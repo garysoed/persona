@@ -2,12 +2,19 @@ import { InstanceSourceId, instanceSourceId } from 'grapevine/export/component';
 import { InstanceofType, Type } from 'gs-types/export';
 import { ResolvedSpec, UnresolvedSpec } from './spec';
 
+/**
+ * @internal
+ */
 export class ResolvedElementSpec<T extends HTMLElement> extends ResolvedSpec<T> {
   constructor(
       private readonly selectorString_: string,
-      private readonly type_: Type<T>,
-      sourceId_: InstanceSourceId<T>) {
-    super(sourceId_);
+      type: Type<T>,
+      sourceId: InstanceSourceId<T>) {
+    super(sourceId, type);
+  }
+
+  getSelectorString(): string {
+    return this.selectorString_;
   }
 
   toString(): string {
@@ -15,6 +22,9 @@ export class ResolvedElementSpec<T extends HTMLElement> extends ResolvedSpec<T> 
   }
 }
 
+/**
+ * @internal
+ */
 export class UnresolvedElementSpec<T extends HTMLElement> extends UnresolvedSpec<T> {
   constructor(private readonly path_: string) {
     super();
@@ -31,6 +41,9 @@ export class UnresolvedElementSpec<T extends HTMLElement> extends UnresolvedSpec
 
 type ElementSpec<T extends HTMLElement> = ResolvedElementSpec<T> | UnresolvedElementSpec<T>;
 
+/**
+ * Creates selector that selects an element.
+ */
 export function elementSelector<T extends HTMLElement>(selector: string): UnresolvedElementSpec<T>;
 export function elementSelector<T extends HTMLElement>(id: string, type: Type<T>):
     ResolvedElementSpec<T>;

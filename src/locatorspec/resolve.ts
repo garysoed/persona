@@ -1,21 +1,15 @@
 import { Jsons } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
-import { ElementWithTagType, HasPropertiesType, InstanceofType, IntersectType, IsType, ObjectType, Type, UnionType } from 'gs-types/export';
-import { elementSelector, ResolvedElementSpec, UnresolvedElementSpec } from './element-spec';
+import { Type } from 'gs-types/export';
+import { ResolvedElementSpec, UnresolvedElementSpec } from './element-spec';
 import { ResolvedSpec, UnresolvedSpec } from './spec';
 
+/**
+ * Object that recursively contains locator spec, resolved or unresolved.
+ */
 interface SpecObject {
   [key: string]: ResolvedSpec<any> | UnresolvedSpec<any> | SpecObject;
 }
-const SPEC_OBJECT_TYPE = IntersectType<SpecObject>([
-  ObjectType.stringKeyed(
-      UnionType([
-        InstanceofType(ResolvedSpec),
-        InstanceofType(UnresolvedSpec),
-        InstanceofType(Object),
-      ])),
-  HasPropertiesType({constructor: IsType<Object>(Object)}),
-]);
 
 // tslint:disable:semicolon whitespace typedef no-empty no-unused-expression
 type Resolved<T extends ResolvedSpec<any> | UnresolvedSpec<any> | SpecObject> =
