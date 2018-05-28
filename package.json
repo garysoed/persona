@@ -1,0 +1,29 @@
+{
+  "name": "persona",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/garysoed/persona.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/garysoed/persona/issues"
+  },
+  "homepage": "https://github.com/garysoed/persona#readme",
+  "devDependencies": {
+    "@types/jasmine": "^2.8.7",
+    "awesome-typescript-loader": "^5.0.0",
+    "jasmine": "^3.1.0",
+    "karma-jasmine": "^1.1.2",
+    "karma-sourcemap-loader": "^0.3.7",
+    "typescript": "^2.8.3",
+    "uglifyjs-webpack-plugin": "^1.2.5",
+    "webpack": "^4.9.2"
+  }
+}
