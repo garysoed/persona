@@ -1,15 +1,15 @@
 import { assert } from 'gs-testing/export/main';
 import { should } from 'gs-testing/src/main/run';
 import { ElementWithTagType } from 'gs-types/export';
-import { elementSelector } from './element-spec';
+import { element } from './element-locator';
 import { resolveSelectors } from './resolve';
 
-describe('locatorspec.resolveSelectors', () => {
+describe('locator.resolveSelectors', () => {
   should(`resolve the object correctly`, () => {
     const unresolved = {
-      a: elementSelector('b.c'),
+      a: element('b.c'),
       b: {
-        c: elementSelector('c', ElementWithTagType('div')),
+        c: element('c', ElementWithTagType('div')),
       },
     };
 
@@ -23,8 +23,8 @@ describe('locatorspec.resolveSelectors', () => {
 
   should(`throw error if an unresolved spec refers to the wrong type`, () => {
     const unresolved = {
-      a: elementSelector('b'),
-      b: elementSelector('c'),
+      a: element('b'),
+      b: element('c'),
     };
 
     assert(() => {

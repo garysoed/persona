@@ -3,15 +3,15 @@ import 'jasmine';
 import { assert } from 'gs-testing/export/main';
 import { should } from 'gs-testing/src/main/run';
 import { ElementWithTagType } from 'gs-types/export';
-import { elementSelector } from './element-spec';
+import { element } from './element-locator';
 import { resolveSelectors } from './resolve';
 
-describe('locatorspec.ElementSpec', () => {
+describe('locator.element', () => {
   should(`resolve correctly`, () => {
     const root = {
-      a: elementSelector('b.c'),
+      a: element('b.c'),
       b: {
-        c: elementSelector('c', ElementWithTagType('div')),
+        c: element('c', ElementWithTagType('div')),
       },
     };
 
