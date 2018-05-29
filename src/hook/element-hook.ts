@@ -4,7 +4,10 @@ import { Errors } from 'gs-tools/export/error';
 import { ResolvedElementLocator } from '../locator/element-locator';
 import { Hook } from './hook';
 
-export class ElementHook<T extends HTMLElement> extends Hook<T> {
+/**
+ * Exposes HTMLElement in DOM to Typescript.
+ */
+export class ElementHook<T extends HTMLElement> extends Hook {
   constructor(
       private readonly locator_: ResolvedElementLocator<T>,
       vine: VineImpl) {

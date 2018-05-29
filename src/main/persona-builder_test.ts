@@ -1,4 +1,4 @@
-import { assert, fshould, Match, should } from 'gs-testing/export/main';
+import { assert, Match, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
@@ -37,8 +37,6 @@ describe('main.PersonaBuilder', () => {
     should(`throw error if the tag is already registered`, () => {
       const tag = 'tag';
       const templateKey = 'templateKey';
-      const mockCustomElementRegistry = jasmine.createSpyObj('CustomElementRegistry', ['define']);
-      const vine = Mocks.object('vine');
 
       builder.register(tag, templateKey, TestClass, ImmutableSet.of(), ImmutableSet.of());
 

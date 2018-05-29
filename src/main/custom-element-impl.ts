@@ -1,11 +1,12 @@
-import { InstanceSourceId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { cache } from 'gs-tools/export/data';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
-import { ResolvedLocator, ResolvedRenderableLocator } from '../locator/locator';
-import { ComponentSpec } from './component-spec';
+import { ResolvedRenderableLocator } from '../locator/locator';
 
+/**
+ * Main logic class of custom elements.
+ */
 export class CustomElementImpl {
   private component_: BaseDisposable | null = null;
 

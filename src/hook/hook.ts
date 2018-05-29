@@ -2,9 +2,9 @@ import { VineImpl } from 'grapevine/export/main';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 
 /**
- * Provides a hook / bridge to a place in the DOM.
+ * Exposes the value in the DOM to Typescript.
  */
-export abstract class Hook<T> {
+export abstract class Hook {
   constructor(protected readonly vine_: VineImpl) { }
 
   abstract install(root: ShadowRoot, component: BaseDisposable): void;

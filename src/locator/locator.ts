@@ -27,6 +27,9 @@ export abstract class UnresolvedLocator<T> {
   abstract resolve(resolver: LocatorPathResolver): ResolvedLocator<T>;
 }
 
+/**
+ * Locator spec that has been resolved and can be used for rendering values into the DOM.
+ */
 export abstract class ResolvedRenderableLocator<T> extends ResolvedLocator<T> {
   constructor(
       protected readonly streamId_: InstanceStreamId<T>,
