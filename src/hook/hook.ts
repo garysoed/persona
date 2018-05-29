@@ -1,11 +1,11 @@
-// import { BaseDisposable } from 'gs-tools/export/dispose';
-// import { Listener } from '../listener/listener';
+import { VineImpl } from 'grapevine/export/main';
+import { BaseDisposable } from 'gs-tools/export/dispose';
 
-// /**
-//  * Specifies a location in the DOM.
-//  */
-// export abstract class Locator<T> {
-//   abstract getValue(root: ShadowRoot): T | null;
+/**
+ * Provides a hook / bridge to a place in the DOM.
+ */
+export abstract class Hook<T> {
+  constructor(protected readonly vine_: VineImpl) { }
 
-//   abstract setValue(value: T | null, root: ShadowRoot): void;
-// }
+  abstract install(root: ShadowRoot, component: BaseDisposable): void;
+}
