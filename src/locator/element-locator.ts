@@ -1,5 +1,7 @@
 import { InstanceSourceId, instanceSourceId } from 'grapevine/export/component';
+import { VineImpl } from 'grapevine/export/main';
 import { InstanceofType, Type } from 'gs-types/export';
+import { ElementWatcher } from '../watcher/element-watcher';
 import { ResolvedLocator, UnresolvedLocator } from './locator';
 
 /**
@@ -11,6 +13,10 @@ export class ResolvedElementLocator<T extends HTMLElement> extends ResolvedLocat
       type: Type<T>,
       sourceId: InstanceSourceId<T>) {
     super(sourceId, type);
+  }
+
+  createWatcher(vine: VineImpl): ElementWatcher<T> {
+    return new ElementWatcher(this, vine);
   }
 
   getSelectorString(): string {

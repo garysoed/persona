@@ -1,5 +1,7 @@
 import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
+import { VineImpl } from 'grapevine/export/main';
 import { Type } from 'gs-types/export';
+import { Watcher } from '../watcher/watcher';
 
 type LocatorPathResolver = <S>(path: string, type: Type<S>) => S;
 
@@ -10,6 +12,8 @@ export abstract class ResolvedLocator<T> {
   constructor(
       protected readonly sourceId_: InstanceSourceId<T>,
       protected readonly type_: Type<T>) { }
+
+  abstract createWatcher(vine: VineImpl): Watcher<T>;
 
   getSourceId(): InstanceSourceId<T> {
     return this.sourceId_;

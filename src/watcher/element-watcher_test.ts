@@ -4,7 +4,7 @@ import { should } from 'gs-testing/src/main/run';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { ElementWithTagType } from 'gs-types/export';
 import { element } from '../locator/element-locator';
-import { ElementHook } from './element-hook';
+import { ElementWatcher } from './element-watcher';
 
 describe('hook.ElementHook', () => {
   let shadowRoot: ShadowRoot;
@@ -26,8 +26,8 @@ describe('hook.ElementHook', () => {
       const locator = element(`.${className}`, ElementWithTagType('div'));
       const component = new BaseDisposable();
 
-      const hook = new ElementHook<HTMLDivElement>(locator, mockVine);
-      hook.install(shadowRoot, component);
+      const watcher = new ElementWatcher<HTMLDivElement>(locator, mockVine);
+      watcher.watch(shadowRoot, component);
       assert(mockVine.setValue).to.haveBeenCalledWith(locator.getSourceId(), el, component);
     });
 
@@ -38,9 +38,9 @@ describe('hook.ElementHook', () => {
       const locator = element(`.nonExistentClass`, ElementWithTagType('div'));
       const component = new BaseDisposable();
 
-      const hook = new ElementHook<HTMLDivElement>(locator, mockVine);
+      const watcher = new ElementWatcher<HTMLDivElement>(locator, mockVine);
       assert(() => {
-        hook.install(shadowRoot, component);
+        watcher.watch(shadowRoot, component);
       }).to.throwError(/Element of/i);
     });
   });

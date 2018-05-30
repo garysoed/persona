@@ -28,6 +28,7 @@ describe('main.PersonaBuilder', () => {
           templateKey,
           TestClass,
           ImmutableSet.of(),
+          ImmutableSet.of(),
           ImmutableSet.of());
       builder.build(mockCustomElementRegistry, vine);
 
@@ -38,10 +39,22 @@ describe('main.PersonaBuilder', () => {
       const tag = 'tag';
       const templateKey = 'templateKey';
 
-      builder.register(tag, templateKey, TestClass, ImmutableSet.of(), ImmutableSet.of());
+      builder.register(
+          tag,
+          templateKey,
+          TestClass,
+          ImmutableSet.of(),
+          ImmutableSet.of(),
+          ImmutableSet.of());
 
       assert(() => {
-        builder.register(tag, templateKey, TestClass, ImmutableSet.of(), ImmutableSet.of());
+        builder.register(
+            tag,
+            templateKey,
+            TestClass,
+            ImmutableSet.of(),
+            ImmutableSet.of(),
+            ImmutableSet.of());
       }).to.throwError(/unregistered/);
     });
   });

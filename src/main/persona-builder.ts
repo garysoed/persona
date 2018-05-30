@@ -3,7 +3,8 @@ import { VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
-import { ResolvedRenderableLocator } from '../locator/locator';
+import { ResolvedLocator, ResolvedRenderableLocator } from '../locator/locator';
+import { Watcher } from '../watcher/watcher';
 import { ComponentSpec, RendererSpec } from './component-spec';
 import { CustomElementImpl } from './custom-element-impl';
 
@@ -11,6 +12,7 @@ function createCustomElementClass_(
     componentClass: typeof BaseDisposable,
     rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
     templateStr: string,
+    watchers: ImmutableSet<Watcher<any>>,
     vine: VineImpl): typeof HTMLElement {
   return class extends HTMLElement {
     private readonly customElementImpl_: CustomElementImpl = new CustomElementImpl(
@@ -18,6 +20,7 @@ function createCustomElementClass_(
         this,
         rendererLocators,
         templateStr,
+        watchers,
         vine);
 
     constructor() {
@@ -42,12 +45,15 @@ export class PersonaBuilder {
 
   build(customElementRegistry: CustomElementRegistry, vine: VineImpl): void {
     for (const spec of this.componentSpecs_.values()) {
+      const watchers = ImmutableSet.of(spec.watchers || [])
+          .mapItem(locator => locator.createWatcher(vine));
       const rendererLocators = ImmutableSet.of<RendererSpec>(spec.renderers || [])
           .mapItem(renderer => renderer.locator);
       const elementClass = createCustomElementClass_(
           spec.componentClass,
           rendererLocators,
           'TODO',
+          watchers,
           vine);
       customElementRegistry.define(spec.tag, elementClass);
     }
@@ -58,7 +64,8 @@ export class PersonaBuilder {
       templateKey: string,
       componentClass: typeof BaseDisposable,
       renderers: ImmutableSet<RendererSpec>,
-      sources: ImmutableSet<InstanceSourceId<any>>): void {
+      sources: ImmutableSet<InstanceSourceId<any>>,
+      watchers: ImmutableSet<ResolvedLocator<any>>): void {
     if (this.componentSpecs_.has(tag)) {
       throw Errors.assert(`Component with tag ${tag}`).shouldBe('unregistered').butNot();
     }
@@ -69,6 +76,7 @@ export class PersonaBuilder {
       sources,
       tag,
       templateKey,
+      watchers,
     });
   }
 }

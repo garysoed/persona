@@ -1,6 +1,6 @@
 import { instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
-import { assert, Match, should } from 'gs-testing/export/main';
+import { assert, fshould, Match, should } from 'gs-testing/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { NumberType } from 'gs-types/export';
@@ -27,6 +27,7 @@ describe('main.CustomElementImpl', () => {
           element,
           ImmutableSet.of(),
           templateString,
+          ImmutableSet.of(),
           mockVine,
           'open');
 
@@ -54,6 +55,7 @@ describe('main.CustomElementImpl', () => {
           element,
           ImmutableSet.of([mockRendererLocator1, mockRendererLocator2]),
           templateString,
+          ImmutableSet.of(),
           mockVine,
           'open');
 
@@ -74,6 +76,27 @@ describe('main.CustomElementImpl', () => {
       mockVine.listen.calls.argsFor(1)[1](value);
       assert(mockRendererLocator2.setValue).to.haveBeenCalledWith(value);
     });
+
+    should(`setup the watchers correctly`, () => {
+      const element = document.createElement('div');
+      const templateString = 'templateString';
+
+      const mockWatcher1 = jasmine.createSpyObj('Watcher1', ['watch']);
+      const mockWatcher2 = jasmine.createSpyObj('Watcher2', ['watch']);
+
+      const customElement = new CustomElementImpl(
+          TestClass,
+          element,
+          ImmutableSet.of(),
+          templateString,
+          ImmutableSet.of([mockWatcher1, mockWatcher2]),
+          mockVine,
+          'open');
+      customElement.connectedCallback();
+
+      assert(mockWatcher1.watch).to.haveBeenCalledWith(element.shadowRoot, Match.any(TestClass));
+      assert(mockWatcher2.watch).to.haveBeenCalledWith(element.shadowRoot, Match.any(TestClass));
+    });
   });
 
   describe(`disconnectedCallback`, () => {
@@ -85,6 +108,7 @@ describe('main.CustomElementImpl', () => {
           element,
           ImmutableSet.of(),
           templateString,
+          ImmutableSet.of(),
           mockVine,
           'open');
 
@@ -102,6 +126,7 @@ describe('main.CustomElementImpl', () => {
           element,
           ImmutableSet.of(),
           templateString,
+          ImmutableSet.of(),
           mockVine,
           'open');
 
