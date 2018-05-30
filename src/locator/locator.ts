@@ -13,7 +13,7 @@ export abstract class ResolvedLocator<T> {
       protected readonly sourceId_: InstanceSourceId<T>,
       protected readonly type_: Type<T>) { }
 
-  abstract createWatcher(vine: VineImpl): Watcher<T>;
+  abstract createWatcher(vine: VineImpl): Watcher<any>;
 
   getSourceId(): InstanceSourceId<T> {
     return this.sourceId_;

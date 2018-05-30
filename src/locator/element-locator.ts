@@ -7,7 +7,7 @@ import { ResolvedLocator, UnresolvedLocator } from './locator';
 /**
  * @internal
  */
-export class ResolvedElementLocator<T extends HTMLElement> extends ResolvedLocator<T> {
+export class ResolvedElementLocator<T extends HTMLElement | null> extends ResolvedLocator<T> {
   constructor(
       private readonly selectorString_: string,
       type: Type<T>,
@@ -31,7 +31,7 @@ export class ResolvedElementLocator<T extends HTMLElement> extends ResolvedLocat
 /**
  * @internal
  */
-export class UnresolvedElementLocator<T extends HTMLElement> extends UnresolvedLocator<T> {
+export class UnresolvedElementLocator<T extends HTMLElement | null> extends UnresolvedLocator<T> {
   constructor(private readonly path_: string) {
     super();
   }
@@ -45,15 +45,17 @@ export class UnresolvedElementLocator<T extends HTMLElement> extends UnresolvedL
   }
 }
 
-type ElementSpec<T extends HTMLElement> = ResolvedElementLocator<T> | UnresolvedElementLocator<T>;
+type ElementSpec<T extends HTMLElement | null> =
+    ResolvedElementLocator<T> | UnresolvedElementLocator<T>;
 
 /**
  * Creates selector that selects an element.
  */
-export function element<T extends HTMLElement>(selector: string): UnresolvedElementLocator<T>;
-export function element<T extends HTMLElement>(id: string, type: Type<T>):
+export function element<T extends HTMLElement | null>(
+    selector: string): UnresolvedElementLocator<T>;
+export function element<T extends HTMLElement | null>(id: string, type: Type<T>):
     ResolvedElementLocator<T>;
-export function element<T extends HTMLElement>(
+export function element<T extends HTMLElement | null>(
     selectorOrId: string, type?: Type<T>): ElementSpec<T> {
   if (type) {
     return new ResolvedElementLocator(selectorOrId, type, instanceSourceId(selectorOrId, type));
