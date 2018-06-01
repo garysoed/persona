@@ -16,7 +16,7 @@ export class ResolvedElementLocator<T extends HTMLElement | null> extends Resolv
   }
 
   createWatcher(vine: VineImpl): ElementWatcher<T> {
-    return new ElementWatcher(this, vine);
+    return new ElementWatcher(this.selectorString_, this.type_, this.sourceId_, vine);
   }
 
   getSelectorString(): string {
@@ -24,7 +24,7 @@ export class ResolvedElementLocator<T extends HTMLElement | null> extends Resolv
   }
 
   toString(): string {
-    return `ResolvedElementSpec(${this.sourceId_})`;
+    return `ResolvedAttributeLocator(${this.sourceId_})`;
   }
 }
 
@@ -36,16 +36,20 @@ export class UnresolvedElementLocator<T extends HTMLElement | null> extends Unre
     super();
   }
 
+  getPath(): string {
+    return this.path_;
+  }
+
   resolve(resolver: <S>(path: string, type: Type<S>) => S): ResolvedElementLocator<T> {
     return resolver(this.path_, InstanceofType<ResolvedElementLocator<T>>(ResolvedElementLocator));
   }
 
   toString(): string {
-    return `UnresolvedElementSpec(${this.path_})`;
+    return `UnresolvedAttributeLocator(${this.path_})`;
   }
 }
 
-type ElementSpec<T extends HTMLElement | null> =
+export type ElementLocator<T extends HTMLElement | null> =
     ResolvedElementLocator<T> | UnresolvedElementLocator<T>;
 
 /**
@@ -56,7 +60,7 @@ export function element<T extends HTMLElement | null>(
 export function element<T extends HTMLElement | null>(id: string, type: Type<T>):
     ResolvedElementLocator<T>;
 export function element<T extends HTMLElement | null>(
-    selectorOrId: string, type?: Type<T>): ElementSpec<T> {
+    selectorOrId: string, type?: Type<T>): ElementLocator<T> {
   if (type) {
     return new ResolvedElementLocator(selectorOrId, type, instanceSourceId(selectorOrId, type));
   } else {

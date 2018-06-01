@@ -10,11 +10,5 @@ export abstract class Watcher<T> {
       protected readonly sourceId_: InstanceSourceId<T>,
       protected readonly vine_: VineImpl) { }
 
-  protected abstract getValue_(root: ShadowRoot): T;
-
-  protected updateVine_(root: ShadowRoot, context: BaseDisposable): void {
-    this.vine_.setValue(this.sourceId_, this.getValue_(root), context);
-  }
-
   abstract watch(root: ShadowRoot, context: BaseDisposable): DisposableFunction;
 }
