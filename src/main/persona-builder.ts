@@ -7,6 +7,7 @@ import { ResolvedLocator, ResolvedRenderableLocator } from '../locator/locator';
 import { Watcher } from '../watcher/watcher';
 import { ComponentSpec, RendererSpec } from './component-spec';
 import { CustomElementImpl } from './custom-element-impl';
+import { TemplateRegistrar } from './template-registrar';
 
 function createCustomElementClass_(
     componentClass: typeof BaseDisposable,
@@ -43,16 +44,24 @@ function createCustomElementClass_(
 export class PersonaBuilder {
   private readonly componentSpecs_: Map<string, ComponentSpec> = new Map();
 
+  constructor(private readonly templateRegistrar_: TemplateRegistrar) { }
+
   build(customElementRegistry: CustomElementRegistry, vine: VineImpl): void {
     for (const spec of this.componentSpecs_.values()) {
       const watchers = ImmutableSet.of(spec.watchers || [])
           .mapItem(locator => locator.createWatcher(vine));
       const rendererLocators = ImmutableSet.of<RendererSpec>(spec.renderers || [])
           .mapItem(renderer => renderer.locator);
+
+      const template = this.templateRegistrar_.getTemplate(spec.templateKey);
+      if (!template) {
+        throw Errors.assert(`Template of ${spec.templateKey}`).shouldExist().butNot();
+      }
+
       const elementClass = createCustomElementClass_(
           spec.componentClass,
           rendererLocators,
-          'TODO',
+          template,
           watchers,
           vine);
       customElementRegistry.define(spec.tag, elementClass);

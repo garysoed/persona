@@ -3,6 +3,7 @@ import { Mocks } from 'gs-testing/export/mock';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { PersonaBuilder } from './persona-builder';
+import { TemplateRegistrar } from './template-registrar';
 
 /**
  * @test
@@ -11,12 +12,18 @@ class TestClass extends BaseDisposable { }
 
 describe('main.PersonaBuilder', () => {
   let builder: PersonaBuilder;
+  let mockTemplateRegistrar: jasmine.SpyObj<TemplateRegistrar>;
 
   beforeEach(() => {
-    builder = new PersonaBuilder();
+    mockTemplateRegistrar = jasmine.createSpyObj('TemplateRegistrar', ['getTemplate']);
+    builder = new PersonaBuilder(mockTemplateRegistrar);
   });
 
   describe('register', () => {
+    beforeEach(() => {
+      mockTemplateRegistrar.getTemplate.and.returnValue('templateString');
+    });
+
     should(`register the components correctly`, () => {
       const tag = 'tag';
       const templateKey = 'templateKey';
