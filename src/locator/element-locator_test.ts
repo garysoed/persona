@@ -4,7 +4,7 @@ import { assert } from 'gs-testing/export/main';
 import { should } from 'gs-testing/src/main/run';
 import { ElementWithTagType } from 'gs-types/export';
 import { element } from './element-locator';
-import { resolveSelectors } from './resolve';
+import { resolveLocators } from './resolve';
 
 describe('locator.element', () => {
   should(`resolve correctly`, () => {
@@ -15,7 +15,7 @@ describe('locator.element', () => {
       },
     };
 
-    const resolved = resolveSelectors(root);
+    const resolved = resolveLocators(root);
     assert(resolved.a).to.be(root.b.c);
   });
 });

@@ -1,5 +1,6 @@
 import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
-import { VineImpl } from 'grapevine/export/main';
+import { VineBuilder, VineImpl } from 'grapevine/export/main';
+import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Type } from 'gs-types/export';
 import { Watcher } from '../watcher/watcher';
 
@@ -10,17 +11,16 @@ type LocatorPathResolver = <S>(path: string, type: Type<S>) => S;
  */
 export abstract class ResolvedLocator<T> {
   constructor(
-      protected readonly sourceId_: InstanceSourceId<T>,
-      protected readonly type_: Type<T>) { }
+      protected readonly sourceId_: InstanceSourceId<T>) { }
 
-  abstract createWatcher(vine: VineImpl): Watcher<any>;
+  abstract createWatcher(vine: VineImpl): Watcher<T>;
 
   getSourceId(): InstanceSourceId<T> {
     return this.sourceId_;
   }
 
   getType(): Type<T> {
-    return this.type_;
+    return this.sourceId_.getType();
   }
 }
 
@@ -37,14 +37,15 @@ export abstract class UnresolvedLocator<T> {
 export abstract class ResolvedRenderableLocator<T> extends ResolvedLocator<T> {
   constructor(
       protected readonly streamId_: InstanceStreamId<T>,
-      sourceId: InstanceSourceId<T>,
-      type: Type<T>) {
-    super(sourceId, type);
+      sourceId: InstanceSourceId<T>) {
+    super(sourceId);
   }
 
   getStreamId(): InstanceStreamId<T> {
     return this.streamId_;
   }
 
-  abstract setValue(newValue: T): void;
+  abstract setupVine(builder: VineBuilder): void;
+
+  abstract startRender(vine: VineImpl, context: BaseDisposable): () => void;
 }

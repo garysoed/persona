@@ -1,4 +1,4 @@
-import { InstanceSourceId, NodeId } from 'grapevine/export/component';
+import { NodeId } from 'grapevine/export/component';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { ResolvedLocator, ResolvedRenderableLocator } from '../locator/locator';
 
@@ -17,7 +17,7 @@ export interface RendererSpec {
 export interface ComponentSpec {
   componentClass: typeof BaseDisposable;
   renderers?: Iterable<RendererSpec>;
-  sources?: Iterable<InstanceSourceId<any>>;
+  shadowMode?: 'open'|'closed';
   tag: string;
   templateKey: string;
   watchers?: Iterable<ResolvedLocator<any>>;

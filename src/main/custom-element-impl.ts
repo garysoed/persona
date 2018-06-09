@@ -46,11 +46,7 @@ export class CustomElementImpl {
 
   private setupRenderers_(context: BaseDisposable): void {
     for (const rendererLocator of this.rendererLocators_ || []) {
-      const unlistenFn = this.vine_.listen(
-          rendererLocator.getStreamId(),
-          value => {
-            rendererLocator.setValue(value);
-          }, context);
+      const unlistenFn = rendererLocator.startRender(this.vine_, context);
       context.addDisposable(DisposableFunction.of(unlistenFn));
     }
   }

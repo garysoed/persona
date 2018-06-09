@@ -2,7 +2,7 @@ import { assert } from 'gs-testing/export/main';
 import { should } from 'gs-testing/src/main/run';
 import { ElementWithTagType } from 'gs-types/export';
 import { element } from './element-locator';
-import { resolveSelectors } from './resolve';
+import { resolveLocators } from './resolve';
 
 describe('locator.resolveSelectors', () => {
   should(`resolve the object correctly`, () => {
@@ -13,7 +13,7 @@ describe('locator.resolveSelectors', () => {
       },
     };
 
-    assert(resolveSelectors(unresolved)).to.equal({
+    assert(resolveLocators(unresolved)).to.equal({
       a: unresolved.b.c,
       b: {
         c: unresolved.b.c,
@@ -28,7 +28,7 @@ describe('locator.resolveSelectors', () => {
     };
 
     assert(() => {
-      resolveSelectors(unresolved);
+      resolveLocators(unresolved);
     }).to.throwError(/Type of b/i);
   });
 });

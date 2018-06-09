@@ -1,5 +1,4 @@
-import { InstanceSourceId } from 'grapevine/export/component';
-import { VineImpl } from 'grapevine/export/main';
+import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
@@ -14,7 +13,8 @@ function createCustomElementClass_(
     rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
     templateStr: string,
     watchers: ImmutableSet<Watcher<any>>,
-    vine: VineImpl): typeof HTMLElement {
+    vine: VineImpl,
+    shadowMode: 'open'|'closed' = 'closed'): typeof HTMLElement {
   return class extends HTMLElement {
     private readonly customElementImpl_: CustomElementImpl = new CustomElementImpl(
         componentClass,
@@ -22,7 +22,8 @@ function createCustomElementClass_(
         rendererLocators,
         templateStr,
         watchers,
-        vine);
+        vine,
+        shadowMode);
 
     constructor() {
       super();
@@ -63,7 +64,8 @@ export class PersonaBuilder {
           rendererLocators,
           template,
           watchers,
-          vine);
+          vine,
+          spec.shadowMode);
       customElementRegistry.define(spec.tag, elementClass);
     }
   }
@@ -73,16 +75,26 @@ export class PersonaBuilder {
       templateKey: string,
       componentClass: typeof BaseDisposable,
       renderers: ImmutableSet<RendererSpec>,
-      sources: ImmutableSet<InstanceSourceId<any>>,
-      watchers: ImmutableSet<ResolvedLocator<any>>): void {
+      watchers: ImmutableSet<ResolvedLocator<any>>,
+      vineBuilder: VineBuilder,
+      shadowMode: 'open'|'closed' = 'closed'): void {
     if (this.componentSpecs_.has(tag)) {
       throw Errors.assert(`Component with tag ${tag}`).shouldBe('unregistered').butNot();
+    }
+
+    for (const renderer of renderers || []) {
+      renderer.locator.setupVine(vineBuilder);
+      vineBuilder.source(renderer.locator.getSourceId(), null);
+    }
+
+    for (const watcher of watchers || []) {
+      vineBuilder.source(watcher.getSourceId(), null);
     }
 
     this.componentSpecs_.set(tag, {
       componentClass,
       renderers,
-      sources,
+      shadowMode,
       tag,
       templateKey,
       watchers,

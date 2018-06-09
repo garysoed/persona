@@ -62,7 +62,7 @@ function resolveSelectorsHelper_(
   return processed;
 }
 
-export function resolveSelectors<T extends LocatorObject>(raw: T): ResolvedLocatorObject<T> {
+export function resolveLocators<T extends LocatorObject>(raw: T): ResolvedLocatorObject<T> {
   return resolveSelectorsHelper_<T>(raw, raw);
 }
 

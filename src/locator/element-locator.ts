@@ -10,13 +10,12 @@ import { ResolvedLocator, UnresolvedLocator } from './locator';
 export class ResolvedElementLocator<T extends HTMLElement | null> extends ResolvedLocator<T> {
   constructor(
       private readonly selectorString_: string,
-      type: Type<T>,
       sourceId: InstanceSourceId<T>) {
-    super(sourceId, type);
+    super(sourceId);
   }
 
   createWatcher(vine: VineImpl): ElementWatcher<T> {
-    return new ElementWatcher(this.selectorString_, this.type_, this.sourceId_, vine);
+    return new ElementWatcher(this.selectorString_, this.getType(), this.sourceId_, vine);
   }
 
   getSelectorString(): string {
@@ -57,13 +56,13 @@ export type ElementLocator<T extends HTMLElement | null> =
  */
 export function element<T extends HTMLElement | null>(
     selector: string): UnresolvedElementLocator<T>;
-export function element<T extends HTMLElement | null>(id: string, type: Type<T>):
+export function element<T extends HTMLElement | null>(cssSelector: string, type: Type<T>):
     ResolvedElementLocator<T>;
 export function element<T extends HTMLElement | null>(
-    selectorOrId: string, type?: Type<T>): ElementLocator<T> {
+    selector: string, type?: Type<T>): ElementLocator<T> {
   if (type) {
-    return new ResolvedElementLocator(selectorOrId, type, instanceSourceId(selectorOrId, type));
+    return new ResolvedElementLocator(selector, instanceSourceId(selector, type));
   } else {
-    return new UnresolvedElementLocator(selectorOrId);
+    return new UnresolvedElementLocator(selector);
   }
 }

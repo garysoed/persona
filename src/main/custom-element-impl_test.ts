@@ -43,11 +43,11 @@ describe('main.CustomElementImpl', () => {
       const nodeId1 = instanceStreamId('node1', NumberType);
       const nodeId2 = instanceStreamId('node2', NumberType);
       const mockRendererLocator1 =
-          jasmine.createSpyObj('RendererLocator1', ['getStreamId', 'setValue']);
+          jasmine.createSpyObj('RendererLocator1', ['getStreamId', 'startRender']);
       mockRendererLocator1.getStreamId.and.returnValue(nodeId1);
 
       const mockRendererLocator2 =
-          jasmine.createSpyObj('RendererLocator2', ['getStreamId', 'setValue']);
+          jasmine.createSpyObj('RendererLocator2', ['getStreamId', 'startRender']);
       mockRendererLocator2.getStreamId.and.returnValue(nodeId2);
 
       const customElement = new CustomElementImpl(
@@ -61,20 +61,10 @@ describe('main.CustomElementImpl', () => {
 
       customElement.connectedCallback();
 
-      const value = 123;
-      assert(mockVine.listen).to.haveBeenCalledWith(
-          nodeId1,
-          Match.anyFunction(),
-          Match.any(TestClass));
-      mockVine.listen.calls.argsFor(0)[1](value);
-      assert(mockRendererLocator1.setValue).to.haveBeenCalledWith(value);
-
-      assert(mockVine.listen).to.haveBeenCalledWith(
-          nodeId2,
-          Match.anyFunction(),
-          Match.any(TestClass));
-      mockVine.listen.calls.argsFor(1)[1](value);
-      assert(mockRendererLocator2.setValue).to.haveBeenCalledWith(value);
+      assert(mockRendererLocator1.startRender).to
+          .haveBeenCalledWith(mockVine, Match.any(TestClass));
+      assert(mockRendererLocator2.startRender).to
+          .haveBeenCalledWith(mockVine, Match.any(TestClass));
     });
 
     should(`setup the watchers correctly`, () => {
