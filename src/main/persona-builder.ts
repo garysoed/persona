@@ -1,6 +1,5 @@
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
-import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
 import { ResolvedLocator, ResolvedRenderableLocator } from '../locator/locator';
 import { Watcher } from '../watcher/watcher';

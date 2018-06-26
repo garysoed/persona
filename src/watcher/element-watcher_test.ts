@@ -2,7 +2,7 @@ import { instanceSourceId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
 import { should, wait } from 'gs-testing/export/main';
 import { BaseDisposable } from 'gs-tools/export/dispose';
-import { ElementWithTagType, NullType, UnionType } from 'gs-types/export';
+import { ElementWithTagType } from 'gs-types/export';
 import { ElementWatcher } from './element-watcher';
 
 describe('watcher.ElementWatcher', () => {

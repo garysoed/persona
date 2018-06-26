@@ -69,11 +69,11 @@ describe('main.PersonaBuilder', () => {
           mockVineBuilder);
 
       assert(mockVineBuilder.sourceWithProvider)
-          .to.haveBeenCalledWith(locator1.getSourceId(), Match.anyFunction());
+          .to.haveBeenCalledWith(locator1.getSourceId(), Match.anyFunction<() => HTMLElement>());
       assert(await mockVineBuilder.sourceWithProvider.calls.argsFor(0)[1](context))
           .to.be(sectionEl);
       assert(mockVineBuilder.sourceWithProvider)
-          .to.haveBeenCalledWith(locator2.getSourceId(), Match.anyFunction());
+          .to.haveBeenCalledWith(locator2.getSourceId(), Match.anyFunction<() => HTMLElement>());
       assert(await mockVineBuilder.sourceWithProvider.calls.argsFor(1)[1](context))
           .to.be(anchorEl);
     });

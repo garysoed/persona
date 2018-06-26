@@ -1,6 +1,5 @@
 import { VineApp } from 'grapevine/export/main';
 import { Annotations } from 'gs-tools/export/data';
-import { BaseDisposable } from 'gs-tools/export/dispose';
 import { CustomElement, customElementFactory } from '../annotation/custom-element';
 import { Render, renderFactory } from '../annotation/render';
 import { RendererSpec } from './component-spec';

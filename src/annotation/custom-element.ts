@@ -4,7 +4,6 @@ import { Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { ResolvedLocator } from '../locator/locator';
 import { RendererSpec } from '../main/component-spec';
-import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { PersonaBuilder } from '../main/persona-builder';
 
 /**

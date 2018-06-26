@@ -1,7 +1,6 @@
 import { staticSourceId } from 'grapevine/export/component';
 import { getOrRegisterApp as vineGetOrRegisterApp } from 'grapevine/export/main';
 import { should, waitFor } from 'gs-testing/export/main';
-import { BaseDisposable } from 'gs-tools/export/dispose';
 import { IntegerParser } from 'gs-tools/export/parse';
 import { NullableType, NumberType } from 'gs-types/export';
 import { attribute } from '../locator/attribute-locator';

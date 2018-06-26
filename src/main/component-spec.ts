@@ -1,5 +1,4 @@
 import { NodeId } from 'grapevine/export/component';
-import { BaseDisposable } from 'gs-tools/export/dispose';
 import { ResolvedLocator, ResolvedRenderableLocator } from '../locator/locator';
 import { CustomElementCtrl } from './custom-element-ctrl';
 
