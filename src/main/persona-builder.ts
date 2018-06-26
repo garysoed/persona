@@ -5,11 +5,11 @@ import { Errors } from 'gs-tools/export/error';
 import { ResolvedLocator, ResolvedRenderableLocator } from '../locator/locator';
 import { Watcher } from '../watcher/watcher';
 import { ComponentSpec, RendererSpec } from './component-spec';
-import { CustomElementImpl } from './custom-element-impl';
-import { TemplateRegistrar } from './template-registrar';
+import { CustomElementCtrl } from './custom-element-ctrl';
+import { CustomElementImpl, SHADOW_ROOT } from './custom-element-impl';
 
 function createCustomElementClass_(
-    componentClass: typeof BaseDisposable,
+    componentClass: new () => CustomElementCtrl,
     rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
     templateStr: string,
     watchers: ImmutableSet<Watcher<any>>,
@@ -45,8 +45,6 @@ function createCustomElementClass_(
 export class PersonaBuilder {
   private readonly componentSpecs_: Map<string, ComponentSpec> = new Map();
 
-  constructor(private readonly templateRegistrar_: TemplateRegistrar) { }
-
   build(customElementRegistry: CustomElementRegistry, vine: VineImpl): void {
     for (const spec of this.componentSpecs_.values()) {
       const watchers = ImmutableSet.of(spec.watchers || [])
@@ -54,11 +52,7 @@ export class PersonaBuilder {
       const rendererLocators = ImmutableSet.of<RendererSpec>(spec.renderers || [])
           .mapItem(renderer => renderer.locator);
 
-      const template = this.templateRegistrar_.getTemplate(spec.templateKey);
-      if (!template) {
-        throw Errors.assert(`Template of ${spec.templateKey}`).shouldExist().butNot();
-      }
-
+      const template = spec.template;
       const elementClass = createCustomElementClass_(
           spec.componentClass,
           rendererLocators,
@@ -72,12 +66,13 @@ export class PersonaBuilder {
 
   register(
       tag: string,
-      templateKey: string,
-      componentClass: typeof BaseDisposable,
+      template: string,
+      componentClass: new () => CustomElementCtrl,
       renderers: ImmutableSet<RendererSpec>,
       watchers: ImmutableSet<ResolvedLocator<any>>,
       vineBuilder: VineBuilder,
-      shadowMode: 'open'|'closed' = 'closed'): void {
+      shadowMode: 'open'|'closed' = 'closed',
+      windowObj: Window = window): void {
     if (this.componentSpecs_.has(tag)) {
       throw Errors.assert(`Component with tag ${tag}`).shouldBe('unregistered').butNot();
     }
@@ -88,7 +83,14 @@ export class PersonaBuilder {
     }
 
     for (const watcher of watchers || []) {
-      vineBuilder.source(watcher.getSourceId(), null);
+      vineBuilder.sourceWithProvider(watcher.getSourceId(), async context => {
+        const shadowRoot = (context as any)[SHADOW_ROOT];
+        if (!shadowRoot) {
+          throw Errors.assert(`Shadow root of ${context}`).shouldExist().butNot();
+        }
+
+        return watcher.getValue(shadowRoot);
+      });
     }
 
     this.componentSpecs_.set(tag, {
@@ -96,7 +98,7 @@ export class PersonaBuilder {
       renderers,
       shadowMode,
       tag,
-      templateKey,
+      template,
       watchers,
     });
   }

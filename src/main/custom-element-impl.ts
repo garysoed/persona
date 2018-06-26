@@ -4,15 +4,18 @@ import { cache } from 'gs-tools/export/data';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
 import { ResolvedRenderableLocator } from '../locator/locator';
 import { Watcher } from '../watcher/watcher';
+import { CustomElementCtrl } from './custom-element-ctrl';
+
+export const SHADOW_ROOT = Symbol('shadowRoot');
 
 /**
  * Main logic class of custom elements.
  */
 export class CustomElementImpl {
-  private component_: BaseDisposable | null = null;
+  private component_: CustomElementCtrl | null = null;
 
   constructor(
-      private readonly componentClass_: typeof BaseDisposable,
+      private readonly componentClass_: new () => CustomElementCtrl,
       private readonly element_: HTMLElement,
       private readonly rendererLocators_: ImmutableSet<ResolvedRenderableLocator<any>>,
       private readonly templateStr_: string,
@@ -25,9 +28,12 @@ export class CustomElementImpl {
     const componentInstance = new ctor();
     this.component_ = componentInstance;
 
-    this.getShadowRoot_();
+    const shadowRoot = this.getShadowRoot_();
+    (componentInstance as any)[SHADOW_ROOT] = shadowRoot;
     this.setupRenderers_(componentInstance);
     this.setupWatchers_(componentInstance);
+
+    componentInstance.init(this.vine_);
   }
 
   disconnectedCallback(): void {

@@ -22,6 +22,8 @@ export abstract class ResolvedLocator<T> {
   getType(): Type<T> {
     return this.sourceId_.getType();
   }
+
+  abstract getValue(root: ShadowRoot): T;
 }
 
 /**

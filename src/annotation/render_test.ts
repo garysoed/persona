@@ -7,15 +7,14 @@ import { NullableType, NumberType } from 'gs-types/export';
 import { attribute } from '../locator/attribute-locator';
 import { resolveLocators } from '../locator/resolve';
 import { shadowHost } from '../locator/shadow-host-locator';
+import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { getOrRegisterApp } from '../main/persona';
 
 const vineApp = vineGetOrRegisterApp('test');
 const {builder: vineBuilder, vineIn} = vineApp;
-const {builder: personaBuilder, customElement, render, templates} =
-    getOrRegisterApp('test', vineApp);
+const {builder: personaBuilder, customElement, render} = getOrRegisterApp('test', vineApp);
 
-const templateKey = 'templateKey';
-templates.addTemplate(templateKey, '<div></div>');
+const template = '<div></div>';
 
 const $testSource = staticSourceId('testsource', NumberType);
 vineBuilder.source($testSource, 2);
@@ -36,11 +35,15 @@ const $ = resolveLocators({
 @customElement({
   shadowMode: 'open',
   tag: 'p-test',
-  templateKey,
+  template,
   watch: [shadowHost],
 })
 // tslint:disable-next-line:no-unused-variable
-class TestClass extends BaseDisposable {
+class TestClass extends CustomElementCtrl {
+  init(): void {
+    // noop
+  }
+
   @render($.host.attr)
   renderInteger(@vineIn($testSource) test: number): number {
     return test;

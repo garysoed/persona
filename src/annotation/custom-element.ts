@@ -4,15 +4,17 @@ import { Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { ResolvedLocator } from '../locator/locator';
 import { RendererSpec } from '../main/component-spec';
+import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { PersonaBuilder } from '../main/persona-builder';
 
 /**
  * Specs that define a custom element.
  */
 interface Spec {
+  dependencies?: (typeof BaseDisposable)[];
   shadowMode?: 'open'|'closed';
   tag: string;
-  templateKey: string;
+  template: string;
   watch?: Iterable<ResolvedLocator<any>>;
 }
 
@@ -33,8 +35,8 @@ export function customElementFactory(
 
       personaBuilder.register(
           spec.tag,
-          spec.templateKey,
-          target as (typeof BaseDisposable),
+          spec.template,
+          target as any,
           rendererSpecs,
           ImmutableSet.of(spec.watch || []),
           vineBuilder,

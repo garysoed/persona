@@ -24,6 +24,7 @@ describe('watcher.AttributeWatcher', () => {
         mockElementWatcher,
         ELEMENT_SOURCE_ID,
         IntegerParser,
+        NumberType,
         ATTR_NAME,
         SOURCE_ID,
         mockVine);

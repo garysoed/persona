@@ -1,5 +1,6 @@
 import { InstanceSourceId, instanceSourceId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
+import { Errors } from 'gs-tools/src/error';
 import { InstanceofType, Type } from 'gs-types/export';
 import { ElementWatcher } from '../watcher/element-watcher';
 import { ResolvedLocator, UnresolvedLocator } from './locator';
@@ -7,7 +8,7 @@ import { ResolvedLocator, UnresolvedLocator } from './locator';
 /**
  * @internal
  */
-export class ResolvedElementLocator<T extends HTMLElement | null> extends ResolvedLocator<T> {
+export class ResolvedElementLocator<T extends HTMLElement|null> extends ResolvedLocator<T> {
   constructor(
       private readonly selectorString_: string,
       sourceId: InstanceSourceId<T>) {
@@ -15,11 +16,25 @@ export class ResolvedElementLocator<T extends HTMLElement | null> extends Resolv
   }
 
   createWatcher(vine: VineImpl): ElementWatcher<T> {
-    return new ElementWatcher(this.selectorString_, this.getType(), this.sourceId_, vine);
+    return new ElementWatcher(
+        root => this.getValue(root),
+        this.sourceId_,
+        vine);
   }
 
   getSelectorString(): string {
     return this.selectorString_;
+  }
+
+  getValue(root: ShadowRoot): T {
+    const selectorString = this.selectorString_;
+    const type = this.getType();
+    const el = root.querySelector(selectorString);
+    if (!type.check(el)) {
+      throw Errors.assert(`Element of [${selectorString}]`).shouldBeA(type).butWas(el);
+    }
+
+    return el;
   }
 
   toString(): string {
@@ -30,7 +45,7 @@ export class ResolvedElementLocator<T extends HTMLElement | null> extends Resolv
 /**
  * @internal
  */
-export class UnresolvedElementLocator<T extends HTMLElement | null> extends UnresolvedLocator<T> {
+export class UnresolvedElementLocator<T extends HTMLElement|null> extends UnresolvedLocator<T> {
   constructor(private readonly path_: string) {
     super();
   }
@@ -48,17 +63,17 @@ export class UnresolvedElementLocator<T extends HTMLElement | null> extends Unre
   }
 }
 
-export type ElementLocator<T extends HTMLElement | null> =
+export type ElementLocator<T extends HTMLElement|null> =
     ResolvedElementLocator<T> | UnresolvedElementLocator<T>;
 
 /**
  * Creates selector that selects an element.
  */
-export function element<T extends HTMLElement | null>(
+export function element<T extends HTMLElement|null>(
     selector: string): UnresolvedElementLocator<T>;
-export function element<T extends HTMLElement | null>(cssSelector: string, type: Type<T>):
+export function element<T extends HTMLElement|null>(cssSelector: string, type: Type<T>):
     ResolvedElementLocator<T>;
-export function element<T extends HTMLElement | null>(
+export function element<T extends HTMLElement|null>(
     selector: string, type?: Type<T>): ElementLocator<T> {
   if (type) {
     return new ResolvedElementLocator(selector, instanceSourceId(selector, type));

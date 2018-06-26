@@ -3,14 +3,14 @@ import { VineBuilder } from 'grapevine/export/main';
 import { should, waitFor } from 'gs-testing/export/main';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { IntegerParser } from 'gs-tools/export/parse';
-import { InstanceofType, NumberType } from 'gs-types/export';
+import { InstanceofType, NullableType, NumberType } from 'gs-types/export';
 import { attribute, ResolvedAttributeLocator } from './attribute-locator';
 import { element } from './element-locator';
 
 describe('locator.AttributeLocator', () => {
   const ATTR_NAME = 'attr';
-  const elementLocator = element('element', InstanceofType(HTMLElement));
-  let locator: ResolvedAttributeLocator<number>;
+  const elementLocator = element('element', NullableType(InstanceofType(HTMLElement)));
+  let locator: ResolvedAttributeLocator<number, HTMLElement|null>;
 
   beforeEach(() => {
     locator = attribute(elementLocator, ATTR_NAME, IntegerParser, NumberType);

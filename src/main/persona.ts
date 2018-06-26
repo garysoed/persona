@@ -1,10 +1,10 @@
 import { VineApp } from 'grapevine/export/main';
 import { Annotations } from 'gs-tools/export/data';
+import { BaseDisposable } from 'gs-tools/export/dispose';
 import { CustomElement, customElementFactory } from '../annotation/custom-element';
 import { Render, renderFactory } from '../annotation/render';
 import { RendererSpec } from './component-spec';
 import { PersonaBuilder } from './persona-builder';
-import { TemplateRegistrar } from './template-registrar';
 
 /**
  * Describes a Persona App.
@@ -13,7 +13,6 @@ interface PersonaApp {
   builder: PersonaBuilder;
   customElement: CustomElement;
   render: Render;
-  templates: TemplateRegistrar;
 }
 
 const apps = new Map<string, PersonaApp>();
@@ -32,8 +31,7 @@ export function getOrRegisterApp(
   }
 
   const renderAnnotationsCache = new Annotations<RendererSpec>(Symbol(appName));
-  const templates = new TemplateRegistrar();
-  const personaBuilder = new PersonaBuilder(templates);
+  const personaBuilder = new PersonaBuilder();
   const newApp = {
     builder: personaBuilder,
     customElement: customElementFactory(
@@ -44,7 +42,6 @@ export function getOrRegisterApp(
         vineOut,
         renderAnnotationsCache,
         vineBuilder),
-    templates,
   };
   apps.set(appName, newApp);
 

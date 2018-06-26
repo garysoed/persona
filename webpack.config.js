@@ -1,9 +1,9 @@
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const glob = require("glob");
+const path = require("path");
 
 module.exports = {
   entry: glob.sync("./src/**/*_test.ts"),
-  // entry: "./src/async/atomic_test.ts",
   output: {
     filename: "bundle.js",
     path: __dirname + "/out"
@@ -14,16 +14,14 @@ module.exports = {
 
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
-    extensions: [".ts", ".tsx", ".js", ".json"]
+    extensions: [".ts", ".tsx", ".js", ".json", ".html"]
   },
 
   module: {
     rules: [
       // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-      { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
-
-      // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-      { test: /\.tsx?$/, loader: "awesome-typescript-loader" }
+      // { enforce: "pre", test: /\.js$/, loader: "source-map-loader" },
+      { test: /\.tsx?$/, loader: "awesome-typescript-loader"},
     ]
   },
 

@@ -1,6 +1,7 @@
 import { NodeId } from 'grapevine/export/component';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { ResolvedLocator, ResolvedRenderableLocator } from '../locator/locator';
+import { CustomElementCtrl } from './custom-element-ctrl';
 
 /**
  * Specifications for a renderer.
@@ -15,10 +16,10 @@ export interface RendererSpec {
  * Specifications for a custom element.
  */
 export interface ComponentSpec {
-  componentClass: typeof BaseDisposable;
+  componentClass: new () => CustomElementCtrl;
   renderers?: Iterable<RendererSpec>;
   shadowMode?: 'open'|'closed';
   tag: string;
-  templateKey: string;
+  template: string;
   watchers?: Iterable<ResolvedLocator<any>>;
 }

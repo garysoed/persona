@@ -2,6 +2,7 @@ import { InstanceSourceId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
 import { Parser } from 'gs-tools/export/parse';
+import { Type } from 'gs-types/export';
 import { Watcher } from './watcher';
 
 /**
@@ -20,6 +21,7 @@ export class AttributeWatcher<T> extends Watcher<T> {
       private readonly elementWatcher_: Watcher<HTMLElement | null>,
       private readonly elementSourceId_: InstanceSourceId<HTMLElement | null>,
       private readonly parser_: Parser<T>,
+      private readonly type_: Type<T>,
       private readonly attrName_: string,
       sourceId: InstanceSourceId<T>,
       vine: VineImpl) {
@@ -38,7 +40,7 @@ export class AttributeWatcher<T> extends Watcher<T> {
 
       const unparsedValue = target.getAttribute(attributeName);
       const parsedValue = this.parser_.parse(unparsedValue);
-      if (parsedValue !== null) {
+      if (this.type_.check(parsedValue)) {
         this.vine_.setValue(this.sourceId_, parsedValue, context);
       }
     }

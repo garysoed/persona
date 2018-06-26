@@ -4,12 +4,17 @@ import { assert, Match, should } from 'gs-testing/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { NumberType } from 'gs-types/export';
+import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl } from './custom-element-impl';
 
 /**
  * @test
  */
-class TestClass extends BaseDisposable { }
+class TestClass extends CustomElementCtrl {
+  init(): void {
+    // noop
+  }
+}
 
 describe('main.CustomElementImpl', () => {
   let mockVine: jasmine.SpyObj<VineImpl>;
