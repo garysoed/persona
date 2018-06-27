@@ -22,8 +22,7 @@ export abstract class ResolvedLocator<T> {
 }
 
 /**
- * Locator spec that has been resolved and can be used for rendering values into the DOM, and has
- * a watcher.
+ * Locator spec that has been resolved and can be used for rendering values into the DOM.
  */
 export abstract class ResolvedRenderableLocator<T> extends ResolvedLocator<T> {
   constructor(
@@ -41,12 +40,16 @@ export abstract class ResolvedRenderableLocator<T> extends ResolvedLocator<T> {
   abstract startRender(vine: VineImpl, context: BaseDisposable): () => void;
 }
 
+/**
+ * Locator spec that has been resolved and has a watcher.
+ */
 export abstract class ResolvedWatchableLocator<T> extends ResolvedLocator<T> {
   abstract createWatcher(vine: VineImpl): Watcher<T>;
 }
 
 /**
- * Locator spec that has been resolved and can be used for rendering values into the DOM.
+ * Locator spec that has been resolved and can be used for rendering values into the DOM, and has
+ * a watcher.
  */
 export abstract class ResolvedRenderableWatchableLocator<T> extends ResolvedRenderableLocator<T> {
   abstract createWatcher(vine: VineImpl): Watcher<T>;
