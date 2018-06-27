@@ -2,7 +2,7 @@ import { VineBuilder } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
-import { ResolvedLocator } from '../locator/locator';
+import { ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { RendererSpec } from '../main/component-spec';
 import { PersonaBuilder } from '../main/persona-builder';
 
@@ -14,7 +14,7 @@ interface Spec {
   shadowMode?: 'open'|'closed';
   tag: string;
   template: string;
-  watch?: Iterable<ResolvedLocator<any>>;
+  watch?: Iterable<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>;
 }
 
 export type CustomElement = (spec: Spec) => ClassDecorator;

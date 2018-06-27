@@ -3,12 +3,14 @@ import { VineImpl } from 'grapevine/export/main';
 import { Errors } from 'gs-tools/src/error';
 import { InstanceofType, Type } from 'gs-types/export';
 import { ElementWatcher } from '../watcher/element-watcher';
-import { ResolvedLocator, UnresolvedLocator } from './locator';
+import { ResolvedWatchableLocator } from './resolved-locator';
+import { UnresolvedWatchableLocator } from './unresolved-locator';
 
 /**
  * @internal
  */
-export class ResolvedElementLocator<T extends HTMLElement|null> extends ResolvedLocator<T> {
+export class ResolvedElementLocator<T extends HTMLElement|null>
+    extends ResolvedWatchableLocator<T> {
   constructor(
       private readonly selectorString_: string,
       sourceId: InstanceSourceId<T>) {
@@ -45,7 +47,8 @@ export class ResolvedElementLocator<T extends HTMLElement|null> extends Resolved
 /**
  * @internal
  */
-export class UnresolvedElementLocator<T extends HTMLElement|null> extends UnresolvedLocator<T> {
+export class UnresolvedElementLocator<T extends HTMLElement|null>
+    extends UnresolvedWatchableLocator<T> {
   constructor(private readonly path_: string) {
     super();
   }

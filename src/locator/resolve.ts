@@ -2,7 +2,8 @@ import { Jsons } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
 import { Type } from 'gs-types/export';
 import { ResolvedElementLocator, UnresolvedElementLocator } from './element-locator';
-import { ResolvedLocator, UnresolvedLocator } from './locator';
+import { ResolvedLocator } from './resolved-locator';
+import { UnresolvedLocator } from './unresolved-locator';
 
 /**
  * Object that recursively contains locator spec, resolved or unresolved.

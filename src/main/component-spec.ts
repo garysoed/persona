@@ -1,5 +1,5 @@
 import { NodeId } from 'grapevine/export/component';
-import { ResolvedLocator, ResolvedRenderableLocator } from '../locator/locator';
+import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { CustomElementCtrl } from './custom-element-ctrl';
 
 /**
@@ -20,5 +20,5 @@ export interface ComponentSpec {
   shadowMode?: 'open'|'closed';
   tag: string;
   template: string;
-  watchers?: Iterable<ResolvedLocator<any>>;
+  watchers?: Iterable<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>;
 }

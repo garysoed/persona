@@ -5,7 +5,8 @@ import { Parser } from 'gs-tools/export/parse';
 import { Errors } from 'gs-tools/src/error';
 import { TupleOfType, Type } from 'gs-types/export';
 import { AttributeWatcher } from '../watcher/attribute-watcher';
-import { ResolvedLocator, ResolvedRenderableLocator, UnresolvedLocator } from './locator';
+import { ResolvedLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from './resolved-locator';
+import { UnresolvedRenderableWatchableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
 function generateVineId(elementLocator: ResolvedLocator<HTMLElement|null>, attrName: string):
     string {
@@ -16,11 +17,11 @@ function generateVineId(elementLocator: ResolvedLocator<HTMLElement|null>, attrN
  * @internal
  */
 export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
-    extends ResolvedRenderableLocator<T> {
+    extends ResolvedRenderableWatchableLocator<T> {
   private readonly innerRenderStreamId_: InstanceStreamId<[E, T]>;
 
   constructor(
-      private readonly elementLocator_: ResolvedLocator<E>,
+      private readonly elementLocator_: ResolvedWatchableLocator<E>,
       private readonly attrName_: string,
       private readonly parser_: Parser<T>,
       type: Type<T>) {
@@ -86,9 +87,9 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
  * @internal
  */
 export class UnresolvedAttributeLocator<T, E extends HTMLElement|null>
-    extends UnresolvedLocator<T> {
+    extends UnresolvedRenderableWatchableLocator<T> {
   constructor(
-      private readonly elementLocator_: UnresolvedLocator<E>,
+      private readonly elementLocator_: UnresolvedWatchableLocator<E>,
       private readonly attrName_: string,
       private readonly parser_: Parser<T>,
       private readonly type_: Type<T>) {
@@ -115,17 +116,17 @@ type AttributeLocator<T, E extends HTMLElement|null> =
  * Creates selector that selects an element.
  */
 export function attribute<T, E extends HTMLElement|null>(
-    elementLocator: ResolvedLocator<E>,
+    elementLocator: ResolvedWatchableLocator<E>,
     attrName: string,
     parser: Parser<T>,
     type: Type<T>): ResolvedAttributeLocator<T, E>;
 export function attribute<T, E extends HTMLElement|null>(
-    elementLocator: UnresolvedLocator<E>,
+    elementLocator: UnresolvedWatchableLocator<E>,
     attrName: string,
     parser: Parser<T>,
     type: Type<T>): UnresolvedAttributeLocator<T, E>;
 export function attribute<T, E extends HTMLElement|null>(
-    elementLocator: ResolvedLocator<E> | UnresolvedLocator<E>,
+    elementLocator: ResolvedWatchableLocator<E> | UnresolvedWatchableLocator<E>,
     attrName: string,
     parser: Parser<T>,
     type: Type<T>): AttributeLocator<T, E> {

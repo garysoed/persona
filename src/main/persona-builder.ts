@@ -1,7 +1,7 @@
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { Errors } from 'gs-tools/export/error';
-import { ResolvedLocator, ResolvedRenderableLocator } from '../locator/locator';
+import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { Watcher } from '../watcher/watcher';
 import { ComponentSpec, RendererSpec } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
@@ -68,7 +68,7 @@ export class PersonaBuilder {
       template: string,
       componentClass: new () => CustomElementCtrl,
       renderers: ImmutableSet<RendererSpec>,
-      watchers: ImmutableSet<ResolvedLocator<any>>,
+      watchers: ImmutableSet<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>,
       vineBuilder: VineBuilder,
       shadowMode: 'open'|'closed' = 'closed',
       windowObj: Window = window): void {

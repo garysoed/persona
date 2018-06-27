@@ -4,7 +4,7 @@ import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/src/error';
 import { InstanceofType } from 'gs-types/export';
 import { Watcher } from '../watcher/watcher';
-import { ResolvedLocator } from './locator';
+import { ResolvedWatchableLocator } from './resolved-locator';
 
 /**
  * Watch for changes to the shadow host.
@@ -20,7 +20,7 @@ class ShadowHostWatcher extends Watcher<HTMLElement> {
 /**
  * Locates the shadow host.
  */
-class ShadowHostLocatorImpl extends ResolvedLocator<HTMLElement> {
+class ShadowHostLocatorImpl extends ResolvedWatchableLocator<HTMLElement> {
   constructor() {
     super(instanceSourceId('.host', InstanceofType(HTMLElement)));
   }

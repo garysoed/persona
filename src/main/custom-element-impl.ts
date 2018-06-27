@@ -2,7 +2,7 @@ import { VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { cache } from 'gs-tools/export/data';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
-import { ResolvedRenderableLocator } from '../locator/locator';
+import { ResolvedRenderableLocator } from '../locator/resolved-locator';
 import { Watcher } from '../watcher/watcher';
 import { CustomElementCtrl } from './custom-element-ctrl';
 

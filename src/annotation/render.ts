@@ -1,7 +1,7 @@
 import { VineOut } from 'grapevine/export/annotation';
 import { VineBuilder } from 'grapevine/export/main';
 import { Annotations } from 'gs-tools/export/data';
-import { ResolvedRenderableLocator } from '../locator/locator';
+import { ResolvedRenderableLocator } from '../locator/resolved-locator';
 import { RendererSpec } from '../main/component-spec';
 
 export type Render = (locator: ResolvedRenderableLocator<any>) => MethodDecorator;
