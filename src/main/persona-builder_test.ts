@@ -78,33 +78,6 @@ describe('main.PersonaBuilder', () => {
           .to.be(anchorEl);
     });
 
-    should(`register the renderers correctly`, () => {
-      const tag = 'tag';
-      const templateKey = 'templateKey';
-      const mockVineBuilder = jasmine.createSpyObj('VineBuilder', ['source']);
-      const elementLocator = element('div', InstanceofType(HTMLElement));
-
-      const locator1 = attribute(elementLocator, 'attr', StringParser, StringType);
-      spyOn(locator1, 'setupVine');
-      const rendererSpec1 = {locator: locator1, propertyKey: 'key'};
-      const locator2 = attribute(elementLocator, 'attr', StringParser, StringType);
-      spyOn(locator2, 'setupVine');
-      const rendererSpec2 = {locator: locator2, propertyKey: 'key'};
-
-      builder.register(
-          tag,
-          templateKey,
-          TestClass,
-          ImmutableSet.of([rendererSpec1, rendererSpec2]),
-          ImmutableSet.of(),
-          mockVineBuilder);
-
-      assert(mockVineBuilder.source).to.haveBeenCalledWith(locator1.getSourceId(), null);
-      assert(mockVineBuilder.source).to.haveBeenCalledWith(locator2.getSourceId(), null);
-      assert(locator1.setupVine).to.haveBeenCalledWith(mockVineBuilder);
-      assert(locator2.setupVine).to.haveBeenCalledWith(mockVineBuilder);
-    });
-
     should(`throw error if the tag is already registered`, () => {
       const tag = 'tag';
       const templateKey = 'templateKey';

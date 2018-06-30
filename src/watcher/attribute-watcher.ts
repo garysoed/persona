@@ -50,7 +50,6 @@ export class AttributeWatcher<T> extends Watcher<T> {
     const mutationObserver = new MutationObserver(records => this.updateVine_(records, context));
     const elementWatcherUnlisten = this.elementWatcher_.watch(root, context);
     const elementSourceUnlisten = this.vine_.listen(
-        this.elementSourceId_,
         element => {
           if (element) {
             mutationObserver.observe(
@@ -66,7 +65,8 @@ export class AttributeWatcher<T> extends Watcher<T> {
             mutationObserver.disconnect();
           }
         },
-        context);
+        context,
+        this.elementSourceId_);
 
     return DisposableFunction.of(() => {
       mutationObserver.disconnect();

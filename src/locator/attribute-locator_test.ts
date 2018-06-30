@@ -29,9 +29,6 @@ describe('locator.AttributeLocator', () => {
       // Sets up the element locator.
       vineBuilder.source(elementLocator.getSourceId(), null);
 
-      // Sets up the attribute locator.
-      locator.setupVine(vineBuilder);
-
       const vine = vineBuilder.run();
       locator.startRender(vine, context);
 

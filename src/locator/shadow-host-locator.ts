@@ -26,7 +26,7 @@ class ShadowHostLocatorImpl extends ResolvedWatchableLocator<HTMLElement> {
   }
 
   createWatcher(vine: VineImpl): Watcher<HTMLElement> {
-    return new ShadowHostWatcher(this.sourceId_, vine);
+    return new ShadowHostWatcher(this.getSourceId(), vine);
   }
 
   getValue(root: ShadowRoot): HTMLElement {

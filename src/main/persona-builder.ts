@@ -68,17 +68,13 @@ export class PersonaBuilder {
       template: string,
       componentClass: new () => CustomElementCtrl,
       renderers: ImmutableSet<RendererSpec>,
-      watchers: ImmutableSet<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>,
+      watchers: ImmutableSet<
+          ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>,
       vineBuilder: VineBuilder,
       shadowMode: 'open'|'closed' = 'closed',
       windowObj: Window = window): void {
     if (this.componentSpecs_.has(tag)) {
       throw Errors.assert(`Component with tag ${tag}`).shouldBe('unregistered').butNot();
-    }
-
-    for (const renderer of renderers || []) {
-      renderer.locator.setupVine(vineBuilder);
-      vineBuilder.source(renderer.locator.getSourceId(), null);
     }
 
     for (const watcher of watchers || []) {

@@ -1,14 +1,14 @@
-import { instanceSourceId, instanceStreamId, InstanceStreamId } from 'grapevine/export/component';
-import { VineBuilder, VineImpl } from 'grapevine/export/main';
+import { instanceSourceId, instanceStreamId } from 'grapevine/export/component';
+import { VineImpl } from 'grapevine/export/main';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Parser } from 'gs-tools/export/parse';
 import { Errors } from 'gs-tools/src/error';
-import { TupleOfType, Type } from 'gs-types/export';
+import { Type } from 'gs-types/export';
 import { AttributeWatcher } from '../watcher/attribute-watcher';
 import { ResolvedLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { UnresolvedRenderableWatchableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
-function generateVineId(elementLocator: ResolvedLocator<HTMLElement|null>, attrName: string):
+function generateVineId(elementLocator: ResolvedLocator, attrName: string):
     string {
   return `${elementLocator}[${attrName}]`;
 }
@@ -18,7 +18,6 @@ function generateVineId(elementLocator: ResolvedLocator<HTMLElement|null>, attrN
  */
 export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
     extends ResolvedRenderableWatchableLocator<T> {
-  private readonly innerRenderStreamId_: InstanceStreamId<[E, T]>;
 
   constructor(
       private readonly elementLocator_: ResolvedWatchableLocator<E>,
@@ -28,9 +27,6 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
     super(
         instanceStreamId(generateVineId(elementLocator_, attrName_), type),
         instanceSourceId(generateVineId(elementLocator_, attrName_), type));
-    this.innerRenderStreamId_ = instanceStreamId(
-        `${generateVineId(elementLocator_, attrName_)}@private`,
-        TupleOfType<E, T>([elementLocator_.getType(), type]));
   }
 
   createWatcher(vine: VineImpl): AttributeWatcher<T> {
@@ -40,7 +36,7 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
         this.parser_,
         this.getType(),
         this.attrName_,
-        this.sourceId_,
+        this.getSourceId(),
         vine);
   }
 
@@ -61,25 +57,17 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
     return value;
   }
 
-  setupVine(builder: VineBuilder): void {
-    builder.stream(
-        this.innerRenderStreamId_,
-        (attrEl, value) => [attrEl, value],
-        this.elementLocator_.getSourceId(),
-        this.streamId_);
-  }
-
   startRender(vine: VineImpl, context: BaseDisposable): () => void {
-    return vine.listen(this.innerRenderStreamId_, ([attrEl, attr]) => {
+    return vine.listen((attrEl, attr) => {
       if (!attrEl) {
         return;
       }
       attrEl.setAttribute(this.attrName_, this.parser_.stringify(attr));
-    }, context);
+    }, context, this.elementLocator_.getSourceId(), this.getStreamId());
   }
 
   toString(): string {
-    return `ResolvedAttributeLocator(${this.sourceId_})`;
+    return `ResolvedAttributeLocator(${this.getSourceId()})`;
   }
 }
 

@@ -20,7 +20,7 @@ export class ResolvedElementLocator<T extends HTMLElement|null>
   createWatcher(vine: VineImpl): ElementWatcher<T> {
     return new ElementWatcher(
         root => this.getValue(root),
-        this.sourceId_,
+        this.getSourceId(),
         vine);
   }
 
@@ -40,7 +40,7 @@ export class ResolvedElementLocator<T extends HTMLElement|null>
   }
 
   toString(): string {
-    return `ResolvedAttributeLocator(${this.sourceId_})`;
+    return `ResolvedAttributeLocator(${this.getSourceId()})`;
   }
 }
 

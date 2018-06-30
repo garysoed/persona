@@ -88,14 +88,14 @@ describe('watcher.AttributeWatcher', () => {
       const context = new BaseDisposable();
 
       mockVine.listen.and.callFake(
-          (_: InstanceSourceId<HTMLElement>, handler: Listener<HTMLElement>) => {
+          (handler: Listener<HTMLElement>) => {
             handler(element);
           });
 
       watcher.watch(shadowRoot, context);
       assert(mockVine.setValue).to.haveBeenCalledWith(SOURCE_ID, 123, context);
       assert(mockVine.listen).to
-          .haveBeenCalledWith(ELEMENT_SOURCE_ID, Match.anyFunction(), context);
+          .haveBeenCalledWith(Match.anyFunction(), context, ELEMENT_SOURCE_ID);
 
       element.setAttribute(ATTR_NAME, '456');
       await wait(mockVine.setValue).to.haveBeenCalledWith(SOURCE_ID, 456, context);

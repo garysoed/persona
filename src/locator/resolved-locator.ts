@@ -7,8 +7,32 @@ import { Watcher } from '../watcher/watcher';
 /**
  * Locator spec that has been resolved.
  */
-export abstract class ResolvedLocator<T> {
-  constructor(protected readonly sourceId_: InstanceSourceId<T>) { }
+export abstract class ResolvedLocator { }
+
+/**
+ * Locator spec that has been resolved and can be used for rendering values into the DOM.
+ */
+export abstract class ResolvedRenderableLocator<T> extends ResolvedLocator {
+  constructor(private readonly streamId_: InstanceStreamId<T>) {
+    super();
+  }
+
+  getStreamId(): InstanceStreamId<T> {
+    return this.streamId_;
+  }
+
+  abstract startRender(vine: VineImpl, context: BaseDisposable): () => void;
+}
+
+/**
+ * Locator spec that has been resolved and has a watcher.
+ */
+export abstract class ResolvedWatchableLocator<T> extends ResolvedLocator {
+  constructor(private readonly sourceId_: InstanceSourceId<T>) {
+    super();
+  }
+
+  abstract createWatcher(vine: VineImpl): Watcher<T>;
 
   getSourceId(): InstanceSourceId<T> {
     return this.sourceId_;
@@ -22,35 +46,25 @@ export abstract class ResolvedLocator<T> {
 }
 
 /**
- * Locator spec that has been resolved and can be used for rendering values into the DOM.
- */
-export abstract class ResolvedRenderableLocator<T> extends ResolvedLocator<T> {
-  constructor(
-      protected readonly streamId_: InstanceStreamId<T>,
-      sourceId: InstanceSourceId<T>) {
-    super(sourceId);
-  }
-
-  getStreamId(): InstanceStreamId<T> {
-    return this.streamId_;
-  }
-
-  abstract setupVine(builder: VineBuilder): void;
-
-  abstract startRender(vine: VineImpl, context: BaseDisposable): () => void;
-}
-
-/**
- * Locator spec that has been resolved and has a watcher.
- */
-export abstract class ResolvedWatchableLocator<T> extends ResolvedLocator<T> {
-  abstract createWatcher(vine: VineImpl): Watcher<T>;
-}
-
-/**
  * Locator spec that has been resolved and can be used for rendering values into the DOM, and has
  * a watcher.
  */
 export abstract class ResolvedRenderableWatchableLocator<T> extends ResolvedRenderableLocator<T> {
+  constructor(
+      streamId_: InstanceStreamId<T>,
+      private readonly sourceId_: InstanceSourceId<T>) {
+    super(streamId_);
+  }
+
   abstract createWatcher(vine: VineImpl): Watcher<T>;
+
+  getSourceId(): InstanceSourceId<T> {
+    return this.sourceId_;
+  }
+
+  getType(): Type<T> {
+    return this.sourceId_.getType();
+  }
+
+  abstract getValue(root: ShadowRoot): T;
 }

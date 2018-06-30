@@ -1,14 +1,13 @@
 import { Type } from 'gs-types/export';
 import { ResolvedLocator, ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from './resolved-locator';
 
-
-type LocatorPathResolver = <S>(path: string, type: Type<S>) => S;
+export type LocatorPathResolver = <S>(path: string, type: Type<S>) => S;
 
 /**
  * Locator spec that may refer to another resolved spec.
  */
 export abstract class UnresolvedLocator<T> {
-  abstract resolve(resolver: LocatorPathResolver): ResolvedLocator<T>;
+  abstract resolve(resolver: LocatorPathResolver): ResolvedLocator;
 }
 
 /**
