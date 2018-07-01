@@ -76,8 +76,8 @@ describe('main.CustomElementImpl', () => {
       const element = document.createElement('div');
       const templateString = 'templateString';
 
-      const mockWatcher1 = jasmine.createSpyObj('Watcher1', ['watch']);
-      const mockWatcher2 = jasmine.createSpyObj('Watcher2', ['watch']);
+      const mockWatcher1 = jasmine.createSpyObj('Watcher1', ['startWatch']);
+      const mockWatcher2 = jasmine.createSpyObj('Watcher2', ['startWatch']);
 
       const customElement = new CustomElementImpl(
           TestClass,
@@ -89,8 +89,10 @@ describe('main.CustomElementImpl', () => {
           'open');
       customElement.connectedCallback();
 
-      assert(mockWatcher1.watch).to.haveBeenCalledWith(element.shadowRoot, Match.any(TestClass));
-      assert(mockWatcher2.watch).to.haveBeenCalledWith(element.shadowRoot, Match.any(TestClass));
+      assert(mockWatcher1.startWatch).to
+          .haveBeenCalledWith(mockVine, Match.any(TestClass), element.shadowRoot);
+      assert(mockWatcher2.startWatch).to
+          .haveBeenCalledWith(mockVine, Match.any(TestClass), element.shadowRoot);
     });
   });
 

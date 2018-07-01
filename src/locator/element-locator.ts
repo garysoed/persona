@@ -17,11 +17,8 @@ export class ResolvedElementLocator<T extends HTMLElement|null>
     super(sourceId);
   }
 
-  createWatcher(vine: VineImpl): ElementWatcher<T> {
-    return new ElementWatcher(
-        root => this.getValue(root),
-        this.getReadingId(),
-        vine);
+  createWatcher(): ElementWatcher<T> {
+    return new ElementWatcher(root => this.getValue(root));
   }
 
   getSelectorString(): string {

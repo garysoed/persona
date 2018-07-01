@@ -11,7 +11,7 @@ function createCustomElementClass_(
     componentClass: new () => CustomElementCtrl,
     rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
     templateStr: string,
-    watchers: ImmutableSet<Watcher<any>>,
+    watchers: ImmutableSet<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>,
     vine: VineImpl,
     shadowMode: 'open'|'closed' = 'closed'): typeof HTMLElement {
   return class extends HTMLElement {
@@ -46,8 +46,6 @@ export class PersonaBuilder {
 
   build(customElementRegistry: CustomElementRegistry, vine: VineImpl): void {
     for (const spec of this.componentSpecs_.values()) {
-      const watchers = ImmutableSet.of(spec.watchers || [])
-          .mapItem(locator => locator.createWatcher(vine));
       const rendererLocators = ImmutableSet.of<RendererSpec>(spec.renderers || [])
           .mapItem(renderer => renderer.locator);
 
@@ -56,7 +54,7 @@ export class PersonaBuilder {
           spec.componentClass,
           rendererLocators,
           template,
-          watchers,
+          ImmutableSet.of(spec.watchers || []),
           vine,
           spec.shadowMode);
       customElementRegistry.define(spec.tag, elementClass);

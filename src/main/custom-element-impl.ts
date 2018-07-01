@@ -2,8 +2,7 @@ import { VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { cache } from 'gs-tools/export/data';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
-import { ResolvedRenderableLocator } from '../locator/resolved-locator';
-import { Watcher } from '../watcher/watcher';
+import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { CustomElementCtrl } from './custom-element-ctrl';
 
 export const SHADOW_ROOT = Symbol('shadowRoot');
@@ -19,7 +18,8 @@ export class CustomElementImpl {
       private readonly element_: HTMLElement,
       private readonly rendererLocators_: ImmutableSet<ResolvedRenderableLocator<any>>,
       private readonly templateStr_: string,
-      private readonly watchers_: ImmutableSet<Watcher<any>>,
+      private readonly watchers_:
+          ImmutableSet<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>,
       private readonly vine_: VineImpl,
       private readonly shadowMode_: 'open' | 'closed' = 'closed') { }
 
@@ -59,7 +59,7 @@ export class CustomElementImpl {
 
   private setupWatchers_(context: BaseDisposable): void {
     for (const watcher of this.watchers_) {
-      context.addDisposable(watcher.watch(this.getShadowRoot_(), context));
+      context.addDisposable(watcher.startWatch(this.vine_, context, this.getShadowRoot_()));
     }
   }
 }

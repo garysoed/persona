@@ -10,7 +10,7 @@ import { element } from './element-locator';
 describe('locator.AttributeLocator', () => {
   const ATTR_NAME = 'attr';
   const elementLocator = element('element', NullableType(InstanceofType(HTMLElement)));
-  let locator: ResolvedAttributeLocator<number, HTMLElement|null>;
+  let locator: ResolvedAttributeLocator<number>;
 
   beforeEach(() => {
     locator = attribute(elementLocator, ATTR_NAME, IntegerParser, NumberType);

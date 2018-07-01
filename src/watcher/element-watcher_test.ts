@@ -1,8 +1,5 @@
-import { instanceSourceId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
-import { should, wait } from 'gs-testing/export/main';
-import { BaseDisposable } from 'gs-tools/export/dispose';
-import { ElementWithTagType } from 'gs-types/export';
+import { assert, should, wait } from 'gs-testing/export/main';
 import { ElementWatcher } from './element-watcher';
 
 describe('watcher.ElementWatcher', () => {
@@ -15,21 +12,22 @@ describe('watcher.ElementWatcher', () => {
     mockVine = jasmine.createSpyObj('Vine', ['setValue']);
   });
 
-  describe('watch', () => {
+  describe('startWatching_', () => {
     should(`update the source if the element has changed`, async () => {
-      const context = new BaseDisposable();
-      const sourceId = instanceSourceId('source', ElementWithTagType('div'));
+      const watcher = new ElementWatcher<HTMLDivElement|null>(root => root.querySelector('div'));
 
-      const watcher = new ElementWatcher<HTMLDivElement|null>(
-          root => root.querySelector('div'),
-          sourceId,
-          mockVine);
-      watcher.watch(shadowRoot, context);
+      const mockOnChange = jasmine.createSpy('OnChange');
+
+      const disposableFn = watcher['startWatching_'](mockVine, mockOnChange, shadowRoot);
+      assert(mockOnChange).to.haveBeenCalledWith(null);
+
+      mockOnChange.calls.reset();
 
       const el = document.createElement('div');
       shadowRoot.appendChild(el);
 
-      await wait(mockVine.setValue).to.haveBeenCalledWith(sourceId, el, context);
+      await wait(mockOnChange).to.haveBeenCalledWith(el);
+      disposableFn.dispose();
     });
   });
 });

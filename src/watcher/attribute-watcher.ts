@@ -1,9 +1,9 @@
 import { InstanceSourceId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
-import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
+import { DisposableFunction } from 'gs-tools/export/dispose';
 import { Parser } from 'gs-tools/export/parse';
 import { Type } from 'gs-types/export';
-import { Watcher } from './watcher';
+import { Handler, Watcher } from './watcher';
 
 /**
  * A subclass of MutationRecord.
@@ -18,17 +18,45 @@ interface Record {
  */
 export class AttributeWatcher<T> extends Watcher<T> {
   constructor(
-      private readonly elementWatcher_: Watcher<HTMLElement | null>,
-      private readonly elementSourceId_: InstanceSourceId<HTMLElement | null>,
+      private readonly elementWatcher_: Watcher<HTMLElement|null>,
       private readonly parser_: Parser<T>,
       private readonly type_: Type<T>,
       private readonly attrName_: string,
-      sourceId: InstanceSourceId<T>,
-      vine: VineImpl) {
-    super(sourceId, vine);
+      sourceId: InstanceSourceId<T>) {
+    super();
   }
 
-  private updateVine_(records: Record[], context: BaseDisposable): void {
+  protected startWatching_(
+      vineImpl: VineImpl,
+      onChange: Handler<T>,
+      root: ShadowRoot): DisposableFunction {
+    const mutationObserver = new MutationObserver(records => this.updateVine_(records, onChange));
+    const elementUnwatch = this.elementWatcher_.watch(
+        vineImpl,
+        newElement => {
+          if (newElement) {
+            mutationObserver.observe(
+                newElement,
+                {
+                  attributeFilter: [this.attrName_],
+                  attributes: true,
+                });
+            this.updateVine_(
+                [{attributeName: this.attrName_, target: newElement}],
+                onChange);
+          } else {
+            mutationObserver.disconnect();
+          }
+        },
+        root);
+
+    return DisposableFunction.of(() => {
+      mutationObserver.disconnect();
+      elementUnwatch.dispose();
+    });
+  }
+
+  private updateVine_(records: Record[], onChange: Handler<T>): void {
     for (const {attributeName, target} of records) {
       if (!attributeName) {
         continue;
@@ -41,37 +69,8 @@ export class AttributeWatcher<T> extends Watcher<T> {
       const unparsedValue = target.getAttribute(attributeName);
       const parsedValue = this.parser_.parse(unparsedValue);
       if (this.type_.check(parsedValue)) {
-        this.vine_.setValue(this.sourceId_, parsedValue, context);
+        onChange(parsedValue);
       }
     }
-  }
-
-  watch(root: ShadowRoot, context: BaseDisposable): DisposableFunction {
-    const mutationObserver = new MutationObserver(records => this.updateVine_(records, context));
-    const elementWatcherUnlisten = this.elementWatcher_.watch(root, context);
-    const elementSourceUnlisten = this.vine_.listen(
-        element => {
-          if (element) {
-            mutationObserver.observe(
-                element,
-                {
-                  attributeFilter: [this.attrName_],
-                  attributes: true,
-                });
-            this.updateVine_(
-                [{attributeName: this.attrName_, target: element}],
-                context);
-          } else {
-            mutationObserver.disconnect();
-          }
-        },
-        context,
-        this.elementSourceId_);
-
-    return DisposableFunction.of(() => {
-      mutationObserver.disconnect();
-      elementWatcherUnlisten.dispose();
-      elementSourceUnlisten();
-    });
   }
 }

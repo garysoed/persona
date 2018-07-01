@@ -3,15 +3,18 @@ import { VineImpl } from 'grapevine/export/main';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/src/error';
 import { InstanceofType } from 'gs-types/export';
-import { Watcher } from '../watcher/watcher';
+import { Handler, Watcher } from '../watcher/watcher';
 import { ResolvedWatchableLocator } from './resolved-locator';
 
 /**
  * Watch for changes to the shadow host.
  */
-class ShadowHostWatcher extends Watcher<HTMLElement> {
-  watch(root: ShadowRoot, context: BaseDisposable): DisposableFunction {
-    this.vine_.setValue(this.sourceId_, root.host as HTMLElement, context);
+class ShadowHostWatcher extends Watcher<HTMLElement|null> {
+  protected startWatching_(
+      vineImpl: VineImpl,
+      onChange: Handler<HTMLElement>,
+      root: ShadowRoot): DisposableFunction {
+    onChange(root.host as HTMLElement);
 
     return DisposableFunction.of(() => undefined);
   }
@@ -20,13 +23,13 @@ class ShadowHostWatcher extends Watcher<HTMLElement> {
 /**
  * Locates the shadow host.
  */
-class ShadowHostLocatorImpl extends ResolvedWatchableLocator<HTMLElement> {
+class ShadowHostLocatorImpl extends ResolvedWatchableLocator<HTMLElement|null> {
   constructor() {
     super(instanceSourceId('.host', InstanceofType(HTMLElement)));
   }
 
-  createWatcher(vine: VineImpl): Watcher<HTMLElement> {
-    return new ShadowHostWatcher(this.getReadingId(), vine);
+  createWatcher(): Watcher<HTMLElement|null> {
+    return new ShadowHostWatcher();
   }
 
   getValue(root: ShadowRoot): HTMLElement {

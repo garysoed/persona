@@ -1,31 +1,27 @@
-import { InstanceSourceId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
-import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
-import { Watcher } from './watcher';
+import { DisposableFunction } from 'gs-tools/export/dispose';
+import { Handler, Watcher } from './watcher';
 
 /**
  * Exposes HTMLElement in DOM to Typescript.
  */
 export class ElementWatcher<T extends HTMLElement|null> extends Watcher<T> {
   constructor(
-      private readonly valueProvider_: (root: ShadowRoot) => T,
-      sourceId: InstanceSourceId<T>,
-      vine: VineImpl) {
-    super(sourceId, vine);
+      private readonly valueProvider_: (root: ShadowRoot) => T) {
+    super();
   }
 
-  private updateVine_(root: ShadowRoot, context: BaseDisposable): void {
-    this.vine_.setValue(this.sourceId_, this.valueProvider_(root), context);
-  }
-
-  watch(root: ShadowRoot, context: BaseDisposable): DisposableFunction {
+  protected startWatching_(
+      vineImpl: VineImpl,
+      onChange: Handler<T>,
+      root: ShadowRoot): DisposableFunction {
     const mutationObserver = new MutationObserver(records => {
       if (records.length > 0) {
-        this.updateVine_(root, context);
+        onChange(this.valueProvider_(root));
       }
     });
     mutationObserver.observe(root, {childList: true, subtree: true});
-    this.updateVine_(root, context);
+    onChange(this.valueProvider_(root));
 
     return DisposableFunction.of(() => {
       mutationObserver.disconnect();

@@ -1,8 +1,8 @@
 import { instanceSourceId, instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
 import { BaseDisposable } from 'gs-tools/export/dispose';
+import { Errors } from 'gs-tools/export/error';
 import { Parser } from 'gs-tools/export/parse';
-import { Errors } from 'gs-tools/src/error';
 import { Type } from 'gs-types/export';
 import { AttributeWatcher } from '../watcher/attribute-watcher';
 import { ResolvedLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from './resolved-locator';
@@ -16,11 +16,11 @@ function generateVineId(elementLocator: ResolvedLocator, attrName: string):
 /**
  * @internal
  */
-export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
+export class ResolvedAttributeLocator<T>
     extends ResolvedRenderableWatchableLocator<T> {
 
   constructor(
-      private readonly elementLocator_: ResolvedWatchableLocator<E>,
+      private readonly elementLocator_: ResolvedWatchableLocator<HTMLElement|null>,
       private readonly attrName_: string,
       private readonly parser_: Parser<T>,
       type: Type<T>) {
@@ -29,15 +29,13 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
         instanceSourceId(generateVineId(elementLocator_, attrName_), type));
   }
 
-  createWatcher(vine: VineImpl): AttributeWatcher<T> {
-    return new AttributeWatcher(
-        this.elementLocator_.createWatcher(vine),
-        this.elementLocator_.getReadingId(),
+  createWatcher(): AttributeWatcher<T> {
+    return new AttributeWatcher<T>(
+        this.elementLocator_.createWatcher(),
         this.parser_,
         this.getType(),
         this.attrName_,
-        this.getReadingId(),
-        vine);
+        this.getReadingId());
   }
 
 
@@ -74,17 +72,17 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
 /**
  * @internal
  */
-export class UnresolvedAttributeLocator<T, E extends HTMLElement|null>
+export class UnresolvedAttributeLocator<T>
     extends UnresolvedRenderableWatchableLocator<T> {
   constructor(
-      private readonly elementLocator_: UnresolvedWatchableLocator<E>,
+      private readonly elementLocator_: UnresolvedWatchableLocator<HTMLElement|null>,
       private readonly attrName_: string,
       private readonly parser_: Parser<T>,
       private readonly type_: Type<T>) {
     super();
   }
 
-  resolve(resolver: <S>(path: string, type: Type<S>) => S): ResolvedAttributeLocator<T, E> {
+  resolve(resolver: <S>(path: string, type: Type<S>) => S): ResolvedAttributeLocator<T> {
     return new ResolvedAttributeLocator(
         this.elementLocator_.resolve(resolver),
         this.attrName_,
@@ -97,27 +95,27 @@ export class UnresolvedAttributeLocator<T, E extends HTMLElement|null>
   }
 }
 
-type AttributeLocator<T, E extends HTMLElement|null> =
-    ResolvedAttributeLocator<T, E> | UnresolvedAttributeLocator<T, E>;
+type AttributeLocator<T> = ResolvedAttributeLocator<T> | UnresolvedAttributeLocator<T>;
 
 /**
  * Creates selector that selects an element.
  */
-export function attribute<T, E extends HTMLElement|null>(
-    elementLocator: ResolvedWatchableLocator<E>,
+export function attribute<T>(
+    elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
     attrName: string,
     parser: Parser<T>,
-    type: Type<T>): ResolvedAttributeLocator<T, E>;
-export function attribute<T, E extends HTMLElement|null>(
-    elementLocator: UnresolvedWatchableLocator<E>,
+    type: Type<T>): ResolvedAttributeLocator<T>;
+export function attribute<T>(
+    elementLocator: UnresolvedWatchableLocator<HTMLElement|null>,
     attrName: string,
     parser: Parser<T>,
-    type: Type<T>): UnresolvedAttributeLocator<T, E>;
-export function attribute<T, E extends HTMLElement|null>(
-    elementLocator: ResolvedWatchableLocator<E> | UnresolvedWatchableLocator<E>,
+    type: Type<T>): UnresolvedAttributeLocator<T>;
+export function attribute<T>(
+    elementLocator:
+        ResolvedWatchableLocator<HTMLElement|null>|UnresolvedWatchableLocator<HTMLElement|null>,
     attrName: string,
     parser: Parser<T>,
-    type: Type<T>): AttributeLocator<T, E> {
+    type: Type<T>): AttributeLocator<T> {
   if (elementLocator instanceof ResolvedLocator) {
     return new ResolvedAttributeLocator(elementLocator, attrName, parser, type);
   } else {
