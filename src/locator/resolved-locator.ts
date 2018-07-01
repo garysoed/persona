@@ -17,7 +17,7 @@ export abstract class ResolvedRenderableLocator<T> extends ResolvedLocator {
     super();
   }
 
-  getStreamId(): InstanceStreamId<T> {
+  getWritingId(): InstanceStreamId<T> {
     return this.streamId_;
   }
 
@@ -34,7 +34,7 @@ export abstract class ResolvedWatchableLocator<T> extends ResolvedLocator {
 
   abstract createWatcher(vine: VineImpl): Watcher<T>;
 
-  getSourceId(): InstanceSourceId<T> {
+  getReadingId(): InstanceSourceId<T> {
     return this.sourceId_;
   }
 
@@ -58,7 +58,7 @@ export abstract class ResolvedRenderableWatchableLocator<T> extends ResolvedRend
 
   abstract createWatcher(vine: VineImpl): Watcher<T>;
 
-  getSourceId(): InstanceSourceId<T> {
+  getReadingId(): InstanceSourceId<T> {
     return this.sourceId_;
   }
 

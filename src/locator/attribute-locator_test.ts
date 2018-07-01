@@ -24,16 +24,16 @@ describe('locator.AttributeLocator', () => {
       // Sets up the test source and stream.
       const testSourceId = instanceSourceId('test', NumberType);
       vineBuilder.source(testSourceId, 0);
-      vineBuilder.stream(locator.getStreamId(), testValue => testValue, testSourceId);
+      vineBuilder.stream(locator.getWritingId(), testValue => testValue, testSourceId);
 
       // Sets up the element locator.
-      vineBuilder.source(elementLocator.getSourceId(), null);
+      vineBuilder.source(elementLocator.getReadingId(), null);
 
       const vine = vineBuilder.run();
       locator.startRender(vine, context);
 
       const divElement = document.createElement('div');
-      vine.setValue(elementLocator.getSourceId(), divElement, context);
+      vine.setValue(elementLocator.getReadingId(), divElement, context);
       vine.setValue(testSourceId, 123, context);
 
       await waitFor(() => divElement.getAttribute(ATTR_NAME)).to.be('123');

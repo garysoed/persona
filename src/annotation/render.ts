@@ -15,7 +15,7 @@ export function renderFactory(
         target: Object,
         propertyKey: string | symbol,
         descriptor: TypedPropertyDescriptor<T>) => {
-      vineOut(locator.getStreamId())(target, propertyKey, descriptor);
+      vineOut(locator.getWritingId())(target, propertyKey, descriptor);
       rendererAnnotationsCache.forCtor(target.constructor)
           .attachValueToProperty(propertyKey, {locator, propertyKey});
     };

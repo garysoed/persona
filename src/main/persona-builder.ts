@@ -78,7 +78,7 @@ export class PersonaBuilder {
     }
 
     for (const watcher of watchers || []) {
-      vineBuilder.sourceWithProvider(watcher.getSourceId(), async context => {
+      vineBuilder.sourceWithProvider(watcher.getReadingId(), async context => {
         const shadowRoot = (context as any)[SHADOW_ROOT];
         if (!shadowRoot) {
           throw Errors.assert(`Shadow root of ${context}`).shouldExist().butNot();

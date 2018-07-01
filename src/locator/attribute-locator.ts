@@ -32,11 +32,11 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
   createWatcher(vine: VineImpl): AttributeWatcher<T> {
     return new AttributeWatcher(
         this.elementLocator_.createWatcher(vine),
-        this.elementLocator_.getSourceId(),
+        this.elementLocator_.getReadingId(),
         this.parser_,
         this.getType(),
         this.attrName_,
-        this.getSourceId(),
+        this.getReadingId(),
         vine);
   }
 
@@ -63,11 +63,11 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
         return;
       }
       attrEl.setAttribute(this.attrName_, this.parser_.stringify(attr));
-    }, context, this.elementLocator_.getSourceId(), this.getStreamId());
+    }, context, this.elementLocator_.getReadingId(), this.getWritingId());
   }
 
   toString(): string {
-    return `ResolvedAttributeLocator(${this.getSourceId()})`;
+    return `ResolvedAttributeLocator(${this.getReadingId()})`;
   }
 }
 
