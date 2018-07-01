@@ -1,9 +1,7 @@
 import { VineBuilder } from 'grapevine/export/main';
 import { assert, Match, should } from 'gs-testing/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
-import { StringParser } from 'gs-tools/export/parse';
-import { InstanceofType, StringType } from 'gs-types/export';
-import { attribute } from '../locator/attribute-locator';
+import { InstanceofType } from 'gs-types/export';
 import { element } from '../locator/element-locator';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { SHADOW_ROOT } from './custom-element-impl';

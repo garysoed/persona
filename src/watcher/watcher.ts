@@ -1,5 +1,5 @@
 import { VineImpl } from 'grapevine/export/main';
-import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
+import { DisposableFunction } from 'gs-tools/export/dispose';
 
 export type Handler<T> = (newValue: T) => void;
 

@@ -1,6 +1,6 @@
 import { instanceSourceId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
-import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
+import { DisposableFunction } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/src/error';
 import { InstanceofType } from 'gs-types/export';
 import { Handler, Watcher } from '../watcher/watcher';

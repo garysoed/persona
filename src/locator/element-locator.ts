@@ -1,5 +1,4 @@
 import { InstanceSourceId, instanceSourceId } from 'grapevine/export/component';
-import { VineImpl } from 'grapevine/export/main';
 import { Errors } from 'gs-tools/src/error';
 import { InstanceofType, Type } from 'gs-types/export';
 import { ElementWatcher } from '../watcher/element-watcher';

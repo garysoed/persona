@@ -2,7 +2,6 @@ import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { Errors } from 'gs-tools/export/error';
 import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
-import { Watcher } from '../watcher/watcher';
 import { ComponentSpec, RendererSpec } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl, SHADOW_ROOT } from './custom-element-impl';

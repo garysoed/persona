@@ -1,16 +1,13 @@
-import { instanceSourceId, InstanceSourceId } from 'grapevine/export/component';
+import { instanceSourceId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
-import { Listener } from 'grapevine/src/node/listener';
-import { assert, fshould, Match, should, wait } from 'gs-testing/export/main';
-import { BaseDisposable } from 'gs-tools/export/dispose';
+import { assert, Match, should, wait } from 'gs-testing/export/main';
 import { IntegerParser } from 'gs-tools/export/parse';
-import { InstanceofType, NumberType } from 'gs-types/export';
+import { NumberType } from 'gs-types/export';
 import { AttributeWatcher } from './attribute-watcher';
-import { Watcher } from './watcher';
+import { Handler, Watcher } from './watcher';
 
 describe('watcher.AttributeWatcher', () => {
   const ATTR_NAME = 'attrname';
-  const ELEMENT_SOURCE_ID = instanceSourceId('element', InstanceofType(HTMLElement));
   const SOURCE_ID = instanceSourceId('source', NumberType);
 
   let watcher: AttributeWatcher<number>;
@@ -43,7 +40,7 @@ describe('watcher.AttributeWatcher', () => {
 
       const disposableFn = watcher['startWatching_'](mockVine, mockOnChange, shadowRoot);
       assert(mockElementWatcher.watch).to
-          .haveBeenCalledWith(mockVine, Match.anyFunction(), shadowRoot);
+          .haveBeenCalledWith(mockVine, Match.anyFunction<Handler<number>>(), shadowRoot);
 
       mockElementWatcher.watch.calls.argsFor(0)[1](element);
       assert(mockOnChange).to.haveBeenCalledWith(123);
