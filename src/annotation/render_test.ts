@@ -24,7 +24,8 @@ const $ = resolveLocators({
         shadowHost,
         'attr',
         IntegerParser,
-        NullableType(NumberType)),
+        NullableType(NumberType),
+        123),
     },
 });
 

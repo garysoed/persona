@@ -1,12 +1,21 @@
 import { instanceSourceId, instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
-import { BaseDisposable } from 'gs-tools/export/dispose';
+import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
 import { Parser } from 'gs-tools/export/parse';
 import { Type } from 'gs-types/export';
-import { AttributeWatcher } from '../watcher/attribute-watcher';
+import { ChainedWatcher, Unlisten } from '../watcher/chained-watcher';
+import { Handler, Watcher } from '../watcher/watcher';
 import { ResolvedLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { UnresolvedRenderableWatchableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
+
+/**
+ * A subclass of MutationRecord.
+ */
+interface Record {
+  attributeName: string | null;
+  target: Node;
+}
 
 function generateVineId(elementLocator: ResolvedLocator, attrName: string):
     string {
@@ -16,12 +25,12 @@ function generateVineId(elementLocator: ResolvedLocator, attrName: string):
 /**
  * @internal
  */
-export class ResolvedAttributeLocator<T>
-    extends ResolvedRenderableWatchableLocator<T> {
+export class ResolvedAttributeLocator<T> extends ResolvedRenderableWatchableLocator<T> {
 
   constructor(
       private readonly elementLocator_: ResolvedWatchableLocator<HTMLElement|null>,
       private readonly attrName_: string,
+      private readonly defaultValue_: T,
       private readonly parser_: Parser<T>,
       type: Type<T>) {
     super(
@@ -29,15 +38,15 @@ export class ResolvedAttributeLocator<T>
         instanceSourceId(generateVineId(elementLocator_, attrName_), type));
   }
 
-  createWatcher(): AttributeWatcher<T> {
-    return new AttributeWatcher<T>(
+  createWatcher(): Watcher<T> {
+    return new ChainedWatcher<HTMLElement|null, T>(
         this.elementLocator_.createWatcher(),
-        this.parser_,
-        this.getType(),
-        this.attrName_,
-        this.getReadingId());
+        (
+            element: HTMLElement|null,
+            prevUnlisten: Unlisten|null,
+            _: VineImpl,
+            onChange: Handler<T>) => this.startWatch_(element, prevUnlisten, onChange));
   }
-
 
   getValue(root: ShadowRoot): T {
     const element = this.elementLocator_.getValue(root);
@@ -55,6 +64,26 @@ export class ResolvedAttributeLocator<T>
     return value;
   }
 
+  private onMutation_(records: Record[], onChange: Handler<T>): void {
+    for (const {attributeName, target} of records) {
+      if (!attributeName) {
+        continue;
+      }
+
+      if (!(target instanceof Element)) {
+        continue;
+      }
+
+      const unparsedValue = target.getAttribute(attributeName);
+      const parsedValue = this.parser_.parse(unparsedValue);
+      if (this.getType().check(parsedValue)) {
+        onChange(parsedValue);
+      } else {
+        onChange(this.defaultValue_);
+      }
+    }
+  }
+
   startRender(vine: VineImpl, context: BaseDisposable): () => void {
     return vine.listen((attrEl, attr) => {
       if (!attrEl) {
@@ -62,6 +91,38 @@ export class ResolvedAttributeLocator<T>
       }
       attrEl.setAttribute(this.attrName_, this.parser_.stringify(attr));
     }, context, this.elementLocator_.getReadingId(), this.getWritingId());
+  }
+
+  private startWatch_(
+      element: HTMLElement|null,
+      prevUnlisten: Unlisten|null,
+      onChange: Handler<T>): Unlisten|null {
+    // Check if already listening. If so, bail out.
+    if (prevUnlisten && prevUnlisten.key === element) {
+      return prevUnlisten;
+    }
+
+    if (prevUnlisten) {
+      prevUnlisten.unlisten.dispose();
+    }
+
+    // If there is no element, bail out quickly.
+    if (!element) {
+      onChange(this.defaultValue_);
+
+      return null;
+    }
+
+    const mutationObserver = new MutationObserver(records => this.onMutation_(records, onChange));
+    mutationObserver.observe(element, {attributeFilter: [this.attrName_], attributes: true});
+    this.onMutation_([{attributeName: this.attrName_, target: element}], onChange);
+
+    return {
+      key: element,
+      unlisten: DisposableFunction.of(() => {
+        mutationObserver.disconnect();
+      }),
+    };
   }
 
   toString(): string {
@@ -77,6 +138,7 @@ export class UnresolvedAttributeLocator<T>
   constructor(
       private readonly elementLocator_: UnresolvedWatchableLocator<HTMLElement|null>,
       private readonly attrName_: string,
+      private readonly defaultValue_: T,
       private readonly parser_: Parser<T>,
       private readonly type_: Type<T>) {
     super();
@@ -86,6 +148,7 @@ export class UnresolvedAttributeLocator<T>
     return new ResolvedAttributeLocator(
         this.elementLocator_.resolve(resolver),
         this.attrName_,
+        this.defaultValue_,
         this.parser_,
         this.type_);
   }
@@ -104,21 +167,24 @@ export function attribute<T>(
     elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
     attrName: string,
     parser: Parser<T>,
-    type: Type<T>): ResolvedAttributeLocator<T>;
+    type: Type<T>,
+    defaultValue: T): ResolvedAttributeLocator<T>;
 export function attribute<T>(
     elementLocator: UnresolvedWatchableLocator<HTMLElement|null>,
     attrName: string,
     parser: Parser<T>,
-    type: Type<T>): UnresolvedAttributeLocator<T>;
+    type: Type<T>,
+    defaultValue: T): UnresolvedAttributeLocator<T>;
 export function attribute<T>(
     elementLocator:
         ResolvedWatchableLocator<HTMLElement|null>|UnresolvedWatchableLocator<HTMLElement|null>,
     attrName: string,
     parser: Parser<T>,
-    type: Type<T>): AttributeLocator<T> {
+    type: Type<T>,
+    defaultValue: T): AttributeLocator<T> {
   if (elementLocator instanceof ResolvedLocator) {
-    return new ResolvedAttributeLocator(elementLocator, attrName, parser, type);
+    return new ResolvedAttributeLocator(elementLocator, attrName, defaultValue, parser, type);
   } else {
-    return new UnresolvedAttributeLocator(elementLocator, attrName, parser, type);
+    return new UnresolvedAttributeLocator(elementLocator, attrName, defaultValue, parser, type);
   }
 }
