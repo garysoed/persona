@@ -9,11 +9,11 @@ import { UnresolvedLocator } from './unresolved-locator';
  * Object that recursively contains locator spec, resolved or unresolved.
  */
 interface LocatorObject {
-  [key: string]: ResolvedLocator|UnresolvedLocator<any>|LocatorObject;
+  [key: string]: ResolvedLocator|UnresolvedLocator|LocatorObject;
 }
 
 // tslint:disable:semicolon whitespace typedef no-empty no-unused-expression
-type Resolved<T extends ResolvedLocator|UnresolvedLocator<any>|LocatorObject> =
+type Resolved<T extends ResolvedLocator|UnresolvedLocator|LocatorObject> =
     T extends UnresolvedElementLocator<infer E> ? ResolvedElementLocator<E> :
     T extends ResolvedLocator ? T :
     T extends LocatorObject ? ResolvedLocatorObject<T> : never;
@@ -25,9 +25,9 @@ type ResolvedLocatorObject<O extends LocatorObject> = {
 function resolveSelectorsHelper_<T extends LocatorObject>(
     current: T, root: LocatorObject): ResolvedLocatorObject<T>;
 function resolveSelectorsHelper_<T>(
-    current: ResolvedLocator|UnresolvedLocator<T>, root: LocatorObject): ResolvedLocator;
+    current: ResolvedLocator|UnresolvedLocator, root: LocatorObject): ResolvedLocator;
 function resolveSelectorsHelper_(
-    current: ResolvedLocator|UnresolvedLocator<any>|LocatorObject,
+    current: ResolvedLocator|UnresolvedLocator|LocatorObject,
     root: LocatorObject): ResolvedLocator|ResolvedLocatorObject<any> {
   if (current instanceof ResolvedLocator) {
     return current;
