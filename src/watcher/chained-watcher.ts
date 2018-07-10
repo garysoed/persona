@@ -2,6 +2,10 @@ import { VineImpl } from 'grapevine/export/main';
 import { DisposableFunction } from 'gs-tools/export/dispose';
 import { Handler, Watcher } from './watcher';
 
+/**
+ * Unlisten object. Key is used to determine if the given unlisten will unlisten the object
+ * corresponding to the key.
+ */
 export interface Unlisten {
   key: {};
   unlisten: DisposableFunction;
@@ -13,6 +17,9 @@ export type StartWatchFn<T1, T2> = (
     onChange: Handler<T2>,
     root: ShadowRoot) => Unlisten|null;
 
+/**
+ * Chains two watchers together.
+ */
 export class ChainedWatcher<T1, T2> extends Watcher<T2> {
   constructor(
       private readonly sourceWatcher_: Watcher<T1>,

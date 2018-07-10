@@ -30,7 +30,8 @@ describe('watcher.ChainedWatcher', () => {
       mockStartWatchFn.and.returnValue(unlisten);
 
       const unwatch = watcher['startWatching_'](vine, onChange, root);
-      assert(mockSourceWatcher.watch).to.haveBeenCalledWith(vine, Match.anyFunction(), root);
+      assert(mockSourceWatcher.watch).to
+          .haveBeenCalledWith(vine, Match.anyFunction<Handler<number>>(), root);
 
       const handler = mockSourceWatcher.watch.calls.argsFor(0)[1];
       handler(source);
