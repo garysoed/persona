@@ -28,25 +28,25 @@ export abstract class ResolvedRenderableLocator<T> extends ResolvedLocator {
  * Locator spec that has been resolved and has a watcher.
  */
 export abstract class ResolvedWatchableLocator<T> extends ResolvedLocator {
-  constructor(private readonly sourceId_: InstanceSourceId<T>) {
+  constructor(private readonly readingId_: InstanceSourceId<T>) {
     super();
   }
 
   abstract createWatcher(): Watcher<T>;
 
   getReadingId(): InstanceSourceId<T> {
-    return this.sourceId_;
+    return this.readingId_;
   }
 
   getType(): Type<T> {
-    return this.sourceId_.getType();
+    return this.readingId_.getType();
   }
 
   abstract getValue(root: ShadowRoot): T;
 
   startWatch(vine: VineImpl, context: BaseDisposable, root: ShadowRoot): DisposableFunction {
     return this.createWatcher().watch(vine, newValue => {
-      vine.setValue(this.sourceId_, newValue, context);
+      vine.setValue(this.readingId_, newValue, context);
     }, root);
   }
 }
