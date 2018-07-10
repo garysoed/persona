@@ -36,6 +36,9 @@ export function startWatch_<E extends CustomEvent>(
   return {key: element, unlisten: DisposableFunction.of(() => undefined)};
 }
 
+/**
+ * @internal
+ */
 export class ResolvedDispatcherLocator<V extends CustomEvent, E extends HTMLElement>
     extends ResolvedWatchableLocator<DispatchFn<V>|null> {
   constructor(
@@ -63,6 +66,9 @@ export class ResolvedDispatcherLocator<V extends CustomEvent, E extends HTMLElem
   }
 }
 
+/**
+ * @internal
+ */
 export class UnresolvedDispatcherLocator<V extends CustomEvent, E extends HTMLElement> extends
     UnresolvedWatchableLocator<DispatchFn<V>|null> {
   constructor(
@@ -78,6 +84,9 @@ export class UnresolvedDispatcherLocator<V extends CustomEvent, E extends HTMLEl
 type DispatcherLocator<V extends CustomEvent, E extends HTMLElement> =
     ResolvedDispatcherLocator<V, E>|UnresolvedDispatcherLocator<V, E>;
 
+/**
+ * Creates selector that selects the event dispatch function of an element.
+ */
 export function dispatcher<V extends CustomEvent, E extends HTMLElement>(
     elementLocator: UnresolvedWatchableLocator<HTMLElement|null>):
         UnresolvedDispatcherLocator<V, E>;
