@@ -1,8 +1,9 @@
 import { VineApp } from 'grapevine/export/main';
 import { Annotations } from 'gs-tools/export/data';
 import { CustomElement, customElementFactory } from '../annotation/custom-element';
+import { onDomFactory } from '../annotation/on-dom';
 import { Render, renderFactory } from '../annotation/render';
-import { RendererSpec } from './component-spec';
+import { OnDomSpec, RendererSpec } from './component-spec';
 import { PersonaBuilder } from './persona-builder';
 
 /**
@@ -29,18 +30,19 @@ export function getOrRegisterApp(
     return createdApp;
   }
 
-  const renderAnnotationsCache = new Annotations<RendererSpec>(Symbol(appName));
+  const onDomAnnotationsCache = new Annotations<OnDomSpec>(Symbol(`${appName}-onDom`));
+  const renderAnnotationsCache = new Annotations<RendererSpec>(Symbol(`${appName}-render`));
+
   const personaBuilder = new PersonaBuilder();
   const newApp = {
     builder: personaBuilder,
     customElement: customElementFactory(
         personaBuilder,
         vineBuilder,
+        onDomAnnotationsCache,
         renderAnnotationsCache),
-    render: renderFactory(
-        vineOut,
-        renderAnnotationsCache,
-        vineBuilder),
+    onDom: onDomFactory(onDomAnnotationsCache),
+    render: renderFactory(vineOut, renderAnnotationsCache),
   };
   apps.set(appName, newApp);
 

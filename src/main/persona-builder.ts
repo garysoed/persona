@@ -1,13 +1,15 @@
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { Errors } from 'gs-tools/export/error';
+import { DomListener } from '../event/dom-listener';
 import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
-import { ComponentSpec, RendererSpec } from './component-spec';
+import { ComponentSpec, OnDomSpec, RendererSpec } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl, SHADOW_ROOT } from './custom-element-impl';
 
 function createCustomElementClass_(
     componentClass: new () => CustomElementCtrl,
+    domListeners: ImmutableSet<DomListener>,
     rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
     templateStr: string,
     watchers: ImmutableSet<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>,
@@ -16,6 +18,7 @@ function createCustomElementClass_(
   return class extends HTMLElement {
     private readonly customElementImpl_: CustomElementImpl = new CustomElementImpl(
         componentClass,
+        domListeners,
         this,
         rendererLocators,
         templateStr,
@@ -47,10 +50,15 @@ export class PersonaBuilder {
     for (const spec of this.componentSpecs_.values()) {
       const rendererLocators = ImmutableSet.of<RendererSpec>(spec.renderers || [])
           .mapItem(renderer => renderer.locator);
+      const domListeners = ImmutableSet.of<OnDomSpec>(spec.listeners || [])
+          .mapItem(({elementLocator, eventName, options, propertyKey}) => {
+            return new DomListener(elementLocator, eventName, propertyKey, options);
+          });
 
       const template = spec.template;
       const elementClass = createCustomElementClass_(
           spec.componentClass,
+          domListeners,
           rendererLocators,
           template,
           ImmutableSet.of(spec.watchers || []),
@@ -64,12 +72,12 @@ export class PersonaBuilder {
       tag: string,
       template: string,
       componentClass: new () => CustomElementCtrl,
+      listeners: ImmutableSet<OnDomSpec>,
       renderers: ImmutableSet<RendererSpec>,
       watchers: ImmutableSet<
           ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>,
       vineBuilder: VineBuilder,
-      shadowMode: 'open'|'closed' = 'closed',
-      windowObj: Window = window): void {
+      shadowMode: 'open'|'closed' = 'closed'): void {
     if (this.componentSpecs_.has(tag)) {
       throw Errors.assert(`Component with tag ${tag}`).shouldBe('unregistered').butNot();
     }
@@ -87,6 +95,7 @@ export class PersonaBuilder {
 
     this.componentSpecs_.set(tag, {
       componentClass,
+      listeners,
       renderers,
       shadowMode,
       tag,

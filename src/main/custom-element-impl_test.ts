@@ -29,6 +29,7 @@ describe('main.CustomElementImpl', () => {
       const templateString = 'templateString';
       const customElement = new CustomElementImpl(
           TestClass,
+          ImmutableSet.of(),
           element,
           ImmutableSet.of(),
           templateString,
@@ -39,6 +40,28 @@ describe('main.CustomElementImpl', () => {
       customElement.connectedCallback();
       // tslint:disable-next-line:no-non-null-assertion
       assert(element.shadowRoot!.innerHTML).to.be(templateString);
+    });
+
+    should(`setup the listeners correctly`, () => {
+      const element = document.createElement('div');
+      const templateString = 'templateString';
+
+      const mockListener1 = jasmine.createSpyObj('Listener1', ['listen']);
+      const mockListener2 = jasmine.createSpyObj('Listener2', ['listen']);
+
+      const customElement = new CustomElementImpl(
+          TestClass,
+          ImmutableSet.of([mockListener1, mockListener2]),
+          element,
+          ImmutableSet.of(),
+          templateString,
+          ImmutableSet.of(),
+          mockVine,
+          'open');
+      customElement.connectedCallback();
+
+      assert(mockListener1.listen).to.haveBeenCalledWith(mockVine, Match.any(TestClass));
+      assert(mockListener2.listen).to.haveBeenCalledWith(mockVine, Match.any(TestClass));
     });
 
     should(`setup the renderers correctly`, () => {
@@ -57,6 +80,7 @@ describe('main.CustomElementImpl', () => {
 
       const customElement = new CustomElementImpl(
           TestClass,
+          ImmutableSet.of(),
           element,
           ImmutableSet.of([mockRendererLocator1, mockRendererLocator2]),
           templateString,
@@ -81,6 +105,7 @@ describe('main.CustomElementImpl', () => {
 
       const customElement = new CustomElementImpl(
           TestClass,
+          ImmutableSet.of(),
           element,
           ImmutableSet.of(),
           templateString,
@@ -102,6 +127,7 @@ describe('main.CustomElementImpl', () => {
       const templateString = 'templateString';
       const customElement = new CustomElementImpl(
           TestClass,
+          ImmutableSet.of(),
           element,
           ImmutableSet.of(),
           templateString,
@@ -120,6 +146,7 @@ describe('main.CustomElementImpl', () => {
       const templateString = 'templateString';
       const customElement = new CustomElementImpl(
           TestClass,
+          ImmutableSet.of(),
           element,
           ImmutableSet.of(),
           templateString,

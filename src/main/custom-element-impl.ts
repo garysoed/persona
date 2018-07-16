@@ -2,6 +2,7 @@ import { VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { cache } from 'gs-tools/export/data';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
+import { DomListener } from '../event/dom-listener';
 import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { CustomElementCtrl } from './custom-element-ctrl';
 
@@ -15,6 +16,7 @@ export class CustomElementImpl {
 
   constructor(
       private readonly componentClass_: new () => CustomElementCtrl,
+      private readonly domListeners_: ImmutableSet<DomListener>,
       private readonly element_: HTMLElement,
       private readonly rendererLocators_: ImmutableSet<ResolvedRenderableLocator<any>>,
       private readonly templateStr_: string,
@@ -30,6 +32,7 @@ export class CustomElementImpl {
 
     const shadowRoot = this.getShadowRoot_();
     (componentInstance as any)[SHADOW_ROOT] = shadowRoot;
+    this.setupDomListeners_(componentInstance);
     this.setupRenderers_(componentInstance);
     this.setupWatchers_(componentInstance);
 
@@ -50,7 +53,14 @@ export class CustomElementImpl {
     return shadowRoot;
   }
 
-  private setupRenderers_(context: BaseDisposable): void {
+  private setupDomListeners_(context: CustomElementCtrl): void {
+    for (const domListener of this.domListeners_) {
+      const disposableFn = domListener.listen(this.vine_, context);
+      context.addDisposable(disposableFn);
+    }
+  }
+
+  private setupRenderers_(context: CustomElementCtrl): void {
     for (const rendererLocator of this.rendererLocators_ || []) {
       const unlistenFn = rendererLocator.startRender(this.vine_, context);
       context.addDisposable(DisposableFunction.of(unlistenFn));

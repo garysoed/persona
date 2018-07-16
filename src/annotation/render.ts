@@ -1,5 +1,4 @@
 import { VineOut } from 'grapevine/export/annotation';
-import { VineBuilder } from 'grapevine/export/main';
 import { Annotations } from 'gs-tools/export/data';
 import { ResolvedRenderableLocator } from '../locator/resolved-locator';
 import { RendererSpec } from '../main/component-spec';
@@ -8,8 +7,7 @@ export type Render = (locator: ResolvedRenderableLocator<any>) => MethodDecorato
 
 export function renderFactory(
     vineOut: VineOut,
-    rendererAnnotationsCache: Annotations<RendererSpec>,
-    vineBuilder: VineBuilder): Render {
+    rendererAnnotationsCache: Annotations<RendererSpec>): Render {
   return (locator: ResolvedRenderableLocator<any>) => {
     return <T>(
         target: Object,

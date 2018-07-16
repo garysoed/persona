@@ -36,6 +36,7 @@ describe('main.PersonaBuilder', () => {
           TestClass,
           ImmutableSet.of(),
           ImmutableSet.of(),
+          ImmutableSet.of(),
           vineBuilder);
       builder.build(mockCustomElementRegistry, vineBuilder.run());
 
@@ -63,6 +64,7 @@ describe('main.PersonaBuilder', () => {
           templateKey,
           TestClass,
           ImmutableSet.of(),
+          ImmutableSet.of(),
           ImmutableSet.of([locator1, locator2]),
           mockVineBuilder);
 
@@ -87,6 +89,7 @@ describe('main.PersonaBuilder', () => {
           TestClass,
           ImmutableSet.of(),
           ImmutableSet.of(),
+          ImmutableSet.of(),
           vineBuilder);
 
       assert(() => {
@@ -94,6 +97,7 @@ describe('main.PersonaBuilder', () => {
             tag,
             templateKey,
             TestClass,
+            ImmutableSet.of(),
             ImmutableSet.of(),
             ImmutableSet.of(),
             vineBuilder);

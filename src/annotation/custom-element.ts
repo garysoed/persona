@@ -3,7 +3,7 @@ import { ImmutableSet } from 'gs-tools/export/collect';
 import { Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
-import { RendererSpec } from '../main/component-spec';
+import { OnDomSpec, RendererSpec } from '../main/component-spec';
 import { PersonaBuilder } from '../main/persona-builder';
 
 /**
@@ -22,6 +22,7 @@ export type CustomElement = (spec: Spec) => ClassDecorator;
 export function customElementFactory(
     personaBuilder: PersonaBuilder,
     vineBuilder: VineBuilder,
+    onDomAnnotationsCache: Annotations<OnDomSpec>,
     rendererAnnotationsCache: Annotations<RendererSpec>): CustomElement {
   return (spec: Spec) => {
     return (target: Function) => {
@@ -31,11 +32,18 @@ export function customElementFactory(
           .reduce((prevSet, specs) => {
             return prevSet.addAll(specs);
           }, ImmutableSet.of<RendererSpec>());
+      const listeners = onDomAnnotationsCache
+          .forCtor(target)
+          .getAttachedValues()
+          .reduce((prevSet, specs) => {
+            return prevSet.addAll(specs);
+          }, ImmutableSet.of<OnDomSpec>());
 
       personaBuilder.register(
           spec.tag,
           spec.template,
           target as any,
+          listeners,
           rendererSpecs,
           ImmutableSet.of(spec.watch || []),
           vineBuilder,

@@ -8,7 +8,17 @@ import { CustomElementCtrl } from './custom-element-ctrl';
 export interface RendererSpec {
   locator: ResolvedRenderableLocator<any>;
   parameters?: NodeId<any>[];
-  propertyKey: string | symbol;
+  propertyKey: string|symbol;
+}
+
+/**
+ * Specifications for a dom listener.
+ */
+export interface OnDomSpec {
+  elementLocator: ResolvedWatchableLocator<HTMLElement|null>;
+  eventName: string;
+  options?: AddEventListenerOptions;
+  propertyKey: string|symbol;
 }
 
 /**
@@ -16,6 +26,7 @@ export interface RendererSpec {
  */
 export interface ComponentSpec {
   componentClass: new () => CustomElementCtrl;
+  listeners?: Iterable<OnDomSpec>;
   renderers?: Iterable<RendererSpec>;
   shadowMode?: 'open'|'closed';
   tag: string;
