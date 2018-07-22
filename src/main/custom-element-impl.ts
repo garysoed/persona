@@ -2,7 +2,7 @@ import { VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { cache } from 'gs-tools/export/data';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
-import { DomListener } from '../event/dom-listener';
+import { BaseListener } from '../event/base-listener';
 import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { CustomElementCtrl } from './custom-element-ctrl';
 
@@ -16,7 +16,7 @@ export class CustomElementImpl {
 
   constructor(
       private readonly componentClass_: new () => CustomElementCtrl,
-      private readonly domListeners_: ImmutableSet<DomListener>,
+      private readonly domListeners_: ImmutableSet<BaseListener>,
       private readonly element_: HTMLElement,
       private readonly rendererLocators_: ImmutableSet<ResolvedRenderableLocator<any>>,
       private readonly templateStr_: string,

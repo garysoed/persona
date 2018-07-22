@@ -1,6 +1,7 @@
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { Errors } from 'gs-tools/export/error';
+import { BaseListener } from '../event/base-listener';
 import { DomListener } from '../event/dom-listener';
 import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { ComponentSpec, OnDomSpec, RendererSpec } from './component-spec';
@@ -9,7 +10,7 @@ import { CustomElementImpl, SHADOW_ROOT } from './custom-element-impl';
 
 function createCustomElementClass_(
     componentClass: new () => CustomElementCtrl,
-    domListeners: ImmutableSet<DomListener>,
+    domListeners: ImmutableSet<BaseListener>,
     rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
     templateStr: string,
     watchers: ImmutableSet<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>,
