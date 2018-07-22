@@ -1,30 +1,26 @@
 import { VineImpl } from 'grapevine/export/main';
 import { DisposableFunction } from 'gs-tools/export/dispose';
-import { Errors } from 'gs-tools/src/error';
-import { InstanceofType } from 'gs-types/export';
 import { ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
+import { BaseListener } from './base-listener';
 
 /**
  * Class to listen to DOM events.
  */
-export class DomListener {
+export class DomListener extends BaseListener {
   constructor(
       private readonly elementLocator_: ResolvedWatchableLocator<HTMLElement|null>,
       private readonly eventName_: string,
-      private readonly propertyKey_: string|symbol,
-      private readonly options_?: AddEventListenerOptions) { }
+      propertyKey: string|symbol,
+      private readonly options_?: AddEventListenerOptions) {
+    super(propertyKey);
+  }
 
-  listen(vine: VineImpl, context: CustomElementCtrl): DisposableFunction {
+  protected listenImpl_(
+      vine: VineImpl,
+      context: CustomElementCtrl,
+      handler: EventListener): DisposableFunction {
     let lastEl: HTMLElement|null = null;
-    const handlerFn = (context as any)[this.propertyKey_];
-    if (!InstanceofType(Function).check(handlerFn)) {
-      throw Errors.assert(`Property ${this.propertyKey_.toString()} of ${context}`)
-          .shouldBeAnInstanceOf(Function)
-          .butWas(handlerFn);
-    }
-
-    const handler = (event: Event) => handlerFn.call(context, event, vine);
     const vineUnlisten = vine.listen(el => {
       if (el && lastEl !== el) {
         el.addEventListener(this.eventName_, handler, this.options_);
