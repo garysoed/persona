@@ -38,7 +38,7 @@ describe('event.BaseListener', () => {
       const mockContext = jasmine.createSpyObj('Context', [PROPERTY_KEY]);
 
       listener.listen(vine, mockContext);
-      assert(mockListenImplSpy).to.haveBeenCalledWith(vine, mockContext, Match.anyFunction());
+      assert(mockListenImplSpy).to.haveBeenCalledWith(vine, mockContext, Match.any(Function));
 
       const event = Mocks.object('event');
       mockListenImplSpy.calls.argsFor(0)[2](event);

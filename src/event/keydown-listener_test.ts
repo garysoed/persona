@@ -175,7 +175,7 @@ describe('event.KeydownListener', () => {
       listener['listenImpl_'](mockVine, context, mockHandler);
       mockVine.listen.calls.argsFor(0)[0](el);
 
-      el.dispatchEvent(new CustomEvent('keydown'));
+      el.dispatchEvent(new CustomEvent<{}>('keydown'));
       assert(mockHandler).toNot.haveBeenCalled();
     });
   });

@@ -1,6 +1,5 @@
 import { VineImpl } from 'grapevine/export/main';
 import { DisposableFunction } from 'gs-tools/export/dispose';
-import { Errors } from 'gs-tools/src/error';
 import { BooleanType } from 'gs-types/export';
 import { ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
@@ -20,6 +19,9 @@ export interface MatchOptions {
   shift?: boolean;
 }
 
+/**
+ * Listens to keydown events, matching by key and several options.
+ */
 export class KeydownListener<E extends HTMLElement|null = HTMLElement> extends DomListener<E> {
   constructor(
       private readonly key_: string,
