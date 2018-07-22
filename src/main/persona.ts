@@ -2,8 +2,9 @@ import { VineApp } from 'grapevine/export/main';
 import { Annotations } from 'gs-tools/export/data';
 import { CustomElement, customElementFactory } from '../annotation/custom-element';
 import { OnDomAnnotation, onDomFactory } from '../annotation/on-dom';
+import { OnKeydownAnnotation, onKeydownFactory } from '../annotation/on-keydown';
 import { Render, renderFactory } from '../annotation/render';
-import { OnDomSpec, RendererSpec } from './component-spec';
+import { OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
 import { PersonaBuilder } from './persona-builder';
 
 /**
@@ -13,6 +14,7 @@ interface PersonaApp {
   builder: PersonaBuilder;
   customElement: CustomElement;
   onDom: OnDomAnnotation;
+  onKeydown: OnKeydownAnnotation;
   render: Render;
 }
 
@@ -32,6 +34,7 @@ export function getOrRegisterApp(
   }
 
   const onDomAnnotationsCache = new Annotations<OnDomSpec>(Symbol(`${appName}-onDom`));
+  const onKeydownAnnotationsCache = new Annotations<OnKeydownSpec>(Symbol(`${appName}-onKeydown`));
   const renderAnnotationsCache = new Annotations<RendererSpec>(Symbol(`${appName}-render`));
 
   const personaBuilder = new PersonaBuilder();
@@ -43,6 +46,7 @@ export function getOrRegisterApp(
         onDomAnnotationsCache,
         renderAnnotationsCache),
     onDom: onDomFactory(onDomAnnotationsCache),
+    onKeydown: onKeydownFactory(onKeydownAnnotationsCache),
     render: renderFactory(vineOut, renderAnnotationsCache),
   };
   apps.set(appName, newApp);
