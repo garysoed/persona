@@ -44,7 +44,7 @@ describe('event.DomListener', () => {
       const eventObj = new CustomEvent<{}>(EVENT_NAME);
       el.dispatchEvent(eventObj);
 
-      assert(mockContext[PROPERTY_KEY]).to.haveBeenCalledWith(eventObj);
+      assert(mockContext[PROPERTY_KEY]).to.haveBeenCalledWith(eventObj, vine);
 
       disposableFn.dispose();
 

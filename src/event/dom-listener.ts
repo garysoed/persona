@@ -24,7 +24,7 @@ export class DomListener {
           .butWas(handlerFn);
     }
 
-    const handler = (event: Event) => handlerFn.call(context, event);
+    const handler = (event: Event) => handlerFn.call(context, event, vine);
     const vineUnlisten = vine.listen(el => {
       if (el && lastEl !== el) {
         el.addEventListener(this.eventName_, handler, this.options_);

@@ -2,7 +2,7 @@ import { Annotations } from 'gs-tools/export/data';
 import { ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { OnDomSpec } from '../main/component-spec';
 
-type OnDomAnnotation = (
+export type OnDomAnnotation = (
     elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
     eventName: string,
     options?: AddEventListenerOptions) => MethodDecorator;
