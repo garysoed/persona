@@ -1,5 +1,7 @@
 import { VineBuilder } from 'grapevine/export/main';
-import { assert, Match, should } from 'gs-testing/export/main';
+import { InstanceSourceProvider } from 'grapevine/src/node/instance-source-provider';
+import { assert, match, should } from 'gs-testing/export/main';
+import { createSpyInstance, createSpyObject } from 'gs-testing/export/spy';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { InstanceofType } from 'gs-types/export';
 import { element } from '../locator/element-locator';
@@ -27,7 +29,8 @@ describe('main.PersonaBuilder', () => {
     should(`register the components correctly`, () => {
       const tag = 'tag';
       const templateKey = 'templateKey';
-      const mockCustomElementRegistry = jasmine.createSpyObj('CustomElementRegistry', ['define']);
+      const mockCustomElementRegistry =
+          createSpyObject<CustomElementRegistry>('CustomElementRegistry', ['define']);
       const vineBuilder = new VineBuilder();
 
       builder.register(
@@ -37,16 +40,17 @@ describe('main.PersonaBuilder', () => {
           ImmutableSet.of(),
           ImmutableSet.of(),
           ImmutableSet.of(),
+          ImmutableSet.of(),
           vineBuilder);
-      builder.build(mockCustomElementRegistry, vineBuilder.run());
+      builder.build(mockCustomElementRegistry, vineBuilder.run(), []);
 
-      assert(mockCustomElementRegistry.define).to.haveBeenCalledWith(tag, Match.anyThing());
+      assert(mockCustomElementRegistry.define).to.haveBeenCalledWith(tag, match.anyThing());
     });
 
     should(`register the watchers correctly`, async () => {
       const tag = 'tag';
       const templateKey = 'templateKey';
-      const mockVineBuilder = jasmine.createSpyObj('VineBuilder', ['source', 'sourceWithProvider']);
+      const mockVineBuilder = createSpyInstance('VineBuilder', VineBuilder.prototype);
       const locator1 = element('section', InstanceofType(HTMLElement));
       const locator2 = element('a', InstanceofType(HTMLElement));
 
@@ -65,17 +69,17 @@ describe('main.PersonaBuilder', () => {
           TestClass,
           ImmutableSet.of(),
           ImmutableSet.of(),
+          ImmutableSet.of(),
           ImmutableSet.of([locator1, locator2]),
           mockVineBuilder);
 
+      const providerMatcher = match.anyThat<InstanceSourceProvider<HTMLElement>>().beAFunction();
+      assert(mockVineBuilder.sourceWithProvider).to
+          .haveBeenCalledWith(locator1.getReadingId(), providerMatcher);
+      assert(await providerMatcher.getLastMatch()(context)).to.equal(sectionEl);
       assert(mockVineBuilder.sourceWithProvider)
-          .to.haveBeenCalledWith(locator1.getReadingId(), Match.anyFunction<() => HTMLElement>());
-      assert(await mockVineBuilder.sourceWithProvider.calls.argsFor(0)[1](context))
-          .to.be(sectionEl);
-      assert(mockVineBuilder.sourceWithProvider)
-          .to.haveBeenCalledWith(locator2.getReadingId(), Match.anyFunction<() => HTMLElement>());
-      assert(await mockVineBuilder.sourceWithProvider.calls.argsFor(1)[1](context))
-          .to.be(anchorEl);
+          .to.haveBeenCalledWith(locator2.getReadingId(), providerMatcher);
+      assert(await providerMatcher.getLastMatch()(context)).to.equal(anchorEl);
     });
 
     should(`throw error if the tag is already registered`, () => {
@@ -90,6 +94,7 @@ describe('main.PersonaBuilder', () => {
           ImmutableSet.of(),
           ImmutableSet.of(),
           ImmutableSet.of(),
+          ImmutableSet.of(),
           vineBuilder);
 
       assert(() => {
@@ -100,8 +105,9 @@ describe('main.PersonaBuilder', () => {
             ImmutableSet.of(),
             ImmutableSet.of(),
             ImmutableSet.of(),
+            ImmutableSet.of(),
             vineBuilder);
-      }).to.throwError(/unregistered/);
+      }).to.throwErrorWithMessage(/unregistered/);
     });
   });
 });

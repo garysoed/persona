@@ -1,4 +1,4 @@
-import { assert } from 'gs-testing/export/main';
+import { assert, match } from 'gs-testing/export/main';
 import { should } from 'gs-testing/src/main/run';
 import { ElementWithTagType } from 'gs-types/export';
 import { element } from './element-locator';
@@ -13,11 +13,11 @@ describe('locator.resolveSelectors', () => {
       },
     };
 
-    assert(resolveLocators(unresolved)).to.equal({
+    assert(resolveLocators(unresolved)).to.haveProperties({
       a: unresolved.b.c,
-      b: {
+      b: match.anyObjectThat().haveProperties({
         c: unresolved.b.c,
-      },
+      }),
     });
   });
 
@@ -29,6 +29,6 @@ describe('locator.resolveSelectors', () => {
 
     assert(() => {
       resolveLocators(unresolved);
-    }).to.throwError(/Type of b/i);
+    }).to.throwErrorWithMessage(/Type of b/i);
   });
 });

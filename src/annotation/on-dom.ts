@@ -13,9 +13,7 @@ export function onDomFactory(
       elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
       eventName: string,
       options?: AddEventListenerOptions) => {
-    return (
-        target: Object,
-        propertyKey: string | symbol) => {
+    return (target: Object, propertyKey: string | symbol) => {
       onDomAnnotationsCache.forCtor(target.constructor).attachValueToProperty(propertyKey, {
         elementLocator,
         eventName,

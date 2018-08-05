@@ -1,9 +1,11 @@
-import { instanceStreamId } from 'grapevine/export/component';
+// tslint:disable:no-non-null-assertion
 import { VineImpl } from 'grapevine/export/main';
-import { assert, Match, should } from 'gs-testing/export/main';
+import { assert, match, should } from 'gs-testing/export/main';
+import { createSpyInstance, spy, SpyObj } from 'gs-testing/export/spy';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
-import { NumberType } from 'gs-types/export';
+import { BaseListener } from '../event/base-listener';
+import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl } from './custom-element-impl';
 
@@ -17,10 +19,10 @@ class TestClass extends CustomElementCtrl {
 }
 
 describe('main.CustomElementImpl', () => {
-  let mockVine: jasmine.SpyObj<VineImpl>;
+  let mockVine: SpyObj<VineImpl>;
 
   beforeEach(() => {
-    mockVine = jasmine.createSpyObj('Vine', ['listen']);
+    mockVine = createSpyInstance('Vine', VineImpl.prototype);
   });
 
   describe(`connectedCallback`, () => {
@@ -39,15 +41,15 @@ describe('main.CustomElementImpl', () => {
 
       customElement.connectedCallback();
       // tslint:disable-next-line:no-non-null-assertion
-      assert(element.shadowRoot!.innerHTML).to.be(templateString);
+      assert(element.shadowRoot!.innerHTML).to.equal(templateString);
     });
 
     should(`setup the listeners correctly`, () => {
       const element = document.createElement('div');
       const templateString = 'templateString';
 
-      const mockListener1 = jasmine.createSpyObj('Listener1', ['listen']);
-      const mockListener2 = jasmine.createSpyObj('Listener2', ['listen']);
+      const mockListener1 = createSpyInstance('Listener1', BaseListener.prototype);
+      const mockListener2 = createSpyInstance('Listener2', BaseListener.prototype);
 
       const customElement = new CustomElementImpl(
           TestClass,
@@ -60,23 +62,24 @@ describe('main.CustomElementImpl', () => {
           'open');
       customElement.connectedCallback();
 
-      assert(mockListener1.listen).to.haveBeenCalledWith(mockVine, Match.any(TestClass));
-      assert(mockListener2.listen).to.haveBeenCalledWith(mockVine, Match.any(TestClass));
+      assert(mockListener1.listen)
+          .to.haveBeenCalledWith(mockVine, match.anyThat<TestClass>().beAnInstanceOf(TestClass));
+      assert(mockListener2.listen)
+          .to.haveBeenCalledWith(mockVine, match.anyThat<TestClass>().beAnInstanceOf(TestClass));
     });
 
     should(`setup the renderers correctly`, () => {
       const element = document.createElement('div');
       const templateString = 'templateString';
 
-      const nodeId1 = instanceStreamId('node1', NumberType);
-      const nodeId2 = instanceStreamId('node2', NumberType);
-      const mockRendererLocator1 =
-          jasmine.createSpyObj('RendererLocator1', ['getStreamId', 'startRender']);
-      mockRendererLocator1.getStreamId.and.returnValue(nodeId1);
-
-      const mockRendererLocator2 =
-          jasmine.createSpyObj('RendererLocator2', ['getStreamId', 'startRender']);
-      mockRendererLocator2.getStreamId.and.returnValue(nodeId2);
+      const mockRendererLocator1 = createSpyInstance(
+          'RendererLocator1',
+          ResolvedRenderableLocator.prototype,
+          ['startRender']);
+      const mockRendererLocator2 = createSpyInstance(
+          'RendererLocator2',
+          ResolvedRenderableLocator.prototype,
+          ['startRender']);
 
       const customElement = new CustomElementImpl(
           TestClass,
@@ -91,17 +94,17 @@ describe('main.CustomElementImpl', () => {
       customElement.connectedCallback();
 
       assert(mockRendererLocator1.startRender).to
-          .haveBeenCalledWith(mockVine, Match.any(TestClass));
+          .haveBeenCalledWith(mockVine, match.anyThat<TestClass>().beAnInstanceOf(TestClass));
       assert(mockRendererLocator2.startRender).to
-          .haveBeenCalledWith(mockVine, Match.any(TestClass));
+          .haveBeenCalledWith(mockVine, match.anyThat<TestClass>().beAnInstanceOf(TestClass));
     });
 
     should(`setup the watchers correctly`, () => {
       const element = document.createElement('div');
       const templateString = 'templateString';
 
-      const mockWatcher1 = jasmine.createSpyObj('Watcher1', ['startWatch']);
-      const mockWatcher2 = jasmine.createSpyObj('Watcher2', ['startWatch']);
+      const mockWatcher1 = createSpyInstance('Watcher1', ResolvedWatchableLocator.prototype);
+      const mockWatcher2 = createSpyInstance('Watcher2', ResolvedWatchableLocator.prototype);
 
       const customElement = new CustomElementImpl(
           TestClass,
@@ -114,10 +117,14 @@ describe('main.CustomElementImpl', () => {
           'open');
       customElement.connectedCallback();
 
-      assert(mockWatcher1.startWatch).to
-          .haveBeenCalledWith(mockVine, Match.any(TestClass), element.shadowRoot);
-      assert(mockWatcher2.startWatch).to
-          .haveBeenCalledWith(mockVine, Match.any(TestClass), element.shadowRoot);
+      assert(mockWatcher1.startWatch).to.haveBeenCalledWith(
+          mockVine,
+          match.anyThat<TestClass>().beAnInstanceOf(TestClass),
+          element.shadowRoot!);
+      assert(mockWatcher2.startWatch).to.haveBeenCalledWith(
+          mockVine,
+          match.anyThat<TestClass>().beAnInstanceOf(TestClass),
+          element.shadowRoot!);
     });
   });
 
@@ -135,10 +142,10 @@ describe('main.CustomElementImpl', () => {
           mockVine,
           'open');
 
-      spyOn(BaseDisposable.prototype, 'dispose');
+      const disposeSpy = spy(BaseDisposable.prototype, 'dispose');
       customElement.connectedCallback();
       customElement.disconnectedCallback();
-      assert(BaseDisposable.prototype.dispose).to.haveBeenCalledWith();
+      assert(disposeSpy).to.haveBeenCalledWith();
     });
 
     should(`not throw any errors if never connected`, () => {

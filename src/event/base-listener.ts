@@ -18,7 +18,12 @@ export abstract class BaseListener {
           .butWas(handlerFn);
     }
 
-    return this.listenImpl_(vine, context, (event: Event) => handlerFn.call(context, event, vine));
+    return this.listenImpl_(
+        vine,
+        context,
+        (event: Event) => {
+          handlerFn.call(context, event, vine);
+        });
   }
 
   protected abstract listenImpl_(

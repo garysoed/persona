@@ -32,9 +32,9 @@ export class CustomElementImpl {
 
     const shadowRoot = this.getShadowRoot_();
     (componentInstance as any)[SHADOW_ROOT] = shadowRoot;
-    this.setupDomListeners_(componentInstance);
     this.setupRenderers_(componentInstance);
     this.setupWatchers_(componentInstance);
+    this.setupDomListeners_(componentInstance);
 
     componentInstance.init(this.vine_);
   }

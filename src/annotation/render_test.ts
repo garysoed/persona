@@ -1,6 +1,6 @@
 import { staticSourceId } from 'grapevine/export/component';
 import { getOrRegisterApp as vineGetOrRegisterApp } from 'grapevine/export/main';
-import { should, waitFor } from 'gs-testing/export/main';
+import { retryUntil, should } from 'gs-testing/export/main';
 import { IntegerParser } from 'gs-tools/export/parse';
 import { NullableType, NumberType } from 'gs-types/export';
 import { attribute } from '../locator/attribute-locator';
@@ -52,7 +52,7 @@ class TestClass extends CustomElementCtrl {
 
 // Runs persona and grapevine.
 const vine = vineBuilder.run();
-personaBuilder.build(window.customElements, vine);
+personaBuilder.build(window.customElements, vine, [TestClass]);
 
 describe('annotation.render', () => {
   should(`update the element correctly`, async () => {
@@ -60,11 +60,11 @@ describe('annotation.render', () => {
     document.body.appendChild(testElement);
 
     // tslint:disable-next-line:no-non-null-assertion
-    await waitFor(() => testElement.getAttribute('attr')).to.be('2');
+    await retryUntil(() => testElement.getAttribute('attr')).to.equal('2');
 
     // Sets the new value.
     vine.setValue($testSource, 123);
 
-    await waitFor(() => testElement.getAttribute('attr')).to.be('123');
+    await retryUntil(() => testElement.getAttribute('attr')).to.equal('123');
   });
 });

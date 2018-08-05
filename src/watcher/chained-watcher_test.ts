@@ -1,17 +1,19 @@
 import { VineImpl } from 'grapevine/export/main';
-import { assert, Match, should } from 'gs-testing/export/main';
+import { assert, fshould, match, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
+import { createSpy, createSpyInstance, fake, Spy, SpyObj } from 'gs-testing/export/spy';
+import { DisposableFunction } from 'gs-tools/export/dispose';
 import { ChainedWatcher } from './chained-watcher';
 import { Handler, Watcher } from './watcher';
 
 describe('watcher.ChainedWatcher', () => {
-  let mockSourceWatcher: jasmine.SpyObj<Watcher<string>>;
-  let mockStartWatchFn: jasmine.Spy;
+  let mockSourceWatcher: SpyObj<Watcher<string>>;
+  let mockStartWatchFn: Spy;
   let watcher: ChainedWatcher<string, number>;
 
   beforeEach(() => {
-    mockSourceWatcher = jasmine.createSpyObj('SourceWatcher', ['watch']);
-    mockStartWatchFn = jasmine.createSpy('StartWatchFn');
+    mockSourceWatcher = createSpyInstance('SourceWatcher', Watcher.prototype);
+    mockStartWatchFn = createSpy('StartWatchFn');
     watcher = new ChainedWatcher(mockSourceWatcher, mockStartWatchFn);
   });
 
@@ -22,18 +24,20 @@ describe('watcher.ChainedWatcher', () => {
       const root = Mocks.object<ShadowRoot>('root');
       const source = 'source';
 
-      const mockSourceUnlisten = jasmine.createSpyObj('SourceUnlisten', ['dispose']);
-      mockSourceWatcher.watch.and.returnValue(mockSourceUnlisten);
+      const mockSourceUnlisten = createSpyInstance('SourceUnlisten', DisposableFunction.prototype);
+      fake(mockSourceWatcher.watch).always().return(mockSourceUnlisten);
 
-      const mockInnerUnlisten = jasmine.createSpyObj('InnerUnlisten', ['dispose']);
+      const mockInnerUnlisten = createSpyInstance('InnerUnlisten', DisposableFunction.prototype);
       const unlisten = {key: '123', unlisten: mockInnerUnlisten};
-      mockStartWatchFn.and.returnValue(unlisten);
+      fake(mockStartWatchFn).always().return(unlisten);
 
       const unwatch = watcher['startWatching_'](vine, onChange, root);
-      assert(mockSourceWatcher.watch).to
-          .haveBeenCalledWith(vine, Match.anyFunction<Handler<number>>(), root);
 
-      const handler = mockSourceWatcher.watch.calls.argsFor(0)[1];
+      const functionMatcher = match.anyThat<Handler<string>>().beAFunction();
+      assert(mockSourceWatcher.watch).to
+          .haveBeenCalledWith(vine, functionMatcher, root);
+
+      const handler = functionMatcher.getLastMatch();
       handler(source);
       assert(mockStartWatchFn).to.haveBeenCalledWith(source, null, vine, onChange, root);
 
@@ -50,9 +54,9 @@ describe('watcher.ChainedWatcher', () => {
       const onChange = Mocks.object<Handler<number>>('onChange');
       const root = Mocks.object<ShadowRoot>('root');
 
-      const mockSourceUnlisten = jasmine.createSpyObj('SourceUnlisten', ['dispose']);
-      mockSourceWatcher.watch.and.returnValue(mockSourceUnlisten);
-      mockStartWatchFn.and.returnValue(null);
+      const mockSourceUnlisten = createSpyInstance('SourceUnlisten', DisposableFunction.prototype);
+      fake(mockSourceWatcher.watch).always().return(mockSourceUnlisten);
+      fake(mockStartWatchFn).always().return(null);
 
       const unwatch = watcher['startWatching_'](vine, onChange, root);
       unwatch.dispose();

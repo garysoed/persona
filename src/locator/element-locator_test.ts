@@ -16,6 +16,6 @@ describe('locator.element', () => {
     };
 
     const resolved = resolveLocators(root);
-    assert(resolved.a).to.be(root.b.c);
+    assert(resolved.a).to.equal(root.b.c);
   });
 });

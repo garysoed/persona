@@ -58,7 +58,7 @@ export class ResolvedAttributeLocator<T> extends ResolvedRenderableWatchableLoca
     const value = this.parser_.parse(attrValue);
     const type = this.getType();
     if (!type.check(value)) {
-      throw Errors.assert(`Value of [${this}]`).shouldBeA(type).butWas(value);
+      return this.defaultValue_;
     }
 
     return value;

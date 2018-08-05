@@ -44,6 +44,7 @@ export function getOrRegisterApp(
         personaBuilder,
         vineBuilder,
         onDomAnnotationsCache,
+        onKeydownAnnotationsCache,
         renderAnnotationsCache),
     onDom: onDomFactory(onDomAnnotationsCache),
     onKeydown: onKeydownFactory(onKeydownAnnotationsCache),

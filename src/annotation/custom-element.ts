@@ -3,7 +3,7 @@ import { ImmutableSet } from 'gs-tools/export/collect';
 import { Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
-import { OnDomSpec, RendererSpec } from '../main/component-spec';
+import { OnDomSpec, OnKeydownSpec, RendererSpec } from '../main/component-spec';
 import { PersonaBuilder } from '../main/persona-builder';
 
 /**
@@ -23,6 +23,7 @@ export function customElementFactory(
     personaBuilder: PersonaBuilder,
     vineBuilder: VineBuilder,
     onDomAnnotationsCache: Annotations<OnDomSpec>,
+    onKeydownAnnotationsCache: Annotations<OnKeydownSpec>,
     rendererAnnotationsCache: Annotations<RendererSpec>): CustomElement {
   return (spec: Spec) => {
     return (target: Function) => {
@@ -32,6 +33,12 @@ export function customElementFactory(
           .reduce((prevSet, specs) => {
             return prevSet.addAll(specs);
           }, ImmutableSet.of<RendererSpec>());
+      const keydownSpecs = onKeydownAnnotationsCache
+          .forCtor(target)
+          .getAttachedValues()
+          .reduce((prevSet, specs) => {
+            return prevSet.addAll(specs);
+          }, ImmutableSet.of<OnKeydownSpec>());
       const listeners = onDomAnnotationsCache
           .forCtor(target)
           .getAttachedValues()
@@ -43,11 +50,11 @@ export function customElementFactory(
           spec.tag,
           spec.template,
           target as any,
+          keydownSpecs,
           listeners,
           rendererSpecs,
           ImmutableSet.of(spec.watch || []),
-          vineBuilder,
-          spec.shadowMode);
+          vineBuilder);
     };
   };
 }

@@ -1,8 +1,9 @@
 import { instanceSourceId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
-import { assert, should, wait, waitFor } from 'gs-testing/export/main';
+import { assert, match, retryUntil, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
-import { BaseDisposable } from 'gs-tools/export/dispose';
+import { createSpy, createSpyInstance } from 'gs-testing/export/spy';
+import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
 import { IntegerParser } from 'gs-tools/export/parse';
 import { InstanceofType, NullableType, NumberType } from 'gs-types/export';
 import { attribute, ResolvedAttributeLocator } from './attribute-locator';
@@ -23,7 +24,7 @@ describe('locator.AttributeLocator', () => {
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});
       const vine = Mocks.object<VineImpl>('vine');
-      const mockOnChange = jasmine.createSpy('OnChange');
+      const mockOnChange = createSpy('OnChange');
 
       const innerEl = document.createElement('div');
       innerEl.setAttribute(ATTR_NAME, '456');
@@ -32,14 +33,14 @@ describe('locator.AttributeLocator', () => {
       const watcher = locator.createWatcher();
       watcher.watch(vine, mockOnChange, shadowRoot);
 
-      await wait(mockOnChange).to.haveBeenCalledWith(456);
+      await retryUntil(() => mockOnChange).to.equal(match.anySpyThat().haveBeenCalledWith(456));
 
       // Grab the element.
       // tslint:disable-next-line:no-non-null-assertion
       const watchedEl = shadowRoot.querySelector('div')!;
       watchedEl.setAttribute(ATTR_NAME, '789');
 
-      await wait(mockOnChange).to.haveBeenCalledWith(789);
+      await retryUntil(() => mockOnChange).to.equal(match.anySpyThat().haveBeenCalledWith(789));
     });
   });
 
@@ -51,7 +52,7 @@ describe('locator.AttributeLocator', () => {
       const records: any[] = [
         {attributeName: ATTR_NAME, target},
       ];
-      const mockOnChange = jasmine.createSpy('OnChange');
+      const mockOnChange = createSpy('OnChange');
 
       locator['onMutation_'](records, mockOnChange);
       assert(mockOnChange).to.haveBeenCalledWith(123);
@@ -64,7 +65,7 @@ describe('locator.AttributeLocator', () => {
       const records: any[] = [
         {attributeName: ATTR_NAME, target},
       ];
-      const mockOnChange = jasmine.createSpy('OnChange');
+      const mockOnChange = createSpy('OnChange');
 
       locator['onMutation_'](records, mockOnChange);
       assert(mockOnChange).to.haveBeenCalledWith(DEFAULT_VALUE);
@@ -74,7 +75,7 @@ describe('locator.AttributeLocator', () => {
       const records: any[] = [
         {attributeName: ATTR_NAME, target: null},
       ];
-      const mockOnChange = jasmine.createSpy('OnChange');
+      const mockOnChange = createSpy('OnChange');
 
       locator['onMutation_'](records, mockOnChange);
       assert(mockOnChange).toNot.haveBeenCalled();
@@ -84,7 +85,7 @@ describe('locator.AttributeLocator', () => {
       const records: any[] = [
         {attributeName: '', target: document.createElement('div')},
       ];
-      const mockOnChange = jasmine.createSpy('OnChange');
+      const mockOnChange = createSpy('OnChange');
 
       locator['onMutation_'](records, mockOnChange);
       assert(mockOnChange).toNot.haveBeenCalled();
@@ -111,7 +112,7 @@ describe('locator.AttributeLocator', () => {
       vine.setValue(elementLocator.getReadingId(), divElement, context);
       vine.setValue(testSourceId, 123, context);
 
-      await waitFor(() => divElement.getAttribute(ATTR_NAME)).to.be('123');
+      await retryUntil(() => divElement.getAttribute(ATTR_NAME)).to.equal('123');
     });
   });
 
@@ -119,40 +120,40 @@ describe('locator.AttributeLocator', () => {
     should(`call onChange for attribute changes`, async () => {
       const watchedEl = document.createElement('div');
       watchedEl.setAttribute(ATTR_NAME, '456');
-      const mockOnChange = jasmine.createSpy('OnChange');
+      const mockOnChange = createSpy('OnChange');
 
       // tslint:disable-next-line:no-non-null-assertion
       const unlisten = locator['startWatch_'](watchedEl, null, mockOnChange)!;
-      assert(unlisten.key).to.be(watchedEl);
+      assert(unlisten.key).to.equal(watchedEl);
       assert(mockOnChange).to.haveBeenCalledWith(456);
 
       watchedEl.setAttribute(ATTR_NAME, '789');
-      await wait(mockOnChange).to.haveBeenCalledWith(789);
+      await retryUntil(() => mockOnChange).to.equal(match.anySpyThat().haveBeenCalledWith(789));
     });
 
     should(`dispose the previous undispose if for different element`, async () => {
       const oldEl = document.createElement('div');
-      const mockPrevUnlisten = jasmine.createSpyObj('PrevUnlisten', ['dispose']);
+      const mockPrevUnlisten = createSpyInstance('PrevUnlisten', DisposableFunction.prototype);
 
       const watchedEl = document.createElement('div');
       watchedEl.setAttribute(ATTR_NAME, '456');
-      const mockOnChange = jasmine.createSpy('OnChange');
+      const mockOnChange = createSpy('OnChange');
 
       // tslint:disable-next-line:no-non-null-assertion
       const unlisten = locator['startWatch_'](
           watchedEl,
           {key: oldEl, unlisten: mockPrevUnlisten},
           mockOnChange)!;
-      assert(unlisten.key).to.be(watchedEl);
+      assert(unlisten.key).to.equal(watchedEl);
       assert(mockOnChange).to.haveBeenCalledWith(456);
 
       watchedEl.setAttribute(ATTR_NAME, '789');
-      await wait(mockOnChange).to.haveBeenCalledWith(789);
+      await retryUntil(() => mockOnChange).to.equal(match.anySpyThat().haveBeenCalledWith(789));
       assert(mockPrevUnlisten.dispose).to.haveBeenCalledWith();
     });
 
     should(`call onChange with default value if the element is removed`, () => {
-      const mockOnChange = jasmine.createSpy('OnChange');
+      const mockOnChange = createSpy('OnChange');
 
       const unlisten = locator['startWatch_'](null, null, mockOnChange);
       assert(unlisten).to.beNull();
@@ -161,9 +162,9 @@ describe('locator.AttributeLocator', () => {
 
     should(`dispose the previous undispose if element is removed`, () => {
       const oldEl = document.createElement('div');
-      const mockPrevUnlisten = jasmine.createSpyObj('PrevUnlisten', ['dispose']);
+      const mockPrevUnlisten = createSpyInstance('PrevUnlisten', DisposableFunction.prototype);
 
-      const mockOnChange = jasmine.createSpy('OnChange');
+      const mockOnChange = createSpy('OnChange');
 
       const unlisten = locator['startWatch_'](
           null,
@@ -177,14 +178,14 @@ describe('locator.AttributeLocator', () => {
     should(`not observe changes if already observing`, () => {
       const watchedEl = document.createElement('div');
       watchedEl.setAttribute(ATTR_NAME, '456');
-      const mockOnChange = jasmine.createSpy('OnChange');
-      const mockUnlisten = jasmine.createSpyObj('Unlisten', ['dispose']);
+      const mockOnChange = createSpy('OnChange');
+      const mockUnlisten = createSpyInstance('Unlisten', DisposableFunction.prototype);
 
       const oldUnlisten = {key: watchedEl, unlisten: mockUnlisten};
 
       // tslint:disable-next-line:no-non-null-assertion
       const unlisten = locator['startWatch_'](watchedEl, oldUnlisten, mockOnChange);
-      assert(unlisten).to.be(oldUnlisten);
+      assert(unlisten).to.equal(oldUnlisten);
       assert(mockOnChange).toNot.haveBeenCalled();
     });
   });

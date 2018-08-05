@@ -1,6 +1,8 @@
 import { VineImpl } from 'grapevine/export/main';
-import { assert, should } from 'gs-testing/export/main';
+import { assert, fshould, match, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
+import { createSpy, createSpyInstance, createSpyObject } from 'gs-testing/export/spy';
+import { DisposableFunction } from 'gs-tools/export/dispose';
 import { InstanceofType, NullableType } from 'gs-types/export';
 import { ResolvedDispatcherLocator, startWatch_ } from './dispatcher-locator';
 import { element } from './element-locator';
@@ -27,17 +29,19 @@ describe('locator.dispatcher', () => {
   describe('startWatch_', () => {
     should(`call onChange and return the correct unlisten if element exists`, () => {
       const el = document.createElement('div');
-      const mockListener = jasmine.createSpy('Listener');
+      const mockListener = createSpy('Listener');
       el.addEventListener(CUSTOM_EVENT_NAME, mockListener);
 
-      const mockOnChange = jasmine.createSpy('OnChange');
+      const mockOnChange = createSpy('OnChange');
 
       // tslint:disable-next-line:no-non-null-assertion
       const unlisten = startWatch_(el, null, mockOnChange)!;
 
-      assert(unlisten.key).to.be(el);
+      assert(unlisten.key).to.equal(el);
 
-      const dispatchFn = mockOnChange.calls.argsFor(0)[0];
+      const dispatcherMatcher = match.anyThat<(event: TestCustomEvent) => void>().beAFunction();
+      assert(mockOnChange).to.haveBeenCalledWith(dispatcherMatcher);
+      const dispatchFn = dispatcherMatcher.getLastMatch();
 
       const event = new TestCustomEvent();
       dispatchFn(event);
@@ -45,7 +49,7 @@ describe('locator.dispatcher', () => {
     });
 
     should(`call onChange and return null if element doesn't exist`, () => {
-      const mockOnChange = jasmine.createSpy('OnChange');
+      const mockOnChange = createSpy('OnChange');
 
       const unlisten = startWatch_(null, null, mockOnChange);
 
@@ -55,19 +59,21 @@ describe('locator.dispatcher', () => {
 
     should(`dispose the previous unlisten if exist`, () => {
       const el = document.createElement('div');
-      const mockListener = jasmine.createSpy('Listener');
+      const mockListener = createSpy('Listener');
       el.addEventListener(CUSTOM_EVENT_NAME, mockListener);
 
-      const mockOnChange = jasmine.createSpy('OnChange');
-      const mockPrevUnlisten = jasmine.createSpyObj('PrevUnlisten', ['dispose']);
+      const mockOnChange = createSpy('OnChange');
+      const mockPrevUnlisten = createSpyInstance('PrevUnlisten', DisposableFunction.prototype);
       const prevUnlisten = {key: document.createElement('div'), unlisten: mockPrevUnlisten};
 
       // tslint:disable-next-line:no-non-null-assertion
       const unlisten = startWatch_(el, prevUnlisten, mockOnChange)!;
 
-      assert(unlisten.key).to.be(el);
+      assert(unlisten.key).to.equal(el);
 
-      const dispatchFn = mockOnChange.calls.argsFor(0)[0];
+      const dispatcherMatcher = match.anyThat<(event: TestCustomEvent) => void>().beAFunction();
+      assert(mockOnChange).to.haveBeenCalledWith(dispatcherMatcher);
+      const dispatchFn = dispatcherMatcher.getLastMatch();
 
       const event = new TestCustomEvent();
       dispatchFn(event);
@@ -78,14 +84,14 @@ describe('locator.dispatcher', () => {
     should(`not call onChange if already bound to the same element`, () => {
       const el = document.createElement('div');
 
-      const mockOnChange = jasmine.createSpy('OnChange');
-      const mockPrevUnlisten = jasmine.createSpyObj('PrevUnlisten', ['dispose']);
+      const mockOnChange = createSpy('OnChange');
+      const mockPrevUnlisten = createSpyInstance('PrevUnlisten', DisposableFunction.prototype);
       const prevUnlisten = {key: el, unlisten: mockPrevUnlisten};
 
       // tslint:disable-next-line:no-non-null-assertion
       const unlisten = startWatch_(el, prevUnlisten, mockOnChange)!;
 
-      assert(unlisten).to.be(prevUnlisten);
+      assert(unlisten).to.equal(prevUnlisten);
       assert(mockOnChange).toNot.haveBeenCalled();
     });
   });
@@ -96,17 +102,21 @@ describe('locator.dispatcher', () => {
       const shadowRoot = root.attachShadow({mode: 'open'});
       shadowRoot.innerHTML = '<div></div>';
       const vine = Mocks.object<VineImpl>('vine');
-      const mockOnChange = jasmine.createSpy('OnChange');
+      const mockOnChange = createSpy('OnChange');
 
       // tslint:disable-next-line:no-non-null-assertion
       const watchedEl = shadowRoot.querySelector('div')!;
-      const mockListener = jasmine.createSpy('Listener');
+      const mockListener = createSpy('Listener');
       watchedEl.addEventListener(CUSTOM_EVENT_NAME, mockListener);
 
       locator.createWatcher().watch(vine, mockOnChange, shadowRoot);
 
+      const dispatcherMatcher = match.anyThat<(event: TestCustomEvent) => void>().beAFunction();
+      assert(mockOnChange).to.haveBeenCalledWith(dispatcherMatcher);
+      const dispatchFn = dispatcherMatcher.getLastMatch();
+
       const event = new TestCustomEvent();
-      mockOnChange.calls.argsFor(0)[0](event);
+      dispatchFn(event);
 
       assert(mockListener).to.haveBeenCalledWith(event);
     });
@@ -120,7 +130,7 @@ describe('locator.dispatcher', () => {
 
       // tslint:disable-next-line:no-non-null-assertion
       const watchedEl = shadowRoot.querySelector('div')!;
-      const mockListener = jasmine.createSpy('Listener');
+      const mockListener = createSpy('Listener');
       watchedEl.addEventListener(CUSTOM_EVENT_NAME, mockListener);
 
       // tslint:disable-next-line:no-non-null-assertion

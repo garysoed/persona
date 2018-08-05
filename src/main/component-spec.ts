@@ -38,9 +38,9 @@ export interface OnKeydownSpec {
  */
 export interface ComponentSpec {
   componentClass: new () => CustomElementCtrl;
+  keydownSpecs?: Iterable<OnKeydownSpec>;
   listeners?: Iterable<OnDomSpec>;
   renderers?: Iterable<RendererSpec>;
-  shadowMode?: 'open'|'closed';
   tag: string;
   template: string;
   watchers?: Iterable<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>;

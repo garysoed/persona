@@ -1,17 +1,19 @@
 import { VineImpl } from 'grapevine/export/main';
-import { assert, Match, should } from 'gs-testing/export/main';
+import { assert, match, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
+import { createSpy, Spy } from 'gs-testing/export/spy';
+import { spy } from 'gs-testing/src/spy/spy';
 import { DisposableFunction } from 'gs-tools/export/dispose';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { BaseListener } from './base-listener';
 
-const PROPERTY_KEY = 'propertyKey';
+const PROPERTY_KEY = 'method';
 
 /**
  * @test
  */
 class TestListener extends BaseListener {
-  constructor(private readonly listenImplSpy_: jasmine.Spy) {
+  constructor(private readonly listenImplSpy_: Spy) {
     super(PROPERTY_KEY);
   }
 
@@ -23,26 +25,42 @@ class TestListener extends BaseListener {
   }
 }
 
+/**
+ * @test
+ */
+class TestCtrl extends CustomElementCtrl {
+  [PROPERTY_KEY](event: CustomEvent, vine: VineImpl): void {
+    // noop
+  }
+
+  init(vine: VineImpl): void {
+    // Noop
+  }
+}
+
 describe('event.BaseListener', () => {
-  let mockListenImplSpy: jasmine.Spy;
+  let mockListenImplSpy: Spy;
   let listener: TestListener;
 
   beforeEach(() => {
-    mockListenImplSpy = jasmine.createSpy('ListenImplSpy');
+    mockListenImplSpy = createSpy('ListenImplSpy');
     listener = new TestListener(mockListenImplSpy);
   });
 
   describe('listen', () => {
     should(`call listenImpl correctly`, () => {
       const vine = Mocks.object<VineImpl>('vine');
-      const mockContext = jasmine.createSpyObj('Context', [PROPERTY_KEY]);
+      const mockContext = new TestCtrl();
+      const propertySpy = spy(mockContext, PROPERTY_KEY);
 
       listener.listen(vine, mockContext);
-      assert(mockListenImplSpy).to.haveBeenCalledWith(vine, mockContext, Match.any(Function));
+      const handlerMatch = match.anyThat<(event: Event) => void>().beAFunction();
+      assert(mockListenImplSpy).to
+          .haveBeenCalledWith(vine, mockContext, handlerMatch);
 
-      const event = Mocks.object('event');
-      mockListenImplSpy.calls.argsFor(0)[2](event);
-      assert(mockContext[PROPERTY_KEY]).to.haveBeenCalledWith(event, vine);
+      const event = Mocks.object<CustomEvent>('event');
+      handlerMatch.getLastMatch()(event);
+      assert(propertySpy).to.haveBeenCalledWith(event, vine);
     });
 
     should(`throw error if property is not a function`, () => {
@@ -50,7 +68,7 @@ describe('event.BaseListener', () => {
       const mockContext = jasmine.createSpyObj('Context', ['otherProperty']);
       assert(() => {
         listener.listen(vine, mockContext);
-      }).to.throwError(/Property/);
+      }).to.throwErrorWithMessage(/Property/);
     });
   });
 });
