@@ -7,7 +7,9 @@ import { Watcher } from '../watcher/watcher';
 /**
  * Locator spec that has been resolved.
  */
-export abstract class ResolvedLocator { }
+export abstract class ResolvedLocator {
+  readonly type: 'resolvedLocator' = 'resolvedLocator';
+}
 
 /**
  * Locator spec that has been resolved and can be used for rendering values into the DOM.

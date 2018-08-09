@@ -1,7 +1,6 @@
 import { instanceSourceId, instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
-import { Errors } from 'gs-tools/export/error';
 import { Parser } from 'gs-tools/export/parse';
 import { Type } from 'gs-types/export';
 import { ChainedWatcher, Unlisten } from '../watcher/chained-watcher';
