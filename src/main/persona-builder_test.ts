@@ -3,8 +3,10 @@ import { InstanceSourceProvider } from 'grapevine/src/node/instance-source-provi
 import { assert, match, should } from 'gs-testing/export/main';
 import { createSpyInstance, createSpyObject } from 'gs-testing/export/spy';
 import { ImmutableSet } from 'gs-tools/export/collect';
+import { __class, Annotations } from 'gs-tools/export/data';
 import { InstanceofType } from 'gs-types/export';
 import { element } from '../locator/element-locator';
+import { ComponentSpec } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { SHADOW_ROOT } from './custom-element-impl';
 import { PersonaBuilder } from './persona-builder';
@@ -19,37 +21,43 @@ class TestClass extends CustomElementCtrl {
 }
 
 describe('main.PersonaBuilder', () => {
+  let customElementsAnnotationsCache: Annotations<ComponentSpec>;
   let builder: PersonaBuilder;
 
   beforeEach(() => {
-    builder = new PersonaBuilder();
+    customElementsAnnotationsCache = Annotations.of<ComponentSpec>(Symbol('test'));
+    builder = new PersonaBuilder(customElementsAnnotationsCache);
   });
 
   describe('register', () => {
     should(`register the components correctly`, () => {
       const tag = 'tag';
-      const templateKey = 'templateKey';
+      const template = 'template';
       const mockCustomElementRegistry =
           createSpyObject<CustomElementRegistry>('CustomElementRegistry', ['define']);
       const vineBuilder = new VineBuilder();
+      const componentSpec: ComponentSpec = {
+        componentClass: TestClass,
+        keydownSpecs: ImmutableSet.of(),
+        listeners: ImmutableSet.of(),
+        renderers: ImmutableSet.of(),
+        tag,
+        template,
+        watchers: ImmutableSet.of(),
+      };
 
-      builder.register(
-          tag,
-          templateKey,
-          TestClass,
-          ImmutableSet.of(),
-          ImmutableSet.of(),
-          ImmutableSet.of(),
-          ImmutableSet.of(),
-          vineBuilder);
-      builder.build(mockCustomElementRegistry, vineBuilder.run(), []);
+      customElementsAnnotationsCache.forCtor(TestClass)
+          .attachValueToProperty(__class, componentSpec);
+
+      builder.register([TestClass], vineBuilder);
+      builder.build(mockCustomElementRegistry, vineBuilder.run());
 
       assert(mockCustomElementRegistry.define).to.haveBeenCalledWith(tag, match.anyThing());
     });
 
     should(`register the watchers correctly`, async () => {
       const tag = 'tag';
-      const templateKey = 'templateKey';
+      const template = 'template';
       const mockVineBuilder = createSpyInstance('VineBuilder', VineBuilder.prototype);
       const locator1 = element('section', InstanceofType(HTMLElement));
       const locator2 = element('a', InstanceofType(HTMLElement));
@@ -63,15 +71,20 @@ describe('main.PersonaBuilder', () => {
       const context = new TestClass();
       (context as any)[SHADOW_ROOT] = rootEl;
 
-      builder.register(
-          tag,
-          templateKey,
-          TestClass,
-          ImmutableSet.of(),
-          ImmutableSet.of(),
-          ImmutableSet.of(),
-          ImmutableSet.of([locator1, locator2]),
-          mockVineBuilder);
+      const componentSpec: ComponentSpec = {
+        componentClass: TestClass,
+        keydownSpecs: ImmutableSet.of(),
+        listeners: ImmutableSet.of(),
+        renderers: ImmutableSet.of(),
+        tag,
+        template,
+        watchers: ImmutableSet.of([locator1, locator2]),
+      };
+
+      customElementsAnnotationsCache.forCtor(TestClass)
+          .attachValueToProperty(__class, componentSpec);
+
+      builder.register([TestClass], mockVineBuilder);
 
       const providerMatcher = match.anyThat<InstanceSourceProvider<HTMLElement>>().beAFunction();
       assert(mockVineBuilder.sourceWithProvider).to
@@ -84,30 +97,35 @@ describe('main.PersonaBuilder', () => {
 
     should(`throw error if the tag is already registered`, () => {
       const tag = 'tag';
-      const templateKey = 'templateKey';
+      const template = 'template';
       const vineBuilder = new VineBuilder();
 
-      builder.register(
-          tag,
-          templateKey,
-          TestClass,
-          ImmutableSet.of(),
-          ImmutableSet.of(),
-          ImmutableSet.of(),
-          ImmutableSet.of(),
-          vineBuilder);
+      const componentSpec: ComponentSpec = {
+        componentClass: TestClass,
+        keydownSpecs: ImmutableSet.of(),
+        listeners: ImmutableSet.of(),
+        renderers: ImmutableSet.of(),
+        tag,
+        template,
+        watchers: ImmutableSet.of(),
+      };
+
+      customElementsAnnotationsCache.forCtor(TestClass)
+          .attachValueToProperty(__class, componentSpec);
+
+      builder.register([TestClass], vineBuilder);
 
       assert(() => {
-        builder.register(
-            tag,
-            templateKey,
-            TestClass,
-            ImmutableSet.of(),
-            ImmutableSet.of(),
-            ImmutableSet.of(),
-            ImmutableSet.of(),
-            vineBuilder);
+        builder.register([TestClass], vineBuilder);
       }).to.throwErrorWithMessage(/unregistered/);
+    });
+
+    should(`throw error if annotations does not exist`, () => {
+      const vineBuilder = new VineBuilder();
+
+      assert(() => {
+        builder.register([TestClass], vineBuilder);
+      }).to.throwErrorWithMessage(/Annotations for/);
     });
   });
 });

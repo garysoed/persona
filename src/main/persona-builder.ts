@@ -1,5 +1,6 @@
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
+import { __class, Annotations } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
 import { BaseListener } from '../event/base-listener';
 import { DomListener } from '../event/dom-listener';
@@ -48,10 +49,11 @@ function createCustomElementClass_(
 export class PersonaBuilder {
   private readonly componentSpecs_: Map<string, ComponentSpec> = new Map();
 
+  constructor(private readonly customElementAnnotationsCache_: Annotations<ComponentSpec>) { }
+
   build(
       customElementRegistry: CustomElementRegistry,
       vine: VineImpl,
-      _rootCtrls: (typeof CustomElementCtrl)[],
       shadowMode: 'open'|'closed' = 'closed'): void {
     for (const spec of this.componentSpecs_.values()) {
       const rendererLocators = ImmutableSet.of<RendererSpec>(spec.renderers || [])
@@ -84,38 +86,40 @@ export class PersonaBuilder {
   }
 
   register(
-      tag: string,
-      template: string,
-      componentClass: new () => CustomElementCtrl,
-      keydownSpecs: ImmutableSet<OnKeydownSpec>,
-      listeners: ImmutableSet<OnDomSpec>,
-      renderers: ImmutableSet<RendererSpec>,
-      watchers: ImmutableSet<
-          ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>,
+      rootCtrls: (typeof CustomElementCtrl)[],
       vineBuilder: VineBuilder): void {
-    if (this.componentSpecs_.has(tag)) {
-      throw Errors.assert(`Component with tag ${tag}`).shouldBe('unregistered').butNot();
+    for (const ctrl of rootCtrls) {
+      const values = this.customElementAnnotationsCache_
+          .forCtor(ctrl)
+          .getAttachedValues()
+          .get(__class);
+      if (!values) {
+        throw Errors.assert(`Annotations for ${ctrl.name}`).shouldExist().butNot();
+      }
+
+      const componentSpec = [...values][0];
+      if (!componentSpec) {
+        throw Errors.assert(`Annotations for ${ctrl.name}`).shouldExist().butNot();
+      }
+
+      if (this.componentSpecs_.has(componentSpec.tag)) {
+        throw Errors.assert(`Component with tag ${componentSpec.tag}`)
+            .shouldBe('unregistered')
+            .butNot();
+      }
+
+      this.componentSpecs_.set(componentSpec.tag, componentSpec);
+
+      for (const watcher of componentSpec.watchers || []) {
+        vineBuilder.sourceWithProvider(watcher.getReadingId(), async context => {
+          const shadowRoot = (context as any)[SHADOW_ROOT];
+          if (!shadowRoot) {
+            throw Errors.assert(`Shadow root of ${context}`).shouldExist().butNot();
+          }
+
+          return watcher.getValue(shadowRoot);
+        });
+      }
     }
-
-    for (const watcher of watchers || []) {
-      vineBuilder.sourceWithProvider(watcher.getReadingId(), async context => {
-        const shadowRoot = (context as any)[SHADOW_ROOT];
-        if (!shadowRoot) {
-          throw Errors.assert(`Shadow root of ${context}`).shouldExist().butNot();
-        }
-
-        return watcher.getValue(shadowRoot);
-      });
-    }
-
-    this.componentSpecs_.set(tag, {
-      componentClass,
-      keydownSpecs,
-      listeners,
-      renderers,
-      tag,
-      template,
-      watchers,
-    });
   }
 }

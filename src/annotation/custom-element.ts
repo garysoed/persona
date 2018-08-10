@@ -1,9 +1,9 @@
 import { VineBuilder } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
-import { Annotations } from 'gs-tools/export/data';
+import { __class, Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
-import { OnDomSpec, OnKeydownSpec, RendererSpec } from '../main/component-spec';
+import { ComponentSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from '../main/component-spec';
 import { PersonaBuilder } from '../main/persona-builder';
 
 /**
@@ -20,11 +20,10 @@ interface Spec {
 export type CustomElement = (spec: Spec) => ClassDecorator;
 
 export function customElementFactory(
-    personaBuilder: PersonaBuilder,
-    vineBuilder: VineBuilder,
     onDomAnnotationsCache: Annotations<OnDomSpec>,
     onKeydownAnnotationsCache: Annotations<OnKeydownSpec>,
-    rendererAnnotationsCache: Annotations<RendererSpec>): CustomElement {
+    rendererAnnotationsCache: Annotations<RendererSpec>,
+    customElementAnnotationsCache: Annotations<ComponentSpec>): CustomElement {
   return (spec: Spec) => {
     return (target: Function) => {
       const rendererSpecs = rendererAnnotationsCache
@@ -46,15 +45,15 @@ export function customElementFactory(
             return prevSet.addAll(specs);
           }, ImmutableSet.of<OnDomSpec>());
 
-      personaBuilder.register(
-          spec.tag,
-          spec.template,
-          target as any,
-          keydownSpecs,
-          listeners,
-          rendererSpecs,
-          ImmutableSet.of(spec.watch || []),
-          vineBuilder);
+      customElementAnnotationsCache.forCtor(target).attachValueToProperty(__class, {
+        componentClass: target as any,
+        keydownSpecs,
+        listeners,
+        renderers: rendererSpecs,
+        tag: spec.tag,
+        template: spec.template,
+        watchers: ImmutableSet.of(spec.watch || []),
+      });
     };
   };
 }
