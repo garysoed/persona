@@ -1,10 +1,8 @@
-import { VineBuilder } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { ComponentSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from '../main/component-spec';
-import { PersonaBuilder } from '../main/persona-builder';
 
 /**
  * Specs that define a custom element.

@@ -5,17 +5,9 @@ import { StringType } from 'gs-types/export';
 import { ResolvedLocator, ResolvedRenderableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { LocatorPathResolver, UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
-export class UnresolvedTextContentLocator<E extends HTMLElement|null>
-    extends UnresolvedRenderableLocator<string> {
-  constructor(private readonly elementLocator_: UnresolvedWatchableLocator<E>) {
-    super();
-  }
-
-  resolve(resolver: LocatorPathResolver): ResolvedRenderableLocator<string> {
-    return new ResolvedTextContentLocator(this.elementLocator_.resolve(resolver));
-  }
-}
-
+/**
+ * @internal
+ */
 export class ResolvedTextContentLocator<E extends HTMLElement|null>
     extends ResolvedRenderableLocator<string> {
   constructor(
@@ -34,11 +26,25 @@ export class ResolvedTextContentLocator<E extends HTMLElement|null>
   }
 }
 
+/**
+ * @internal
+ */
+export class UnresolvedTextContentLocator<E extends HTMLElement|null>
+    extends UnresolvedRenderableLocator<string> {
+  constructor(private readonly elementLocator_: UnresolvedWatchableLocator<E>) {
+    super();
+  }
+
+  resolve(resolver: LocatorPathResolver): ResolvedRenderableLocator<string> {
+    return new ResolvedTextContentLocator(this.elementLocator_.resolve(resolver));
+  }
+}
+
 export type TextContentLocator<E extends HTMLElement|null> =
     ResolvedTextContentLocator<E>|UnresolvedTextContentLocator<E>;
 
 /**
- * Creates selector that selects an inner text of an element.
+ * Creates selector that selects a text content of an element.
  */
 export function textContent<E extends HTMLElement|null>(
     elementLocator: ResolvedWatchableLocator<E>): ResolvedTextContentLocator<E>;

@@ -1,7 +1,7 @@
 import { VineImpl } from 'grapevine/export/main';
-import { assert, fshould, match, should } from 'gs-testing/export/main';
+import { assert, match, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
-import { createSpy, createSpyInstance, createSpyObject } from 'gs-testing/export/spy';
+import { createSpy, createSpyInstance } from 'gs-testing/export/spy';
 import { DisposableFunction } from 'gs-tools/export/dispose';
 import { InstanceofType, NullableType } from 'gs-types/export';
 import { ResolvedDispatcherLocator, startWatch_ } from './dispatcher-locator';
