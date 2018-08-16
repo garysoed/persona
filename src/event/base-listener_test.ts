@@ -13,7 +13,7 @@ const PROPERTY_KEY = 'method';
  * @test
  */
 class TestListener extends BaseListener {
-  constructor(private readonly listenImplSpy_: Spy) {
+  constructor(private readonly listenImplSpy_: Spy<DisposableFunction>) {
     super(PROPERTY_KEY);
   }
 
@@ -39,11 +39,11 @@ class TestCtrl extends CustomElementCtrl {
 }
 
 describe('event.BaseListener', () => {
-  let mockListenImplSpy: Spy;
+  let mockListenImplSpy: Spy<DisposableFunction>;
   let listener: TestListener;
 
   beforeEach(() => {
-    mockListenImplSpy = createSpy('ListenImplSpy');
+    mockListenImplSpy = createSpy<DisposableFunction>('ListenImplSpy');
     listener = new TestListener(mockListenImplSpy);
   });
 

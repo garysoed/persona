@@ -3,12 +3,12 @@ import { assert, match, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
 import { createSpy, createSpyInstance, fake, Spy, SpyObj } from 'gs-testing/export/spy';
 import { DisposableFunction } from 'gs-tools/export/dispose';
-import { ChainedWatcher } from './chained-watcher';
+import { ChainedWatcher, Unlisten } from './chained-watcher';
 import { Handler, Watcher } from './watcher';
 
 describe('watcher.ChainedWatcher', () => {
   let mockSourceWatcher: SpyObj<Watcher<string>>;
-  let mockStartWatchFn: Spy;
+  let mockStartWatchFn: Spy<Unlisten>;
   let watcher: ChainedWatcher<string, number>;
 
   beforeEach(() => {
@@ -56,7 +56,8 @@ describe('watcher.ChainedWatcher', () => {
 
       const mockSourceUnlisten = createSpyInstance('SourceUnlisten', DisposableFunction.prototype);
       fake(mockSourceWatcher.watch).always().return(mockSourceUnlisten);
-      fake(mockStartWatchFn).always().return(null);
+      fake(mockStartWatchFn).always()
+          .return({key: 'key', unlisten: DisposableFunction.of(() => undefined)});
 
       const unwatch = watcher['startWatching_'](vine, onChange, root);
       unwatch.dispose();
