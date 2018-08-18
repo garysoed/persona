@@ -47,7 +47,7 @@ export type StyleLocator<S extends keyof CSSStyleDeclaration, E extends HTMLElem
     ResolvedStyleLocator<S, E>|UnresolvedStyleLocator<S, E>;
 
 /**
- * Creates selector that selects the event dispatch function of an element.
+ * Creates selector that selects the given style of an element.
  */
 export function style<E extends HTMLElement|null, S extends keyof CSSStyleDeclaration>(
     elementLocator: UnresolvedWatchableLocator<E>,
