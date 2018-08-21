@@ -12,7 +12,8 @@ import { UnresolvedRenderableWatchableLocator, UnresolvedWatchableLocator } from
  * A subclass of MutationRecord.
  */
 interface Record {
-  attributeName: string | null;
+  attributeName: string|null;
+  oldValue: string|null;
   target: Node;
 }
 
@@ -24,10 +25,11 @@ function generateVineId(elementLocator: ResolvedLocator, attrName: string):
 /**
  * @internal
  */
-export class ResolvedAttributeLocator<T> extends ResolvedRenderableWatchableLocator<T> {
+export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
+    extends ResolvedRenderableWatchableLocator<T> {
 
   constructor(
-      private readonly elementLocator_: ResolvedWatchableLocator<HTMLElement|null>,
+      private readonly elementLocator_: ResolvedWatchableLocator<E>,
       private readonly attrName_: string,
       private readonly defaultValue_: T,
       private readonly parser_: Parser<T>,
@@ -38,10 +40,10 @@ export class ResolvedAttributeLocator<T> extends ResolvedRenderableWatchableLoca
   }
 
   createWatcher(): Watcher<T> {
-    return new ChainedWatcher<HTMLElement|null, T>(
+    return new ChainedWatcher<E, T>(
         this.elementLocator_.createWatcher(),
         (
-            element: HTMLElement|null,
+            element: E,
             prevUnlisten: Unlisten|null,
             _: VineImpl,
             onChange: Handler<T>) => this.startWatch_(element, prevUnlisten, onChange));
@@ -64,7 +66,7 @@ export class ResolvedAttributeLocator<T> extends ResolvedRenderableWatchableLoca
   }
 
   private onMutation_(records: Record[], onChange: Handler<T>): void {
-    for (const {attributeName, target} of records) {
+    for (const {attributeName, oldValue, target} of records) {
       if (!attributeName) {
         continue;
       }
@@ -73,7 +75,13 @@ export class ResolvedAttributeLocator<T> extends ResolvedRenderableWatchableLoca
         continue;
       }
 
+      const oldValueString = oldValue;
       const unparsedValue = target.getAttribute(attributeName);
+
+      if (oldValueString === unparsedValue) {
+        continue;
+      }
+
       const parsedValue = this.parser_.parse(unparsedValue);
       if (this.getType().check(parsedValue)) {
         onChange(parsedValue);
@@ -93,7 +101,7 @@ export class ResolvedAttributeLocator<T> extends ResolvedRenderableWatchableLoca
   }
 
   private startWatch_(
-      element: HTMLElement|null,
+      element: E,
       prevUnlisten: Unlisten|null,
       onChange: Handler<T>): Unlisten|null {
     // Check if already listening. If so, bail out.
@@ -113,11 +121,13 @@ export class ResolvedAttributeLocator<T> extends ResolvedRenderableWatchableLoca
     }
 
     const mutationObserver = new MutationObserver(records => this.onMutation_(records, onChange));
-    mutationObserver.observe(element, {attributeFilter: [this.attrName_], attributes: true});
-    this.onMutation_([{attributeName: this.attrName_, target: element}], onChange);
+    mutationObserver.observe(
+        element!,
+        {attributeFilter: [this.attrName_], attributes: true, attributeOldValue: true});
+    this.onMutation_([{attributeName: this.attrName_, oldValue: null, target: element!}], onChange);
 
     return {
-      key: element,
+      key: element!,
       unlisten: DisposableFunction.of(() => {
         mutationObserver.disconnect();
       }),
@@ -132,10 +142,10 @@ export class ResolvedAttributeLocator<T> extends ResolvedRenderableWatchableLoca
 /**
  * @internal
  */
-export class UnresolvedAttributeLocator<T>
+export class UnresolvedAttributeLocator<T, E extends HTMLElement|null>
     extends UnresolvedRenderableWatchableLocator<T> {
   constructor(
-      private readonly elementLocator_: UnresolvedWatchableLocator<HTMLElement|null>,
+      private readonly elementLocator_: UnresolvedWatchableLocator<E>,
       private readonly attrName_: string,
       private readonly defaultValue_: T,
       private readonly parser_: Parser<T>,
@@ -143,7 +153,7 @@ export class UnresolvedAttributeLocator<T>
     super();
   }
 
-  resolve(resolver: <S>(path: string, type: Type<S>) => S): ResolvedAttributeLocator<T> {
+  resolve(resolver: <S>(path: string, type: Type<S>) => S): ResolvedAttributeLocator<T, E> {
     return new ResolvedAttributeLocator(
         this.elementLocator_.resolve(resolver),
         this.attrName_,
@@ -157,30 +167,30 @@ export class UnresolvedAttributeLocator<T>
   }
 }
 
-type AttributeLocator<T> = ResolvedAttributeLocator<T> | UnresolvedAttributeLocator<T>;
+type AttributeLocator<T, E extends HTMLElement|null> =
+    ResolvedAttributeLocator<T, E> | UnresolvedAttributeLocator<T, E>;
 
 /**
  * Creates selector that selects an element.
  */
-export function attribute<T>(
-    elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
+export function attribute<T, E extends HTMLElement|null>(
+    elementLocator: ResolvedWatchableLocator<E>,
     attrName: string,
     parser: Parser<T>,
     type: Type<T>,
-    defaultValue: T): ResolvedAttributeLocator<T>;
-export function attribute<T>(
-    elementLocator: UnresolvedWatchableLocator<HTMLElement|null>,
+    defaultValue: T): ResolvedAttributeLocator<T, E>;
+export function attribute<T, E extends HTMLElement|null>(
+    elementLocator: UnresolvedWatchableLocator<E>,
     attrName: string,
     parser: Parser<T>,
     type: Type<T>,
-    defaultValue: T): UnresolvedAttributeLocator<T>;
-export function attribute<T>(
-    elementLocator:
-        ResolvedWatchableLocator<HTMLElement|null>|UnresolvedWatchableLocator<HTMLElement|null>,
+    defaultValue: T): UnresolvedAttributeLocator<T, E>;
+export function attribute<T, E extends HTMLElement|null>(
+    elementLocator: ResolvedWatchableLocator<E>|UnresolvedWatchableLocator<E>,
     attrName: string,
     parser: Parser<T>,
     type: Type<T>,
-    defaultValue: T): AttributeLocator<T> {
+    defaultValue: T): AttributeLocator<T, E> {
   if (elementLocator instanceof ResolvedLocator) {
     return new ResolvedAttributeLocator(elementLocator, attrName, defaultValue, parser, type);
   } else {

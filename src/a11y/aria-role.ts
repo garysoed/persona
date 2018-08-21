@@ -3,4 +3,5 @@
  */
 export enum AriaRole {
   BUTTON = 'button',
+  PRESENTATION = 'presentation',
 }

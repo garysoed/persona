@@ -13,7 +13,7 @@ describe('locator.AttributeLocator', () => {
   const ATTR_NAME = 'attr';
   const DEFAULT_VALUE = 123;
   const elementLocator = element('div', NullableType(InstanceofType(HTMLElement)));
-  let locator: ResolvedAttributeLocator<number>;
+  let locator: ResolvedAttributeLocator<number, HTMLElement|null>;
 
   beforeEach(() => {
     locator = attribute(elementLocator, ATTR_NAME, IntegerParser, NumberType, DEFAULT_VALUE);

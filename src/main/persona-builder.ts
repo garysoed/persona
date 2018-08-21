@@ -111,6 +111,10 @@ export class PersonaBuilder {
       this.componentSpecs_.set(componentSpec.tag, componentSpec);
 
       for (const watcher of componentSpec.watchers || []) {
+        if (vineBuilder.isRegistered(watcher.getReadingId())) {
+          continue;
+        }
+
         vineBuilder.sourceWithProvider(watcher.getReadingId(), async context => {
           const shadowRoot = (context as any)[SHADOW_ROOT];
           if (!shadowRoot) {
