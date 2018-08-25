@@ -114,7 +114,7 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
     }
 
     // If there is no element, bail out quickly.
-    if (!element) {
+    if (!(element instanceof HTMLElement)) {
       onChange(this.defaultValue_);
 
       return null;
@@ -122,12 +122,12 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
 
     const mutationObserver = new MutationObserver(records => this.onMutation_(records, onChange));
     mutationObserver.observe(
-        element!,
+        element,
         {attributeFilter: [this.attrName_], attributes: true, attributeOldValue: true});
-    this.onMutation_([{attributeName: this.attrName_, oldValue: null, target: element!}], onChange);
+    this.onMutation_([{attributeName: this.attrName_, oldValue: null, target: element}], onChange);
 
     return {
-      key: element!,
+      key: element,
       unlisten: DisposableFunction.of(() => {
         mutationObserver.disconnect();
       }),

@@ -1,4 +1,5 @@
-import { VineBuilder, VineImpl } from 'grapevine/export/main';
+import { VineOut } from 'grapevine/export/annotation';
+import { VineApp, VineBuilder, VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
@@ -7,6 +8,7 @@ import { DomListener } from '../event/dom-listener';
 import { KeydownListener } from '../event/keydown-listener';
 import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { ComponentSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
+import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl, SHADOW_ROOT } from './custom-element-impl';
 
@@ -16,18 +18,21 @@ function createCustomElementClass_(
     rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
     templateStr: string,
     watchers: ImmutableSet<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>,
-    vine: VineImpl,
-    shadowMode: 'open'|'closed' = 'closed'): typeof HTMLElement {
-  return class extends HTMLElement {
-    private readonly customElementImpl_: CustomElementImpl = new CustomElementImpl(
+    vine: VineImpl): CustomElementClass {
+  const customElementImplFactory = (element: HTMLElement, shadowMode: 'open'|'closed') => {
+    return new CustomElementImpl(
         componentClass,
         listeners,
-        this,
+        element,
         rendererLocators,
         templateStr,
         watchers,
         vine,
         shadowMode);
+  };
+  const htmlClass = class extends HTMLElement {
+    private readonly customElementImpl_: CustomElementImpl =
+        customElementImplFactory(this, 'closed');
 
     constructor() {
       super();
@@ -41,6 +46,9 @@ function createCustomElementClass_(
       this.customElementImpl_.disconnectedCallback();
     }
   };
+
+  // tslint:disable-next-line:prefer-object-spread
+  return Object.assign(htmlClass, {[__customElementImplFactory]: customElementImplFactory});
 }
 
 /**
@@ -53,8 +61,7 @@ export class PersonaBuilder {
 
   build(
       customElementRegistry: CustomElementRegistry,
-      vine: VineImpl,
-      shadowMode: 'open'|'closed' = 'closed'): void {
+      vine: VineImpl): void {
     for (const spec of this.componentSpecs_.values()) {
       const rendererLocators = ImmutableSet.of<RendererSpec>(spec.renderers || [])
           .mapItem(renderer => renderer.locator);
@@ -79,15 +86,15 @@ export class PersonaBuilder {
           rendererLocators,
           template,
           ImmutableSet.of(spec.watchers || []),
-          vine,
-          shadowMode);
+          vine);
+
       customElementRegistry.define(spec.tag, elementClass);
     }
   }
 
   register(
       rootCtrls: (typeof CustomElementCtrl)[],
-      vineBuilder: VineBuilder): void {
+      {builder, vineOut}: VineApp): void {
     for (const ctrl of rootCtrls) {
       const values = this.customElementAnnotationsCache_
           .forCtor(ctrl)
@@ -111,11 +118,11 @@ export class PersonaBuilder {
       this.componentSpecs_.set(componentSpec.tag, componentSpec);
 
       for (const watcher of componentSpec.watchers || []) {
-        if (vineBuilder.isRegistered(watcher.getReadingId())) {
+        if (builder.isRegistered(watcher.getReadingId())) {
           continue;
         }
 
-        vineBuilder.sourceWithProvider(watcher.getReadingId(), async context => {
+        builder.sourceWithProvider(watcher.getReadingId(), async context => {
           const shadowRoot = (context as any)[SHADOW_ROOT];
           if (!shadowRoot) {
             throw Errors.assert(`Shadow root of ${context}`).shouldExist().butNot();
@@ -123,6 +130,10 @@ export class PersonaBuilder {
 
           return watcher.getValue(shadowRoot);
         });
+      }
+
+      for (const {descriptor, locator, propertyKey, target} of componentSpec.renderers || []) {
+        vineOut(locator.getWritingId())(target, propertyKey, descriptor);
       }
     }
   }

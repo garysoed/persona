@@ -27,7 +27,7 @@ const apps = new Map<string, PersonaApp>();
  */
 export function getOrRegisterApp(
     appName: string,
-    {builder: vineBuilder, vineOut}: VineApp): PersonaApp {
+    vineApp: VineApp): PersonaApp {
   const createdApp = apps.get(appName);
   if (createdApp) {
     return createdApp;
@@ -46,10 +46,12 @@ export function getOrRegisterApp(
         onDomAnnotationsCache,
         onKeydownAnnotationsCache,
         renderAnnotationsCache,
-        customElementAnnotationsCache),
+        customElementAnnotationsCache,
+        personaBuilder,
+        vineApp),
     onDom: onDomFactory(onDomAnnotationsCache),
     onKeydown: onKeydownFactory(onKeydownAnnotationsCache),
-    render: renderFactory(vineOut, renderAnnotationsCache),
+    render: renderFactory(renderAnnotationsCache),
   };
   apps.set(appName, newApp);
 

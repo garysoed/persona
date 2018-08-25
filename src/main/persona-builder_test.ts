@@ -1,10 +1,13 @@
-import { VineBuilder } from 'grapevine/export/main';
+import { InstanceStreamId } from 'grapevine/export/component';
+import { VineApp, VineBuilder } from 'grapevine/export/main';
 import { InstanceSourceProvider } from 'grapevine/src/node/instance-source-provider';
 import { assert, match, should } from 'gs-testing/export/main';
-import { createSpyInstance, createSpyObject } from 'gs-testing/export/spy';
+import { Mocks } from 'gs-testing/export/mock';
+import { createSpy, createSpyInstance, createSpyObject, fake, SpyObj } from 'gs-testing/export/spy';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { InstanceofType } from 'gs-types/export';
+import { classlist } from '../locator/classlist-locator';
 import { element } from '../locator/element-locator';
 import { ComponentSpec } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
@@ -30,6 +33,14 @@ describe('main.PersonaBuilder', () => {
   });
 
   describe('register', () => {
+    let mockVine: VineApp;
+
+    beforeEach(() => {
+      const mockVineBuilder = createSpyInstance('VineBuilder', VineBuilder.prototype);
+      const mockVineOut = createSpy<MethodDecorator, [InstanceStreamId<unknown>]>('VineOut');
+      mockVine = {builder: mockVineBuilder, vineOut: mockVineOut} as any;
+    });
+
     should(`register the components correctly`, () => {
       const tag = 'tag';
       const template = 'template';
@@ -49,7 +60,7 @@ describe('main.PersonaBuilder', () => {
       customElementsAnnotationsCache.forCtor(TestClass)
           .attachValueToProperty(__class, componentSpec);
 
-      builder.register([TestClass], vineBuilder);
+      builder.register([TestClass], {builder: vineBuilder, vineOut: createSpy('VineOut')} as any);
       builder.build(mockCustomElementRegistry, vineBuilder.run());
 
       assert(mockCustomElementRegistry.define).to.haveBeenCalledWith(tag, match.anyThing());
@@ -84,7 +95,9 @@ describe('main.PersonaBuilder', () => {
       customElementsAnnotationsCache.forCtor(TestClass)
           .attachValueToProperty(__class, componentSpec);
 
-      builder.register([TestClass], mockVineBuilder);
+      builder.register(
+          [TestClass],
+          {builder: mockVineBuilder, vineOut: createSpy('vineOut')} as any);
 
       const providerMatcher = match.anyThat<InstanceSourceProvider<HTMLElement>>().beAFunction();
       assert(mockVineBuilder.sourceWithProvider).to
@@ -93,6 +106,75 @@ describe('main.PersonaBuilder', () => {
       assert(mockVineBuilder.sourceWithProvider)
           .to.haveBeenCalledWith(locator2.getReadingId(), providerMatcher);
       assert(await providerMatcher.getLastMatch()(context)).to.equal(anchorEl);
+    });
+
+    should(`register the renderers correctly`, async () => {
+      const tag = 'tag';
+      const template = 'template';
+      const mockVineBuilder = createSpyInstance('VineBuilder', VineBuilder.prototype);
+      const locator1 = classlist(element('section', InstanceofType(HTMLElement)));
+      const locator2 = classlist(element('a', InstanceofType(HTMLElement)));
+
+      const descriptor1 = Mocks.object('descriptor1');
+      const propertyKey1 = 'propertyKey1';
+      const target1 = Mocks.object('target1');
+      const renderer1 = {
+        descriptor: descriptor1,
+        locator: locator1,
+        propertyKey: propertyKey1,
+        target: target1,
+      };
+      // TODO: Make this easier.
+      const mockDecorator1 = createSpy<
+          TypedPropertyDescriptor<any>|void,
+          [Object, string|symbol, TypedPropertyDescriptor<any>]>('decorator1');
+
+      const descriptor2 = Mocks.object('descriptor2');
+      const propertyKey2 = 'propertyKey2';
+      const target2 = Mocks.object('target2');
+      const renderer2 = {
+        descriptor: descriptor2,
+        locator: locator2,
+        propertyKey: propertyKey2,
+        target: target2,
+      };
+      const mockDecorator2 = createSpy<
+          TypedPropertyDescriptor<any>|void,
+          [Object, string|symbol, TypedPropertyDescriptor<any>]>('decorator2');
+
+      const mockVineOut = createSpy<MethodDecorator, [InstanceStreamId<unknown>]>('vineOut');
+      fake(mockVineOut)
+          .when(locator1.getWritingId()).return(mockDecorator1)
+          .when(locator2.getWritingId()).return(mockDecorator2);
+
+      const anchorEl = document.createElement('a');
+      const sectionEl = document.createElement('section');
+      const rootEl = document.createElement('div');
+      rootEl.appendChild(anchorEl);
+      rootEl.appendChild(sectionEl);
+
+      const context = new TestClass();
+      (context as any)[SHADOW_ROOT] = rootEl;
+
+      const componentSpec: ComponentSpec = {
+        componentClass: TestClass,
+        keydownSpecs: ImmutableSet.of(),
+        listeners: ImmutableSet.of(),
+        renderers: ImmutableSet.of([renderer1, renderer2]),
+        tag,
+        template,
+        watchers: ImmutableSet.of(),
+      };
+
+      customElementsAnnotationsCache.forCtor(TestClass)
+          .attachValueToProperty(__class, componentSpec);
+
+      builder.register(
+          [TestClass],
+          {builder: mockVineBuilder, vineOut: mockVineOut} as any);
+
+      assert(mockDecorator1).to.haveBeenCalledWith(target1, propertyKey1, descriptor1);
+      assert(mockDecorator2).to.haveBeenCalledWith(target2, propertyKey2, descriptor2);
     });
 
     should(`throw error if the tag is already registered`, () => {
@@ -113,10 +195,12 @@ describe('main.PersonaBuilder', () => {
       customElementsAnnotationsCache.forCtor(TestClass)
           .attachValueToProperty(__class, componentSpec);
 
-      builder.register([TestClass], vineBuilder);
+      const vineApp: any = {builder: vineBuilder, vineOut: createSpy('VineOut')};
+
+      builder.register([TestClass], vineApp);
 
       assert(() => {
-        builder.register([TestClass], vineBuilder);
+        builder.register([TestClass], vineApp);
       }).to.throwErrorWithMessage(/unregistered/);
     });
 
@@ -124,7 +208,7 @@ describe('main.PersonaBuilder', () => {
       const vineBuilder = new VineBuilder();
 
       assert(() => {
-        builder.register([TestClass], vineBuilder);
+        builder.register([TestClass], {builder: vineBuilder, vineOut: createSpy('VineOut')} as any);
       }).to.throwErrorWithMessage(/Annotations for/);
     });
   });

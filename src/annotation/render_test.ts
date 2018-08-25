@@ -50,8 +50,6 @@ class TestClass extends CustomElementCtrl {
   }
 }
 
-personaBuilder.register([TestClass], vineBuilder);
-
 // Runs persona and grapevine.
 const vine = vineBuilder.run();
 personaBuilder.build(window.customElements, vine);
