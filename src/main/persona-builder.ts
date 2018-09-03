@@ -60,6 +60,7 @@ export class PersonaBuilder {
   constructor(private readonly customElementAnnotationsCache_: Annotations<ComponentSpec>) { }
 
   build(
+      rootCtrls: (typeof CustomElementCtrl)[],
       customElementRegistry: CustomElementRegistry,
       vine: VineImpl): void {
     for (const spec of this.componentSpecs_.values()) {
@@ -132,8 +133,8 @@ export class PersonaBuilder {
         });
       }
 
-      for (const {descriptor, locator, propertyKey, target} of componentSpec.renderers || []) {
-        vineOut(locator.getWritingId())(target, propertyKey, descriptor);
+      for (const {locator, propertyKey, target} of componentSpec.renderers || []) {
+        vineOut(locator.getWritingId())(target, propertyKey);
       }
     }
   }

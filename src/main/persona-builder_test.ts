@@ -61,7 +61,7 @@ describe('main.PersonaBuilder', () => {
           .attachValueToProperty(__class, componentSpec);
 
       builder.register([TestClass], {builder: vineBuilder, vineOut: createSpy('VineOut')} as any);
-      builder.build(mockCustomElementRegistry, vineBuilder.run());
+      builder.build([TestClass], mockCustomElementRegistry, vineBuilder.run());
 
       assert(mockCustomElementRegistry.define).to.haveBeenCalledWith(tag, match.anyThing());
     });
@@ -125,9 +125,7 @@ describe('main.PersonaBuilder', () => {
         target: target1,
       };
       // TODO: Make this easier.
-      const mockDecorator1 = createSpy<
-          TypedPropertyDescriptor<any>|void,
-          [Object, string|symbol, TypedPropertyDescriptor<any>]>('decorator1');
+      const mockDecorator1 = createSpy<void, [Object, string|symbol]>('decorator1');
 
       const descriptor2 = Mocks.object('descriptor2');
       const propertyKey2 = 'propertyKey2';
@@ -138,9 +136,7 @@ describe('main.PersonaBuilder', () => {
         propertyKey: propertyKey2,
         target: target2,
       };
-      const mockDecorator2 = createSpy<
-          TypedPropertyDescriptor<any>|void,
-          [Object, string|symbol, TypedPropertyDescriptor<any>]>('decorator2');
+      const mockDecorator2 = createSpy<void, [Object, string|symbol]>('decorator2');
 
       const mockVineOut = createSpy<MethodDecorator, [InstanceStreamId<unknown>]>('vineOut');
       fake(mockVineOut)
@@ -173,8 +169,8 @@ describe('main.PersonaBuilder', () => {
           [TestClass],
           {builder: mockVineBuilder, vineOut: mockVineOut} as any);
 
-      assert(mockDecorator1).to.haveBeenCalledWith(target1, propertyKey1, descriptor1);
-      assert(mockDecorator2).to.haveBeenCalledWith(target2, propertyKey2, descriptor2);
+      assert(mockDecorator1).to.haveBeenCalledWith(target1, propertyKey1);
+      assert(mockDecorator2).to.haveBeenCalledWith(target2, propertyKey2);
     });
 
     should(`throw error if the tag is already registered`, () => {

@@ -20,13 +20,9 @@ vineBuilder.source($testSource, 2);
 
 const $ = resolveLocators({
   host: {
-    attr: attribute(
-        shadowHost,
-        'attr',
-        IntegerParser,
-        NullableType(NumberType),
-        123),
-    },
+    attr: attribute(shadowHost, 'attr', IntegerParser, NullableType(NumberType), 0),
+    attr2: attribute(shadowHost, 'attr2', IntegerParser, NullableType(NumberType), 0),
+  },
 });
 
 /**
@@ -40,6 +36,8 @@ const $ = resolveLocators({
 })
 // tslint:disable-next-line:no-unused-variable
 class TestClass extends CustomElementCtrl {
+  @render($.host.attr2) readonly attr2: number = 456;
+
   init(): void {
     // noop
   }
@@ -52,7 +50,7 @@ class TestClass extends CustomElementCtrl {
 
 // Runs persona and grapevine.
 const vine = vineBuilder.run();
-personaBuilder.build(window.customElements, vine);
+personaBuilder.build([TestClass], window.customElements, vine);
 
 describe('annotation.render', () => {
   should(`update the element correctly`, async () => {
@@ -66,5 +64,6 @@ describe('annotation.render', () => {
     vine.setValue($testSource, 123);
 
     await retryUntil(() => testElement.getAttribute('attr')).to.equal('123');
+    await retryUntil(() => testElement.getAttribute('attr2')).to.equal('456');
   });
 });

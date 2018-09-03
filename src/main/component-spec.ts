@@ -7,7 +7,6 @@ import { CustomElementCtrl } from './custom-element-ctrl';
  * Specifications for a renderer.
  */
 export interface RendererSpec {
-  descriptor: TypedPropertyDescriptor<any>;
   locator: ResolvedRenderableLocator<any>;
   propertyKey: string|symbol;
   target: Object;
