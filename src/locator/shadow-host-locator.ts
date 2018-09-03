@@ -1,5 +1,6 @@
 import { instanceSourceId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
+import { cache } from 'gs-tools/export/data';
 import { DisposableFunction } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/src/error';
 import { InstanceofType } from 'gs-types/export';
@@ -28,6 +29,7 @@ class ShadowHostLocatorImpl extends ResolvedWatchableLocator<HTMLElement|null> {
     super(instanceSourceId('.host', InstanceofType(HTMLElement)));
   }
 
+  @cache()
   createWatcher(): Watcher<HTMLElement|null> {
     return new ShadowHostWatcher();
   }

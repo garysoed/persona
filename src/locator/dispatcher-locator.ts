@@ -1,4 +1,5 @@
 import { instanceSourceId } from 'grapevine/export/component';
+import { cache } from 'gs-tools/export/data';
 import { DisposableFunction } from 'gs-tools/export/dispose';
 import { InstanceofType, Type } from 'gs-types/export';
 import { ChainedWatcher, Unlisten } from '../watcher/chained-watcher';
@@ -46,6 +47,7 @@ export class ResolvedDispatcherLocator<V extends CustomEvent, E extends HTMLElem
     super(instanceSourceId(`${elementLocator_}.dispatch`, InstanceofType<DispatchFn<V>>(Function)));
   }
 
+  @cache()
   createWatcher(): Watcher<DispatchFn<V>|null> {
     return new ChainedWatcher<E|null, DispatchFn<V>|null>(
         this.elementLocator_.createWatcher(),

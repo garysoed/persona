@@ -1,5 +1,6 @@
 import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
+import { cache } from 'gs-tools/export/data';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
 import { Type } from 'gs-types/export';
 import { Watcher } from '../watcher/watcher';

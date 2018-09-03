@@ -1,5 +1,6 @@
 import { instanceSourceId, instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
+import { cache } from 'gs-tools/export/data';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
 import { Parser } from 'gs-tools/export/parse';
 import { Type } from 'gs-types/export';
@@ -39,6 +40,7 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
         instanceSourceId(generateVineId(elementLocator_, attrName_), type));
   }
 
+  @cache()
   createWatcher(): Watcher<T> {
     return new ChainedWatcher<E, T>(
         this.elementLocator_.createWatcher(),
