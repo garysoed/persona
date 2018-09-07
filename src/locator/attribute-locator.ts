@@ -40,7 +40,6 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
         instanceSourceId(generateVineId(elementLocator_, attrName_), type));
   }
 
-  @cache()
   createWatcher(): Watcher<T> {
     return new ChainedWatcher<E, T>(
         this.elementLocator_.createWatcher(),
@@ -48,17 +47,28 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
             element: E,
             prevUnlisten: Unlisten|null,
             _: VineImpl,
-            onChange: Handler<T>) => this.startWatch_(element, prevUnlisten, onChange));
+            onChange: Handler<T>) => this.startWatch_(element, prevUnlisten, onChange),
+        source => {
+          const value = this.getAttributeValue_(source);
+          if (value === null) {
+            return this.defaultValue_;
+          }
+
+          return value;
+        });
+  }
+
+  private getAttributeValue_(element: E): T|null {
+    if (!element) {
+      return null;
+    }
+
+    return this.parser_.parse(element.getAttribute(this.attrName_));
   }
 
   getValue(root: ShadowRoot): T {
     const element = this.elementLocator_.getValue(root);
-    let attrValue = null;
-    if (element) {
-      attrValue = element.getAttribute(this.attrName_);
-    }
-
-    const value = this.parser_.parse(attrValue);
+    const value = this.getAttributeValue_(element);
     const type = this.getType();
     if (!type.check(value)) {
       return this.defaultValue_;

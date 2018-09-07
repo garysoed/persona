@@ -3,12 +3,11 @@ import { DisposableFunction } from 'gs-tools/export/dispose';
 
 export type Handler<T> = (newValue: T) => void;
 
-/**
- * Exposes the value in the DOM to Typescript.
- */
 export abstract class Watcher<T> {
   private readonly handlers_: Map<ShadowRoot, Set<Handler<T>>> = new Map();
   private readonly unwatch_: Map<ShadowRoot, DisposableFunction> = new Map();
+
+  abstract getValue_(root: ShadowRoot): T;
 
   protected abstract startWatching_(vineImpl: VineImpl, onChange: Handler<T>, root: ShadowRoot):
       DisposableFunction;
@@ -26,6 +25,8 @@ export abstract class Watcher<T> {
       }, root);
       this.unwatch_.set(root, unwatchFn);
     }
+
+    onChange(this.getValue_(root));
 
     return DisposableFunction.of(() => {
       handlers.delete(onChange);

@@ -23,8 +23,13 @@ export type StartWatchFn<T1, T2> = (
 export class ChainedWatcher<T1, T2> extends Watcher<T2> {
   constructor(
       private readonly sourceWatcher_: Watcher<T1>,
-      private readonly startWatchFn_: StartWatchFn<T1, T2>) {
+      private readonly startWatchFn_: StartWatchFn<T1, T2>,
+      private readonly mapFn_: (source: T1) => T2) {
     super();
+  }
+
+  getValue_(root: ShadowRoot): T2 {
+    return this.mapFn_(this.sourceWatcher_.getValue_(root));
   }
 
   protected startWatching_(vineImpl: VineImpl, onChange: Handler<T2>, root: ShadowRoot):

@@ -10,9 +10,13 @@ import { ResolvedWatchableLocator } from './resolved-locator';
 /**
  * Watch for changes to the shadow host.
  */
-class ShadowHostWatcher extends Watcher<HTMLElement|null> {
+class ShadowHostWatcher extends Watcher<HTMLElement> {
+  getValue_(root: ShadowRoot): HTMLElement {
+    return root.host as HTMLElement;
+  }
+
   protected startWatching_(
-      vineImpl: VineImpl,
+      _vineImpl: VineImpl,
       onChange: Handler<HTMLElement>,
       root: ShadowRoot): DisposableFunction {
     onChange(root.host as HTMLElement);
@@ -24,13 +28,13 @@ class ShadowHostWatcher extends Watcher<HTMLElement|null> {
 /**
  * Locates the shadow host.
  */
-class ShadowHostLocatorImpl extends ResolvedWatchableLocator<HTMLElement|null> {
+class ShadowHostLocatorImpl extends ResolvedWatchableLocator<HTMLElement> {
   constructor() {
     super(instanceSourceId('.host', InstanceofType(HTMLElement)));
   }
 
   @cache()
-  createWatcher(): Watcher<HTMLElement|null> {
+  createWatcher(): Watcher<HTMLElement> {
     return new ShadowHostWatcher();
   }
 

@@ -13,6 +13,16 @@ describe('watcher.ElementWatcher', () => {
     mockVine = createSpyInstance('Vine', VineImpl.prototype);
   });
 
+  describe('getValue_', () => {
+    should(`return the correct value`, () => {
+      const el = document.createElement('div');
+      shadowRoot.appendChild(el);
+
+      const watcher = new ElementWatcher<HTMLDivElement|null>(root => root.querySelector('div'));
+      assert(watcher.getValue_(shadowRoot)).to.equal(el);
+    });
+  });
+
   describe('startWatching_', () => {
     should(`update the source if the element has changed`, async () => {
       const watcher = new ElementWatcher<HTMLDivElement|null>(root => root.querySelector('div'));

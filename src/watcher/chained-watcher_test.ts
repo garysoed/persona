@@ -9,12 +9,29 @@ import { Handler, Watcher } from './watcher';
 describe('watcher.ChainedWatcher', () => {
   let mockSourceWatcher: SpyObj<Watcher<string>>;
   let mockStartWatchFn: Spy<Unlisten>;
+  let mockMapFn: Spy<number>;
   let watcher: ChainedWatcher<string, number>;
 
   beforeEach(() => {
-    mockSourceWatcher = createSpyInstance('SourceWatcher', Watcher.prototype);
+    mockSourceWatcher = createSpyInstance('SourceWatcher', Watcher.prototype, ['getValue_']);
     mockStartWatchFn = createSpy('StartWatchFn');
-    watcher = new ChainedWatcher(mockSourceWatcher, mockStartWatchFn);
+    mockMapFn = createSpy('MapFn');
+    watcher = new ChainedWatcher(mockSourceWatcher, mockStartWatchFn, mockMapFn);
+  });
+
+  describe('getValue_', () => {
+    should(`return the correct value`, () => {
+      const root = Mocks.object<ShadowRoot>('root');
+      const value = 123;
+      fake(mockMapFn).always().return(value);
+
+      const sourceValue = '456';
+      fake(mockSourceWatcher.getValue_).always().return(sourceValue);
+
+      assert(watcher.getValue_(root)).to.equal(value);
+      assert(mockMapFn).to.haveBeenCalledWith(sourceValue);
+      assert(mockSourceWatcher.getValue_).to.haveBeenCalledWith(root);
+    });
   });
 
   describe('startWatching_', () => {

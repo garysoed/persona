@@ -1,6 +1,6 @@
 import { instanceSourceId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
-import { assert, match, retryUntil, should } from 'gs-testing/export/main';
+import { assert, fshould, match, retryUntil, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
 import { createSpy, createSpyInstance } from 'gs-testing/export/spy';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
@@ -33,6 +33,8 @@ describe('locator.AttributeLocator', () => {
       const watcher = locator.createWatcher();
       watcher.watch(vine, mockOnChange, shadowRoot);
 
+      assert(watcher.getValue_(shadowRoot)).to.equal(456);
+
       await retryUntil(() => mockOnChange).to.equal(match.anySpyThat().haveBeenCalledWith(456));
 
       // Grab the element.
@@ -41,6 +43,56 @@ describe('locator.AttributeLocator', () => {
       watchedEl.setAttribute(ATTR_NAME, '789');
 
       await retryUntil(() => mockOnChange).to.equal(match.anySpyThat().haveBeenCalledWith(789));
+    });
+
+    should(`create watcher that returns the default value if the element's attribute is missing`,
+        () => {
+      const root = document.createElement('div');
+      const shadowRoot = root.attachShadow({mode: 'open'});
+
+      const innerEl = document.createElement('div');
+      shadowRoot.innerHTML = innerEl.outerHTML;
+
+      const watcher = locator.createWatcher();
+
+      assert(watcher.getValue_(shadowRoot)).to.equal(DEFAULT_VALUE);
+    });
+  });
+
+  describe('getAttributeValue_', () => {
+    should(`return the correct value`, () => {
+      const value = 456;
+      const el = document.createElement('div');
+      el.setAttribute(ATTR_NAME, `${value}`);
+
+      assert(locator['getAttributeValue_'](el)).to.equal(value);
+    });
+
+    should(`return null if element is null`, () => {
+      assert(locator['getAttributeValue_'](null)).to.beNull();
+    });
+  });
+
+  describe('getValue', () => {
+    should(`return the correct value`, () => {
+      const root = document.createElement('div');
+      const shadowRoot = root.attachShadow({mode: 'open'});
+      const value = 456;
+      const el = document.createElement('div');
+      el.setAttribute(ATTR_NAME, `${value}`);
+      shadowRoot.appendChild(el);
+
+      assert(locator.getValue(shadowRoot)).to.equal(value);
+    });
+
+    should(`return the default value if the value type is not correct`, () => {
+      const root = document.createElement('div');
+      const shadowRoot = root.attachShadow({mode: 'open'});
+      const el = document.createElement('div');
+      el.setAttribute(ATTR_NAME, 'abc');
+      shadowRoot.appendChild(el);
+
+      assert(locator.getValue(shadowRoot)).to.equal(DEFAULT_VALUE);
     });
   });
 

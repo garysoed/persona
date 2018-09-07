@@ -1,7 +1,7 @@
 import { VineImpl } from 'grapevine/export/main';
 import { assert, match, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
-import { createSpy, createSpyInstance } from 'gs-testing/export/spy';
+import { createSpy, createSpyInstance, resetCalls } from 'gs-testing/export/spy';
 import { DisposableFunction } from 'gs-tools/export/dispose';
 import { InstanceofType, NullableType } from 'gs-types/export';
 import { ResolvedDispatcherLocator, startWatch_ } from './dispatcher-locator';
@@ -109,16 +109,32 @@ describe('locator.dispatcher', () => {
       const mockListener = createSpy('Listener');
       watchedEl.addEventListener(CUSTOM_EVENT_NAME, mockListener);
 
-      locator.createWatcher().watch(vine, mockOnChange, shadowRoot);
+      const watcher = locator.createWatcher();
+
+      const event1 = new TestCustomEvent();
+      // tslint:disable-next-line:no-non-null-assertion
+      watcher.getValue_(shadowRoot)!(event1);
+      assert(mockListener).to.haveBeenCalledWith(event1);
+      resetCalls(mockListener);
+
+      watcher.watch(vine, mockOnChange, shadowRoot);
 
       const dispatcherMatcher = match.anyThat<(event: TestCustomEvent) => void>().beAFunction();
       assert(mockOnChange).to.haveBeenCalledWith(dispatcherMatcher);
       const dispatchFn = dispatcherMatcher.getLastMatch();
 
-      const event = new TestCustomEvent();
-      dispatchFn(event);
+      const event2 = new TestCustomEvent();
+      dispatchFn(event2);
 
-      assert(mockListener).to.haveBeenCalledWith(event);
+      assert(mockListener).to.haveBeenCalledWith(event2);
+    });
+
+    should(`create watcher that handles case where the element doesn't exist`, () => {
+      const root = document.createElement('div');
+      const shadowRoot = root.attachShadow({mode: 'open'});
+      const watcher = locator.createWatcher();
+
+      assert(watcher.getValue_(shadowRoot)).to.beNull();
     });
   });
 

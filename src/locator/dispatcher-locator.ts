@@ -55,7 +55,14 @@ export class ResolvedDispatcherLocator<V extends CustomEvent, E extends HTMLElem
             element,
             prevUnlisten,
             _,
-            onChange) => startWatch_(element, prevUnlisten, onChange));
+            onChange) => startWatch_(element, prevUnlisten, onChange),
+        source => {
+          if (!source) {
+            return null;
+          }
+
+          return createDispatcher(source);
+        });
   }
 
   getValue(root: ShadowRoot): DispatchFn<V>|null {

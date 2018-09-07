@@ -11,8 +11,12 @@ export class ElementWatcher<T extends HTMLElement|null> extends Watcher<T> {
     super();
   }
 
+  getValue_(root: ShadowRoot): T {
+    return this.valueProvider_(root);
+  }
+
   protected startWatching_(
-      vineImpl: VineImpl,
+      _vineImpl: VineImpl,
       onChange: Handler<T>,
       root: ShadowRoot): DisposableFunction {
     const mutationObserver = new MutationObserver(records => {
