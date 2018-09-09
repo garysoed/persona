@@ -28,13 +28,13 @@ class ShadowHostWatcher extends Watcher<HTMLElement> {
 /**
  * Locates the shadow host.
  */
-class ShadowHostLocatorImpl extends ResolvedWatchableLocator<HTMLElement|null> {
+class ShadowHostLocatorImpl extends ResolvedWatchableLocator<HTMLElement> {
   constructor() {
     super(instanceSourceId('.host', InstanceofType(HTMLElement)));
   }
 
   @cache()
-  createWatcher(): Watcher<HTMLElement|null> {
+  createWatcher(): Watcher<HTMLElement> {
     return new ShadowHostWatcher();
   }
 

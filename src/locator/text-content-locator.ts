@@ -47,8 +47,8 @@ export type TextContentLocator = ResolvedTextContentLocator|UnresolvedTextConten
  */
 export function textContent(
     elementLocator: ResolvedWatchableLocator<HTMLElement|null>): ResolvedTextContentLocator;
-// export function textContent(
-//     elementLocator: UnresolvedWatchableLocator<HTMLElement|null>): UnresolvedTextContentLocator;
+export function textContent(
+    elementLocator: UnresolvedWatchableLocator<HTMLElement|null>): UnresolvedTextContentLocator;
 export function textContent(
     elementLocator:
         ResolvedWatchableLocator<HTMLElement|null>|UnresolvedWatchableLocator<HTMLElement|null>):
