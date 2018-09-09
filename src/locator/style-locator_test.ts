@@ -7,8 +7,8 @@ import { element } from './element-locator';
 import { ResolvedStyleLocator, style } from './style-locator';
 
 describe('locator.StyleLocator', () => {
-  const elementLocator = element('#test', NullableType(InstanceofType(HTMLDivElement)));
-  let locator: ResolvedStyleLocator<'minHeight', HTMLDivElement|null>;
+  const elementLocator = element('#test', InstanceofType(HTMLDivElement));
+  let locator: ResolvedStyleLocator<'minHeight'>;
 
   beforeEach(() => {
     locator = style(elementLocator, 'minHeight');

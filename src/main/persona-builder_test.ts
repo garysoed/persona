@@ -1,9 +1,9 @@
-import { InstanceStreamId } from 'grapevine/export/component';
+import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineApp, VineBuilder } from 'grapevine/export/main';
 import { InstanceSourceProvider } from 'grapevine/src/node/instance-source-provider';
 import { assert, match, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
-import { createSpy, createSpyInstance, createSpyObject, fake, SpyObj } from 'gs-testing/export/spy';
+import { createSpy, createSpyInstance, createSpyObject, fake, Spy, SpyObj } from 'gs-testing/export/spy';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { InstanceofType } from 'gs-types/export';
@@ -22,6 +22,8 @@ class TestClass extends CustomElementCtrl {
     // noop
   }
 }
+
+type SourceWithProvider<T> = (id: InstanceSourceId<T>, provider: InstanceSourceProvider<T>) => void;
 
 describe('main.PersonaBuilder', () => {
   let customElementsAnnotationsCache: Annotations<ComponentSpec>;
@@ -99,11 +101,15 @@ describe('main.PersonaBuilder', () => {
           [TestClass],
           {builder: mockVineBuilder, vineOut: createSpy('vineOut')} as any);
 
-      const providerMatcher = match.anyThat<InstanceSourceProvider<HTMLElement>>().beAFunction();
-      assert(mockVineBuilder.sourceWithProvider).to
+      const providerMatcher = match.anyThat<InstanceSourceProvider<HTMLElement|null>>()
+          .beAFunction();
+
+      const sourceWithProvider =
+          mockVineBuilder.sourceWithProvider as any as Spy<SourceWithProvider<HTMLElement|null>>;
+      assert(sourceWithProvider).to
           .haveBeenCalledWith(locator1.getReadingId(), providerMatcher);
       assert(await providerMatcher.getLastMatch()(context)).to.equal(sectionEl);
-      assert(mockVineBuilder.sourceWithProvider)
+      assert(sourceWithProvider)
           .to.haveBeenCalledWith(locator2.getReadingId(), providerMatcher);
       assert(await providerMatcher.getLastMatch()(context)).to.equal(anchorEl);
     });

@@ -6,14 +6,14 @@ import { createSpy, createSpyInstance } from 'gs-testing/export/spy';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
 import { IntegerParser } from 'gs-tools/export/parse';
 import { InstanceofType, NullableType, NumberType } from 'gs-types/export';
-import { attribute, ResolvedAttributeLocator } from './attribute-locator';
+import { attribute, onMutation_, ResolvedAttributeLocator } from './attribute-locator';
 import { element } from './element-locator';
 
 describe('locator.AttributeLocator', () => {
   const ATTR_NAME = 'attr';
   const DEFAULT_VALUE = 123;
   const elementLocator = element('div', NullableType(InstanceofType(HTMLElement)));
-  let locator: ResolvedAttributeLocator<number, HTMLElement|null>;
+  let locator: ResolvedAttributeLocator<number>;
 
   beforeEach(() => {
     locator = attribute(elementLocator, ATTR_NAME, IntegerParser, NumberType, DEFAULT_VALUE);
@@ -33,16 +33,18 @@ describe('locator.AttributeLocator', () => {
       const watcher = locator.createWatcher();
       watcher.watch(vine, mockOnChange, shadowRoot);
 
-      assert(watcher.getValue_(shadowRoot)).to.equal(456);
+      assert(watcher.getValue(shadowRoot)).to.equal(456);
 
-      await retryUntil(() => mockOnChange).to.equal(match.anySpyThat().haveBeenCalledWith(456));
+      await retryUntil(() => mockOnChange).to
+          .equal(match.anySpyThat().haveBeenCalledWith(shadowRoot));
 
       // Grab the element.
       // tslint:disable-next-line:no-non-null-assertion
       const watchedEl = shadowRoot.querySelector('div')!;
       watchedEl.setAttribute(ATTR_NAME, '789');
 
-      await retryUntil(() => mockOnChange).to.equal(match.anySpyThat().haveBeenCalledWith(789));
+      await retryUntil(() => mockOnChange).to
+          .equal(match.anySpyThat().haveBeenCalledWith(shadowRoot));
     });
 
     should(`create watcher that returns the default value if the element's attribute is missing`,
@@ -55,7 +57,7 @@ describe('locator.AttributeLocator', () => {
 
       const watcher = locator.createWatcher();
 
-      assert(watcher.getValue_(shadowRoot)).to.equal(DEFAULT_VALUE);
+      assert(watcher.getValue(shadowRoot)).to.equal(DEFAULT_VALUE);
     });
   });
 
@@ -101,26 +103,14 @@ describe('locator.AttributeLocator', () => {
       const target = document.createElement('div');
       target.setAttribute(ATTR_NAME, '123');
 
+      const root = document.createElement('div').attachShadow({mode: 'open'});
       const records: any[] = [
         {attributeName: ATTR_NAME, target},
       ];
       const mockOnChange = createSpy('OnChange');
 
-      locator['onMutation_'](records, mockOnChange);
-      assert(mockOnChange).to.haveBeenCalledWith(123);
-    });
-
-    should(`use default value if the value cannot be parsed`, () => {
-      const target = document.createElement('div');
-      target.setAttribute(ATTR_NAME, 'abc');
-
-      const records: any[] = [
-        {attributeName: ATTR_NAME, target},
-      ];
-      const mockOnChange = createSpy('OnChange');
-
-      locator['onMutation_'](records, mockOnChange);
-      assert(mockOnChange).to.haveBeenCalledWith(DEFAULT_VALUE);
+      onMutation_(root, records, mockOnChange);
+      assert(mockOnChange).to.haveBeenCalledWith(root);
     });
 
     should(`not update if target is not Element`, () => {
@@ -128,8 +118,9 @@ describe('locator.AttributeLocator', () => {
         {attributeName: ATTR_NAME, target: null},
       ];
       const mockOnChange = createSpy('OnChange');
+      const root = document.createElement('div').attachShadow({mode: 'open'});
 
-      locator['onMutation_'](records, mockOnChange);
+      onMutation_(root, records, mockOnChange);
       assert(mockOnChange).toNot.haveBeenCalled();
     });
 
@@ -138,8 +129,9 @@ describe('locator.AttributeLocator', () => {
         {attributeName: '', target: document.createElement('div')},
       ];
       const mockOnChange = createSpy('OnChange');
+      const root = document.createElement('div').attachShadow({mode: 'open'});
 
-      locator['onMutation_'](records, mockOnChange);
+      onMutation_(root, records, mockOnChange);
       assert(mockOnChange).toNot.haveBeenCalled();
     });
   });
@@ -172,15 +164,13 @@ describe('locator.AttributeLocator', () => {
     should(`call onChange for attribute changes`, async () => {
       const watchedEl = document.createElement('div');
       watchedEl.setAttribute(ATTR_NAME, '456');
+      const root = document.createElement('div').attachShadow({mode: 'open'});
       const mockOnChange = createSpy('OnChange');
 
       // tslint:disable-next-line:no-non-null-assertion
-      const unlisten = locator['startWatch_'](watchedEl, null, mockOnChange)!;
+      const unlisten = locator['startWatch_'](root, watchedEl, null, mockOnChange)!;
       assert(unlisten.key).to.equal(watchedEl);
-      assert(mockOnChange).to.haveBeenCalledWith(456);
-
-      watchedEl.setAttribute(ATTR_NAME, '789');
-      await retryUntil(() => mockOnChange).to.equal(match.anySpyThat().haveBeenCalledWith(789));
+      assert(mockOnChange).to.haveBeenCalledWith(root);
     });
 
     should(`dispose the previous undispose if for different element`, async () => {
@@ -189,42 +179,17 @@ describe('locator.AttributeLocator', () => {
 
       const watchedEl = document.createElement('div');
       watchedEl.setAttribute(ATTR_NAME, '456');
+      const root = document.createElement('div').attachShadow({mode: 'open'});
       const mockOnChange = createSpy('OnChange');
 
       // tslint:disable-next-line:no-non-null-assertion
       const unlisten = locator['startWatch_'](
+          root,
           watchedEl,
           {key: oldEl, unlisten: mockPrevUnlisten},
           mockOnChange)!;
       assert(unlisten.key).to.equal(watchedEl);
-      assert(mockOnChange).to.haveBeenCalledWith(456);
-
-      watchedEl.setAttribute(ATTR_NAME, '789');
-      await retryUntil(() => mockOnChange).to.equal(match.anySpyThat().haveBeenCalledWith(789));
-      assert(mockPrevUnlisten.dispose).to.haveBeenCalledWith();
-    });
-
-    should(`call onChange with default value if the element is removed`, () => {
-      const mockOnChange = createSpy('OnChange');
-
-      const unlisten = locator['startWatch_'](null, null, mockOnChange);
-      assert(unlisten).to.beNull();
-      assert(mockOnChange).to.haveBeenCalledWith(DEFAULT_VALUE);
-    });
-
-    should(`dispose the previous undispose if element is removed`, () => {
-      const oldEl = document.createElement('div');
-      const mockPrevUnlisten = createSpyInstance('PrevUnlisten', DisposableFunction.prototype);
-
-      const mockOnChange = createSpy('OnChange');
-
-      const unlisten = locator['startWatch_'](
-          null,
-          {key: oldEl, unlisten: mockPrevUnlisten},
-          mockOnChange);
-      assert(unlisten).to.beNull();
-      assert(mockOnChange).to.haveBeenCalledWith(DEFAULT_VALUE);
-      assert(mockPrevUnlisten.dispose).to.haveBeenCalledWith();
+      assert(mockOnChange).to.haveBeenCalledWith(root);
     });
 
     should(`not observe changes if already observing`, () => {
@@ -232,11 +197,11 @@ describe('locator.AttributeLocator', () => {
       watchedEl.setAttribute(ATTR_NAME, '456');
       const mockOnChange = createSpy('OnChange');
       const mockUnlisten = createSpyInstance('Unlisten', DisposableFunction.prototype);
-
       const oldUnlisten = {key: watchedEl, unlisten: mockUnlisten};
+      const root = document.createElement('div').attachShadow({mode: 'open'});
 
       // tslint:disable-next-line:no-non-null-assertion
-      const unlisten = locator['startWatch_'](watchedEl, oldUnlisten, mockOnChange);
+      const unlisten = locator['startWatch_'](root, watchedEl, oldUnlisten, mockOnChange);
       assert(unlisten).to.equal(oldUnlisten);
       assert(mockOnChange).toNot.haveBeenCalled();
     });

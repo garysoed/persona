@@ -1,6 +1,5 @@
 import { instanceSourceId, instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
-import { cache } from 'gs-tools/export/data';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
 import { Parser } from 'gs-tools/export/parse';
 import { Type } from 'gs-types/export';
@@ -23,14 +22,35 @@ function generateVineId(elementLocator: ResolvedLocator, attrName: string):
   return `${elementLocator}[${attrName}]`;
 }
 
+export function onMutation_(root: ShadowRoot, records: Record[], onChange: Handler): void {
+  for (const {attributeName, oldValue, target} of records) {
+    if (!attributeName) {
+      continue;
+    }
+
+    if (!(target instanceof Element)) {
+      continue;
+    }
+
+    const oldValueString = oldValue;
+    const unparsedValue = target.getAttribute(attributeName);
+
+    if (oldValueString === unparsedValue) {
+      continue;
+    }
+
+    onChange(root);
+  }
+}
+
 /**
  * @internal
  */
-export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
+export class ResolvedAttributeLocator<T>
     extends ResolvedRenderableWatchableLocator<T> {
 
   constructor(
-      private readonly elementLocator_: ResolvedWatchableLocator<E>,
+      private readonly elementLocator_: ResolvedWatchableLocator<HTMLElement|null>,
       private readonly attrName_: string,
       private readonly defaultValue_: T,
       private readonly parser_: Parser<T>,
@@ -41,13 +61,20 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
   }
 
   createWatcher(): Watcher<T> {
-    return new ChainedWatcher<E, T>(
+    return new ChainedWatcher<HTMLElement|null, T>(
         this.elementLocator_.createWatcher(),
         (
-            element: E,
+            element: HTMLElement|null,
             prevUnlisten: Unlisten|null,
             _: VineImpl,
-            onChange: Handler<T>) => this.startWatch_(element, prevUnlisten, onChange),
+            onChange: Handler,
+            root: ShadowRoot) => {
+              if (!element) {
+                return null;
+              }
+
+              return this.startWatch_(root, element, prevUnlisten, onChange);
+            },
         source => {
           const value = this.getAttributeValue_(source);
           if (value === null) {
@@ -58,7 +85,7 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
         });
   }
 
-  private getAttributeValue_(element: E): T|null {
+  private getAttributeValue_(element: HTMLElement|null): T|null {
     if (!element) {
       return null;
     }
@@ -77,32 +104,6 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
     return value;
   }
 
-  private onMutation_(records: Record[], onChange: Handler<T>): void {
-    for (const {attributeName, oldValue, target} of records) {
-      if (!attributeName) {
-        continue;
-      }
-
-      if (!(target instanceof Element)) {
-        continue;
-      }
-
-      const oldValueString = oldValue;
-      const unparsedValue = target.getAttribute(attributeName);
-
-      if (oldValueString === unparsedValue) {
-        continue;
-      }
-
-      const parsedValue = this.parser_.parse(unparsedValue);
-      if (this.getType().check(parsedValue)) {
-        onChange(parsedValue);
-      } else {
-        onChange(this.defaultValue_);
-      }
-    }
-  }
-
   startRender(vine: VineImpl, context: BaseDisposable): () => void {
     return vine.listen((attrEl, attr) => {
       if (!attrEl) {
@@ -113,9 +114,10 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
   }
 
   private startWatch_(
-      element: E,
+      root: ShadowRoot,
+      element: HTMLElement,
       prevUnlisten: Unlisten|null,
-      onChange: Handler<T>): Unlisten|null {
+      onChange: Handler): Unlisten|null {
     // Check if already listening. If so, bail out.
     if (prevUnlisten && prevUnlisten.key === element) {
       return prevUnlisten;
@@ -127,16 +129,20 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
 
     // If there is no element, bail out quickly.
     if (!(element instanceof HTMLElement)) {
-      onChange(this.defaultValue_);
+      onChange(root);
 
       return null;
     }
 
-    const mutationObserver = new MutationObserver(records => this.onMutation_(records, onChange));
+    const mutationObserver =
+        new MutationObserver(records => onMutation_(root, records, onChange));
     mutationObserver.observe(
         element,
         {attributeFilter: [this.attrName_], attributes: true, attributeOldValue: true});
-    this.onMutation_([{attributeName: this.attrName_, oldValue: null, target: element}], onChange);
+    onMutation_(
+        root,
+        [{attributeName: this.attrName_, oldValue: null, target: element}],
+        onChange);
 
     return {
       key: element,
@@ -154,10 +160,10 @@ export class ResolvedAttributeLocator<T, E extends HTMLElement|null>
 /**
  * @internal
  */
-export class UnresolvedAttributeLocator<T, E extends HTMLElement|null>
+export class UnresolvedAttributeLocator<T>
     extends UnresolvedRenderableWatchableLocator<T> {
   constructor(
-      private readonly elementLocator_: UnresolvedWatchableLocator<E>,
+      private readonly elementLocator_: UnresolvedWatchableLocator<HTMLElement|null>,
       private readonly attrName_: string,
       private readonly defaultValue_: T,
       private readonly parser_: Parser<T>,
@@ -165,7 +171,8 @@ export class UnresolvedAttributeLocator<T, E extends HTMLElement|null>
     super();
   }
 
-  resolve(resolver: <S>(path: string, type: Type<S>) => S): ResolvedAttributeLocator<T, E> {
+  resolve(resolver: <S>(path: string, type: Type<S>) => S):
+      ResolvedAttributeLocator<T> {
     return new ResolvedAttributeLocator(
         this.elementLocator_.resolve(resolver),
         this.attrName_,
@@ -179,30 +186,30 @@ export class UnresolvedAttributeLocator<T, E extends HTMLElement|null>
   }
 }
 
-type AttributeLocator<T, E extends HTMLElement|null> =
-    ResolvedAttributeLocator<T, E> | UnresolvedAttributeLocator<T, E>;
+type AttributeLocator<T> = ResolvedAttributeLocator<T> | UnresolvedAttributeLocator<T>;
 
 /**
  * Creates selector that selects an element.
  */
-export function attribute<T, E extends HTMLElement|null>(
-    elementLocator: ResolvedWatchableLocator<E>,
+export function attribute<T>(
+    elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
     attrName: string,
     parser: Parser<T>,
     type: Type<T>,
-    defaultValue: T): ResolvedAttributeLocator<T, E>;
-export function attribute<T, E extends HTMLElement|null>(
-    elementLocator: UnresolvedWatchableLocator<E>,
+    defaultValue: T): ResolvedAttributeLocator<T>;
+export function attribute<T>(
+    elementLocator: UnresolvedWatchableLocator<HTMLElement|null>,
     attrName: string,
     parser: Parser<T>,
     type: Type<T>,
-    defaultValue: T): UnresolvedAttributeLocator<T, E>;
-export function attribute<T, E extends HTMLElement|null>(
-    elementLocator: ResolvedWatchableLocator<E>|UnresolvedWatchableLocator<E>,
+    defaultValue: T): UnresolvedAttributeLocator<T>;
+export function attribute<T>(
+    elementLocator:
+        ResolvedWatchableLocator<HTMLElement|null>|UnresolvedWatchableLocator<HTMLElement|null>,
     attrName: string,
     parser: Parser<T>,
     type: Type<T>,
-    defaultValue: T): AttributeLocator<T, E> {
+    defaultValue: T): AttributeLocator<T> {
   if (elementLocator instanceof ResolvedLocator) {
     return new ResolvedAttributeLocator(elementLocator, attrName, defaultValue, parser, type);
   } else {

@@ -19,12 +19,12 @@ interface LocatorObject {
 
 // tslint:disable:semicolon whitespace typedef no-empty no-unused-expression
 type Resolved<T extends ResolvedLocator|UnresolvedLocator|LocatorObject> =
-    T extends UnresolvedAttributeLocator<infer V, infer E> ? ResolvedAttributeLocator<V, E> :
-    T extends UnresolvedClassListLocator<infer E> ? ResolvedClassListLocator<E> :
-    T extends UnresolvedDispatcherLocator<infer V, infer E> ? ResolvedDispatcherLocator<V, E> :
+    T extends UnresolvedAttributeLocator<infer V> ? ResolvedAttributeLocator<V> :
+    T extends UnresolvedClassListLocator ? ResolvedClassListLocator :
+    T extends UnresolvedDispatcherLocator<infer V> ? ResolvedDispatcherLocator<V> :
     T extends UnresolvedElementLocator<infer E> ? ResolvedElementLocator<E> :
-    T extends UnresolvedStyleLocator<infer S, infer E> ? ResolvedStyleLocator<S, E> :
-    T extends UnresolvedTextContentLocator<infer E> ? ResolvedTextContentLocator<E> :
+    T extends UnresolvedStyleLocator<infer S> ? ResolvedStyleLocator<S> :
+    T extends UnresolvedTextContentLocator ? ResolvedTextContentLocator :
     T extends ResolvedLocator ? T :
     T extends LocatorObject ? ResolvedLocatorObject<T> : never;
 

@@ -2,13 +2,13 @@ import { instanceSourceId } from 'grapevine/export/component';
 import { VineBuilder } from 'grapevine/export/main';
 import { retryUntil, should } from 'gs-testing/export/main';
 import { BaseDisposable } from 'gs-tools/export/dispose';
-import { InstanceofType, NullableType, StringType } from 'gs-types/export';
+import { InstanceofType, StringType } from 'gs-types/export';
 import { element } from './element-locator';
 import { ResolvedTextContentLocator, textContent } from './text-content-locator';
 
 describe('locator.TextContentLocator', () => {
-  const elementLocator = element('div', NullableType(InstanceofType(HTMLDivElement)));
-  let locator: ResolvedTextContentLocator<HTMLDivElement|null>;
+  const elementLocator = element('div', InstanceofType(HTMLDivElement));
+  let locator: ResolvedTextContentLocator;
 
   beforeEach(() => {
     locator = textContent(elementLocator);

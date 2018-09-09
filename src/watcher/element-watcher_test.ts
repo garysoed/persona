@@ -19,7 +19,7 @@ describe('watcher.ElementWatcher', () => {
       shadowRoot.appendChild(el);
 
       const watcher = new ElementWatcher<HTMLDivElement|null>(root => root.querySelector('div'));
-      assert(watcher.getValue_(shadowRoot)).to.equal(el);
+      assert(watcher.getValue(shadowRoot)).to.equal(el);
     });
   });
 
@@ -30,14 +30,15 @@ describe('watcher.ElementWatcher', () => {
       const mockOnChange = createSpy('OnChange');
 
       const disposableFn = watcher['startWatching_'](mockVine, mockOnChange, shadowRoot);
-      assert(mockOnChange).to.haveBeenCalledWith(null);
+      assert(mockOnChange).to.haveBeenCalledWith(shadowRoot);
 
       resetCalls(mockOnChange);
 
       const el = document.createElement('div');
       shadowRoot.appendChild(el);
 
-      await retryUntil(() => mockOnChange).to.equal(match.anySpyThat().haveBeenCalledWith(el));
+      await retryUntil(() => mockOnChange).to
+          .equal(match.anySpyThat().haveBeenCalledWith(shadowRoot));
       disposableFn.dispose();
     });
   });

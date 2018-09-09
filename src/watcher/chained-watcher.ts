@@ -10,11 +10,11 @@ export interface Unlisten {
   key: {};
   unlisten: DisposableFunction;
 }
-export type StartWatchFn<T1, T2> = (
-    src: T1,
+export type StartWatchFn<T> = (
+    src: T,
     prevUnlisten: Unlisten|null,
     vineImpl: VineImpl,
-    onChange: Handler<T2>,
+    onChange: Handler,
     root: ShadowRoot) => Unlisten|null;
 
 /**
@@ -23,22 +23,27 @@ export type StartWatchFn<T1, T2> = (
 export class ChainedWatcher<T1, T2> extends Watcher<T2> {
   constructor(
       private readonly sourceWatcher_: Watcher<T1>,
-      private readonly startWatchFn_: StartWatchFn<T1, T2>,
+      private readonly startWatchFn_: StartWatchFn<T1>,
       private readonly mapFn_: (source: T1) => T2) {
     super();
   }
 
-  getValue_(root: ShadowRoot): T2 {
-    return this.mapFn_(this.sourceWatcher_.getValue_(root));
+  getValue(root: ShadowRoot): T2 {
+    return this.mapFn_(this.sourceWatcher_.getValue(root));
   }
 
-  protected startWatching_(vineImpl: VineImpl, onChange: Handler<T2>, root: ShadowRoot):
+  protected startWatching_(vineImpl: VineImpl, onChange: Handler, root: ShadowRoot):
       DisposableFunction {
     let innerUnlisten: Unlisten|null = null;
     const sourceUnlisten = this.sourceWatcher_.watch(
         vineImpl,
-        source => {
-          innerUnlisten = this.startWatchFn_(source, innerUnlisten, vineImpl, onChange, root);
+        root => {
+          innerUnlisten = this.startWatchFn_(
+              this.sourceWatcher_.getValue(root),
+              innerUnlisten,
+              vineImpl,
+              onChange,
+              root);
         },
         root);
 

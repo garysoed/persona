@@ -1,32 +1,32 @@
 import { VineImpl } from 'grapevine/export/main';
 import { DisposableFunction } from 'gs-tools/export/dispose';
 
-export type Handler<T> = (newValue: T) => void;
+export type Handler = (root: ShadowRoot) => void;
 
 export abstract class Watcher<T> {
-  private readonly handlers_: Map<ShadowRoot, Set<Handler<T>>> = new Map();
+  private readonly handlers_: Map<ShadowRoot, Set<Handler>> = new Map();
   private readonly unwatch_: Map<ShadowRoot, DisposableFunction> = new Map();
 
-  abstract getValue_(root: ShadowRoot): T;
+  abstract getValue(root: ShadowRoot): T;
 
-  protected abstract startWatching_(vineImpl: VineImpl, onChange: Handler<T>, root: ShadowRoot):
+  protected abstract startWatching_(vineImpl: VineImpl, onChange: Handler, root: ShadowRoot):
       DisposableFunction;
 
-  watch(vineImpl: VineImpl, onChange: Handler<T>, root: ShadowRoot): DisposableFunction {
+  watch(vineImpl: VineImpl, onChange: Handler, root: ShadowRoot): DisposableFunction {
     const handlers = this.handlers_.get(root) || new Set();
     handlers.add(onChange);
     this.handlers_.set(root, handlers);
 
     if (!this.unwatch_.has(root)) {
-      const unwatchFn = this.startWatching_(vineImpl, (newValue: T) => {
+      const unwatchFn = this.startWatching_(vineImpl, () => {
         for (const handler of handlers) {
-          handler(newValue);
+          handler(root);
         }
       }, root);
       this.unwatch_.set(root, unwatchFn);
     }
 
-    onChange(this.getValue_(root));
+    onChange(root);
 
     return DisposableFunction.of(() => {
       handlers.delete(onChange);

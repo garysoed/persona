@@ -22,9 +22,9 @@ export const classListParser: Parser<ImmutableSet<string>> = {
 /**
  * @internal
  */
-export class ResolvedClassListLocator<E extends HTMLElement|null>
-    extends ResolvedAttributeLocator<ImmutableSet<string>, E> {
-  constructor(elementLocator: ResolvedWatchableLocator<E>) {
+export class ResolvedClassListLocator
+    extends ResolvedAttributeLocator<ImmutableSet<string>> {
+  constructor(elementLocator: ResolvedWatchableLocator<HTMLElement|null>) {
     super(
         elementLocator,
         'class',
@@ -37,31 +37,31 @@ export class ResolvedClassListLocator<E extends HTMLElement|null>
 /**
  * @internal
  */
-export class UnresolvedClassListLocator<E extends HTMLElement|null>
+export class UnresolvedClassListLocator
     extends UnresolvedRenderableLocator<ImmutableSet<string>> {
   constructor(
-      private readonly elementLocator_: UnresolvedWatchableLocator<E>) {
+      private readonly elementLocator_: UnresolvedWatchableLocator<HTMLElement|null>) {
     super();
   }
 
-  resolve(resolver: <K>(path: string, type: Type<K>) => K): ResolvedClassListLocator<E> {
+  resolve(resolver: <K>(path: string, type: Type<K>) => K): ResolvedClassListLocator {
     return new ResolvedClassListLocator(this.elementLocator_.resolve(resolver));
   }
 }
 
-export type ClassListLocator<E extends HTMLElement|null> =
-    ResolvedClassListLocator<E>|UnresolvedClassListLocator<E>;
+export type ClassListLocator = ResolvedClassListLocator|UnresolvedClassListLocator;
 
 /**
  * Creates selector that selects the given style of an element.
  */
+export function classlist(
+    elementLocator: UnresolvedWatchableLocator<HTMLElement|null>): UnresolvedClassListLocator;
 export function classlist<E extends HTMLElement|null>(
-    elementLocator: UnresolvedWatchableLocator<E>): UnresolvedClassListLocator<E>;
+    elementLocator: ResolvedWatchableLocator<HTMLElement|null>): ResolvedClassListLocator;
 export function classlist<E extends HTMLElement|null>(
-    elementLocator: ResolvedWatchableLocator<E>): ResolvedClassListLocator<E>;
-export function classlist<E extends HTMLElement|null>(
-    elementLocator: UnresolvedWatchableLocator<E>|ResolvedWatchableLocator<E>):
-    ClassListLocator<E> {
+    elementLocator:
+        UnresolvedWatchableLocator<HTMLElement|null>|ResolvedWatchableLocator<HTMLElement|null>):
+    ClassListLocator {
   if (elementLocator instanceof ResolvedWatchableLocator) {
     return new ResolvedClassListLocator(elementLocator);
   } else {

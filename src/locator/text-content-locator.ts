@@ -8,10 +8,10 @@ import { LocatorPathResolver, UnresolvedRenderableLocator, UnresolvedWatchableLo
 /**
  * @internal
  */
-export class ResolvedTextContentLocator<E extends HTMLElement|null>
+export class ResolvedTextContentLocator
     extends ResolvedRenderableLocator<string> {
   constructor(
-      private readonly elementLocator_: ResolvedWatchableLocator<E>) {
+      private readonly elementLocator_: ResolvedWatchableLocator<HTMLElement|null>) {
     super(instanceStreamId(`${elementLocator_}.innerText`, StringType));
   }
 
@@ -29,9 +29,9 @@ export class ResolvedTextContentLocator<E extends HTMLElement|null>
 /**
  * @internal
  */
-export class UnresolvedTextContentLocator<E extends HTMLElement|null>
+export class UnresolvedTextContentLocator
     extends UnresolvedRenderableLocator<string> {
-  constructor(private readonly elementLocator_: UnresolvedWatchableLocator<E>) {
+  constructor(private readonly elementLocator_: UnresolvedWatchableLocator<HTMLElement|null>) {
     super();
   }
 
@@ -40,19 +40,19 @@ export class UnresolvedTextContentLocator<E extends HTMLElement|null>
   }
 }
 
-export type TextContentLocator<E extends HTMLElement|null> =
-    ResolvedTextContentLocator<E>|UnresolvedTextContentLocator<E>;
+export type TextContentLocator = ResolvedTextContentLocator|UnresolvedTextContentLocator;
 
 /**
  * Creates selector that selects a text content of an element.
  */
-export function textContent<E extends HTMLElement|null>(
-    elementLocator: ResolvedWatchableLocator<E>): ResolvedTextContentLocator<E>;
-export function textContent<E extends HTMLElement|null>(
-    elementLocator: UnresolvedWatchableLocator<E>): UnresolvedTextContentLocator<E>;
-export function textContent<E extends HTMLElement|null>(
-    elementLocator: ResolvedWatchableLocator<E>|UnresolvedWatchableLocator<E>):
-    TextContentLocator<E> {
+export function textContent(
+    elementLocator: ResolvedWatchableLocator<HTMLElement|null>): ResolvedTextContentLocator;
+// export function textContent(
+//     elementLocator: UnresolvedWatchableLocator<HTMLElement|null>): UnresolvedTextContentLocator;
+export function textContent(
+    elementLocator:
+        ResolvedWatchableLocator<HTMLElement|null>|UnresolvedWatchableLocator<HTMLElement|null>):
+    TextContentLocator {
   if (elementLocator instanceof ResolvedLocator) {
     return new ResolvedTextContentLocator(elementLocator);
   } else {

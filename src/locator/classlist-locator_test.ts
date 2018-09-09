@@ -3,13 +3,13 @@ import { VineBuilder } from 'grapevine/export/main';
 import { retryUntil, should } from 'gs-testing/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
-import { InstanceofType, NullableType } from 'gs-types/export';
+import { InstanceofType } from 'gs-types/export';
 import { classlist, ResolvedClassListLocator } from './classlist-locator';
 import { element } from './element-locator';
 
 describe('locator.ClassListLocator', () => {
-  const elementLocator = element('div', NullableType(InstanceofType(HTMLElement)));
-  let locator: ResolvedClassListLocator<HTMLElement|null>;
+  const elementLocator = element('div', InstanceofType(HTMLElement));
+  let locator: ResolvedClassListLocator;
 
   beforeEach(() => {
     locator = classlist(elementLocator);

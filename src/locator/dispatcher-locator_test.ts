@@ -1,5 +1,5 @@
 import { VineImpl } from 'grapevine/export/main';
-import { assert, match, should } from 'gs-testing/export/main';
+import { assert, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
 import { createSpy, createSpyInstance, resetCalls } from 'gs-testing/export/spy';
 import { DisposableFunction } from 'gs-tools/export/dispose';
@@ -19,7 +19,7 @@ class TestCustomEvent extends CustomEvent<string> {
 }
 
 describe('locator.dispatcher', () => {
-  let locator: ResolvedDispatcherLocator<CustomEvent, HTMLDivElement>;
+  let locator: ResolvedDispatcherLocator<CustomEvent>;
 
   beforeEach(() => {
     locator = new ResolvedDispatcherLocator(
@@ -31,30 +31,25 @@ describe('locator.dispatcher', () => {
       const el = document.createElement('div');
       const mockListener = createSpy('Listener');
       el.addEventListener(CUSTOM_EVENT_NAME, mockListener);
+      const root = document.createElement('div').attachShadow({mode: 'open'});
 
       const mockOnChange = createSpy('OnChange');
 
       // tslint:disable-next-line:no-non-null-assertion
-      const unlisten = startWatch_(el, null, mockOnChange)!;
+      const unlisten = startWatch_(root, el, null, mockOnChange)!;
 
       assert(unlisten.key).to.equal(el);
 
-      const dispatcherMatcher = match.anyThat<(event: TestCustomEvent) => void>().beAFunction();
-      assert(mockOnChange).to.haveBeenCalledWith(dispatcherMatcher);
-      const dispatchFn = dispatcherMatcher.getLastMatch();
-
-      const event = new TestCustomEvent();
-      dispatchFn(event);
-      assert(mockListener).to.haveBeenCalledWith(event);
+      assert(mockOnChange).to.haveBeenCalledWith(root);
     });
 
     should(`call onChange and return null if element doesn't exist`, () => {
       const mockOnChange = createSpy('OnChange');
-
-      const unlisten = startWatch_(null, null, mockOnChange);
+      const root = document.createElement('div').attachShadow({mode: 'open'});
+      const unlisten = startWatch_(root, null, null, mockOnChange);
 
       assert(unlisten).to.beNull();
-      assert(mockOnChange).to.haveBeenCalledWith(null);
+      assert(mockOnChange).to.haveBeenCalledWith(root);
     });
 
     should(`dispose the previous unlisten if exist`, () => {
@@ -65,19 +60,14 @@ describe('locator.dispatcher', () => {
       const mockOnChange = createSpy('OnChange');
       const mockPrevUnlisten = createSpyInstance('PrevUnlisten', DisposableFunction.prototype);
       const prevUnlisten = {key: document.createElement('div'), unlisten: mockPrevUnlisten};
+      const root = document.createElement('div').attachShadow({mode: 'open'});
 
       // tslint:disable-next-line:no-non-null-assertion
-      const unlisten = startWatch_(el, prevUnlisten, mockOnChange)!;
+      const unlisten = startWatch_(root, el, prevUnlisten, mockOnChange)!;
 
       assert(unlisten.key).to.equal(el);
 
-      const dispatcherMatcher = match.anyThat<(event: TestCustomEvent) => void>().beAFunction();
-      assert(mockOnChange).to.haveBeenCalledWith(dispatcherMatcher);
-      const dispatchFn = dispatcherMatcher.getLastMatch();
-
-      const event = new TestCustomEvent();
-      dispatchFn(event);
-      assert(mockListener).to.haveBeenCalledWith(event);
+      assert(mockOnChange).to.haveBeenCalledWith(root);
       assert(mockPrevUnlisten.dispose).to.haveBeenCalledWith();
     });
 
@@ -87,9 +77,10 @@ describe('locator.dispatcher', () => {
       const mockOnChange = createSpy('OnChange');
       const mockPrevUnlisten = createSpyInstance('PrevUnlisten', DisposableFunction.prototype);
       const prevUnlisten = {key: el, unlisten: mockPrevUnlisten};
+      const root = document.createElement('div').attachShadow({mode: 'open'});
 
       // tslint:disable-next-line:no-non-null-assertion
-      const unlisten = startWatch_(el, prevUnlisten, mockOnChange)!;
+      const unlisten = startWatch_(root, el, prevUnlisten, mockOnChange)!;
 
       assert(unlisten).to.equal(prevUnlisten);
       assert(mockOnChange).toNot.haveBeenCalled();
@@ -113,20 +104,13 @@ describe('locator.dispatcher', () => {
 
       const event1 = new TestCustomEvent();
       // tslint:disable-next-line:no-non-null-assertion
-      watcher.getValue_(shadowRoot)!(event1);
+      watcher.getValue(shadowRoot)!(event1);
       assert(mockListener).to.haveBeenCalledWith(event1);
       resetCalls(mockListener);
 
       watcher.watch(vine, mockOnChange, shadowRoot);
 
-      const dispatcherMatcher = match.anyThat<(event: TestCustomEvent) => void>().beAFunction();
-      assert(mockOnChange).to.haveBeenCalledWith(dispatcherMatcher);
-      const dispatchFn = dispatcherMatcher.getLastMatch();
-
-      const event2 = new TestCustomEvent();
-      dispatchFn(event2);
-
-      assert(mockListener).to.haveBeenCalledWith(event2);
+      assert(mockOnChange).to.haveBeenCalledWith(shadowRoot);
     });
 
     should(`create watcher that handles case where the element doesn't exist`, () => {
@@ -134,7 +118,7 @@ describe('locator.dispatcher', () => {
       const shadowRoot = root.attachShadow({mode: 'open'});
       const watcher = locator.createWatcher();
 
-      assert(watcher.getValue_(shadowRoot)).to.beNull();
+      assert(watcher.getValue(shadowRoot)).to.beNull();
     });
   });
 
