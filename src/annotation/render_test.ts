@@ -22,6 +22,7 @@ const $ = resolveLocators({
   host: {
     attr: attribute(shadowHost, 'attr', IntegerParser, NullableType(NumberType), 0),
     attr2: attribute(shadowHost, 'attr2', IntegerParser, NullableType(NumberType), 0),
+    attr3: attribute(shadowHost, 'attr3', IntegerParser, NullableType(NumberType), 0),
   },
 });
 
@@ -32,8 +33,9 @@ const $ = resolveLocators({
   shadowMode: 'open',
   tag: 'p-test',
   template,
-  watch: [shadowHost],
+  watch: [shadowHost, $.host.attr2],
 })
+@render($.host.attr3).withForwarding($.host.attr2)
 // tslint:disable-next-line:no-unused-variable
 class TestClass extends CustomElementCtrl {
   @render($.host.attr2) readonly attr2: number = 456;
@@ -65,5 +67,6 @@ describe('annotation.render', () => {
 
     await retryUntil(() => testElement.getAttribute('attr')).to.equal('123');
     await retryUntil(() => testElement.getAttribute('attr2')).to.equal('456');
+    await retryUntil(() => testElement.getAttribute('attr3')).to.equal('456');
   });
 });

@@ -6,3 +6,4 @@ export { textContent } from '../src/locator/text-content-locator';
 export { resolveLocators } from '../src/locator/resolve';
 export { shadowHost } from '../src/locator/shadow-host-locator';
 export { style } from '../src/locator/style-locator';
+export { ResolvedWatchableLocator, ResolvedRenderableLocator, ResolvedRenderableWatchableLocator } from '../src/locator/resolved-locator';

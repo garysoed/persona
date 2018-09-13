@@ -42,6 +42,7 @@ export function getOrRegisterApp(
       new Annotations<ComponentSpec>(Symbol(`${appName}-component`));
 
   const personaBuilder = new PersonaBuilder(customElementAnnotationsCache);
+  const input = inputFactory(vineApp);
   const newApp = {
     builder: personaBuilder,
     customElement: customElementFactory(
@@ -51,10 +52,10 @@ export function getOrRegisterApp(
         customElementAnnotationsCache,
         personaBuilder,
         vineApp),
-    input: inputFactory(vineApp),
+    input,
     onDom: onDomFactory(onDomAnnotationsCache),
     onKeydown: onKeydownFactory(onKeydownAnnotationsCache),
-    render: renderFactory(renderAnnotationsCache),
+    render: renderFactory(renderAnnotationsCache, input),
   };
   apps.set(appName, newApp);
 
