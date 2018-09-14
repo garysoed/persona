@@ -13,7 +13,7 @@ import { CustomElementImpl } from './custom-element-impl';
  * @test
  */
 class TestClass extends CustomElementCtrl {
-  init(): void {
+  init(vine: VineImpl): void {
     // noop
   }
 }
@@ -26,9 +26,10 @@ describe('main.CustomElementImpl', () => {
   });
 
   describe(`connectedCallback`, () => {
-    should(`set the shadow correctly`, () => {
+    should(`set the shadow correctly`, async () => {
       const element = document.createElement('div');
       const templateString = 'templateString';
+      const spyInit = spy(TestClass.prototype, 'init');
       const customElement = new CustomElementImpl(
           TestClass,
           ImmutableSet.of(),
@@ -39,9 +40,11 @@ describe('main.CustomElementImpl', () => {
           mockVine,
           'open');
 
-      customElement.connectedCallback();
+      await customElement.connectedCallback();
       // tslint:disable-next-line:no-non-null-assertion
       assert(element.shadowRoot!.innerHTML).to.equal(templateString);
+
+      assert(spyInit).to.haveBeenCalledWith(mockVine);
     });
 
     should(`setup the listeners correctly`, () => {

@@ -25,7 +25,7 @@ export class CustomElementImpl {
       private readonly vine_: VineImpl,
       private readonly shadowMode_: 'open' | 'closed' = 'closed') { }
 
-  connectedCallback(): void {
+  async connectedCallback(): Promise<void> {
     const ctor = this.componentClass_;
     const componentInstance = new ctor();
     this.component_ = componentInstance;
@@ -36,7 +36,12 @@ export class CustomElementImpl {
     this.setupWatchers_(componentInstance);
     this.setupDomListeners_(componentInstance);
 
-    componentInstance.init(this.vine_);
+    await new Promise(resolve => {
+      window.setTimeout(() => {
+        componentInstance.init(this.vine_);
+        resolve();
+      });
+    });
   }
 
   disconnectedCallback(): void {

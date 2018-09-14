@@ -55,7 +55,7 @@ export function getOrRegisterApp(
     input,
     onDom: onDomFactory(onDomAnnotationsCache),
     onKeydown: onKeydownFactory(onKeydownAnnotationsCache),
-    render: renderFactory(renderAnnotationsCache, input),
+    render: renderFactory(renderAnnotationsCache, input, vineApp.vineIn),
   };
   apps.set(appName, newApp);
 
