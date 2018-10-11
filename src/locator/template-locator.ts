@@ -32,7 +32,10 @@ export class ResolvedTemplateLocator<I extends TemplateInput> extends
       let innerHTML = templateEl.innerHTML;
       for (const key of Object.keys(input)) {
         const parser = this.parsers_[key];
-        innerHTML = innerHTML.replace(key, parser.convertTo(input[key]));
+        const strValue = parser.convertTo(input[key]);
+        if (strValue !== null) {
+          innerHTML = innerHTML.replace(key, strValue);
+        }
       }
 
       const tempTmpEl = document.createElement('template');

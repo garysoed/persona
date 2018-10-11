@@ -109,7 +109,7 @@ export class ResolvedAttributeLocator<T>
       if (!attrEl) {
         return;
       }
-      attrEl.setAttribute(this.attrName_, this.parser_.convertTo(attr));
+      attrEl.setAttribute(this.attrName_, this.parser_.convertTo(attr) || '');
     }, context, this.elementLocator_.getReadingId(), this.getWritingId());
   }
 
