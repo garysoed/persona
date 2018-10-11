@@ -6,16 +6,16 @@ import { Watcher } from '../watcher/watcher';
 import { ResolvedWatchableLocator } from './resolved-locator';
 import { LocatorPathResolver, UnresolvedWatchableLocator } from './unresolved-locator';
 
-interface Input {
+export interface TemplateInput {
   [key: string]: any;
 }
 
-type InputParsers<I extends Input> = {[K in keyof I]: Parser<I[K]>};
+type InputParsers<I extends TemplateInput> = {[K in keyof I]: Parser<I[K]>};
 
-type TemplateFn<I extends Input> = (input: I) => DocumentFragment|null;
+type TemplateFn<I extends TemplateInput> = (input: I) => DocumentFragment|null;
 
 
-export class ResolvedTemplateLocator<I extends Input> extends
+export class ResolvedTemplateLocator<I extends TemplateInput> extends
     ResolvedWatchableLocator<TemplateFn<I>> {
   constructor(
       private readonly elementLocator_: ResolvedWatchableLocator<HTMLTemplateElement|null>,
@@ -24,7 +24,7 @@ export class ResolvedTemplateLocator<I extends Input> extends
   }
 
   private createTemplateFn_(templateEl: HTMLTemplateElement|null): TemplateFn<I> {
-    return (input: Input) => {
+    return (input: TemplateInput) => {
       if (!templateEl) {
         return null;
       }
@@ -32,7 +32,7 @@ export class ResolvedTemplateLocator<I extends Input> extends
       let innerHTML = templateEl.innerHTML;
       for (const key of Object.keys(input)) {
         const parser = this.parsers_[key];
-        innerHTML = innerHTML.replace(key, parser.stringify(input[key]));
+        innerHTML = innerHTML.replace(key, parser.convertTo(input[key]));
       }
 
       const tempTmpEl = document.createElement('template');
@@ -58,7 +58,7 @@ export class ResolvedTemplateLocator<I extends Input> extends
   }
 }
 
-export class UnresolvedTemplateLocator<I extends Input> extends
+export class UnresolvedTemplateLocator<I extends TemplateInput> extends
     UnresolvedWatchableLocator<TemplateFn<I>> {
 
   constructor(
@@ -72,16 +72,16 @@ export class UnresolvedTemplateLocator<I extends Input> extends
   }
 }
 
-export type TemplateLocator<I extends Input> =
+export type TemplateLocator<I extends TemplateInput> =
     ResolvedTemplateLocator<I>|UnresolvedTemplateLocator<I>;
 
-export function template<I extends Input>(
+export function template<I extends TemplateInput>(
     element: UnresolvedWatchableLocator<HTMLTemplateElement|null>,
     parsers: InputParsers<I>): UnresolvedTemplateLocator<I>;
-export function template<I extends Input>(
+export function template<I extends TemplateInput>(
     element: ResolvedWatchableLocator<HTMLTemplateElement|null>,
     parsers: InputParsers<I>): ResolvedTemplateLocator<I>;
-export function template<I extends Input>(
+export function template<I extends TemplateInput>(
     element: UnresolvedWatchableLocator<HTMLTemplateElement|null>|
         ResolvedWatchableLocator<HTMLTemplateElement|null>,
     parsers: InputParsers<I>): TemplateLocator<I> {
