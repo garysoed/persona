@@ -2,7 +2,7 @@ import { VineImpl } from 'grapevine/export/main';
 import { assert, match, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
 import { createSpy, Spy } from 'gs-testing/export/spy';
-import { spy } from 'gs-testing/src/spy/spy';
+import { createSpyInstance, createSpyObject, spy } from 'gs-testing/src/spy/spy';
 import { DisposableFunction } from 'gs-tools/export/dispose';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { BaseListener } from './base-listener';
@@ -65,7 +65,7 @@ describe('event.BaseListener', () => {
 
     should(`throw error if property is not a function`, () => {
       const vine = Mocks.object<VineImpl>('vine');
-      const mockContext = jasmine.createSpyObj('Context', ['otherProperty']);
+      const mockContext = createSpyInstance('CustomElementCtrl', CustomElementCtrl.prototype);
       assert(() => {
         listener.listen(vine, mockContext);
       }).to.throwErrorWithMessage(/Property/);

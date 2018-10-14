@@ -90,7 +90,7 @@ export class ResolvedAttributeLocator<T>
       return null;
     }
 
-    return this.parser_.convertFrom(element.getAttribute(this.attrName_));
+    return this.parser_.convertForward(element.getAttribute(this.attrName_));
   }
 
   getValue(root: ShadowRoot): T {
@@ -109,7 +109,7 @@ export class ResolvedAttributeLocator<T>
       if (!attrEl) {
         return;
       }
-      attrEl.setAttribute(this.attrName_, this.parser_.convertTo(attr) || '');
+      attrEl.setAttribute(this.attrName_, this.parser_.convertBackward(attr) || '');
     }, context, this.elementLocator_.getReadingId(), this.getWritingId());
   }
 

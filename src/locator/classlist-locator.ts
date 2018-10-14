@@ -6,7 +6,7 @@ import { ResolvedWatchableLocator } from './resolved-locator';
 import { UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
 export const classListParser: Parser<ImmutableSet<string>> = {
-  convertFrom(input: string|null): ImmutableSet<string> {
+  convertForward(input: string|null): ImmutableSet<string> {
     if (!input) {
       return ImmutableSet.of();
     }
@@ -14,7 +14,7 @@ export const classListParser: Parser<ImmutableSet<string>> = {
     return ImmutableSet.of(input.split(' '));
   },
 
-  convertTo(classes: ImmutableSet<string>): string {
+  convertBackward(classes: ImmutableSet<string>): string {
     return [...classes].join(' ');
   },
 };
