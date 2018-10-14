@@ -1,12 +1,12 @@
 import { ImmutableSet } from 'gs-tools/export/collect';
-import { Parser } from 'gs-tools/export/parse';
+import { Converter } from 'gs-tools/src/converter/converter';
 import { InstanceofType, Type } from 'gs-types/export';
 import { ResolvedAttributeLocator } from './attribute-locator';
 import { ResolvedWatchableLocator } from './resolved-locator';
 import { UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
-export const classListParser: Parser<ImmutableSet<string>> = {
-  convertForward(input: string|null): ImmutableSet<string> {
+export const classListParser: Converter<ImmutableSet<string>, string> = {
+  convertBackward(input: string|null): ImmutableSet<string> {
     if (!input) {
       return ImmutableSet.of();
     }
@@ -14,7 +14,7 @@ export const classListParser: Parser<ImmutableSet<string>> = {
     return ImmutableSet.of(input.split(' '));
   },
 
-  convertBackward(classes: ImmutableSet<string>): string {
+  convertForward(classes: ImmutableSet<string>): string {
     return [...classes].join(' ');
   },
 };

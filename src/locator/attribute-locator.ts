@@ -2,6 +2,7 @@ import { instanceSourceId, instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
 import { Parser } from 'gs-tools/export/parse';
+import { Converter } from 'gs-tools/src/converter/converter';
 import { Type } from 'gs-types/export';
 import { ChainedWatcher, Unlisten } from '../watcher/chained-watcher';
 import { Handler, Watcher } from '../watcher/watcher';
@@ -53,7 +54,7 @@ export class ResolvedAttributeLocator<T>
       private readonly elementLocator_: ResolvedWatchableLocator<HTMLElement|null>,
       private readonly attrName_: string,
       private readonly defaultValue_: T,
-      private readonly parser_: Parser<T>,
+      private readonly parser_: Converter<T, string>,
       type: Type<T>) {
     super(
         instanceStreamId(generateVineId(elementLocator_, attrName_), type),
@@ -90,7 +91,7 @@ export class ResolvedAttributeLocator<T>
       return null;
     }
 
-    return this.parser_.convertForward(element.getAttribute(this.attrName_));
+    return this.parser_.convertBackward(element.getAttribute(this.attrName_));
   }
 
   getValue(root: ShadowRoot): T {
@@ -109,7 +110,7 @@ export class ResolvedAttributeLocator<T>
       if (!attrEl) {
         return;
       }
-      attrEl.setAttribute(this.attrName_, this.parser_.convertBackward(attr) || '');
+      attrEl.setAttribute(this.attrName_, this.parser_.convertForward(attr) || '');
     }, context, this.elementLocator_.getReadingId(), this.getWritingId());
   }
 
@@ -166,7 +167,7 @@ export class UnresolvedAttributeLocator<T>
       private readonly elementLocator_: UnresolvedWatchableLocator<HTMLElement|null>,
       private readonly attrName_: string,
       private readonly defaultValue_: T,
-      private readonly parser_: Parser<T>,
+      private readonly parser_: Converter<T, string>,
       private readonly type_: Type<T>) {
     super();
   }
@@ -194,25 +195,25 @@ type AttributeLocator<T> = ResolvedAttributeLocator<T> | UnresolvedAttributeLoca
 export function attribute<T>(
     elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
     attrName: string,
-    parser: Parser<T>,
+    converter: Converter<T, string>,
     type: Type<T>,
     defaultValue: T): ResolvedAttributeLocator<T>;
 export function attribute<T>(
     elementLocator: UnresolvedWatchableLocator<HTMLElement|null>,
     attrName: string,
-    parser: Parser<T>,
+    converter: Converter<T, string>,
     type: Type<T>,
     defaultValue: T): UnresolvedAttributeLocator<T>;
 export function attribute<T>(
     elementLocator:
         ResolvedWatchableLocator<HTMLElement|null>|UnresolvedWatchableLocator<HTMLElement|null>,
     attrName: string,
-    parser: Parser<T>,
+    converter: Converter<T, string>,
     type: Type<T>,
     defaultValue: T): AttributeLocator<T> {
   if (elementLocator instanceof ResolvedLocator) {
-    return new ResolvedAttributeLocator(elementLocator, attrName, defaultValue, parser, type);
+    return new ResolvedAttributeLocator(elementLocator, attrName, defaultValue, converter, type);
   } else {
-    return new UnresolvedAttributeLocator(elementLocator, attrName, defaultValue, parser, type);
+    return new UnresolvedAttributeLocator(elementLocator, attrName, defaultValue, converter, type);
   }
 }
