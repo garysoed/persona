@@ -7,7 +7,6 @@ import { ResolvedDispatcherLocator, UnresolvedDispatcherLocator } from './dispat
 import { ResolvedElementLocator, UnresolvedElementLocator } from './element-locator';
 import { ResolvedLocator } from './resolved-locator';
 import { ResolvedStyleLocator, UnresolvedStyleLocator } from './style-locator';
-import { ResolvedTemplateLocator, UnresolvedTemplateLocator } from './template-locator';
 import { ResolvedTextContentLocator, UnresolvedTextContentLocator } from './text-content-locator';
 import { UnresolvedLocator } from './unresolved-locator';
 
@@ -25,7 +24,6 @@ type Resolved<T extends ResolvedLocator|UnresolvedLocator|LocatorObject> =
     T extends UnresolvedDispatcherLocator<infer V> ? ResolvedDispatcherLocator<V> :
     T extends UnresolvedElementLocator<infer E> ? ResolvedElementLocator<E> :
     T extends UnresolvedStyleLocator<infer S> ? ResolvedStyleLocator<S> :
-    T extends UnresolvedTemplateLocator<infer I> ? ResolvedTemplateLocator<I> :
     T extends UnresolvedTextContentLocator ? ResolvedTextContentLocator :
     T extends ResolvedLocator ? T :
     T extends LocatorObject ? ResolvedLocatorObject<T> : never;
