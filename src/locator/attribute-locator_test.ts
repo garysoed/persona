@@ -1,6 +1,6 @@
 import { instanceSourceId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
-import { assert, fshould, match, retryUntil, should } from 'gs-testing/export/main';
+import { assert, match, retryUntil, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
 import { createSpy, createSpyInstance } from 'gs-testing/export/spy';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
