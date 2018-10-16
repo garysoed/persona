@@ -2,20 +2,19 @@ import { instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
 import { ImmutableList } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
-import { Converter } from 'gs-tools/src/converter/converter';
 import { Type } from 'gs-types/export';
+import { Renderer, RenderValue } from '../renderer/renderer';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { LocatorPathResolver, UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
 export const SLOT_ELEMENT_ = Symbol('slotElement');
-export const SLOT_VALUE_ = Symbol('slotValue');
-type SlotNode<T> = Node & {[SLOT_ELEMENT_]?: Node|null; [SLOT_VALUE_]?: T|null};
+type SlotNode = Node & {[SLOT_ELEMENT_]?: Node|null};
 
-export class ResolvedSlotLocator<T> extends ResolvedRenderableLocator<T|null> {
+export class ResolvedSlotLocator<T extends RenderValue> extends ResolvedRenderableLocator<T|null> {
   constructor(
       private readonly parentElementLocator_: ResolvedWatchableLocator<HTMLElement|null>,
       private readonly slotName_: string,
-      private readonly converter_: Converter<T, Node>,
+      private readonly converter_: Renderer<T, Node>,
       type: Type<T>) {
     super(instanceStreamId(`${parentElementLocator_}.slot(${slotName_})`, type));
   }
@@ -33,20 +32,18 @@ export class ResolvedSlotLocator<T> extends ResolvedRenderableLocator<T|null> {
         return;
       }
 
-      const currentValue = slotNode[SLOT_VALUE_];
-      if (currentValue === value) {
+      // Delete the old element.
+      const oldNode = slotNode[SLOT_ELEMENT_] || null;
+      if (oldNode) {
+        slotNode[SLOT_ELEMENT_] = null;
+        parentEl.removeChild(oldNode);
+      }
+
+      if (value === null) {
         return;
       }
-      slotNode[SLOT_VALUE_] = value;
 
-      // Delete the old element.
-      const currentElement = slotNode[SLOT_ELEMENT_];
-      if (currentElement) {
-        slotNode[SLOT_ELEMENT_] = null;
-        parentEl.removeChild(currentElement);
-      }
-
-      const newNode = this.converter_.convertForward(value);
+      const newNode = this.converter_.render(value, oldNode);
       if (!newNode) {
         return;
       }
@@ -57,11 +54,12 @@ export class ResolvedSlotLocator<T> extends ResolvedRenderableLocator<T|null> {
   }
 }
 
-export class UnresolvedSlotLocator<T> extends UnresolvedRenderableLocator<T|null> {
+export class UnresolvedSlotLocator<T extends RenderValue>
+    extends UnresolvedRenderableLocator<T|null> {
   constructor(
       private readonly parentElementLocator_: UnresolvedWatchableLocator<HTMLElement|null>,
       private readonly slotName_: string,
-      private readonly converter_: Converter<T, Node>,
+      private readonly converter_: Renderer<T, Node>,
       private readonly type_: Type<T>) {
     super();
   }
@@ -75,33 +73,33 @@ export class UnresolvedSlotLocator<T> extends UnresolvedRenderableLocator<T|null
   }
 }
 
-type SlotLocator<T> = ResolvedSlotLocator<T>|UnresolvedSlotLocator<T>;
-export function slot<T>(
+type SlotLocator<T extends RenderValue> = ResolvedSlotLocator<T>|UnresolvedSlotLocator<T>;
+export function slot<T extends RenderValue>(
     parentElement: UnresolvedWatchableLocator<HTMLElement|null>,
     slotName: string,
-    converter: Converter<T, Node>,
+    renderer: Renderer<T, Node>,
     type: Type<T>): UnresolvedSlotLocator<T>;
-export function slot<T>(
+export function slot<T extends RenderValue>(
     parentElement: ResolvedWatchableLocator<HTMLElement|null>,
     slotName: string,
-    converter: Converter<T, Node>,
+    renderer: Renderer<T, Node>,
     type: Type<T>): ResolvedSlotLocator<T>;
-export function slot<T>(
+export function slot<T extends RenderValue>(
     parentElement: UnresolvedWatchableLocator<HTMLElement|null>|
         ResolvedWatchableLocator<HTMLElement|null>,
     slotName: string,
-    converter: Converter<T, Node>,
+    renderer: Renderer<T, Node>,
     type: Type<T>): SlotLocator<T> {
   if (parentElement instanceof UnresolvedWatchableLocator) {
-    return new UnresolvedSlotLocator(parentElement, slotName, converter, type);
+    return new UnresolvedSlotLocator(parentElement, slotName, renderer, type);
   } else {
-    return new ResolvedSlotLocator(parentElement, slotName, converter, type);
+    return new ResolvedSlotLocator(parentElement, slotName, renderer, type);
   }
 }
 
 export function findCommentNode<T>(
     childNodes: ImmutableList<Node>,
-    commentContent: string): SlotNode<T>|null {
+    commentContent: string): SlotNode|null {
   return childNodes.find(node => {
     return node.nodeName === '#comment' && node.nodeValue === commentContent;
   });

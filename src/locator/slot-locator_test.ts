@@ -2,32 +2,26 @@ import { VineBuilder } from 'grapevine/export/main';
 import { assert, retryUntil, should } from 'gs-testing/export/main';
 import { ImmutableList } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
-import { InstanceofType, NullableType, StringType } from 'gs-types/export';
+import { HasPropertiesType, InstanceofType, StringType } from 'gs-types/export';
+import { __id, Renderer } from '../renderer/renderer';
 import { element, ResolvedElementLocator } from './element-locator';
-import { findCommentNode, ResolvedSlotLocator, slot, SLOT_ELEMENT_, SLOT_VALUE_ } from './slot-locator';
+import { findCommentNode, ResolvedSlotLocator, slot, SLOT_ELEMENT_ } from './slot-locator';
 
-const CONVERTER = {
-  convertBackward(node: Node): string|null {
-    if (!(node instanceof HTMLElement)) {
+const RENDERER: Renderer<{[__id]: string}, HTMLElement> = {
+  render(value: {[__id]: string}): HTMLElement|null {
+    const id = value[__id];
+    if (!id) {
       return null;
     }
 
-    return node.tagName;
-  },
-
-  convertForward(tagName: string|null): Node|null {
-    if (!tagName) {
-      return null;
-    }
-
-    return document.createElement(tagName);
+    return document.createElement(id);
   },
 };
 
 describe('locator.SlotLocator', () => {
   const SLOT_NAME = 'slotName';
   let elementLocator: ResolvedElementLocator<HTMLDivElement>;
-  let locator: ResolvedSlotLocator<string|null>;
+  let locator: ResolvedSlotLocator<{[__id]: string}>;
   let vineBuilder: VineBuilder;
 
   beforeEach(() => {
@@ -36,8 +30,8 @@ describe('locator.SlotLocator', () => {
     locator = slot(
         elementLocator,
         SLOT_NAME,
-        CONVERTER,
-        NullableType(StringType));
+        RENDERER,
+        HasPropertiesType({[__id]: StringType}));
   });
 
   describe('startRender', () => {
@@ -49,7 +43,7 @@ describe('locator.SlotLocator', () => {
       innerRoot.appendChild(commentNode);
 
       vineBuilder.source(elementLocator.getReadingId(), innerRoot);
-      vineBuilder.stream(locator.getWritingId(), () => 'input');
+      vineBuilder.stream(locator.getWritingId(), () => ({[__id]: 'input'}));
 
       const vine = vineBuilder.run();
       locator.startRender(vine, context);
@@ -69,7 +63,7 @@ describe('locator.SlotLocator', () => {
       innerRoot.appendChild(oldElement);
 
       vineBuilder.source(elementLocator.getReadingId(), innerRoot);
-      vineBuilder.stream(locator.getWritingId(), () => null);
+      vineBuilder.stream(locator.getWritingId(), () => ({[__id]: ''}));
 
       const vine = vineBuilder.run();
       locator.startRender(vine, context);
@@ -88,7 +82,7 @@ describe('locator.SlotLocator', () => {
       innerRoot.appendChild(oldElement);
 
       vineBuilder.source(elementLocator.getReadingId(), innerRoot);
-      vineBuilder.stream(locator.getWritingId(), () => 'audio');
+      vineBuilder.stream(locator.getWritingId(), () => ({[__id]: 'audio'}));
 
       const vine = vineBuilder.run();
       locator.startRender(vine, context);
@@ -96,28 +90,6 @@ describe('locator.SlotLocator', () => {
       await retryUntil(() => (innerRoot.childNodes.item(1) as HTMLElement).tagName)
           .to.equal('AUDIO');
       await retryUntil(() => innerRoot.childNodes.length).to.equal(2);
-    });
-
-    should(`do nothing if the value does not change`, async () => {
-      const context = new BaseDisposable();
-
-      const oldElement = document.createElement('input');
-      const oldValue = 'oldValue';
-
-      const innerRoot = document.createElement('div');
-      const commentNode = document.createComment(SLOT_NAME);
-      (commentNode as any)[SLOT_VALUE_] = oldValue;
-      (commentNode as any)[SLOT_ELEMENT_] = oldElement;
-      innerRoot.appendChild(commentNode);
-      innerRoot.appendChild(oldElement);
-
-      vineBuilder.source(elementLocator.getReadingId(), innerRoot);
-      vineBuilder.stream(locator.getWritingId(), () => oldValue);
-
-      const vine = vineBuilder.run();
-      locator.startRender(vine, context);
-
-      await retryUntil(() => innerRoot.childNodes.item(1)).to.equal(oldElement);
     });
 
     should(`do nothing if the slot does not exist`, async () => {
@@ -128,7 +100,7 @@ describe('locator.SlotLocator', () => {
       innerRoot.appendChild(commentNode);
 
       vineBuilder.source(elementLocator.getReadingId(), innerRoot);
-      vineBuilder.stream(locator.getWritingId(), () => 'audio');
+      vineBuilder.stream(locator.getWritingId(), () => ({[__id]: 'audio'}));
 
       const vine = vineBuilder.run();
       locator.startRender(vine, context);
@@ -140,7 +112,7 @@ describe('locator.SlotLocator', () => {
       const context = new BaseDisposable();
 
       vineBuilder.source(elementLocator.getReadingId(), null);
-      vineBuilder.stream(locator.getWritingId(), () => 'audio');
+      vineBuilder.stream(locator.getWritingId(), () => ({[__id]: 'audio'}));
 
       const vine = vineBuilder.run();
       assert(() => {
