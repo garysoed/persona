@@ -3,14 +3,14 @@ import { VineImpl } from 'grapevine/export/main';
 import { ImmutableList } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Type } from 'gs-types/export';
-import { Renderer, RenderValue } from '../renderer/renderer';
+import { Renderer } from '../renderer/renderer';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { LocatorPathResolver, UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
 export const SLOT_ELEMENT_ = Symbol('slotElement');
 type SlotNode = Node & {[SLOT_ELEMENT_]?: Node|null};
 
-export class ResolvedSlotLocator<T extends RenderValue> extends ResolvedRenderableLocator<T|null> {
+export class ResolvedSlotLocator<T> extends ResolvedRenderableLocator<T|null> {
   constructor(
       private readonly parentElementLocator_: ResolvedWatchableLocator<HTMLElement|null>,
       private readonly slotName_: string,
@@ -32,29 +32,24 @@ export class ResolvedSlotLocator<T extends RenderValue> extends ResolvedRenderab
         return;
       }
 
-      // Delete the old element.
-      const oldNode = slotNode[SLOT_ELEMENT_] || null;
-      if (oldNode) {
-        slotNode[SLOT_ELEMENT_] = null;
-        parentEl.removeChild(oldNode);
-      }
-
       if (value === null) {
         return;
       }
 
+      const oldNode = slotNode[SLOT_ELEMENT_] || null;
       const newNode = this.converter_.render(value, oldNode);
-      if (!newNode) {
-        return;
-      }
-
       slotNode[SLOT_ELEMENT_] = newNode;
-      parentEl.insertBefore(newNode, slotNode.nextSibling);
+      if (newNode !== oldNode) {
+        if (oldNode) {
+          parentEl.removeChild(oldNode);
+        }
+        parentEl.insertBefore(newNode, slotNode.nextSibling);
+      }
     }, context, this.parentElementLocator_.getReadingId(), this.getWritingId());
   }
 }
 
-export class UnresolvedSlotLocator<T extends RenderValue>
+export class UnresolvedSlotLocator<T>
     extends UnresolvedRenderableLocator<T|null> {
   constructor(
       private readonly parentElementLocator_: UnresolvedWatchableLocator<HTMLElement|null>,
@@ -73,18 +68,18 @@ export class UnresolvedSlotLocator<T extends RenderValue>
   }
 }
 
-type SlotLocator<T extends RenderValue> = ResolvedSlotLocator<T>|UnresolvedSlotLocator<T>;
-export function slot<T extends RenderValue>(
+type SlotLocator<T> = ResolvedSlotLocator<T>|UnresolvedSlotLocator<T>;
+export function slot<T>(
     parentElement: UnresolvedWatchableLocator<HTMLElement|null>,
     slotName: string,
     renderer: Renderer<T, Node>,
     type: Type<T>): UnresolvedSlotLocator<T>;
-export function slot<T extends RenderValue>(
+export function slot<T>(
     parentElement: ResolvedWatchableLocator<HTMLElement|null>,
     slotName: string,
     renderer: Renderer<T, Node>,
     type: Type<T>): ResolvedSlotLocator<T>;
-export function slot<T extends RenderValue>(
+export function slot<T>(
     parentElement: UnresolvedWatchableLocator<HTMLElement|null>|
         ResolvedWatchableLocator<HTMLElement|null>,
     slotName: string,

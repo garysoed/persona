@@ -1,6 +1,6 @@
 import { assert, should } from 'gs-testing/export/main';
 import { IntegerParser, StringParser } from 'gs-tools/export/parse';
-import { __id } from './renderer';
+import { __renderId } from './render-id';
 import { __nodeId, SimpleElementRenderer } from './simple-element-renderer';
 
 interface TestObject {
@@ -51,14 +51,14 @@ describe('converter.SimpleElementConverter', () => {
   describe('render', () => {
     should(`render correctly`, () => {
       // tslint:disable-next-line:no-non-null-assertion
-      const el = converter.render({a: 'a', b: 2, [__id]: 'id'}, null)!;
+      const el = converter.render({a: 'a', b: 2, [__renderId]: 'id'}, null)!;
       assert(el.getAttribute('a')).to.equal('a');
       assert(el.getAttribute('b')).to.equal('2');
     });
 
     should(`ignore null values`, () => {
       // tslint:disable-next-line:no-non-null-assertion
-      const el = converter.render({a: 'a', b: null as any, [__id]: 'id'}, null)!;
+      const el = converter.render({a: 'a', b: null as any, [__renderId]: 'id'}, null)!;
       assert(el.getAttribute('a')).to.equal('a');
       assert(el.hasAttribute('b')).to.beFalse();
     });

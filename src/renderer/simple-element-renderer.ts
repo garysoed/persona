@@ -1,19 +1,24 @@
 import { Converter } from 'gs-tools/export/converter';
-import { __id, Renderer, RenderValue } from './renderer';
+import { __renderId } from './render-id';
+import { Renderer } from './renderer';
 
 export const __nodeId = Symbol('nodeId');
 
-interface Value {
+export interface Value {
   [key: string]: any;
 }
 
-type ValueWithId<V extends Value> = {[__id]: string} & V;
+export interface RenderValue {
+  [__renderId]: string;
+}
+
+export type ValueWithId<V extends Value> = {[__renderId]: string} & V;
 
 type ConvertersOf<T extends Value> = {
   [K in keyof T]: Converter<T[K], string>;
 };
 
-type ElementWithId = HTMLElement & {[__nodeId]: string};
+type ElementWithId = Element & {[__nodeId]: string};
 
 export class SimpleElementRenderer<T extends Value> implements
     Renderer<ValueWithId<T>, ElementWithId> {
@@ -31,8 +36,8 @@ export class SimpleElementRenderer<T extends Value> implements
     return Object.assign(el, {[__nodeId]: currentId});
   }
 
-  render(currentValue: ValueWithId<T>, previousRender: ElementWithId|null): ElementWithId|null {
-    const el = this.getElement_(currentValue[__id], previousRender);
+  render(currentValue: ValueWithId<T>, previousRender: ElementWithId|null): ElementWithId {
+    const el = this.getElement_(currentValue[__renderId], previousRender);
     for (const key in this.attributeConverters_) {
       if (this.attributeConverters_.hasOwnProperty(key)) {
         const value = this.attributeConverters_[key].convertForward(currentValue[key]);
