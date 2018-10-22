@@ -6,6 +6,7 @@ import { ResolvedClassListLocator, UnresolvedClassListLocator } from './classlis
 import { ResolvedDispatcherLocator, UnresolvedDispatcherLocator } from './dispatcher-locator';
 import { ResolvedElementLocator, UnresolvedElementLocator } from './element-locator';
 import { ResolvedLocator } from './resolved-locator';
+import { ResolvedSlotLocator, UnresolvedSlotLocator } from './slot-locator';
 import { ResolvedStyleLocator, UnresolvedStyleLocator } from './style-locator';
 import { ResolvedTextContentLocator, UnresolvedTextContentLocator } from './text-content-locator';
 import { UnresolvedLocator } from './unresolved-locator';
@@ -23,6 +24,7 @@ type Resolved<T extends ResolvedLocator|UnresolvedLocator|LocatorObject> =
     T extends UnresolvedClassListLocator ? ResolvedClassListLocator :
     T extends UnresolvedDispatcherLocator<infer V> ? ResolvedDispatcherLocator<V> :
     T extends UnresolvedElementLocator<infer E> ? ResolvedElementLocator<E> :
+    T extends UnresolvedSlotLocator<infer E> ? ResolvedSlotLocator<E> :
     T extends UnresolvedStyleLocator<infer S> ? ResolvedStyleLocator<S> :
     T extends UnresolvedTextContentLocator ? ResolvedTextContentLocator :
     T extends ResolvedLocator ? T :

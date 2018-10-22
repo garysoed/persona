@@ -27,26 +27,30 @@ describe('renderer.ElementListRenderer', () => {
   });
 
   describe('render', () => {
-    should(`render correctly`, () => {
+    fshould(`render correctly`, () => {
       const elementA = createElement('a');
       const elementB = createElement('b');
+      const elementC = createElement('c');
       fake(mockRenderer.render).always().call(data => {
         switch (data[__renderId]) {
           case 'a':
             return elementA;
           case 'b':
             return elementB;
+          case 'c':
+            return elementC;
           default:
             throw new Error(`Unhandled renderId`);
         }
       });
 
       const docFragment = renderer.render(
-          ImmutableList.of([createData('a'), createData('b')]),
+          ImmutableList.of([createData('a'), createData('b'), createData('c')]),
           null);
       const childrenList = ImmutableList.of(docFragment.children);
       assert(childrenList).to.haveElements([elementA, elementB]);
-      assert(childrenList.mapItem(child => (child as any)[__nodeId])).to.haveElements(['a', 'b']);
+      assert(childrenList.mapItem(child => (child as any)[__nodeId])).to
+          .haveElements(['a', 'b', 'c']);
     });
 
     should(`render changes correctly`, () => {

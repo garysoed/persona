@@ -132,6 +132,12 @@ describe('locator.SlotLocator', () => {
       assert(findCommentNode(ImmutableList.of([commentNode]), SLOT_NAME)).to.equal(commentNode);
     });
 
+    should(`match comment nodes with white spaces at the end`, () => {
+      const commentNode = document.createComment(`  ${SLOT_NAME}   `);
+
+      assert(findCommentNode(ImmutableList.of([commentNode]), SLOT_NAME)).to.equal(commentNode);
+    });
+
     should(`return null if the content does not exist`, () => {
       const commentNode = document.createComment('otherName');
 

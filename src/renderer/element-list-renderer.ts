@@ -47,8 +47,8 @@ export class ElementListRenderer<V extends {[__renderId]: string}> implements
       }
       const currentId = currentValue[__renderId];
 
-      // There are no child at this spot, so insert at the end.
       const previousChild = trimmedPreviousChildren.getAt(p);
+      // There are no child at this spot, so insert at the end.
       if (!previousChild) {
         const newNode = Object.assign(
             this.itemRenderer_.render(currentValue, null),
@@ -56,6 +56,7 @@ export class ElementListRenderer<V extends {[__renderId]: string}> implements
         if (newNode) {
           docFragment.appendChild(newNode);
           trimmedPreviousChildren = trimmedPreviousChildren.insertAt(c, newNode);
+          p++;
         }
         continue;
       }

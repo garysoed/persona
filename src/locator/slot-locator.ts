@@ -96,6 +96,8 @@ export function findCommentNode<T>(
     childNodes: ImmutableList<Node>,
     commentContent: string): SlotNode|null {
   return childNodes.find(node => {
-    return node.nodeName === '#comment' && node.nodeValue === commentContent;
+    return node.nodeName === '#comment' &&
+        !!node.nodeValue &&
+        node.nodeValue.trim() === commentContent;
   });
 }
