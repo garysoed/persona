@@ -36,7 +36,11 @@ export class SimpleElementRenderer<T extends Value> implements
     return Object.assign(el, {[__nodeId]: currentId});
   }
 
-  render(currentValue: ValueWithId<T>, previousRender: ElementWithId|null): ElementWithId {
+  render(
+      currentValue: ValueWithId<T>,
+      previousRender: ElementWithId|null,
+      parentNode: Node,
+      insertionPoint: Node): ElementWithId {
     const el = this.getElement_(currentValue[__renderId], previousRender);
     for (const key in this.attributeConverters_) {
       if (this.attributeConverters_.hasOwnProperty(key)) {
@@ -46,6 +50,8 @@ export class SimpleElementRenderer<T extends Value> implements
         }
       }
     }
+
+    parentNode.insertBefore(el, insertionPoint.nextSibling);
 
     return el;
   }

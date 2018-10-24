@@ -1,7 +1,6 @@
-import { assert, fshould, should } from 'gs-testing/export/main';
-import { createSpyObject, fake, SpyObj } from 'gs-testing/export/spy';
-import { ImmutableList } from 'gs-tools/export/collect';
-import { __nodeId, ElementListRenderer } from './element-list-renderer';
+import { assert, should } from 'gs-testing/export/main';
+import { ImmutableList, ImmutableMap } from 'gs-tools/export/collect';
+import { __nodeId, ElementListRenderer, ElementWithId } from './element-list-renderer';
 import { __renderId } from './render-id';
 import { Renderer } from './renderer';
 
@@ -13,44 +12,73 @@ function createData(id: string): Data {
   return {[__renderId]: id};
 }
 
-function createElement(id: string): HTMLElement {
+function createElement(id: string): ElementWithId {
   return Object.assign(document.createElement('div'), {[__nodeId]: id, id});
+}
+
+class TestRenderer implements Renderer<Data, Element> {
+  idMap: ImmutableMap<string, Element> = ImmutableMap.of();
+
+  render(
+      currentValue: Data,
+      _existingRender: Element|null,
+      parentNode: Node,
+      insertionPoint: Node|null): Element {
+    const renderId = currentValue[__renderId];
+    const el = this.idMap.get(renderId);
+    if (!el) {
+      throw new Error(`Unhandled renderId ${renderId}`);
+    }
+
+    if (insertionPoint) {
+      parentNode.insertBefore(el, insertionPoint.nextSibling);
+    } else {
+      parentNode.insertBefore(el, null);
+    }
+
+    return el;
+  }
 }
 
 describe('renderer.ElementListRenderer', () => {
   let renderer: ElementListRenderer<Data>;
-  let mockRenderer: SpyObj<Renderer<Data, Element>>;
+  let testRenderer: TestRenderer;
 
   beforeEach(() => {
-    mockRenderer = createSpyObject<Renderer<Data, Element>>('Renderer', ['render']);
-    renderer = new ElementListRenderer(mockRenderer);
+    testRenderer = new TestRenderer();
+    renderer = new ElementListRenderer(testRenderer);
   });
 
   describe('render', () => {
-    fshould(`render correctly`, () => {
+    should(`render correctly`, () => {
       const elementA = createElement('a');
       const elementB = createElement('b');
       const elementC = createElement('c');
-      fake(mockRenderer.render).always().call(data => {
-        switch (data[__renderId]) {
-          case 'a':
-            return elementA;
-          case 'b':
-            return elementB;
-          case 'c':
-            return elementC;
-          default:
-            throw new Error(`Unhandled renderId`);
-        }
-      });
+      testRenderer.idMap = ImmutableMap.of([
+        ['a', elementA],
+        ['b', elementB],
+        ['c', elementC],
+      ]);
 
-      const docFragment = renderer.render(
+      const root = document.createElement('div');
+      const insertionPoint = document.createComment('start');
+      root.appendChild(insertionPoint);
+
+      const childrenList = renderer.render(
           ImmutableList.of([createData('a'), createData('b'), createData('c')]),
-          null);
-      const childrenList = ImmutableList.of(docFragment.children);
-      assert(childrenList).to.haveElements([elementA, elementB]);
+          null,
+          root,
+          insertionPoint);
+      assert(childrenList.mapItem(child => (child as Element)))
+          .to.haveElements([elementA, elementB, elementC]);
       assert(childrenList.mapItem(child => (child as any)[__nodeId])).to
           .haveElements(['a', 'b', 'c']);
+      assert(ImmutableList.of<Node>(root.childNodes)).to.haveElements([
+        insertionPoint,
+        elementA,
+        elementB,
+        elementC,
+      ]);
     });
 
     should(`render changes correctly`, () => {
@@ -61,35 +89,29 @@ describe('renderer.ElementListRenderer', () => {
       const element6 = createElement('6');
       const element7 = createElement('7');
       const element8 = createElement('8');
-      fake(mockRenderer.render).always().call(data => {
-        switch (data[__renderId]) {
-          case '1':
-            return element1;
-          case '2':
-            return element2;
-          case '3':
-            return element3;
-          case '4':
-            return element4;
-          case '6':
-            return element6;
-          case '7':
-            return element7;
-          case '8':
-            return element8;
-          default:
-            throw new Error(`Unhandled renderId`);
-        }
-      });
+      testRenderer.idMap = ImmutableMap.of([
+        ['1', element1],
+        ['2', element2],
+        ['3', element3],
+        ['4', element4],
+        ['6', element6],
+        ['7', element7],
+        ['8', element8],
+      ]);
 
-      const oldDocFragment = document.createDocumentFragment();
-      oldDocFragment.appendChild(element1);
-      oldDocFragment.appendChild(element2);
-      oldDocFragment.appendChild(element6);
-      oldDocFragment.appendChild(element7);
-      oldDocFragment.appendChild(element8);
+      const previousRender = ImmutableList.of([
+        element1,
+        element2,
+        element6,
+        element7,
+        element8,
+      ]);
 
-      const docFragment = renderer.render(
+      const root = document.createElement('div');
+      const insertionPoint = document.createComment('start');
+      root.appendChild(insertionPoint);
+
+      const childrenList = renderer.render(
           ImmutableList.of([
             createData('2'),
             createData('3'),
@@ -97,11 +119,20 @@ describe('renderer.ElementListRenderer', () => {
             createData('6'),
             createData('7'),
           ]),
-          oldDocFragment);
-      const childrenList = ImmutableList.of(docFragment.children);
+          previousRender,
+          root,
+          insertionPoint);
       assert(childrenList).to.haveElements([element2, element3, element4, element6, element7]);
       assert(childrenList.mapItem(child => (child as any)[__nodeId])).to
           .haveElements(['2', '3', '4', '6', '7']);
+      assert(ImmutableList.of(root.childNodes)).to.haveElements([
+        insertionPoint,
+        element2,
+        element3,
+        element4,
+        element6,
+        element7,
+      ]);
     });
   });
 });

@@ -7,14 +7,14 @@ import { Renderer } from '../renderer/renderer';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { LocatorPathResolver, UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
-export const SLOT_ELEMENT_ = Symbol('slotElement');
-type SlotNode = Node & {[SLOT_ELEMENT_]?: Node|null};
+export const SLOT_ELEMENTS_ = Symbol('slotElement');
+type SlotNode<R> = Node & {[SLOT_ELEMENTS_]?: R};
 
-export class ResolvedSlotLocator<T> extends ResolvedRenderableLocator<T|null> {
+export class ResolvedSlotLocator<T, R> extends ResolvedRenderableLocator<T> {
   constructor(
       private readonly parentElementLocator_: ResolvedWatchableLocator<HTMLElement|null>,
       private readonly slotName_: string,
-      private readonly converter_: Renderer<T, Node>,
+      private readonly renderer_: Renderer<T, R>,
       type: Type<T>) {
     super(instanceStreamId(`${parentElementLocator_}.slot(${slotName_})`, type));
   }
@@ -26,40 +26,29 @@ export class ResolvedSlotLocator<T> extends ResolvedRenderableLocator<T|null> {
       }
 
       const childNodes = ImmutableList.of(parentEl.childNodes);
-      const slotNode = findCommentNode<T>(childNodes, this.slotName_);
+      const slotNode = findCommentNode<R>(childNodes, this.slotName_);
 
       if (!slotNode) {
         return;
       }
 
-      if (value === null) {
-        return;
-      }
-
-      const oldNode = slotNode[SLOT_ELEMENT_] || null;
-      const newNode = this.converter_.render(value, oldNode);
-      slotNode[SLOT_ELEMENT_] = newNode;
-      if (newNode !== oldNode) {
-        if (oldNode) {
-          parentEl.removeChild(oldNode);
-        }
-        parentEl.insertBefore(newNode, slotNode.nextSibling);
-      }
+      const oldRender = slotNode[SLOT_ELEMENTS_] || null;
+      slotNode[SLOT_ELEMENTS_] = this.renderer_.render(value, oldRender, parentEl, slotNode);
     }, context, this.parentElementLocator_.getReadingId(), this.getWritingId());
   }
 }
 
-export class UnresolvedSlotLocator<T>
+export class UnresolvedSlotLocator<T, N>
     extends UnresolvedRenderableLocator<T|null> {
   constructor(
       private readonly parentElementLocator_: UnresolvedWatchableLocator<HTMLElement|null>,
       private readonly slotName_: string,
-      private readonly converter_: Renderer<T, Node>,
+      private readonly converter_: Renderer<T, N>,
       private readonly type_: Type<T>) {
     super();
   }
 
-  resolve(resolver: LocatorPathResolver): ResolvedSlotLocator<T> {
+  resolve(resolver: LocatorPathResolver): ResolvedSlotLocator<T, N> {
     return new ResolvedSlotLocator(
         this.parentElementLocator_.resolve(resolver),
         this.slotName_,
@@ -68,23 +57,23 @@ export class UnresolvedSlotLocator<T>
   }
 }
 
-type SlotLocator<T> = ResolvedSlotLocator<T>|UnresolvedSlotLocator<T>;
-export function slot<T>(
+type SlotLocator<T, R> = ResolvedSlotLocator<T, R>|UnresolvedSlotLocator<T, R>;
+export function slot<T, R>(
     parentElement: UnresolvedWatchableLocator<HTMLElement|null>,
     slotName: string,
-    renderer: Renderer<T, Node>,
-    type: Type<T>): UnresolvedSlotLocator<T>;
-export function slot<T>(
+    renderer: Renderer<T, R>,
+    type: Type<T>): UnresolvedSlotLocator<T, R>;
+export function slot<T, R>(
     parentElement: ResolvedWatchableLocator<HTMLElement|null>,
     slotName: string,
-    renderer: Renderer<T, Node>,
-    type: Type<T>): ResolvedSlotLocator<T>;
-export function slot<T>(
+    renderer: Renderer<T, R>,
+    type: Type<T>): ResolvedSlotLocator<T, R>;
+export function slot<T, R>(
     parentElement: UnresolvedWatchableLocator<HTMLElement|null>|
         ResolvedWatchableLocator<HTMLElement|null>,
     slotName: string,
-    renderer: Renderer<T, Node>,
-    type: Type<T>): SlotLocator<T> {
+    renderer: Renderer<T, R>,
+    type: Type<T>): SlotLocator<T, R> {
   if (parentElement instanceof UnresolvedWatchableLocator) {
     return new UnresolvedSlotLocator(parentElement, slotName, renderer, type);
   } else {
@@ -92,9 +81,9 @@ export function slot<T>(
   }
 }
 
-export function findCommentNode<T>(
+export function findCommentNode<R>(
     childNodes: ImmutableList<Node>,
-    commentContent: string): SlotNode|null {
+    commentContent: string): SlotNode<R>|null {
   return childNodes.find(node => {
     return node.nodeName === '#comment' &&
         !!node.nodeValue &&

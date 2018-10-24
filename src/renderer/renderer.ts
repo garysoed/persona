@@ -1,3 +1,5 @@
-export interface Renderer<T, N extends Node> {
-  render(currentValue: T, previousRender: N|null): N;
+import { ImmutableList } from 'gs-tools/src/immutable';
+
+export interface Renderer<T, N> {
+  render(currentValue: T, existingRender: N|null, parentNode: Node, insertionPoint: Node|null): N;
 }

@@ -4,24 +4,24 @@ import { Renderer } from './renderer';
 
 export const __nodeId = Symbol('nodeId');
 
-type ElementWithId = Element & {[__nodeId]: string};
+export type ElementWithId = Element & {[__nodeId]: string};
 
 export class ElementListRenderer<V extends {[__renderId]: string}> implements
-    Renderer<ImmutableList<V>, DocumentFragment> {
+    Renderer<ImmutableList<V>, ImmutableList<ElementWithId>> {
   constructor(private readonly itemRenderer_: Renderer<V, Element>) { }
 
-  render(currentValues: ImmutableList<V>, previousRender: DocumentFragment|null):
-      DocumentFragment {
-    const docFragment = previousRender || document.createDocumentFragment();
-
-    const previousChildren = ImmutableList.of(docFragment.children)
-        .filterItem((child: Partial<ElementWithId>): child is ElementWithId => !!child[__nodeId]);
+  render(
+      currentValues: ImmutableList<V>,
+      previousRender: ImmutableList<ElementWithId>|null,
+      parentNode: Node,
+      insertionPoint: Node): ImmutableList<ElementWithId> {
+    const previousChildren = previousRender || ImmutableList.of([]);
     const currentIds = currentValues.mapItem(value => value[__renderId]);
 
     // Delete children that have been deleted.
-    let trimmedPreviousChildren = previousChildren;
-    for (let i = 0; i < trimmedPreviousChildren.size();) {
-      const previousChild = trimmedPreviousChildren.getAt(i);
+    let newChildren = previousChildren;
+    for (let i = 0; i < newChildren.size();) {
+      const previousChild = newChildren.getAt(i);
       if (previousChild === undefined) {
         i++;
         continue;
@@ -35,7 +35,7 @@ export class ElementListRenderer<V extends {[__renderId]: string}> implements
 
       // TODO: Add animation.
       previousChild.remove();
-      trimmedPreviousChildren = trimmedPreviousChildren.deleteAt(i);
+      newChildren = newChildren.deleteAt(i);
     }
 
     // Add the new children.
@@ -47,15 +47,19 @@ export class ElementListRenderer<V extends {[__renderId]: string}> implements
       }
       const currentId = currentValue[__renderId];
 
-      const previousChild = trimmedPreviousChildren.getAt(p);
+      const previousChild = newChildren.getAt(p);
       // There are no child at this spot, so insert at the end.
       if (!previousChild) {
+        const lastNewChild = newChildren.getAt(newChildren.size() - 1) || insertionPoint;
         const newNode = Object.assign(
-            this.itemRenderer_.render(currentValue, null),
+            this.itemRenderer_.render(
+                currentValue,
+                null,
+                parentNode,
+                lastNewChild),
             {[__nodeId]: currentId});
         if (newNode) {
-          docFragment.appendChild(newNode);
-          trimmedPreviousChildren = trimmedPreviousChildren.insertAt(c, newNode);
+          newChildren = newChildren.insertAt(c, newNode);
           p++;
         }
         continue;
@@ -63,21 +67,25 @@ export class ElementListRenderer<V extends {[__renderId]: string}> implements
 
       const previousId = previousChild[__nodeId];
       if (currentId === previousId) {
+        this.itemRenderer_.render(
+            currentValue,
+            previousChild,
+            parentNode,
+            previousChild.previousSibling);
         p++;
         continue;
       }
 
       const newNode = Object.assign(
-          this.itemRenderer_.render(currentValue, null),
+          this.itemRenderer_.render(currentValue, null, parentNode, previousChild.previousSibling),
           {[__nodeId]: currentId});
       if (newNode) {
         p++;
-        docFragment.insertBefore(newNode, previousChild);
-        trimmedPreviousChildren = trimmedPreviousChildren.insertAt(c, newNode);
+        newChildren = newChildren.insertAt(c, newNode);
       }
     }
 
-    return docFragment;
+    return newChildren;
   }
 }
 

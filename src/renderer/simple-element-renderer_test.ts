@@ -1,5 +1,6 @@
 import { assert, should } from 'gs-testing/export/main';
 import { IntegerParser, StringParser } from 'gs-tools/export/parse';
+import { ImmutableList } from 'gs-tools/src/immutable';
 import { __renderId } from './render-id';
 import { __nodeId, SimpleElementRenderer } from './simple-element-renderer';
 
@@ -50,17 +51,26 @@ describe('converter.SimpleElementConverter', () => {
 
   describe('render', () => {
     should(`render correctly`, () => {
-      // tslint:disable-next-line:no-non-null-assertion
-      const el = converter.render({a: 'a', b: 2, [__renderId]: 'id'}, null)!;
+      const insertionNode = document.createComment('insert');
+      const root = document.createElement('div');
+      root.appendChild(insertionNode);
+
+      const el = converter.render({a: 'a', b: 2, [__renderId]: 'id'}, null, root, insertionNode);
       assert(el.getAttribute('a')).to.equal('a');
       assert(el.getAttribute('b')).to.equal('2');
+      assert(ImmutableList.of(root.childNodes)).to.haveElements([insertionNode, el]);
     });
 
     should(`ignore null values`, () => {
-      // tslint:disable-next-line:no-non-null-assertion
-      const el = converter.render({a: 'a', b: null as any, [__renderId]: 'id'}, null)!;
+      const insertionNode = document.createComment('insert');
+      const root = document.createElement('div');
+      root.appendChild(insertionNode);
+
+      const data = {a: 'a', b: null as any, [__renderId]: 'id'};
+      const el = converter.render(data, null, root, insertionNode);
       assert(el.getAttribute('a')).to.equal('a');
       assert(el.hasAttribute('b')).to.beFalse();
+      assert(ImmutableList.of(root.childNodes)).to.haveElements([insertionNode, el]);
     });
   });
 });

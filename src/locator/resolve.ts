@@ -24,7 +24,7 @@ type Resolved<T extends ResolvedLocator|UnresolvedLocator|LocatorObject> =
     T extends UnresolvedClassListLocator ? ResolvedClassListLocator :
     T extends UnresolvedDispatcherLocator<infer V> ? ResolvedDispatcherLocator<V> :
     T extends UnresolvedElementLocator<infer E> ? ResolvedElementLocator<E> :
-    T extends UnresolvedSlotLocator<infer E> ? ResolvedSlotLocator<E> :
+    T extends UnresolvedSlotLocator<infer E, infer N> ? ResolvedSlotLocator<E, N> :
     T extends UnresolvedStyleLocator<infer S> ? ResolvedStyleLocator<S> :
     T extends UnresolvedTextContentLocator ? ResolvedTextContentLocator :
     T extends ResolvedLocator ? T :
