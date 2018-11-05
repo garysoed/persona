@@ -65,7 +65,7 @@ describe('event.BaseListener', () => {
 
     should(`throw error if property is not a function`, () => {
       const vine = Mocks.object<VineImpl>('vine');
-      const mockContext = createSpyInstance('CustomElementCtrl', CustomElementCtrl.prototype);
+      const mockContext = createSpyInstance(CustomElementCtrl);
       assert(() => {
         listener.listen(vine, mockContext);
       }).to.throwErrorWithMessage(/Property/);

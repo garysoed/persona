@@ -28,7 +28,7 @@ describe('event.KeydownListener', () => {
   // TODO: Use test generator.
   describe('listenImpl_', () => {
     should(`match the key correctly`, () => {
-      const mockVine = createSpyInstance('Vine', VineImpl.prototype);
+      const mockVine = createSpyInstance(VineImpl);
       const context = Mocks.object<CustomElementCtrl>('context');
       const mockHandler = createSpy('Handler');
 
@@ -55,7 +55,7 @@ describe('event.KeydownListener', () => {
     });
 
     should(`match the alt correctly`, () => {
-      const mockVine = createSpyInstance('Vine', VineImpl.prototype);
+      const mockVine = createSpyInstance(VineImpl);
       const context = Mocks.object<CustomElementCtrl>('context');
       const mockHandler = createSpy('Handler');
 
@@ -93,7 +93,7 @@ describe('event.KeydownListener', () => {
     });
 
     should(`match the ctrl correctly`, () => {
-      const mockVine = createSpyInstance('Vine', VineImpl.prototype);
+      const mockVine = createSpyInstance(VineImpl);
       const context = Mocks.object<CustomElementCtrl>('context');
       const mockHandler = createSpy('Handler');
 
@@ -131,7 +131,7 @@ describe('event.KeydownListener', () => {
     });
 
     should(`match the meta correctly`, () => {
-      const mockVine = createSpyInstance('Vine', VineImpl.prototype);
+      const mockVine = createSpyInstance(VineImpl);
       const context = Mocks.object<CustomElementCtrl>('context');
       const mockHandler = createSpy('Handler');
 
@@ -169,7 +169,7 @@ describe('event.KeydownListener', () => {
     });
 
     should(`match the shift correctly`, () => {
-      const mockVine = createSpyInstance('Vine', VineImpl.prototype);
+      const mockVine = createSpyInstance(VineImpl);
       const context = Mocks.object<CustomElementCtrl>('context');
       const mockHandler = createSpy('Handler');
 
@@ -207,7 +207,7 @@ describe('event.KeydownListener', () => {
     });
 
     should(`ignore if event is not KeyboardEvent`, () => {
-      const mockVine = createSpyInstance('Vine', VineImpl.prototype);
+      const mockVine = createSpyInstance(VineImpl);
       const context = Mocks.object<CustomElementCtrl>('context');
       const mockHandler = createSpy('Handler');
 

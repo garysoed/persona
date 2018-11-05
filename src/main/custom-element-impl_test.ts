@@ -22,7 +22,7 @@ describe('main.CustomElementImpl', () => {
   let mockVine: SpyObj<VineImpl>;
 
   beforeEach(() => {
-    mockVine = createSpyInstance('Vine', VineImpl.prototype);
+    mockVine = createSpyInstance(VineImpl);
   });
 
   describe(`connectedCallback`, () => {
@@ -51,8 +51,8 @@ describe('main.CustomElementImpl', () => {
       const element = document.createElement('div');
       const templateString = 'templateString';
 
-      const mockListener1 = createSpyInstance('Listener1', BaseListener.prototype);
-      const mockListener2 = createSpyInstance('Listener2', BaseListener.prototype);
+      const mockListener1 = createSpyInstance(BaseListener);
+      const mockListener2 = createSpyInstance(BaseListener);
 
       const customElement = new CustomElementImpl(
           TestClass,
@@ -76,12 +76,10 @@ describe('main.CustomElementImpl', () => {
       const templateString = 'templateString';
 
       const mockRendererLocator1 = createSpyInstance(
-          'RendererLocator1',
-          ResolvedRenderableLocator.prototype,
+          ResolvedRenderableLocator,
           ['startRender']);
       const mockRendererLocator2 = createSpyInstance(
-          'RendererLocator2',
-          ResolvedRenderableLocator.prototype,
+          ResolvedRenderableLocator,
           ['startRender']);
 
       const customElement = new CustomElementImpl(
@@ -106,8 +104,8 @@ describe('main.CustomElementImpl', () => {
       const element = document.createElement('div');
       const templateString = 'templateString';
 
-      const mockWatcher1 = createSpyInstance('Watcher1', ResolvedWatchableLocator.prototype);
-      const mockWatcher2 = createSpyInstance('Watcher2', ResolvedWatchableLocator.prototype);
+      const mockWatcher1 = createSpyInstance(ResolvedWatchableLocator);
+      const mockWatcher2 = createSpyInstance(ResolvedWatchableLocator);
 
       const customElement = new CustomElementImpl(
           TestClass,

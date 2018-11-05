@@ -1,7 +1,6 @@
 import 'jasmine';
 
-import { assert } from 'gs-testing/export/main';
-import { should } from 'gs-testing/src/main/run';
+import { assert, should } from 'gs-testing/export/main';
 import { ElementWithTagType } from 'gs-types/export';
 import { element } from './element-locator';
 import { resolveLocators } from './resolve';

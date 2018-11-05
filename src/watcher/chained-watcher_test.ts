@@ -13,7 +13,7 @@ describe('watcher.ChainedWatcher', () => {
   let watcher: ChainedWatcher<string, number>;
 
   beforeEach(() => {
-    mockSourceWatcher = createSpyInstance('SourceWatcher', Watcher.prototype, ['getValue']);
+    mockSourceWatcher = createSpyInstance(Watcher, ['getValue']);
     mockStartWatchFn = createSpy('StartWatchFn');
     mockMapFn = createSpy<number, [string]>('MapFn');
     watcher = new ChainedWatcher(mockSourceWatcher, mockStartWatchFn, mockMapFn);
@@ -41,11 +41,11 @@ describe('watcher.ChainedWatcher', () => {
       const root = Mocks.object<ShadowRoot>('root');
       const source = 'source';
 
-      const mockSourceUnlisten = createSpyInstance('SourceUnlisten', DisposableFunction.prototype);
+      const mockSourceUnlisten = createSpyInstance(DisposableFunction);
       fake(mockSourceWatcher.watch).always().return(mockSourceUnlisten);
       fake(mockSourceWatcher.getValue).always().return(source);
 
-      const mockInnerUnlisten = createSpyInstance('InnerUnlisten', DisposableFunction.prototype);
+      const mockInnerUnlisten = createSpyInstance(DisposableFunction);
       const unlisten = {key: '123', unlisten: mockInnerUnlisten};
       fake(mockStartWatchFn).always().return(unlisten);
 
@@ -76,7 +76,7 @@ describe('watcher.ChainedWatcher', () => {
       const onChange = Mocks.object<Handler>('onChange');
       const root = Mocks.object<ShadowRoot>('root');
 
-      const mockSourceUnlisten = createSpyInstance('SourceUnlisten', DisposableFunction.prototype);
+      const mockSourceUnlisten = createSpyInstance(DisposableFunction);
       fake(mockSourceWatcher.watch).always().return(mockSourceUnlisten);
       fake(mockStartWatchFn).always()
           .return({key: 'key', unlisten: DisposableFunction.of(() => undefined)});

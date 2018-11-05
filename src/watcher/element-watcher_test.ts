@@ -10,7 +10,7 @@ describe('watcher.ElementWatcher', () => {
   beforeEach(() => {
     const rootEl = document.createElement('div');
     shadowRoot = rootEl.attachShadow({mode: 'closed'});
-    mockVine = createSpyInstance('Vine', VineImpl.prototype);
+    mockVine = createSpyInstance(VineImpl);
   });
 
   describe('getValue_', () => {

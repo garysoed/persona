@@ -58,7 +58,7 @@ describe('locator.dispatcher', () => {
       el.addEventListener(CUSTOM_EVENT_NAME, mockListener);
 
       const mockOnChange = createSpy('OnChange');
-      const mockPrevUnlisten = createSpyInstance('PrevUnlisten', DisposableFunction.prototype);
+      const mockPrevUnlisten = createSpyInstance(DisposableFunction);
       const prevUnlisten = {key: document.createElement('div'), unlisten: mockPrevUnlisten};
       const root = document.createElement('div').attachShadow({mode: 'open'});
 
@@ -75,7 +75,7 @@ describe('locator.dispatcher', () => {
       const el = document.createElement('div');
 
       const mockOnChange = createSpy('OnChange');
-      const mockPrevUnlisten = createSpyInstance('PrevUnlisten', DisposableFunction.prototype);
+      const mockPrevUnlisten = createSpyInstance(DisposableFunction);
       const prevUnlisten = {key: el, unlisten: mockPrevUnlisten};
       const root = document.createElement('div').attachShadow({mode: 'open'});
 

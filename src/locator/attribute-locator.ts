@@ -106,12 +106,16 @@ export class ResolvedAttributeLocator<T>
   }
 
   startRender(vine: VineImpl, context: BaseDisposable): () => void {
-    return vine.listen((attrEl, attr) => {
-      if (!attrEl) {
-        return;
-      }
-      attrEl.setAttribute(this.attrName_, this.parser_.convertForward(attr) || '');
-    }, context, this.elementLocator_.getReadingId(), this.getWritingId());
+    return vine.listen(
+        (attrEl, attr) => {
+          if (!attrEl) {
+            return;
+          }
+          attrEl.setAttribute(this.attrName_, this.parser_.convertForward(attr) || '');
+        },
+        context,
+        this.elementLocator_.getReadingId(),
+        this.getWritingId());
   }
 
   private startWatch_(

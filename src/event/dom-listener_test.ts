@@ -30,8 +30,10 @@ describe('event.DomListener', () => {
 
   beforeEach(() => {
     mockElementLocator = createSpyInstance<ResolvedWatchableLocator<HTMLElement>>(
+        ResolvedWatchableLocator,
+        [],
         'ElementLocator',
-        ResolvedWatchableLocator.prototype);
+    );
     options = Mocks.object('options');
     listener = new DomListener(
         mockElementLocator,
@@ -103,7 +105,7 @@ describe('event.DomListener', () => {
       fake(mockElementLocator.getReadingId).always().return(sourceId);
 
       const vine = vineBuilder.run();
-      const mockContext = createSpyInstance('Context', CustomElementCtrl.prototype);
+      const mockContext = createSpyInstance(CustomElementCtrl);
 
       assert(() => {
         listener.listen(vine, mockContext);

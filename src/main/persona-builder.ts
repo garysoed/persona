@@ -1,5 +1,4 @@
-import { VineOut } from 'grapevine/export/annotation';
-import { VineApp, VineBuilder, VineImpl } from 'grapevine/export/main';
+import { VineApp, VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
@@ -123,7 +122,7 @@ export class PersonaBuilder {
           continue;
         }
 
-        builder.sourceWithProvider(watcher.getReadingId(), async context => {
+        builder.sourceWithProvider(watcher.getReadingId(), context => {
           const shadowRoot = (context as any)[SHADOW_ROOT];
           if (!shadowRoot) {
             throw Errors.assert(`Shadow root of ${context}`).shouldExist().butNot();

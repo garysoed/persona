@@ -38,7 +38,7 @@ describe('main.PersonaBuilder', () => {
     let mockVine: VineApp;
 
     beforeEach(() => {
-      const mockVineBuilder = createSpyInstance('VineBuilder', VineBuilder.prototype);
+      const mockVineBuilder = createSpyInstance(VineBuilder);
       const mockVineOut = createSpy<MethodDecorator, [InstanceStreamId<unknown>]>('VineOut');
       mockVine = {builder: mockVineBuilder, vineOut: mockVineOut} as any;
     });
@@ -71,7 +71,7 @@ describe('main.PersonaBuilder', () => {
     should(`register the watchers correctly`, async () => {
       const tag = 'tag';
       const template = 'template';
-      const mockVineBuilder = createSpyInstance('VineBuilder', VineBuilder.prototype);
+      const mockVineBuilder = createSpyInstance(VineBuilder);
       const locator1 = element('section', InstanceofType(HTMLElement));
       const locator2 = element('a', InstanceofType(HTMLElement));
 
@@ -117,7 +117,7 @@ describe('main.PersonaBuilder', () => {
     should(`register the renderers correctly`, async () => {
       const tag = 'tag';
       const template = 'template';
-      const mockVineBuilder = createSpyInstance('VineBuilder', VineBuilder.prototype);
+      const mockVineBuilder = createSpyInstance(VineBuilder);
       const locator1 = classlist(element('section', InstanceofType(HTMLElement)));
       const locator2 = classlist(element('a', InstanceofType(HTMLElement)));
 

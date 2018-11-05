@@ -48,7 +48,7 @@ describe('locator.AttributeLocator', () => {
     });
 
     should(`create watcher that returns the default value if the element's attribute is missing`,
-        () => {
+           () => {
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});
 
@@ -175,7 +175,7 @@ describe('locator.AttributeLocator', () => {
 
     should(`dispose the previous undispose if for different element`, async () => {
       const oldEl = document.createElement('div');
-      const mockPrevUnlisten = createSpyInstance('PrevUnlisten', DisposableFunction.prototype);
+      const mockPrevUnlisten = createSpyInstance(DisposableFunction);
 
       const watchedEl = document.createElement('div');
       watchedEl.setAttribute(ATTR_NAME, '456');
@@ -196,7 +196,7 @@ describe('locator.AttributeLocator', () => {
       const watchedEl = document.createElement('div');
       watchedEl.setAttribute(ATTR_NAME, '456');
       const mockOnChange = createSpy('OnChange');
-      const mockUnlisten = createSpyInstance('Unlisten', DisposableFunction.prototype);
+      const mockUnlisten = createSpyInstance(DisposableFunction);
       const oldUnlisten = {key: watchedEl, unlisten: mockUnlisten};
       const root = document.createElement('div').attachShadow({mode: 'open'});
 
