@@ -34,7 +34,11 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     return this.definedElements_.get(tag) || null;
   }
 
-  whenDefined(tag: string): PromiseLike<void> {
+  upgrade(root: Node): void {
+    throw new Error('Method not implemented.');
+  }
+
+  whenDefined(tag: string): Promise<void> {
     return new Promise(resolve => {
       // Already defined.
       if (this.get(tag)) {

@@ -11,18 +11,23 @@ import { LocatorPathResolver, UnresolvedRenderableLocator, UnresolvedWatchableLo
 export class ResolvedTextContentLocator
     extends ResolvedRenderableLocator<string> {
   constructor(
-      private readonly elementLocator_: ResolvedWatchableLocator<HTMLElement|null>) {
-    super(instanceStreamId(`${elementLocator_}.innerText`, StringType));
+      readonly elementLocator: ResolvedWatchableLocator<HTMLElement|null>) {
+    super(instanceStreamId(`${elementLocator}.innerText`, StringType));
   }
 
   startRender(vine: VineImpl, context: BaseDisposable): () => void {
-    return vine.listen((el, renderedTextContent) => {
-      if (!el) {
-        return;
-      }
+    return vine.listen(
+        (el, renderedTextContent) => {
+          if (!el) {
+            return;
+          }
 
-      el.textContent = renderedTextContent;
-    }, context, this.elementLocator_.getReadingId(), this.getWritingId());
+          el.textContent = renderedTextContent;
+        },
+        context,
+        this.elementLocator.getReadingId(),
+        this.getWritingId(),
+    );
   }
 }
 

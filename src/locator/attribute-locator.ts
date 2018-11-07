@@ -51,19 +51,19 @@ export class ResolvedAttributeLocator<T>
     extends ResolvedRenderableWatchableLocator<T> {
 
   constructor(
-      private readonly elementLocator_: ResolvedWatchableLocator<HTMLElement|null>,
-      private readonly attrName_: string,
+      readonly elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
+      readonly attrName: string,
       private readonly defaultValue_: T,
-      private readonly parser_: Converter<T, string>,
+      readonly parser: Converter<T, string>,
       type: Type<T>) {
     super(
-        instanceStreamId(generateVineId(elementLocator_, attrName_), type),
-        instanceSourceId(generateVineId(elementLocator_, attrName_), type));
+        instanceStreamId(generateVineId(elementLocator, attrName), type),
+        instanceSourceId(generateVineId(elementLocator, attrName), type));
   }
 
   createWatcher(): Watcher<T> {
     return new ChainedWatcher<HTMLElement|null, T>(
-        this.elementLocator_.createWatcher(),
+        this.elementLocator.createWatcher(),
         (
             element: HTMLElement|null,
             prevUnlisten: Unlisten|null,
@@ -91,11 +91,11 @@ export class ResolvedAttributeLocator<T>
       return null;
     }
 
-    return this.parser_.convertBackward(element.getAttribute(this.attrName_));
+    return this.parser.convertBackward(element.getAttribute(this.attrName));
   }
 
   getValue(root: ShadowRoot): T {
-    const element = this.elementLocator_.getValue(root);
+    const element = this.elementLocator.getValue(root);
     const value = this.getAttributeValue_(element);
     const type = this.getType();
     if (!type.check(value)) {
@@ -111,10 +111,10 @@ export class ResolvedAttributeLocator<T>
           if (!attrEl) {
             return;
           }
-          attrEl.setAttribute(this.attrName_, this.parser_.convertForward(attr) || '');
+          attrEl.setAttribute(this.attrName, this.parser.convertForward(attr) || '');
         },
         context,
-        this.elementLocator_.getReadingId(),
+        this.elementLocator.getReadingId(),
         this.getWritingId());
   }
 
@@ -143,10 +143,10 @@ export class ResolvedAttributeLocator<T>
         new MutationObserver(records => onMutation_(root, records, onChange));
     mutationObserver.observe(
         element,
-        {attributeFilter: [this.attrName_], attributes: true, attributeOldValue: true});
+        {attributeFilter: [this.attrName], attributes: true, attributeOldValue: true});
     onMutation_(
         root,
-        [{attributeName: this.attrName_, oldValue: null, target: element}],
+        [{attributeName: this.attrName, oldValue: null, target: element}],
         onChange);
 
     return {

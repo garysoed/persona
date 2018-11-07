@@ -27,5 +27,11 @@
     "typescript": "^3.0.1",
     "uglifyjs-webpack-plugin": "^1.2.5",
     "webpack": "^4.9.2"
+  },
+  "peerDependencies": {
+    "rxjs": "^6.3.3"
+  },
+  "dependencies": {
+    "rxjs": "^6.3.3"
   }
 }

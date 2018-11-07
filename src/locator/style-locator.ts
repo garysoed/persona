@@ -11,19 +11,24 @@ import { UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unres
 export class ResolvedStyleLocator<S extends keyof CSSStyleDeclaration>
     extends ResolvedRenderableLocator<CSSStyleDeclaration[S]|null> {
   constructor(
-      private readonly elementLocator_: ResolvedWatchableLocator<HTMLElement|null>,
-      private readonly styleKey_: S) {
-    super(instanceStreamId(`${elementLocator_}.${styleKey_}`, AnyType()));
+      readonly elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
+      readonly styleKey: S) {
+    super(instanceStreamId(`${elementLocator}.${styleKey}`, AnyType()));
   }
 
   startRender(vine: VineImpl, context: BaseDisposable): () => void {
-    return vine.listen((el, value) => {
-      if (!el) {
-        return;
-      }
+    return vine.listen(
+        (el, value) => {
+          if (!el) {
+            return;
+          }
 
-      el.style[this.styleKey_] = value;
-    }, context, this.elementLocator_.getReadingId(), this.getWritingId());
+          el.style[this.styleKey] = value;
+        },
+        context,
+        this.elementLocator.getReadingId(),
+        this.getWritingId(),
+    );
   }
 }
 

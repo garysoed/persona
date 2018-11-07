@@ -1,2 +1,2 @@
 export { FakeCustomElementRegistry } from '../src/testing/fake-custom-element-registry';
-export { PersonaTesterFactory } from '../src/testing/persona-tester';
+export { PersonaTester, PersonaTesterFactory } from '../src/testing/persona-tester';

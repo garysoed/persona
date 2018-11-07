@@ -7,17 +7,18 @@ import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, Resolved
 import { CustomElementCtrl } from './custom-element-ctrl';
 
 export const SHADOW_ROOT = Symbol('shadowRoot');
+export const __ctrl = Symbol('ctrl');
+
+export type ElementWithCtrl = HTMLElement & {[__ctrl]?: CustomElementCtrl|null};
 
 /**
  * Main logic class of custom elements.
  */
 export class CustomElementImpl {
-  private component_: CustomElementCtrl | null = null;
-
   constructor(
       private readonly componentClass_: new () => CustomElementCtrl,
       private readonly domListeners_: ImmutableSet<BaseListener>,
-      private readonly element_: HTMLElement,
+      private readonly element_: ElementWithCtrl,
       private readonly rendererLocators_: ImmutableSet<ResolvedRenderableLocator<any>>,
       private readonly templateStr_: string,
       private readonly watchers_:
@@ -28,7 +29,7 @@ export class CustomElementImpl {
   async connectedCallback(): Promise<void> {
     const ctor = this.componentClass_;
     const componentInstance = new ctor();
-    this.component_ = componentInstance;
+    this.element_[__ctrl] = componentInstance;
 
     const shadowRoot = this.getShadowRoot_();
     (componentInstance as any)[SHADOW_ROOT] = shadowRoot;
@@ -45,8 +46,10 @@ export class CustomElementImpl {
   }
 
   disconnectedCallback(): void {
-    if (this.component_) {
-      this.component_.dispose();
+    const ctrl = this.element_[__ctrl];
+    if (ctrl) {
+      ctrl.dispose();
+      this.element_[__ctrl] = null;
     }
   }
 
