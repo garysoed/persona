@@ -1,9 +1,8 @@
 import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
-import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
+import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Type } from 'gs-types/export';
 import { Observable, Subscription } from 'rxjs';
-import { Watcher } from '../watcher/watcher';
 
 /**
  * Locator spec that has been resolved.

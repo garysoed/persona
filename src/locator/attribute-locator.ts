@@ -7,43 +7,12 @@ import { Type } from 'gs-types/export';
 import { combineLatest, Observable, of as observableOf, Subscription } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 import { mutationObservable } from '../util/mutation-observable';
-import { Handler } from '../watcher/watcher';
 import { ResolvedLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { UnresolvedRenderableWatchableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
-
-/**
- * A subclass of MutationRecord.
- */
-interface Record {
-  attributeName: string|null;
-  oldValue: string|null;
-  target: Node;
-}
 
 function generateVineId(elementLocator: ResolvedLocator, attrName: string):
     string {
   return `${elementLocator}[${attrName}]`;
-}
-
-export function onMutation_(root: ShadowRoot, records: Record[], onChange: Handler): void {
-  for (const {attributeName, oldValue, target} of records) {
-    if (!attributeName) {
-      continue;
-    }
-
-    if (!(target instanceof Element)) {
-      continue;
-    }
-
-    const oldValueString = oldValue;
-    const unparsedValue = target.getAttribute(attributeName);
-
-    if (oldValueString === unparsedValue) {
-      continue;
-    }
-
-    onChange(root);
-  }
 }
 
 /**
