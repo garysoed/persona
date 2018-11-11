@@ -2,6 +2,7 @@ import { instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { StringType } from 'gs-types/export';
+import { combineLatest, Subscription } from 'rxjs';
 import { ResolvedLocator, ResolvedRenderableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { LocatorPathResolver, UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
@@ -15,19 +16,18 @@ export class ResolvedTextContentLocator
     super(instanceStreamId(`${elementLocator}.innerText`, StringType));
   }
 
-  startRender(vine: VineImpl, context: BaseDisposable): () => void {
-    return vine.listen(
-        (el, renderedTextContent) => {
+  startRender(vine: VineImpl, context: BaseDisposable): Subscription {
+    return combineLatest(
+        vine.getObservable(this.elementLocator.getReadingId(), context),
+        vine.getObservable(this.getWritingId(), context),
+        )
+        .subscribe(([el, renderedTextContent]) => {
           if (!el) {
             return;
           }
 
           el.textContent = renderedTextContent;
-        },
-        context,
-        this.elementLocator.getReadingId(),
-        this.getWritingId(),
-    );
+        });
   }
 }
 

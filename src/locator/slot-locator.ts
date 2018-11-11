@@ -3,6 +3,7 @@ import { VineImpl } from 'grapevine/export/main';
 import { ImmutableList } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Type } from 'gs-types/export';
+import { combineLatest, Subscription } from 'rxjs';
 import { Renderer } from '../renderer/renderer';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { LocatorPathResolver, UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
@@ -19,9 +20,12 @@ export class ResolvedSlotLocator<T, R> extends ResolvedRenderableLocator<T> {
     super(instanceStreamId(`${parentElementLocator}.slot(${slotName})`, type));
   }
 
-  startRender(vine: VineImpl, context: BaseDisposable): () => void {
-    return vine.listen(
-        (parentEl, value) => {
+  startRender(vine: VineImpl, context: BaseDisposable): Subscription {
+    return combineLatest(
+        vine.getObservable(this.parentElementLocator.getReadingId(), context),
+        vine.getObservable(this.getWritingId(), context),
+        )
+        .subscribe(([parentEl, value]) => {
           if (!parentEl) {
             return;
           }
@@ -35,10 +39,7 @@ export class ResolvedSlotLocator<T, R> extends ResolvedRenderableLocator<T> {
 
           const oldRender = slotNode[SLOT_ELEMENTS_] || null;
           slotNode[SLOT_ELEMENTS_] = this.renderer_.render(value, oldRender, parentEl, slotNode);
-        },
-        context,
-        this.parentElementLocator.getReadingId(),
-        this.getWritingId());
+        });
   }
 }
 

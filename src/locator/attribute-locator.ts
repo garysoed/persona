@@ -1,9 +1,9 @@
 import { instanceSourceId, instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
-import { Parser } from 'gs-tools/export/parse';
 import { Converter } from 'gs-tools/src/converter/converter';
 import { Type } from 'gs-types/export';
+import { combineLatest, Subscription } from 'rxjs';
 import { ChainedWatcher, Unlisten } from '../watcher/chained-watcher';
 import { Handler, Watcher } from '../watcher/watcher';
 import { ResolvedLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from './resolved-locator';
@@ -105,17 +105,17 @@ export class ResolvedAttributeLocator<T>
     return value;
   }
 
-  startRender(vine: VineImpl, context: BaseDisposable): () => void {
-    return vine.listen(
-        (attrEl, attr) => {
+  startRender(vine: VineImpl, context: BaseDisposable): Subscription {
+    return combineLatest(
+        vine.getObservable(this.elementLocator.getReadingId(), context),
+        vine.getObservable(this.getWritingId(), context),
+        )
+        .subscribe(([attrEl, attr]) => {
           if (!attrEl) {
             return;
           }
           attrEl.setAttribute(this.attrName, this.parser.convertForward(attr) || '');
-        },
-        context,
-        this.elementLocator.getReadingId(),
-        this.getWritingId());
+        });
   }
 
   private startWatch_(

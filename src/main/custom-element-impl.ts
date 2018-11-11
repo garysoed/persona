@@ -70,8 +70,8 @@ export class CustomElementImpl {
 
   private setupRenderers_(context: CustomElementCtrl): void {
     for (const rendererLocator of this.rendererLocators_ || []) {
-      const unlistenFn = rendererLocator.startRender(this.vine_, context);
-      context.addDisposable(DisposableFunction.of(unlistenFn));
+      const subscription = rendererLocator.startRender(this.vine_, context);
+      context.addSubscription(subscription);
     }
   }
 

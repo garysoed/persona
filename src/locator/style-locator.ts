@@ -2,6 +2,7 @@ import { instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { AnyType, Type } from 'gs-types/export';
+import { combineLatest, Subscription } from 'rxjs';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
@@ -16,19 +17,18 @@ export class ResolvedStyleLocator<S extends keyof CSSStyleDeclaration>
     super(instanceStreamId(`${elementLocator}.${styleKey}`, AnyType()));
   }
 
-  startRender(vine: VineImpl, context: BaseDisposable): () => void {
-    return vine.listen(
-        (el, value) => {
+  startRender(vine: VineImpl, context: BaseDisposable): Subscription {
+    return combineLatest(
+        vine.getObservable(this.elementLocator.getReadingId(), context),
+        vine.getObservable(this.getWritingId(), context),
+        )
+        .subscribe(([el, value]) => {
           if (!el) {
             return;
           }
 
           el.style[this.styleKey] = value;
-        },
-        context,
-        this.elementLocator.getReadingId(),
-        this.getWritingId(),
-    );
+        });
   }
 }
 

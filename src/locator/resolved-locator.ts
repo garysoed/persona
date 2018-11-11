@@ -2,6 +2,7 @@ import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
 import { Type } from 'gs-types/export';
+import { Subscription } from 'rxjs';
 import { Watcher } from '../watcher/watcher';
 
 /**
@@ -23,7 +24,7 @@ export abstract class ResolvedRenderableLocator<T> extends ResolvedLocator {
     return this.streamId_;
   }
 
-  abstract startRender(vine: VineImpl, context: BaseDisposable): () => void;
+  abstract startRender(vine: VineImpl, context: BaseDisposable): Subscription;
 }
 
 /**
@@ -49,9 +50,16 @@ export abstract class ResolvedWatchableLocator<T> extends ResolvedLocator {
   startWatch(vine: VineImpl, context: BaseDisposable, root: ShadowRoot): DisposableFunction {
     const watcher = this.createWatcher();
 
-    return watcher.watch(vine, root => {
-      vine.setValue(this.readingId_, watcher.getValue(root), context);
-    }, root);
+    return watcher
+        .watch(
+            vine,
+            root => {
+              vine.setValue(
+                  this.readingId_,
+                  watcher.getValue(root),
+                  context);
+            },
+            root);
   }
 }
 
@@ -83,6 +91,6 @@ export abstract class ResolvedRenderableWatchableLocator<T> extends ResolvedRend
 
     return watcher.watch(vine, root => {
       vine.setValue(this.sourceId_, watcher.getValue(root), context);
-    }, root);
+    },                   root);
   }
 }
