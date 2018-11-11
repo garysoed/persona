@@ -77,7 +77,7 @@ export class CustomElementImpl {
 
   private setupWatchers_(context: BaseDisposable): void {
     for (const watcher of this.watchers_) {
-      context.addDisposable(watcher.startWatch(this.vine_, context, this.getShadowRoot_()));
+      context.addSubscription(watcher.startWatch(this.vine_, context, this.getShadowRoot_()));
     }
   }
 }

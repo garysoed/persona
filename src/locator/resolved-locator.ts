@@ -2,7 +2,7 @@ import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
 import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
 import { Type } from 'gs-types/export';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Watcher } from '../watcher/watcher';
 
 /**
@@ -35,7 +35,7 @@ export abstract class ResolvedWatchableLocator<T> extends ResolvedLocator {
     super();
   }
 
-  abstract createWatcher(): Watcher<T>;
+  abstract getObservableValue(root: ShadowRoot): Observable<T>;
 
   getReadingId(): InstanceSourceId<T> {
     return this.readingId_;
@@ -47,19 +47,11 @@ export abstract class ResolvedWatchableLocator<T> extends ResolvedLocator {
 
   abstract getValue(root: ShadowRoot): T;
 
-  startWatch(vine: VineImpl, context: BaseDisposable, root: ShadowRoot): DisposableFunction {
-    const watcher = this.createWatcher();
-
-    return watcher
-        .watch(
-            vine,
-            root => {
-              vine.setValue(
-                  this.readingId_,
-                  watcher.getValue(root),
-                  context);
-            },
-            root);
+  startWatch(vine: VineImpl, context: BaseDisposable, root: ShadowRoot): Subscription {
+    return this.getObservableValue(root)
+        .subscribe(value => {
+          vine.setValue(this.readingId_, value, context);
+        });
   }
 }
 
@@ -74,7 +66,7 @@ export abstract class ResolvedRenderableWatchableLocator<T> extends ResolvedRend
     super(streamId_);
   }
 
-  abstract createWatcher(): Watcher<T>;
+  abstract getObservableValue(root: ShadowRoot): Observable<T>;
 
   getReadingId(): InstanceSourceId<T> {
     return this.sourceId_;
@@ -86,11 +78,10 @@ export abstract class ResolvedRenderableWatchableLocator<T> extends ResolvedRend
 
   abstract getValue(root: ShadowRoot): T;
 
-  startWatch(vine: VineImpl, context: BaseDisposable, root: ShadowRoot): DisposableFunction {
-    const watcher = this.createWatcher();
-
-    return watcher.watch(vine, root => {
-      vine.setValue(this.sourceId_, watcher.getValue(root), context);
-    },                   root);
+  startWatch(vine: VineImpl, context: BaseDisposable, root: ShadowRoot): Subscription {
+    return this.getObservableValue(root)
+        .subscribe(value => {
+          vine.setValue(this.sourceId_, value, context);
+        });
   }
 }

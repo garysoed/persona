@@ -21,7 +21,7 @@ describe('locator.SlotLocator', () => {
   let vineBuilder: VineBuilder;
 
   beforeEach(() => {
-  vineBuilder = new VineBuilder();
+    vineBuilder = new VineBuilder();
     elementLocator = element('div', InstanceofType(HTMLDivElement));
     mockRenderer = createSpyObject<Renderer<Data, HTMLElement>>('Renderer', ['render']);
     locator = slot(

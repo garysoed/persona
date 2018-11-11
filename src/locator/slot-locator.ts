@@ -13,7 +13,7 @@ type SlotNode<R> = Node & {[SLOT_ELEMENTS_]?: R};
 
 export class ResolvedSlotLocator<T, R> extends ResolvedRenderableLocator<T> {
   constructor(
-      readonly parentElementLocator: ResolvedWatchableLocator<HTMLElement|null>,
+      readonly parentElementLocator: ResolvedWatchableLocator<Element>,
       readonly slotName: string,
       private readonly renderer_: Renderer<T, R>,
       type: Type<T>) {
@@ -46,7 +46,7 @@ export class ResolvedSlotLocator<T, R> extends ResolvedRenderableLocator<T> {
 export class UnresolvedSlotLocator<T, N>
     extends UnresolvedRenderableLocator<T|null> {
   constructor(
-      private readonly parentElementLocator_: UnresolvedWatchableLocator<HTMLElement|null>,
+      private readonly parentElementLocator_: UnresolvedWatchableLocator<Element>,
       private readonly slotName_: string,
       private readonly converter_: Renderer<T, N>,
       private readonly type_: Type<T>) {
@@ -64,18 +64,20 @@ export class UnresolvedSlotLocator<T, N>
 
 type SlotLocator<T, R> = ResolvedSlotLocator<T, R>|UnresolvedSlotLocator<T, R>;
 export function slot<T, R>(
-    parentElement: ResolvedWatchableLocator<HTMLElement|null>,
+    parentElement: ResolvedWatchableLocator<Element>,
     slotName: string,
     renderer: Renderer<T, R>,
-    type: Type<T>): ResolvedSlotLocator<T, R>;
+    type: Type<T>,
+): ResolvedSlotLocator<T, R>;
 export function slot<T, R>(
-    parentElement: UnresolvedWatchableLocator<HTMLElement|null>,
+    parentElement: UnresolvedWatchableLocator<Element>,
     slotName: string,
     renderer: Renderer<T, R>,
-    type: Type<T>): UnresolvedSlotLocator<T, R>;
+    type: Type<T>,
+): UnresolvedSlotLocator<T, R>;
 export function slot<T, R>(
-    parentElement: UnresolvedWatchableLocator<HTMLElement|null>|
-        ResolvedWatchableLocator<HTMLElement|null>,
+    parentElement: UnresolvedWatchableLocator<Element>|
+        ResolvedWatchableLocator<Element>,
     slotName: string,
     renderer: Renderer<T, R>,
     type: Type<T>): SlotLocator<T, R> {

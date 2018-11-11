@@ -12,7 +12,7 @@ import { LocatorPathResolver, UnresolvedRenderableLocator, UnresolvedWatchableLo
 export class ResolvedTextContentLocator
     extends ResolvedRenderableLocator<string> {
   constructor(
-      readonly elementLocator: ResolvedWatchableLocator<HTMLElement|null>) {
+      readonly elementLocator: ResolvedWatchableLocator<Element>) {
     super(instanceStreamId(`${elementLocator}.innerText`, StringType));
   }
 
@@ -36,7 +36,7 @@ export class ResolvedTextContentLocator
  */
 export class UnresolvedTextContentLocator
     extends UnresolvedRenderableLocator<string> {
-  constructor(private readonly elementLocator_: UnresolvedWatchableLocator<HTMLElement|null>) {
+  constructor(private readonly elementLocator_: UnresolvedWatchableLocator<Element>) {
     super();
   }
 
@@ -51,12 +51,12 @@ export type TextContentLocator = ResolvedTextContentLocator|UnresolvedTextConten
  * Creates selector that selects a text content of an element.
  */
 export function textContent(
-    elementLocator: ResolvedWatchableLocator<HTMLElement|null>): ResolvedTextContentLocator;
+    elementLocator: ResolvedWatchableLocator<Element>): ResolvedTextContentLocator;
 export function textContent(
-    elementLocator: UnresolvedWatchableLocator<HTMLElement|null>): UnresolvedTextContentLocator;
+    elementLocator: UnresolvedWatchableLocator<Element>): UnresolvedTextContentLocator;
 export function textContent(
     elementLocator:
-        ResolvedWatchableLocator<HTMLElement|null>|UnresolvedWatchableLocator<HTMLElement|null>):
+        ResolvedWatchableLocator<Element>|UnresolvedWatchableLocator<Element>):
     TextContentLocator {
   if (elementLocator instanceof ResolvedLocator) {
     return new ResolvedTextContentLocator(elementLocator);

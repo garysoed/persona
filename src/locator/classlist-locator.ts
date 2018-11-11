@@ -24,13 +24,14 @@ export const classListParser: Converter<ImmutableSet<string>, string> = {
  */
 export class ResolvedClassListLocator
     extends ResolvedAttributeLocator<ImmutableSet<string>> {
-  constructor(elementLocator: ResolvedWatchableLocator<HTMLElement|null>) {
+  constructor(elementLocator: ResolvedWatchableLocator<Element>) {
     super(
         elementLocator,
         'class',
-        ImmutableSet.of(),
         classListParser,
-        InstanceofType<ImmutableSet<string>>(ImmutableSet));
+        InstanceofType<ImmutableSet<string>>(ImmutableSet),
+        ImmutableSet.of(),
+    );
   }
 }
 
@@ -40,7 +41,7 @@ export class ResolvedClassListLocator
 export class UnresolvedClassListLocator
     extends UnresolvedRenderableLocator<ImmutableSet<string>> {
   constructor(
-      private readonly elementLocator_: UnresolvedWatchableLocator<HTMLElement|null>) {
+      private readonly elementLocator_: UnresolvedWatchableLocator<Element>) {
     super();
   }
 
@@ -55,12 +56,11 @@ export type ClassListLocator = ResolvedClassListLocator|UnresolvedClassListLocat
  * Creates selector that selects the given style of an element.
  */
 export function classlist(
-    elementLocator: UnresolvedWatchableLocator<HTMLElement|null>): UnresolvedClassListLocator;
-export function classlist<E extends HTMLElement|null>(
-    elementLocator: ResolvedWatchableLocator<HTMLElement|null>): ResolvedClassListLocator;
-export function classlist<E extends HTMLElement|null>(
-    elementLocator:
-        UnresolvedWatchableLocator<HTMLElement|null>|ResolvedWatchableLocator<HTMLElement|null>):
+    elementLocator: UnresolvedWatchableLocator<Element>): UnresolvedClassListLocator;
+export function classlist(
+    elementLocator: ResolvedWatchableLocator<Element>): ResolvedClassListLocator;
+export function classlist(
+    elementLocator: UnresolvedWatchableLocator<Element>|ResolvedWatchableLocator<Element>):
     ClassListLocator {
   if (elementLocator instanceof ResolvedWatchableLocator) {
     return new ResolvedClassListLocator(elementLocator);

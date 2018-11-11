@@ -1,18 +1,18 @@
 import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
+import { ImmutableList } from 'gs-tools/src/immutable';
 import { Observable } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { ResolvedAttributeLocator } from '../locator/attribute-locator';
 import { ResolvedElementLocator } from '../locator/element-locator';
 import { ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
+import { findCommentNode, ResolvedSlotLocator } from '../locator/slot-locator';
 import { ResolvedStyleLocator } from '../locator/style-locator';
 import { ResolvedTextContentLocator } from '../locator/text-content-locator';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { __ctrl, ElementWithCtrl } from '../main/custom-element-impl';
 import { PersonaBuilder } from '../main/persona-builder';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
-import { ResolvedSlotLocator, findCommentNode, slot } from '../locator/slot-locator';
-import { ImmutableList } from 'gs-tools/src/immutable';
 
 interface Key {
   alt?: boolean;
@@ -198,7 +198,7 @@ function getCtrl_(element: ElementWithCtrl): CustomElementCtrl {
   return ctrl;
 }
 
-function getElement_<E extends HTMLElement|null>(
+function getElement_<E extends Element>(
     element: ElementWithCtrl,
     locator: ResolvedWatchableLocator<E>): Exclude<E, null> {
   const shadowRoot = getShadowRoot_(element);

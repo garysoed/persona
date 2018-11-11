@@ -12,7 +12,7 @@ import { UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unres
 export class ResolvedStyleLocator<S extends keyof CSSStyleDeclaration>
     extends ResolvedRenderableLocator<CSSStyleDeclaration[S]|null> {
   constructor(
-      readonly elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
+      readonly elementLocator: ResolvedWatchableLocator<HTMLElement>,
       readonly styleKey: S) {
     super(instanceStreamId(`${elementLocator}.${styleKey}`, AnyType()));
   }
@@ -38,7 +38,7 @@ export class ResolvedStyleLocator<S extends keyof CSSStyleDeclaration>
 export class UnresolvedStyleLocator<S extends keyof CSSStyleDeclaration>
     extends UnresolvedRenderableLocator<CSSStyleDeclaration[S]|null> {
   constructor(
-      private readonly elementLocator_: UnresolvedWatchableLocator<HTMLElement|null>,
+      private readonly elementLocator_: UnresolvedWatchableLocator<HTMLElement>,
       private readonly styleKey_: S) {
     super();
   }
@@ -55,14 +55,14 @@ export type StyleLocator<S extends keyof CSSStyleDeclaration> =
  * Creates selector that selects the given style of an element.
  */
 export function style<S extends keyof CSSStyleDeclaration>(
-    elementLocator: UnresolvedWatchableLocator<HTMLElement|null>,
+    elementLocator: UnresolvedWatchableLocator<HTMLElement>,
     styleKey: S): UnresolvedStyleLocator<S>;
 export function style<S extends keyof CSSStyleDeclaration>(
-    elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
+    elementLocator: ResolvedWatchableLocator<HTMLElement>,
     styleKey: S): ResolvedStyleLocator<S>;
 export function style<S extends keyof CSSStyleDeclaration>(
     elementLocator:
-        UnresolvedWatchableLocator<HTMLElement|null>|ResolvedWatchableLocator<HTMLElement|null>,
+        UnresolvedWatchableLocator<HTMLElement>|ResolvedWatchableLocator<HTMLElement>,
     styleKey: S): StyleLocator<S> {
   if (elementLocator instanceof ResolvedWatchableLocator) {
     return new ResolvedStyleLocator(elementLocator, styleKey);
