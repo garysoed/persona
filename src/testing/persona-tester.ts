@@ -11,6 +11,8 @@ import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { __ctrl, ElementWithCtrl } from '../main/custom-element-impl';
 import { PersonaBuilder } from '../main/persona-builder';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
+import { ResolvedSlotLocator, findCommentNode, slot } from '../locator/slot-locator';
+import { ImmutableList } from 'gs-tools/src/immutable';
 
 interface Key {
   alt?: boolean;
@@ -51,6 +53,26 @@ export class PersonaTester {
     }
 
     return value;
+  }
+
+  getElementsAfter(
+      element: ElementWithCtrl,
+      locator: ResolvedSlotLocator<unknown, unknown>,
+  ): ImmutableList<Node> {
+    const parentEl = getElement_(element, locator.parentElementLocator);
+    const slotEl = findCommentNode(ImmutableList.of(parentEl.childNodes), locator.slotName);
+    if (!slotEl) {
+      throw new Error(`Slot ${locator.slotName} cannot be found`);
+    }
+
+    const nodes = [];
+    let node = slotEl.nextSibling;
+    while (node) {
+      nodes.push(node);
+      node = node.nextSibling;
+    }
+
+    return ImmutableList.of(nodes);
   }
 
   getObservable<T>(

@@ -1,9 +1,9 @@
 import { VineImpl } from 'grapevine/export/main';
 import { assert, match, should } from 'gs-testing/export/main';
 import { Mocks } from 'gs-testing/export/mock';
-import { createSpy, Spy } from 'gs-testing/export/spy';
-import { createSpyInstance, createSpyObject, spy } from 'gs-testing/src/spy/spy';
-import { DisposableFunction } from 'gs-tools/export/dispose';
+import { createSpy, fake, Spy } from 'gs-testing/export/spy';
+import { createSpyInstance, spy } from 'gs-testing/src/spy/spy';
+import { Observable, of as observableOf } from 'rxjs';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { BaseListener } from './base-listener';
 
@@ -13,15 +13,15 @@ const PROPERTY_KEY = 'method';
  * @test
  */
 class TestListener extends BaseListener {
-  constructor(private readonly listenImplSpy_: Spy<DisposableFunction>) {
+  constructor(
+      private readonly listenImplSpy_: Spy<Observable<Event>, [VineImpl, CustomElementCtrl]>) {
     super(PROPERTY_KEY);
   }
 
   protected listenImpl_(
       vine: VineImpl,
-      context: CustomElementCtrl,
-      handler: EventListener): DisposableFunction {
-    return this.listenImplSpy_(vine, context, handler);
+      context: CustomElementCtrl): Observable<Event> {
+    return this.listenImplSpy_(vine, context);
   }
 }
 
@@ -39,11 +39,12 @@ class TestCtrl extends CustomElementCtrl {
 }
 
 describe('event.BaseListener', () => {
-  let mockListenImplSpy: Spy<DisposableFunction>;
+  let mockListenImplSpy: Spy<Observable<Event>, [VineImpl, CustomElementCtrl]>;
   let listener: TestListener;
 
   beforeEach(() => {
-    mockListenImplSpy = createSpy<DisposableFunction>('ListenImplSpy');
+    mockListenImplSpy = createSpy<Observable<Event>, [VineImpl, CustomElementCtrl]>(
+        'ListenImplSpy');
     listener = new TestListener(mockListenImplSpy);
   });
 
@@ -53,13 +54,10 @@ describe('event.BaseListener', () => {
       const mockContext = new TestCtrl();
       const propertySpy = spy(mockContext, PROPERTY_KEY);
 
-      listener.listen(vine, mockContext);
-      const handlerMatch = match.anyThat<(event: Event) => void>().beAFunction();
-      assert(mockListenImplSpy).to
-          .haveBeenCalledWith(vine, mockContext, handlerMatch);
-
       const event = Mocks.object<CustomEvent>('event');
-      handlerMatch.getLastMatch()(event);
+      fake(mockListenImplSpy).always().return(observableOf(event));
+
+      listener.listen(vine, mockContext);
       assert(propertySpy).to.haveBeenCalledWith(event, vine);
     });
 

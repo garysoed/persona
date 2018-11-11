@@ -45,7 +45,6 @@ describe('event.DomListener', () => {
   describe('listen', () => {
     should(`listen to events correctly`, async () => {
       const el = document.createElement('div');
-      const addListenerSpy = fake(spy(el, 'addEventListener')).always().callOriginal();
 
       const vineBuilder = new VineBuilder();
       const sourceId = instanceSourceId('el', InstanceofType(HTMLElement));
@@ -56,15 +55,13 @@ describe('event.DomListener', () => {
       const mockContext = new TestClass();
       const spyMethod = spy(mockContext, 'method');
 
-      const disposableFn = listener.listen(vine, mockContext);
-      await retryUntil(() => addListenerSpy).to.equal(match.anySpyThat().haveBeenCalled());
-
+      const subscription = listener.listen(vine, mockContext);
       const eventObj = new CustomEvent<{}>(EVENT_NAME);
       el.dispatchEvent(eventObj);
 
       assert(spyMethod).to.haveBeenCalledWith(eventObj, vine);
 
-      disposableFn.dispose();
+      subscription.unsubscribe();
 
       resetCalls(spyMethod);
       el.dispatchEvent(eventObj);
@@ -72,13 +69,9 @@ describe('event.DomListener', () => {
     });
 
     should(`handle when element is removed`, async () => {
-      const el = document.createElement('div');
-      const addListenerSpy = fake(spy(el, 'addEventListener')).always().callOriginal();
-      const removeListenerSpy = fake(spy(el, 'removeEventListener')).always().callOriginal();
-
       const vineBuilder = new VineBuilder();
       const sourceId = instanceSourceId('el', InstanceofType(HTMLElement));
-      vineBuilder.source(sourceId, el);
+      vineBuilder.source(sourceId, null);
       fake(mockElementLocator.getReadingId).always().return(sourceId);
 
       const vine = vineBuilder.run();
@@ -86,30 +79,7 @@ describe('event.DomListener', () => {
       const spyMethod = spy(mockContext, 'method');
 
       listener.listen(vine, mockContext);
-      await retryUntil(() => addListenerSpy).to.equal(match.anySpyThat().haveBeenCalled());
-
-      // Remove the element.
-      vine.setValue(sourceId, null, mockContext);
-      await retryUntil(() => removeListenerSpy).to.equal(match.anySpyThat().haveBeenCalled());
-
-      const eventObj = new CustomEvent<{}>(EVENT_NAME);
-      el.dispatchEvent(eventObj);
       assert(spyMethod).toNot.haveBeenCalled();
-    });
-
-    should(`throw error if property is not a function`, () => {
-      const el = document.createElement('div');
-      const vineBuilder = new VineBuilder();
-      const sourceId = instanceSourceId('el', InstanceofType(HTMLElement));
-      vineBuilder.source(sourceId, el);
-      fake(mockElementLocator.getReadingId).always().return(sourceId);
-
-      const vine = vineBuilder.run();
-      const mockContext = createSpyInstance(CustomElementCtrl);
-
-      assert(() => {
-        listener.listen(vine, mockContext);
-      }).to.throwErrorWithMessage(/Property/);
     });
   });
 });

@@ -12,29 +12,33 @@ type SlotNode<R> = Node & {[SLOT_ELEMENTS_]?: R};
 
 export class ResolvedSlotLocator<T, R> extends ResolvedRenderableLocator<T> {
   constructor(
-      private readonly parentElementLocator_: ResolvedWatchableLocator<HTMLElement|null>,
-      private readonly slotName_: string,
+      readonly parentElementLocator: ResolvedWatchableLocator<HTMLElement|null>,
+      readonly slotName: string,
       private readonly renderer_: Renderer<T, R>,
       type: Type<T>) {
-    super(instanceStreamId(`${parentElementLocator_}.slot(${slotName_})`, type));
+    super(instanceStreamId(`${parentElementLocator}.slot(${slotName})`, type));
   }
 
   startRender(vine: VineImpl, context: BaseDisposable): () => void {
-    return vine.listen((parentEl, value) => {
-      if (!parentEl) {
-        return;
-      }
+    return vine.listen(
+        (parentEl, value) => {
+          if (!parentEl) {
+            return;
+          }
 
-      const childNodes = ImmutableList.of(parentEl.childNodes);
-      const slotNode = findCommentNode<R>(childNodes, this.slotName_);
+          const childNodes = ImmutableList.of(parentEl.childNodes);
+          const slotNode = findCommentNode<R>(childNodes, this.slotName);
 
-      if (!slotNode) {
-        return;
-      }
+          if (!slotNode) {
+            return;
+          }
 
-      const oldRender = slotNode[SLOT_ELEMENTS_] || null;
-      slotNode[SLOT_ELEMENTS_] = this.renderer_.render(value, oldRender, parentEl, slotNode);
-    }, context, this.parentElementLocator_.getReadingId(), this.getWritingId());
+          const oldRender = slotNode[SLOT_ELEMENTS_] || null;
+          slotNode[SLOT_ELEMENTS_] = this.renderer_.render(value, oldRender, parentEl, slotNode);
+        },
+        context,
+        this.parentElementLocator.getReadingId(),
+        this.getWritingId());
   }
 }
 
@@ -59,15 +63,15 @@ export class UnresolvedSlotLocator<T, N>
 
 type SlotLocator<T, R> = ResolvedSlotLocator<T, R>|UnresolvedSlotLocator<T, R>;
 export function slot<T, R>(
-    parentElement: UnresolvedWatchableLocator<HTMLElement|null>,
-    slotName: string,
-    renderer: Renderer<T, R>,
-    type: Type<T>): UnresolvedSlotLocator<T, R>;
-export function slot<T, R>(
     parentElement: ResolvedWatchableLocator<HTMLElement|null>,
     slotName: string,
     renderer: Renderer<T, R>,
     type: Type<T>): ResolvedSlotLocator<T, R>;
+export function slot<T, R>(
+    parentElement: UnresolvedWatchableLocator<HTMLElement|null>,
+    slotName: string,
+    renderer: Renderer<T, R>,
+    type: Type<T>): UnresolvedSlotLocator<T, R>;
 export function slot<T, R>(
     parentElement: UnresolvedWatchableLocator<HTMLElement|null>|
         ResolvedWatchableLocator<HTMLElement|null>,

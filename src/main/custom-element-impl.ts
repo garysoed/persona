@@ -63,8 +63,8 @@ export class CustomElementImpl {
 
   private setupDomListeners_(context: CustomElementCtrl): void {
     for (const domListener of this.domListeners_) {
-      const disposableFn = domListener.listen(this.vine_, context);
-      context.addDisposable(disposableFn);
+      const subscription = domListener.listen(this.vine_, context);
+      context.addSubscription(subscription);
     }
   }
 

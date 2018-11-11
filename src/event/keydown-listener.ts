@@ -1,6 +1,7 @@
 import { VineImpl } from 'grapevine/export/main';
-import { DisposableFunction } from 'gs-tools/export/dispose';
 import { BooleanType } from 'gs-types/export';
+import { Observable } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
 import { ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { DomListener } from './dom-listener';
@@ -34,36 +35,41 @@ export class KeydownListener<E extends HTMLElement|null = HTMLElement> extends D
 
   protected listenImpl_(
       vine: VineImpl,
-      context: CustomElementCtrl,
-      handler: EventListener): DisposableFunction {
-    return super.listenImpl_(vine, context, (event: Event) => {
-      if (!(event instanceof KeyboardEvent)) {
-        return;
-      }
+      context: CustomElementCtrl): Observable<Event> {
+    return super.listenImpl_(vine, context)
+        .pipe(
+            filter(event => {
+              if (!(event instanceof KeyboardEvent)) {
+                return false;
+              }
 
-      if (event.key !== this.key_) {
-        return;
-      }
+              if (event.key !== this.key_) {
+                return false;
+              }
 
-      if (BooleanType.check(this.matchOptions_.alt) && this.matchOptions_.alt !== event.altKey) {
-        return;
-      }
+              if (BooleanType.check(this.matchOptions_.alt) &&
+                  this.matchOptions_.alt !== event.altKey) {
+                return false;
+              }
 
-      if (BooleanType.check(this.matchOptions_.ctrl) && this.matchOptions_.ctrl !== event.ctrlKey) {
-        return;
-      }
+              if (BooleanType.check(this.matchOptions_.ctrl) &&
+                  this.matchOptions_.ctrl !== event.ctrlKey) {
+                return false;
+              }
 
-      if (BooleanType.check(this.matchOptions_.meta) && this.matchOptions_.meta !== event.metaKey) {
-        return;
-      }
+              if (BooleanType.check(this.matchOptions_.meta) &&
+                  this.matchOptions_.meta !== event.metaKey) {
+                return false;
+              }
 
-      if (BooleanType.check(this.matchOptions_.shift) &&
-          this.matchOptions_.shift !== event.shiftKey) {
-        return;
-      }
+              if (BooleanType.check(this.matchOptions_.shift) &&
+                  this.matchOptions_.shift !== event.shiftKey) {
+                return false;
+              }
 
-      event.stopPropagation();
-      handler(event);
-    });
+              return true;
+            }),
+            tap(event => event.stopPropagation()),
+        );
   }
 }

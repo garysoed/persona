@@ -1,7 +1,7 @@
 import { VineImpl } from 'grapevine/export/main';
-import { DisposableFunction } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
 import { InstanceofType } from 'gs-types/export';
+import { Observable, Subscription } from 'rxjs';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 
 /**
@@ -10,7 +10,7 @@ import { CustomElementCtrl } from '../main/custom-element-ctrl';
 export abstract class BaseListener {
   constructor(private readonly propertyKey_: string|symbol) { }
 
-  listen(vine: VineImpl, context: CustomElementCtrl): DisposableFunction {
+  listen(vine: VineImpl, context: CustomElementCtrl): Subscription {
     const handlerFn = (context as any)[this.propertyKey_];
     if (!InstanceofType(Function).check(handlerFn)) {
       throw Errors.assert(`Property ${this.propertyKey_.toString()} of ${context}`)
@@ -18,16 +18,11 @@ export abstract class BaseListener {
           .butWas(handlerFn);
     }
 
-    return this.listenImpl_(
-        vine,
-        context,
-        (event: Event) => {
+    return this.listenImpl_(vine, context)
+        .subscribe(event => {
           handlerFn.call(context, event, vine);
         });
   }
 
-  protected abstract listenImpl_(
-      vine: VineImpl,
-      context: CustomElementCtrl,
-      handler: EventListener): DisposableFunction;
+  protected abstract listenImpl_(vine: VineImpl, context: CustomElementCtrl): Observable<Event>;
 }
