@@ -4,7 +4,7 @@ import { ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { OnKeydownSpec } from '../main/component-spec';
 
 export type OnKeydownAnnotation = (
-    elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
+    elementLocator: ResolvedWatchableLocator<Element>,
     key: string,
     matchOption?: MatchOptions,
     options?: AddEventListenerOptions) => MethodDecorator;
@@ -12,7 +12,7 @@ export type OnKeydownAnnotation = (
 export function onKeydownFactory(
     onKeydownAnnotationsCache: Annotations<OnKeydownSpec>): OnKeydownAnnotation {
   return (
-      elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
+      elementLocator: ResolvedWatchableLocator<Element>,
       key: string,
       matchOptions?: MatchOptions,
       options?: AddEventListenerOptions) => {

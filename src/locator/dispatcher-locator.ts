@@ -14,7 +14,7 @@ export type DispatchFn<E extends CustomEvent> = (event: E) => void;
 export class ResolvedDispatcherLocator<E extends CustomEvent>
     extends ResolvedWatchableLocator<DispatchFn<E>|null> {
   constructor(
-      private readonly elementLocator_: ResolvedWatchableLocator<HTMLElement>) {
+      private readonly elementLocator_: ResolvedWatchableLocator<Element>) {
     super(instanceSourceId(`${elementLocator_}.dispatch`, InstanceofType<DispatchFn<E>>(Function)));
   }
 
@@ -37,7 +37,7 @@ export class ResolvedDispatcherLocator<E extends CustomEvent>
 export class UnresolvedDispatcherLocator<V extends CustomEvent> extends
     UnresolvedWatchableLocator<DispatchFn<V>|null> {
   constructor(
-      private readonly elementLocator_: UnresolvedWatchableLocator<HTMLElement>) {
+      private readonly elementLocator_: UnresolvedWatchableLocator<Element>) {
     super();
   }
 
@@ -53,12 +53,12 @@ type DispatcherLocator<V extends CustomEvent> =
  * Creates selector that selects the event dispatch function of an element.
  */
 export function dispatcher<V extends CustomEvent>(
-    elementLocator: UnresolvedWatchableLocator<HTMLElement>): UnresolvedDispatcherLocator<V>;
+    elementLocator: UnresolvedWatchableLocator<Element>): UnresolvedDispatcherLocator<V>;
 export function dispatcher<V extends CustomEvent>(
-    elementLocator: ResolvedWatchableLocator<HTMLElement>): ResolvedDispatcherLocator<V>;
+    elementLocator: ResolvedWatchableLocator<Element>): ResolvedDispatcherLocator<V>;
 export function dispatcher<V extends CustomEvent>(
     elementLocator:
-        UnresolvedWatchableLocator<HTMLElement>| ResolvedWatchableLocator<HTMLElement>):
+        UnresolvedWatchableLocator<Element>| ResolvedWatchableLocator<Element>):
         DispatcherLocator<V> {
   if (elementLocator instanceof ResolvedWatchableLocator) {
     return new ResolvedDispatcherLocator(elementLocator);

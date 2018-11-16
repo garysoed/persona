@@ -135,7 +135,7 @@ export class PersonaTester {
 
   simulateKeypress(
       element: ElementWithCtrl,
-      locator: ResolvedWatchableLocator<HTMLElement>,
+      locator: ResolvedWatchableLocator<Element>,
       keys: Key[],
   ): void {
     const targetEl = getElement_(element, locator);

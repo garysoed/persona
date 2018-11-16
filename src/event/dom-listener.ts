@@ -8,7 +8,7 @@ import { BaseListener } from './base-listener';
 /**
  * Class to listen to DOM events.
  */
-export class DomListener<E extends HTMLElement|null = HTMLElement> extends BaseListener {
+export class DomListener<E extends Element|null = Element> extends BaseListener {
   constructor(
       private readonly elementLocator_: ResolvedWatchableLocator<E>,
       private readonly eventName_: string,
@@ -27,7 +27,7 @@ export class DomListener<E extends HTMLElement|null = HTMLElement> extends BaseL
                 return observableOf();
               }
 
-              return fromEvent(el as HTMLElement, this.eventName_, this.options_);
+              return fromEvent(el as Element, this.eventName_, this.options_);
             }),
         );
   }

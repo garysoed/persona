@@ -16,7 +16,7 @@ export interface RendererSpec {
  * Specifications for a dom listener.
  */
 export interface OnDomSpec {
-  elementLocator: ResolvedWatchableLocator<HTMLElement|null>;
+  elementLocator: ResolvedWatchableLocator<Element>;
   eventName: string;
   options?: AddEventListenerOptions;
   propertyKey: string|symbol;
@@ -26,7 +26,7 @@ export interface OnDomSpec {
  * Specifications for a keydown listener.
  */
 export interface OnKeydownSpec {
-  elementLocator: ResolvedWatchableLocator<HTMLElement|null>;
+  elementLocator: ResolvedWatchableLocator<Element>;
   key: string;
   matchOptions?: MatchOptions;
   options?: AddEventListenerOptions;

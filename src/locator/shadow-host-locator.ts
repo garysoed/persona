@@ -5,25 +5,22 @@ import { InstanceofType } from 'gs-types/export';
 import { Observable, of as observableOf } from 'rxjs';
 import { ResolvedWatchableLocator } from './resolved-locator';
 
+const htmlElementType = InstanceofType(HTMLElement);
+
 /**
  * Locates the shadow host.
  */
-class ShadowHostLocatorImpl extends ResolvedWatchableLocator<Element> {
+class ShadowHostLocatorImpl extends ResolvedWatchableLocator<HTMLElement> {
   constructor() {
-    super(instanceSourceId('.host', InstanceofType(HTMLElement)));
+    super(instanceSourceId('.host', htmlElementType));
   }
 
   @cache()
-  getObservableValue(root: ShadowRoot): Observable<Element> {
-    const host = root.host;
-    if (!host) {
-      throw Errors.assert(`Host for ${root}`).shouldExist().butNot();
-    }
-
-    return observableOf(host);
+  getObservableValue(root: ShadowRoot): Observable<HTMLElement> {
+    return observableOf(this.getValue(root));
   }
 
-  getValue(root: ShadowRoot): Element {
+  getValue(root: ShadowRoot): HTMLElement {
     const host = root.host;
     if (!(host instanceof HTMLElement)) {
       throw Errors.assert('host element').shouldBeAnInstanceOf(HTMLElement).butWas(host);

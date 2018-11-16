@@ -23,7 +23,7 @@ export interface MatchOptions {
 /**
  * Listens to keydown events, matching by key and several options.
  */
-export class KeydownListener<E extends HTMLElement|null = HTMLElement> extends DomListener<E> {
+export class KeydownListener<E extends Element|null = Element> extends DomListener<E> {
   constructor(
       private readonly key_: string,
       private readonly matchOptions_: MatchOptions,

@@ -3,14 +3,14 @@ import { ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { OnDomSpec } from '../main/component-spec';
 
 export type OnDomAnnotation = (
-    elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
+    elementLocator: ResolvedWatchableLocator<Element>,
     eventName: string,
     options?: AddEventListenerOptions) => MethodDecorator;
 
 export function onDomFactory(
     onDomAnnotationsCache: Annotations<OnDomSpec>): OnDomAnnotation {
   return (
-      elementLocator: ResolvedWatchableLocator<HTMLElement|null>,
+      elementLocator: ResolvedWatchableLocator<Element>,
       eventName: string,
       options?: AddEventListenerOptions) => {
     return (target: Object, propertyKey: string | symbol) => {
