@@ -60,6 +60,7 @@ export class PersonaBuilder {
       private readonly customElementAnnotationsCache_: Annotations<ComponentSpec>,
   ) { }
 
+  // TODO: Use tags instead of ctrls.
   build(
       rootCtrls: (typeof CustomElementCtrl)[],
       customElementRegistry: CustomElementRegistry,
@@ -92,6 +93,10 @@ export class PersonaBuilder {
 
       customElementRegistry.define(spec.tag, elementClass);
     }
+  }
+
+  getComponentSpec(tag: string): ComponentSpec|null {
+    return this.componentSpecs_.get(tag) || null;
   }
 
   register(

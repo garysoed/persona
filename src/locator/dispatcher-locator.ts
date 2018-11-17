@@ -7,13 +7,13 @@ import { map } from 'rxjs/operators';
 import { ResolvedWatchableLocator, ResolvedWatchableLocators } from './resolved-locator';
 import { UnresolvedWatchableLocator } from './unresolved-locator';
 
-export type DispatchFn<E extends CustomEvent> = (event: E) => void;
+export type DispatchFn<E extends Event> = (event: E) => void;
 
 /**
  * @internal
  */
-export class ResolvedDispatcherLocator<E extends CustomEvent>
-    extends ResolvedWatchableLocator<DispatchFn<E>|null> {
+export class ResolvedDispatcherLocator<E extends Event>
+    extends ResolvedWatchableLocator<DispatchFn<E>> {
   constructor(
       private readonly elementLocator_: ResolvedWatchableLocator<Element>) {
     super(instanceSourceId(`${elementLocator_}.dispatch`, InstanceofType<DispatchFn<E>>(Function)));
@@ -31,7 +31,7 @@ export class ResolvedDispatcherLocator<E extends CustomEvent>
         .pipe(map(el => (event: E) => el.dispatchEvent(event)));
   }
 
-  getValue(root: ShadowRoot): DispatchFn<E>|null {
+  getValue(root: ShadowRoot): DispatchFn<E> {
     const element = this.elementLocator_.getValue(root);
 
     return (event: E) => element.dispatchEvent(event);
@@ -41,8 +41,8 @@ export class ResolvedDispatcherLocator<E extends CustomEvent>
 /**
  * @internal
  */
-export class UnresolvedDispatcherLocator<V extends CustomEvent> extends
-    UnresolvedWatchableLocator<DispatchFn<V>|null> {
+export class UnresolvedDispatcherLocator<V extends Event> extends
+    UnresolvedWatchableLocator<DispatchFn<V>> {
   constructor(
       private readonly elementLocator_: UnresolvedWatchableLocator<Element>) {
     super();
@@ -53,17 +53,17 @@ export class UnresolvedDispatcherLocator<V extends CustomEvent> extends
   }
 }
 
-type DispatcherLocator<V extends CustomEvent> =
+type DispatcherLocator<V extends Event> =
     ResolvedDispatcherLocator<V>|UnresolvedDispatcherLocator<V>;
 
 /**
  * Creates selector that selects the event dispatch function of an element.
  */
-export function dispatcher<V extends CustomEvent>(
+export function dispatcher<V extends Event>(
     elementLocator: UnresolvedWatchableLocator<Element>): UnresolvedDispatcherLocator<V>;
-export function dispatcher<V extends CustomEvent>(
+export function dispatcher<V extends Event>(
     elementLocator: ResolvedWatchableLocator<Element>): ResolvedDispatcherLocator<V>;
-export function dispatcher<V extends CustomEvent>(
+export function dispatcher<V extends Event>(
     elementLocator:
         UnresolvedWatchableLocator<Element>| ResolvedWatchableLocator<Element>):
         DispatcherLocator<V> {

@@ -15,6 +15,15 @@ interface PersonaApp {
   builder: PersonaBuilder;
   customElement: CustomElement;
   input: Input;
+
+  /**
+   * Annotates method to listen to dom events.
+   *
+   * The method should take in two arguments:
+   *
+   * -   The event object.
+   * -   The Vine object.
+   */
   onDom: OnDomAnnotation;
   onKeydown: OnKeydownAnnotation;
   render: Render;

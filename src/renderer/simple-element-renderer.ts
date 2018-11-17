@@ -24,7 +24,8 @@ export class SimpleElementRenderer<T extends Value> implements
     Renderer<ValueWithId<T>, ElementWithId> {
   constructor(
       private readonly tagName_: string,
-      private readonly attributeConverters_: ConvertersOf<T>) { }
+      private readonly attributeConverters_: ConvertersOf<T>,
+  ) { }
 
   private getElement_(currentId: string, previousRender: ElementWithId|null): ElementWithId {
     if (previousRender && previousRender[__nodeId] === currentId) {
@@ -40,7 +41,8 @@ export class SimpleElementRenderer<T extends Value> implements
       currentValue: ValueWithId<T>,
       previousRender: ElementWithId|null,
       parentNode: Node,
-      insertionPoint: Node): ElementWithId {
+      insertionPoint: Node,
+  ): ElementWithId {
     const el = this.getElement_(currentValue[__renderId], previousRender);
     for (const key in this.attributeConverters_) {
       if (this.attributeConverters_.hasOwnProperty(key)) {

@@ -1,5 +1,7 @@
 import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
+import { fake, spy } from 'gs-testing/export/spy';
+import { Errors } from 'gs-tools/export/error';
 import { ImmutableList } from 'gs-tools/src/immutable';
 import { Observable } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
@@ -28,7 +30,7 @@ export class PersonaTester {
       private readonly customElementRegistry_: FakeCustomElementRegistry,
   ) { }
 
-  createElement(tag: string, parent: HTMLElement): HTMLElement {
+  createElement(tag: string, parent: HTMLElement|null): HTMLElement {
     return this.customElementRegistry_.create(tag, parent);
   }
 
@@ -180,12 +182,37 @@ export class PersonaTesterFactory {
       private readonly personaBuilder_: PersonaBuilder,
   ) { }
 
-  build(ctors: (typeof CustomElementCtrl)[]): PersonaTester {
-    const customElementRegistry = new FakeCustomElementRegistry();
+  build(tags: string[]): PersonaTester {
+    const origCreateElement = document.createElement;
+    const createElement = (tag: string) => origCreateElement.call(document, tag);
+    const customElementRegistry = new FakeCustomElementRegistry(createElement);
     const vine = this.vineBuilder_.run();
+
+    const ctors = [];
+    for (const tag of tags) {
+      const spec = this.personaBuilder_.getComponentSpec(tag);
+      if (!spec) {
+        throw Errors.assert(`Spec for ${tag}`).shouldExist().butNot();
+      }
+
+      ctors.push(spec.componentClass);
+    }
+
+    const tagsSet = new Set(tags);
+
     this.personaBuilder_.build(ctors, customElementRegistry, vine);
 
-    return new PersonaTester(vine, customElementRegistry);
+    const tester = new PersonaTester(vine, customElementRegistry);
+    fake(spy(document, 'createElement'))
+        .always().call(tag => {
+          if (tagsSet.has(tag)) {
+            return tester.createElement(tag, null);
+          } else {
+            return createElement(tag);
+          }
+        });
+
+    return tester;
   }
 }
 
@@ -200,7 +227,8 @@ function getCtrl_(element: ElementWithCtrl): CustomElementCtrl {
 
 function getElement_<E extends Element>(
     element: ElementWithCtrl,
-    locator: ResolvedWatchableLocator<E>): Exclude<E, null> {
+    locator: ResolvedWatchableLocator<E>,
+): Exclude<E, null> {
   const shadowRoot = getShadowRoot_(element);
   const targetEl = locator.getValue(shadowRoot);
   if (!targetEl) {

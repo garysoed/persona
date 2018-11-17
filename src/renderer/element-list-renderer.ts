@@ -14,7 +14,8 @@ export class ElementListRenderer<V extends {[__renderId]: string}> implements
       currentValues: ImmutableList<V>,
       previousRender: ImmutableList<ElementWithId>|null,
       parentNode: Node,
-      insertionPoint: Node): ImmutableList<ElementWithId> {
+      insertionPoint: Node,
+  ): ImmutableList<ElementWithId> {
     const previousChildren = previousRender || ImmutableList.of([]);
     const currentIds = currentValues.mapItem(value => value[__renderId]);
 
