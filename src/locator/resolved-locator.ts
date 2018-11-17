@@ -1,14 +1,20 @@
 import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
+import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Type } from 'gs-types/export';
 import { Observable, Subscription } from 'rxjs';
+
+export type ResolvedWatchableLocators =
+    ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>;
 
 /**
  * Locator spec that has been resolved.
  */
 export abstract class ResolvedLocator {
   readonly type: 'resolvedLocator' = 'resolvedLocator';
+
+  abstract getDependencies(): ImmutableSet<ResolvedWatchableLocators>;
 }
 
 /**

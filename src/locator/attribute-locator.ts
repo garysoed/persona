@@ -1,5 +1,6 @@
 import { instanceSourceId, instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
+import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Converter } from 'gs-tools/src/converter/converter';
 import { Errors } from 'gs-tools/src/error';
@@ -7,7 +8,7 @@ import { Type } from 'gs-types/export';
 import { combineLatest, Observable, of as observableOf, Subscription } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 import { mutationObservable } from '../util/mutation-observable';
-import { ResolvedLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from './resolved-locator';
+import { ResolvedLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator, ResolvedWatchableLocators } from './resolved-locator';
 import { UnresolvedRenderableWatchableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
 function generateVineId(elementLocator: ResolvedLocator, attrName: string):
@@ -31,6 +32,12 @@ export class ResolvedAttributeLocator<T>
     super(
         instanceStreamId(generateVineId(elementLocator, attrName), type),
         instanceSourceId(generateVineId(elementLocator, attrName), type));
+  }
+
+  getDependencies(): ImmutableSet<ResolvedWatchableLocators> {
+    return ImmutableSet
+        .of<ResolvedWatchableLocators>([this.elementLocator])
+        .addAll(this.elementLocator.getDependencies());
   }
 
   getObservableValue(root: ShadowRoot): Observable<T> {

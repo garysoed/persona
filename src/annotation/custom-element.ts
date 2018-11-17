@@ -2,8 +2,8 @@ import { VineApp } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
-import { ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
-import { ComponentSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from '../main/component-spec';
+import { ResolvedRenderableWatchableLocator, ResolvedWatchableLocator, ResolvedWatchableLocators } from '../locator/resolved-locator';
+import { ComponentSpec, InputSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from '../main/component-spec';
 import { PersonaBuilder } from '../main/persona-builder';
 
 /**
@@ -20,6 +20,7 @@ interface Spec {
 export type CustomElement = (spec: Spec) => ClassDecorator;
 
 export function customElementFactory(
+    inputAnnotationsCache: Annotations<InputSpec>,
     onDomAnnotationsCache: Annotations<OnDomSpec>,
     onKeydownAnnotationsCache: Annotations<OnKeydownSpec>,
     rendererAnnotationsCache: Annotations<RendererSpec>,
@@ -31,21 +32,56 @@ export function customElementFactory(
       const rendererSpecs = rendererAnnotationsCache
           .forCtor(target)
           .getAttachedValues()
-          .reduce((prevSet, specs) => {
-            return prevSet.addAll(specs);
-          }, ImmutableSet.of<RendererSpec>());
+          .reduce(
+              (prevSet, specs) => {
+                return prevSet.addAll(specs);
+              },
+              ImmutableSet.of<RendererSpec>());
       const keydownSpecs = onKeydownAnnotationsCache
           .forCtor(target)
           .getAttachedValues()
-          .reduce((prevSet, specs) => {
-            return prevSet.addAll(specs);
-          }, ImmutableSet.of<OnKeydownSpec>());
+          .reduce(
+              (prevSet, specs) => {
+                return prevSet.addAll(specs);
+              },
+              ImmutableSet.of<OnKeydownSpec>());
       const listeners = onDomAnnotationsCache
           .forCtor(target)
           .getAttachedValues()
-          .reduce((prevSet, specs) => {
-            return prevSet.addAll(specs);
-          }, ImmutableSet.of<OnDomSpec>());
+          .reduce(
+              (prevSet, specs) => {
+                return prevSet.addAll(specs);
+              },
+              ImmutableSet.of<OnDomSpec>());
+
+      const watchers = [
+        ...inputAnnotationsCache.forCtor(target)
+            .getAttachedValues()
+            .values()
+            .reduceItem(
+                (prevSet, watchers) => {
+                  return prevSet.addAll(watchers);
+                },
+                ImmutableSet.of<ResolvedWatchableLocators>(),
+            ),
+        ...rendererAnnotationsCache.forCtor(target)
+            .getAttachedValues()
+            .values()
+            .reduceItem(
+                (prevSet, spec) => {
+                  const set = new Set<ResolvedWatchableLocators>();
+                  for (const renderer of spec) {
+                    for (const watcher of renderer.locator.getDependencies()) {
+                      set.add(watcher);
+                    }
+                  }
+
+                  return prevSet.addAll(ImmutableSet.of(set));
+                },
+                ImmutableSet.of<ResolvedWatchableLocators>(),
+            ),
+        ...spec.watch || [],
+      ];
 
       customElementAnnotationsCache.forCtor(target).attachValueToProperty(__class, {
         componentClass: target as any,
@@ -54,7 +90,7 @@ export function customElementFactory(
         renderers: rendererSpecs,
         tag: spec.tag,
         template: spec.template,
-        watchers: ImmutableSet.of(spec.watch || []),
+        watchers: ImmutableSet.of(watchers),
       });
 
       personaBuilder.register([target as any], vineApp);

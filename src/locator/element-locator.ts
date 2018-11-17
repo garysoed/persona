@@ -1,10 +1,11 @@
 import { InstanceSourceId, instanceSourceId } from 'grapevine/export/component';
 import { cache } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/src/error';
+import { ImmutableSet } from 'gs-tools/src/immutable';
 import { InstanceofType, Type } from 'gs-types/export';
 import { Observable } from 'rxjs';
 import { elementObservable } from '../util/element-observable';
-import { ResolvedWatchableLocator } from './resolved-locator';
+import { ResolvedWatchableLocator, ResolvedWatchableLocators } from './resolved-locator';
 import { UnresolvedWatchableLocator } from './unresolved-locator';
 
 /**
@@ -16,6 +17,10 @@ export class ResolvedElementLocator<T extends HTMLElement>
       private readonly selectorString_: string,
       sourceId: InstanceSourceId<T>) {
     super(sourceId);
+  }
+
+  getDependencies(): ImmutableSet<ResolvedWatchableLocators> {
+    return ImmutableSet.of([]);
   }
 
   @cache()

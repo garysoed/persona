@@ -1,9 +1,10 @@
 import { instanceSourceId } from 'grapevine/export/component';
 import { cache } from 'gs-tools/export/data';
+import { ImmutableSet } from 'gs-tools/src/immutable';
 import { InstanceofType, Type } from 'gs-types/export';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ResolvedWatchableLocator } from './resolved-locator';
+import { ResolvedWatchableLocator, ResolvedWatchableLocators } from './resolved-locator';
 import { UnresolvedWatchableLocator } from './unresolved-locator';
 
 export type DispatchFn<E extends CustomEvent> = (event: E) => void;
@@ -16,6 +17,12 @@ export class ResolvedDispatcherLocator<E extends CustomEvent>
   constructor(
       private readonly elementLocator_: ResolvedWatchableLocator<Element>) {
     super(instanceSourceId(`${elementLocator_}.dispatch`, InstanceofType<DispatchFn<E>>(Function)));
+  }
+
+  getDependencies(): ImmutableSet<ResolvedWatchableLocators> {
+    return ImmutableSet
+        .of<ResolvedWatchableLocators>([this.elementLocator_])
+        .addAll(this.elementLocator_.getDependencies());
   }
 
   @cache()

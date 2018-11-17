@@ -1,6 +1,5 @@
-import { NodeId } from 'grapevine/export/component';
 import { MatchOptions } from '../event/keydown-listener';
-import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
+import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator, ResolvedWatchableLocators } from '../locator/resolved-locator';
 import { CustomElementCtrl } from './custom-element-ctrl';
 
 /**
@@ -45,3 +44,5 @@ export interface ComponentSpec {
   template: string;
   watchers?: Iterable<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>;
 }
+
+export type InputSpec = ResolvedWatchableLocators;

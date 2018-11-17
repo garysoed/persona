@@ -5,7 +5,7 @@ import { Input, inputFactory } from '../annotation/input';
 import { OnDomAnnotation, onDomFactory } from '../annotation/on-dom';
 import { OnKeydownAnnotation, onKeydownFactory } from '../annotation/on-keydown';
 import { Render, renderFactory } from '../annotation/render';
-import { ComponentSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
+import { ComponentSpec, InputSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
 import { PersonaBuilder } from './persona-builder';
 
 /**
@@ -35,6 +35,7 @@ export function getOrRegisterApp(
     return createdApp;
   }
 
+  const inputAnnotationsCache = new Annotations<InputSpec>(Symbol(`${appName}-input`));
   const onDomAnnotationsCache = new Annotations<OnDomSpec>(Symbol(`${appName}-onDom`));
   const onKeydownAnnotationsCache = new Annotations<OnKeydownSpec>(Symbol(`${appName}-onKeydown`));
   const renderAnnotationsCache = new Annotations<RendererSpec>(Symbol(`${appName}-render`));
@@ -42,10 +43,11 @@ export function getOrRegisterApp(
       new Annotations<ComponentSpec>(Symbol(`${appName}-component`));
 
   const personaBuilder = new PersonaBuilder(customElementAnnotationsCache);
-  const input = inputFactory(vineApp);
+  const input = inputFactory(inputAnnotationsCache, vineApp);
   const newApp = {
     builder: personaBuilder,
     customElement: customElementFactory(
+        inputAnnotationsCache,
         onDomAnnotationsCache,
         onKeydownAnnotationsCache,
         renderAnnotationsCache,

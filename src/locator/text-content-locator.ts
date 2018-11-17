@@ -1,9 +1,10 @@
 import { instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
+import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { StringType } from 'gs-types/export';
 import { combineLatest, Subscription } from 'rxjs';
-import { ResolvedLocator, ResolvedRenderableLocator, ResolvedWatchableLocator } from './resolved-locator';
+import { ResolvedLocator, ResolvedRenderableLocator, ResolvedWatchableLocator, ResolvedWatchableLocators } from './resolved-locator';
 import { LocatorPathResolver, UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
 /**
@@ -14,6 +15,12 @@ export class ResolvedTextContentLocator
   constructor(
       readonly elementLocator: ResolvedWatchableLocator<Element>) {
     super(instanceStreamId(`${elementLocator}.innerText`, StringType));
+  }
+
+  getDependencies(): ImmutableSet<ResolvedWatchableLocators> {
+    return ImmutableSet
+        .of<ResolvedWatchableLocators>([this.elementLocator])
+        .addAll(this.elementLocator.getDependencies());
   }
 
   startRender(vine: VineImpl, context: BaseDisposable): Subscription {

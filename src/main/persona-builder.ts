@@ -56,7 +56,9 @@ function createCustomElementClass_(
 export class PersonaBuilder {
   private readonly componentSpecs_: Map<string, ComponentSpec> = new Map();
 
-  constructor(private readonly customElementAnnotationsCache_: Annotations<ComponentSpec>) { }
+  constructor(
+      private readonly customElementAnnotationsCache_: Annotations<ComponentSpec>,
+  ) { }
 
   build(
       rootCtrls: (typeof CustomElementCtrl)[],
@@ -96,15 +98,15 @@ export class PersonaBuilder {
       rootCtrls: (typeof CustomElementCtrl)[],
       {builder, vineOut}: VineApp): void {
     for (const ctrl of rootCtrls) {
-      const values = this.customElementAnnotationsCache_
+      const customElementAnnotations = this.customElementAnnotationsCache_
           .forCtor(ctrl)
           .getAttachedValues()
           .get(__class);
-      if (!values) {
+      if (!customElementAnnotations) {
         throw Errors.assert(`Annotations for ${ctrl.name}`).shouldExist().butNot();
       }
 
-      const componentSpec = [...values][0];
+      const componentSpec = [...customElementAnnotations][0];
       if (!componentSpec) {
         throw Errors.assert(`Annotations for ${ctrl.name}`).shouldExist().butNot();
       }
