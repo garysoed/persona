@@ -60,9 +60,8 @@ export class PersonaBuilder {
       private readonly customElementAnnotationsCache_: Annotations<ComponentSpec>,
   ) { }
 
-  // TODO: Use tags instead of ctrls.
   build(
-      rootCtrls: (typeof CustomElementCtrl)[],
+      rootTags: string[],
       customElementRegistry: CustomElementRegistry,
       vine: VineImpl): void {
     for (const spec of this.componentSpecs_.values()) {

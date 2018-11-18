@@ -188,19 +188,9 @@ export class PersonaTesterFactory {
     const customElementRegistry = new FakeCustomElementRegistry(createElement);
     const vine = this.vineBuilder_.run();
 
-    const ctors = [];
-    for (const tag of tags) {
-      const spec = this.personaBuilder_.getComponentSpec(tag);
-      if (!spec) {
-        throw Errors.assert(`Spec for ${tag}`).shouldExist().butNot();
-      }
-
-      ctors.push(spec.componentClass);
-    }
-
     const tagsSet = new Set(tags);
 
-    this.personaBuilder_.build(ctors, customElementRegistry, vine);
+    this.personaBuilder_.build(tags, customElementRegistry, vine);
 
     const tester = new PersonaTester(vine, customElementRegistry);
     fake(spy(document, 'createElement'))

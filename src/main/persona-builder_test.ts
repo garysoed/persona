@@ -63,7 +63,7 @@ describe('main.PersonaBuilder', () => {
           .attachValueToProperty(__class, componentSpec);
 
       builder.register([TestClass], {builder: vineBuilder, vineOut: createSpy('VineOut')} as any);
-      builder.build([TestClass], mockCustomElementRegistry, vineBuilder.run());
+      builder.build([tag], mockCustomElementRegistry, vineBuilder.run());
 
       assert(mockCustomElementRegistry.define).to.haveBeenCalledWith(tag, match.anyThing());
     });

@@ -52,7 +52,7 @@ class TestClass extends CustomElementCtrl {
 
 // Runs persona and grapevine.
 const vine = vineBuilder.run();
-personaBuilder.build([TestClass], window.customElements, vine);
+personaBuilder.build(['p-test'], window.customElements, vine);
 
 describe('annotation.render', () => {
   should(`update the element correctly`, async () => {
