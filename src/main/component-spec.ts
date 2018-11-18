@@ -32,17 +32,20 @@ export interface OnKeydownSpec {
   propertyKey: string|symbol;
 }
 
+export interface BaseComponentSpec {
+  keydownSpecs?: Iterable<OnKeydownSpec>;
+  listeners?: Iterable<OnDomSpec>;
+  renderers?: Iterable<RendererSpec>;
+  watchers?: Iterable<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>;
+}
+
 /**
  * Specifications for a custom element.
  */
 export interface ComponentSpec {
   componentClass: new () => CustomElementCtrl;
-  keydownSpecs?: Iterable<OnKeydownSpec>;
-  listeners?: Iterable<OnDomSpec>;
-  renderers?: Iterable<RendererSpec>;
   tag: string;
   template: string;
-  watchers?: Iterable<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>;
 }
 
 export type InputSpec = ResolvedWatchableLocators;

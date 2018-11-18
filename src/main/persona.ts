@@ -1,11 +1,12 @@
 import { VineApp } from 'grapevine/export/main';
 import { Annotations } from 'gs-tools/export/data';
+import { baseCustomElementFactory } from '../annotation/base-custom-element';
 import { CustomElement, customElementFactory } from '../annotation/custom-element';
 import { Input, inputFactory } from '../annotation/input';
 import { OnDomAnnotation, onDomFactory } from '../annotation/on-dom';
 import { OnKeydownAnnotation, onKeydownFactory } from '../annotation/on-keydown';
 import { Render, renderFactory } from '../annotation/render';
-import { ComponentSpec, InputSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
+import { BaseComponentSpec, ComponentSpec, InputSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
 import { PersonaBuilder } from './persona-builder';
 
 /**
@@ -38,7 +39,8 @@ const apps = new Map<string, PersonaApp>();
  */
 export function getOrRegisterApp(
     appName: string,
-    vineApp: VineApp): PersonaApp {
+    vineApp: VineApp,
+): PersonaApp {
   const createdApp = apps.get(appName);
   if (createdApp) {
     return createdApp;
@@ -50,19 +52,31 @@ export function getOrRegisterApp(
   const renderAnnotationsCache = new Annotations<RendererSpec>(Symbol(`${appName}-render`));
   const customElementAnnotationsCache =
       new Annotations<ComponentSpec>(Symbol(`${appName}-component`));
+  const baseCustomElementAnnotationsCache =
+      new Annotations<BaseComponentSpec>(Symbol(`${appName}-baseComponent`));
 
-  const personaBuilder = new PersonaBuilder(customElementAnnotationsCache);
+  const baseCustomElement = baseCustomElementFactory(
+      inputAnnotationsCache,
+      onDomAnnotationsCache,
+      onKeydownAnnotationsCache,
+      renderAnnotationsCache,
+      baseCustomElementAnnotationsCache,
+  );
+
+  const personaBuilder = new PersonaBuilder(
+      baseCustomElementAnnotationsCache,
+      customElementAnnotationsCache,
+  );
   const input = inputFactory(inputAnnotationsCache, vineApp);
   const newApp = {
+    baseCustomElement,
     builder: personaBuilder,
     customElement: customElementFactory(
-        inputAnnotationsCache,
-        onDomAnnotationsCache,
-        onKeydownAnnotationsCache,
-        renderAnnotationsCache,
         customElementAnnotationsCache,
         personaBuilder,
-        vineApp),
+        vineApp,
+        baseCustomElement,
+    ),
     input,
     onDom: onDomFactory(onDomAnnotationsCache),
     onKeydown: onKeydownFactory(onKeydownAnnotationsCache),
