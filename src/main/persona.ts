@@ -1,6 +1,6 @@
 import { VineApp } from 'grapevine/export/main';
 import { Annotations } from 'gs-tools/export/data';
-import { baseCustomElementFactory } from '../annotation/base-custom-element';
+import { BaseCustomElement, baseCustomElementFactory } from '../annotation/base-custom-element';
 import { CustomElement, customElementFactory } from '../annotation/custom-element';
 import { Input, inputFactory } from '../annotation/input';
 import { OnDomAnnotation, onDomFactory } from '../annotation/on-dom';
@@ -13,6 +13,7 @@ import { PersonaBuilder } from './persona-builder';
  * Describes a Persona App.
  */
 interface PersonaApp {
+  baseCustomElement: BaseCustomElement;
   builder: PersonaBuilder;
   customElement: CustomElement;
   input: Input;

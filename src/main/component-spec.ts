@@ -32,6 +32,9 @@ export interface OnKeydownSpec {
   propertyKey: string|symbol;
 }
 
+/**
+ * Specification for a base custom element that doesn't get initialized.
+ */
 export interface BaseComponentSpec {
   keydownSpecs?: Iterable<OnKeydownSpec>;
   listeners?: Iterable<OnDomSpec>;

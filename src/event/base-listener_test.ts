@@ -1,6 +1,6 @@
 import { VineImpl } from 'grapevine/export/main';
 import { assert, match, should } from 'gs-testing/export/main';
-import { Mocks } from 'gs-testing/export/mock';
+import { mocks } from 'gs-testing/export/mock';
 import { createSpy, fake, Spy } from 'gs-testing/export/spy';
 import { createSpyInstance, spy } from 'gs-testing/src/spy/spy';
 import { Observable, of as observableOf } from 'rxjs';
@@ -50,11 +50,11 @@ describe('event.BaseListener', () => {
 
   describe('listen', () => {
     should(`call listenImpl correctly`, () => {
-      const vine = Mocks.object<VineImpl>('vine');
+      const vine = mocks.object<VineImpl>('vine');
       const mockContext = new TestCtrl();
       const propertySpy = spy(mockContext, PROPERTY_KEY);
 
-      const event = Mocks.object<CustomEvent>('event');
+      const event = mocks.object<CustomEvent>('event');
       fake(mockListenImplSpy).always().return(observableOf(event));
 
       listener.listen(vine, mockContext);
@@ -62,7 +62,7 @@ describe('event.BaseListener', () => {
     });
 
     should(`throw error if property is not a function`, () => {
-      const vine = Mocks.object<VineImpl>('vine');
+      const vine = mocks.object<VineImpl>('vine');
       const mockContext = createSpyInstance(CustomElementCtrl);
       assert(() => {
         listener.listen(vine, mockContext);

@@ -2,6 +2,7 @@ import { VineApp, VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
+import { AnyType, IterableOfType } from 'gs-types/export';
 import { BaseListener } from '../event/base-listener';
 import { DomListener } from '../event/dom-listener';
 import { KeydownListener } from '../event/keydown-listener';
@@ -62,12 +63,15 @@ export class PersonaBuilder {
     return this.registeredComponentSpecs_.get(tag) || null;
   }
 
+  /**
+   * @TODO This should only take in one root ctrl.
+   */
   register(
-      rootCtrls: (typeof CustomElementCtrl)[],
+      rootCtrls: Array<typeof CustomElementCtrl>,
       {builder, vineOut}: VineApp): void {
     for (const ctrl of rootCtrls) {
-      const baseComponentSpec = getSpec(this.baseCustomElementAnnotationsCache_, ctrl);
-      const componentSpec = getSpec(this.customElementAnnotationsCache_, ctrl);
+      const baseComponentSpec = getSpec_(this.baseCustomElementAnnotationsCache_, ctrl);
+      const componentSpec = getSpec_(this.customElementAnnotationsCache_, ctrl);
       if (this.registeredComponentSpecs_.has(componentSpec.tag)) {
         throw Errors.assert(`Component with tag ${componentSpec.tag}`)
             .shouldBe('unregistered')
@@ -75,8 +79,9 @@ export class PersonaBuilder {
       }
 
       this.registeredComponentSpecs_.set(
-        componentSpec.tag,
-        {...baseComponentSpec, ...componentSpec});
+          componentSpec.tag,
+          {...baseComponentSpec, ...componentSpec},
+      );
 
       for (const watcher of baseComponentSpec.watchers || []) {
         if (builder.isRegistered(watcher.getReadingId())) {
@@ -100,7 +105,10 @@ export class PersonaBuilder {
   }
 }
 
-function getSpec<T>(annotationsCache: Annotations<T>, ctrl: typeof CustomElementCtrl): T {
+export function getSpec_<T extends BaseComponentSpec|ComponentSpec>(
+    annotationsCache: Annotations<T>,
+    ctrl: typeof CustomElementCtrl,
+): T {
   const annotations = annotationsCache
       .forCtor(ctrl)
       .getAttachedValues()
@@ -109,12 +117,31 @@ function getSpec<T>(annotationsCache: Annotations<T>, ctrl: typeof CustomElement
     throw Errors.assert(`Annotations for ${ctrl.name}`).shouldExist().butNot();
   }
 
-  const spec = [...annotations][0];
-  if (!spec) {
+  let combinedSpec: T|null = null;
+  for (const spec of annotations) {
+    if (!combinedSpec) {
+      combinedSpec = spec;
+      continue;
+    }
+
+    for (const key of Object.keys(spec) as Array<keyof T>) {
+      const value = spec[key];
+      const existingValue = combinedSpec[key];
+      if (!IterableOfType(AnyType()).check(value) ||
+          !IterableOfType(AnyType()).check(existingValue)) {
+        // Ignore the new value, since it belongs to the ancestor class.
+        continue;
+      }
+
+      combinedSpec[key] = [...existingValue, ...value] as unknown as T[keyof T];
+    }
+  }
+
+  if (!combinedSpec) {
     throw Errors.assert(`Annotations for ${ctrl.name}`).shouldExist().butNot();
   }
 
-  return spec;
+  return combinedSpec;
 }
 
 function createCustomElementClass_(

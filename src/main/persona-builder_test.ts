@@ -1,18 +1,19 @@
 import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
-import { VineApp, VineBuilder } from 'grapevine/export/main';
+import { VineApp, VineBuilder, VineImpl } from 'grapevine/export/main';
 import { InstanceSourceProvider } from 'grapevine/src/node/instance-source-provider';
 import { assert, match, should } from 'gs-testing/export/main';
-import { Mocks } from 'gs-testing/export/mock';
+import { mocks } from 'gs-testing/export/mock';
 import { createSpy, createSpyInstance, createSpyObject, fake, Spy, SpyObj } from 'gs-testing/export/spy';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { InstanceofType } from 'gs-types/export';
 import { classlist } from '../locator/classlist-locator';
 import { element } from '../locator/element-locator';
-import { ComponentSpec } from './component-spec';
+import { BaseComponentSpec, ComponentSpec, OnKeydownSpec, OnDomSpec, RendererSpec } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { SHADOW_ROOT } from './custom-element-impl';
-import { PersonaBuilder } from './persona-builder';
+import { PersonaBuilder, getSpec_ } from './persona-builder';
+import { ResolvedWatchableLocator } from 'src/locator/resolved-locator';
 
 /**
  * @test
@@ -26,12 +27,18 @@ class TestClass extends CustomElementCtrl {
 type SourceWithProvider<T> = (id: InstanceSourceId<T>, provider: InstanceSourceProvider<T>) => void;
 
 describe('main.PersonaBuilder', () => {
+  let baseCustomElementsAnnotationsCache: Annotations<BaseComponentSpec>;
   let customElementsAnnotationsCache: Annotations<ComponentSpec>;
   let builder: PersonaBuilder;
 
   beforeEach(() => {
-    customElementsAnnotationsCache = Annotations.of<ComponentSpec>(Symbol('test'));
-    builder = new PersonaBuilder(customElementsAnnotationsCache);
+    baseCustomElementsAnnotationsCache =
+        Annotations.of<BaseComponentSpec>(Symbol('testBaseComponentSpec'));
+    customElementsAnnotationsCache = Annotations.of<ComponentSpec>(Symbol('testComponentSpec'));
+    builder = new PersonaBuilder(
+        baseCustomElementsAnnotationsCache,
+        customElementsAnnotationsCache,
+    );
   });
 
   describe('register', () => {
@@ -51,16 +58,21 @@ describe('main.PersonaBuilder', () => {
       const vineBuilder = new VineBuilder();
       const componentSpec: ComponentSpec = {
         componentClass: TestClass,
+        tag,
+        template,
+      };
+
+      const baseComponentSpec: BaseComponentSpec = {
         keydownSpecs: ImmutableSet.of(),
         listeners: ImmutableSet.of(),
         renderers: ImmutableSet.of(),
-        tag,
-        template,
         watchers: ImmutableSet.of(),
       };
 
       customElementsAnnotationsCache.forCtor(TestClass)
           .attachValueToProperty(__class, componentSpec);
+      baseCustomElementsAnnotationsCache.forCtor(TestClass)
+          .attachValueToProperty(__class, baseComponentSpec);
 
       builder.register([TestClass], {builder: vineBuilder, vineOut: createSpy('VineOut')} as any);
       builder.build([tag], mockCustomElementRegistry, vineBuilder.run());
@@ -86,16 +98,21 @@ describe('main.PersonaBuilder', () => {
 
       const componentSpec: ComponentSpec = {
         componentClass: TestClass,
+        tag,
+        template,
+      };
+
+      const baseComponentSpec: BaseComponentSpec = {
         keydownSpecs: ImmutableSet.of(),
         listeners: ImmutableSet.of(),
         renderers: ImmutableSet.of(),
-        tag,
-        template,
         watchers: ImmutableSet.of([locator1, locator2]),
       };
 
       customElementsAnnotationsCache.forCtor(TestClass)
           .attachValueToProperty(__class, componentSpec);
+      baseCustomElementsAnnotationsCache.forCtor(TestClass)
+          .attachValueToProperty(__class, baseComponentSpec);
 
       builder.register(
           [TestClass],
@@ -121,21 +138,21 @@ describe('main.PersonaBuilder', () => {
       const locator1 = classlist(element('section', InstanceofType(HTMLElement)));
       const locator2 = classlist(element('a', InstanceofType(HTMLElement)));
 
-      const descriptor1 = Mocks.object('descriptor1');
+      const descriptor1 = mocks.object('descriptor1');
       const propertyKey1 = 'propertyKey1';
-      const target1 = Mocks.object('target1');
+      const target1 = mocks.object('target1');
       const renderer1 = {
         descriptor: descriptor1,
         locator: locator1,
         propertyKey: propertyKey1,
         target: target1,
       };
-      // TODO: Make this easier.
+      /** @TODO Make this easier. */
       const mockDecorator1 = createSpy<void, [Object, string|symbol]>('decorator1');
 
-      const descriptor2 = Mocks.object('descriptor2');
+      const descriptor2 = mocks.object('descriptor2');
       const propertyKey2 = 'propertyKey2';
-      const target2 = Mocks.object('target2');
+      const target2 = mocks.object('target2');
       const renderer2 = {
         descriptor: descriptor2,
         locator: locator2,
@@ -158,18 +175,24 @@ describe('main.PersonaBuilder', () => {
       const context = new TestClass();
       (context as any)[SHADOW_ROOT] = rootEl;
 
+
       const componentSpec: ComponentSpec = {
         componentClass: TestClass,
+        tag,
+        template,
+      };
+
+      const baseComponentSpec: BaseComponentSpec = {
         keydownSpecs: ImmutableSet.of(),
         listeners: ImmutableSet.of(),
         renderers: ImmutableSet.of([renderer1, renderer2]),
-        tag,
-        template,
         watchers: ImmutableSet.of(),
       };
 
       customElementsAnnotationsCache.forCtor(TestClass)
           .attachValueToProperty(__class, componentSpec);
+      baseCustomElementsAnnotationsCache.forCtor(TestClass)
+          .attachValueToProperty(__class, baseComponentSpec);
 
       builder.register(
           [TestClass],
@@ -186,16 +209,21 @@ describe('main.PersonaBuilder', () => {
 
       const componentSpec: ComponentSpec = {
         componentClass: TestClass,
+        tag,
+        template,
+      };
+
+      const baseComponentSpec: BaseComponentSpec = {
         keydownSpecs: ImmutableSet.of(),
         listeners: ImmutableSet.of(),
         renderers: ImmutableSet.of(),
-        tag,
-        template,
         watchers: ImmutableSet.of(),
       };
 
       customElementsAnnotationsCache.forCtor(TestClass)
           .attachValueToProperty(__class, componentSpec);
+      baseCustomElementsAnnotationsCache.forCtor(TestClass)
+          .attachValueToProperty(__class, baseComponentSpec);
 
       const vineApp: any = {builder: vineBuilder, vineOut: createSpy('VineOut')};
 
@@ -212,6 +240,104 @@ describe('main.PersonaBuilder', () => {
       assert(() => {
         builder.register([TestClass], {builder: vineBuilder, vineOut: createSpy('VineOut')} as any);
       }).to.throwErrorWithMessage(/Annotations for/);
+    });
+  });
+
+  describe('getSpec_', () => {
+    class ParentTestClass extends CustomElementCtrl {
+      init(vine: VineImpl): void {
+        throw new Error('Method not implemented.');
+      }
+    }
+
+    class TestClass extends ParentTestClass { }
+
+    should(`combine the specs correctly for BaseComponentSpec`, () => {
+      const cache = Annotations.of<BaseComponentSpec>(Symbol('baseComponentSpec'));
+
+      const keydownSpec1 = mocks.object<OnKeydownSpec>('keydownSpec1');
+      const keydownSpec2 = mocks.object<OnKeydownSpec>('keydownSpec2');
+      const keydownSpec3 = mocks.object<OnKeydownSpec>('keydownSpec3');
+
+      const onDomSpec1 = mocks.object<OnDomSpec>('onDomSpec1');
+      const onDomSpec2 = mocks.object<OnDomSpec>('onDomSpec2');
+      const onDomSpec3 = mocks.object<OnDomSpec>('onDomSpec3');
+
+      const rendererSpec1 = mocks.object<RendererSpec>('rendererSpec1');
+      const rendererSpec2 = mocks.object<RendererSpec>('rendererSpec2');
+      const rendererSpec3 = mocks.object<RendererSpec>('rendererSpec3');
+
+      const watcher1 = mocks.object<ResolvedWatchableLocator<any>>('watcher1');
+      const watcher2 = mocks.object<ResolvedWatchableLocator<any>>('watcher2');
+      const watcher3 = mocks.object<ResolvedWatchableLocator<any>>('watcher3');
+
+      cache.forCtor(ParentTestClass).attachValueToProperty(
+          __class,
+          {
+            keydownSpecs: [keydownSpec1],
+            listeners: [onDomSpec1, onDomSpec2],
+            renderers: [rendererSpec1],
+            watchers: [watcher1, watcher2],
+          },
+      );
+      cache.forCtor(TestClass).attachValueToProperty(
+          __class,
+          {
+            keydownSpecs: [keydownSpec2, keydownSpec3],
+            listeners: [onDomSpec3],
+            renderers: [rendererSpec2, rendererSpec3],
+            watchers: [watcher2, watcher3],
+          },
+      );
+
+      const spec = getSpec_(cache, TestClass);
+      // tslint:disable-next-line:no-non-null-assertion
+      assert(spec.keydownSpecs!).to.haveElements([keydownSpec1, keydownSpec2, keydownSpec3]);
+      // tslint:disable-next-line:no-non-null-assertion
+      assert(spec.listeners!).to.haveElements([onDomSpec1, onDomSpec2, onDomSpec3]);
+      // tslint:disable-next-line:no-non-null-assertion
+      assert(spec.renderers!).to.haveElements([rendererSpec1, rendererSpec2, rendererSpec3]);
+      // tslint:disable-next-line:no-non-null-assertion
+      assert(spec.watchers!).to.haveElements([watcher1, watcher2, watcher3]);
+    });
+
+    should(`combine the specs correctly for ComponentSpec`, () => {
+      const cache = Annotations.of<ComponentSpec>(Symbol('componentSpec'));
+
+      const tag1 = 'tag1';
+      const tag2 = 'tag2';
+      const template1 = 'template1';
+      const template2 = 'template2';
+
+      cache.forCtor(ParentTestClass).attachValueToProperty(
+          __class,
+          {
+            componentClass: ParentTestClass,
+            tag: tag1,
+            template: template1,
+          },
+      );
+      cache.forCtor(TestClass).attachValueToProperty(
+          __class,
+          {
+            componentClass: TestClass,
+            tag: tag2,
+            template: template2,
+          },
+      );
+
+      const spec = getSpec_(cache, TestClass);
+      assert(spec.componentClass).to.equal(TestClass);
+      assert(spec.tag).to.equal(tag2);
+      assert(spec.template).to.equal(template2);
+    });
+
+    should(`throw error if there are no annotations`, () => {
+      const cache = Annotations.of<ComponentSpec>(Symbol('componentSpec'));
+
+      assert(() => {
+        getSpec_(cache, TestClass);
+      }).to.throwErrorWithMessage(/should exist/);
     });
   });
 });

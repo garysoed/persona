@@ -1,6 +1,6 @@
 import { VineImpl } from 'grapevine/export/main';
 import { assert, should } from 'gs-testing/export/main';
-import { Mocks } from 'gs-testing/export/mock';
+import { mocks } from 'gs-testing/export/mock';
 import { createSpy, resetCalls } from 'gs-testing/export/spy';
 import { InstanceofType } from 'gs-types/export';
 import { BehaviorSubject } from 'rxjs';
@@ -31,7 +31,7 @@ describe('locator.dispatcher', () => {
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});
       shadowRoot.innerHTML = '<div></div>';
-      const vine = Mocks.object<VineImpl>('vine');
+      const vine = mocks.object<VineImpl>('vine');
       const mockOnChange = createSpy('OnChange');
 
       // tslint:disable-next-line:no-non-null-assertion

@@ -1,7 +1,7 @@
 import { instanceSourceId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { assert, match, retryUntil, should } from 'gs-testing/export/main';
-import { Mocks } from 'gs-testing/export/mock';
+import { mocks } from 'gs-testing/export/mock';
 import { createSpyInstance, fake, resetCalls, spy, SpyObj } from 'gs-testing/export/spy';
 import { InstanceofType } from 'gs-types/export';
 import { ResolvedWatchableLocator } from '../locator/resolved-locator';
@@ -34,7 +34,7 @@ describe('event.DomListener', () => {
         [],
         'ElementLocator',
     );
-    options = Mocks.object('options');
+    options = mocks.object('options');
     listener = new DomListener(
         mockElementLocator,
         EVENT_NAME,
