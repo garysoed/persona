@@ -1,6 +1,6 @@
 import { staticSourceId } from 'grapevine/export/component';
 import { getOrRegisterApp as vineGetOrRegisterApp } from 'grapevine/export/main';
-import { retryUntil, should } from 'gs-testing/export/main';
+import { retryUntil, should, test } from 'gs-testing/export/main';
 import { IntegerParser } from 'gs-tools/export/parse';
 import { NullableType, NumberType } from 'gs-types/export';
 import { attribute } from '../locator/attribute-locator';
@@ -54,7 +54,7 @@ class TestClass extends CustomElementCtrl {
 const vine = vineBuilder.run();
 personaBuilder.build(['p-test'], window.customElements, vine);
 
-describe('annotation.render', () => {
+test('annotation.render', () => {
   should(`update the element correctly`, async () => {
     const testElement = document.createElement('p-test');
     document.body.appendChild(testElement);

@@ -1,6 +1,6 @@
 import { InstanceSourceId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
-import { assert, match, should } from 'gs-testing/export/main';
+import { assert, match, should, test } from 'gs-testing/export/main';
 import { mocks } from 'gs-testing/export/mock';
 import { createSpy, createSpyInstance, fake, resetCalls, Spy, spy } from 'gs-testing/export/spy';
 import { BaseDisposable } from 'gs-tools/export/dispose';
@@ -25,7 +25,7 @@ class TestClass extends CustomElementCtrl {
   }
 }
 
-describe('event.KeydownListener', () => {
+test('event.KeydownListener', () => {
   const ELEMENT_LOCATOR = element('div', InstanceofType(HTMLDivElement));
   let listener: KeydownListener<HTMLDivElement>;
   let matchOptions: MatchOptions;
@@ -40,7 +40,7 @@ describe('event.KeydownListener', () => {
   });
 
   // TODO: Use test generator.
-  describe('listenImpl_', () => {
+  test('listenImpl_', () => {
     should(`match the key correctly`, () => {
       const context = new TestClass();
       const spyMethod = spy(context, 'method');

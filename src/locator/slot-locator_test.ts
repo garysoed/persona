@@ -1,5 +1,5 @@
 import { VineBuilder } from 'grapevine/export/main';
-import { assert, match, retryUntil, should } from 'gs-testing/export/main';
+import { assert, match, retryUntil, should, test } from 'gs-testing/export/main';
 import { createSpyObject, fake, SpyObj } from 'gs-testing/export/spy';
 import { ImmutableList } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
@@ -13,7 +13,7 @@ interface Data {
   [__renderId]: string;
 }
 
-describe('locator.SlotLocator', () => {
+test('locator.SlotLocator', () => {
   const SLOT_NAME = 'slotName';
   let elementLocator: ResolvedElementLocator<HTMLDivElement>;
   let locator: ResolvedSlotLocator<{[__renderId]: string}, HTMLElement>;
@@ -31,7 +31,7 @@ describe('locator.SlotLocator', () => {
         HasPropertiesType({[__renderId]: StringType}));
   });
 
-  describe('startRender', () => {
+  test('startRender', () => {
     should(`render correctly`, async () => {
       const context = new BaseDisposable();
 
@@ -81,7 +81,7 @@ describe('locator.SlotLocator', () => {
     });
   });
 
-  describe('findCommentNode', () => {
+  test('findCommentNode', () => {
     should(`return the correct comment node`, () => {
       const commentNode = document.createComment(SLOT_NAME);
 

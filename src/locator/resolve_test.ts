@@ -1,9 +1,9 @@
-import { assert, match, should } from 'gs-testing/export/main';
+import { assert, match, should, test } from 'gs-testing/export/main';
 import { ElementWithTagType } from 'gs-types/export';
 import { element } from './element-locator';
 import { resolveLocators } from './resolve';
 
-describe('locator.resolveSelectors', () => {
+test('locator.resolveSelectors', () => {
   should(`resolve the object correctly`, () => {
     const unresolved = {
       a: element('b.c'),

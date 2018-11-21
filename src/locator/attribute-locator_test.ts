@@ -1,6 +1,6 @@
 import { instanceSourceId } from 'grapevine/export/component';
 import { VineBuilder } from 'grapevine/export/main';
-import { assert, retryUntil, should } from 'gs-testing/export/main';
+import { assert, retryUntil, should, test } from 'gs-testing/export/main';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { IntegerParser } from 'gs-tools/export/parse';
 import { InstanceofType, NumberType } from 'gs-types/export';
@@ -8,7 +8,7 @@ import { BehaviorSubject } from 'rxjs';
 import { attribute, ResolvedAttributeLocator } from './attribute-locator';
 import { element } from './element-locator';
 
-describe('locator.AttributeLocator', () => {
+test('locator.AttributeLocator', () => {
   const ATTR_NAME = 'attr';
   const DEFAULT_VALUE = 123;
   const elementLocator = element('div', InstanceofType(HTMLElement));
@@ -18,7 +18,7 @@ describe('locator.AttributeLocator', () => {
     locator = attribute(elementLocator, ATTR_NAME, IntegerParser, NumberType, DEFAULT_VALUE);
   });
 
-  describe('getObservableValue', () => {
+  test('getObservableValue', () => {
     should(`create observable that emits attribute values`, async () => {
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});
@@ -56,7 +56,7 @@ describe('locator.AttributeLocator', () => {
         });
   });
 
-  describe('getValue', () => {
+  test('getValue', () => {
     should(`return the correct value`, () => {
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});
@@ -79,13 +79,13 @@ describe('locator.AttributeLocator', () => {
     });
   });
 
-  describe('startRender', () => {
+  test('startRender', () => {
     should(`render the attribute correctly`, async () => {
       const context = new BaseDisposable();
       const vineBuilder = new VineBuilder();
 
       // Sets up the test source and stream.
-      const testSourceId = instanceSourceId('test', NumberType);
+      const testSourceId = instanceSourceId('test(', NumberType);
       vineBuilder.source(testSourceId, 0);
       vineBuilder.stream(locator.getWritingId(), testValue => testValue, testSourceId);
 

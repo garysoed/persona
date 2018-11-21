@@ -1,13 +1,13 @@
 import { instanceSourceId } from 'grapevine/export/component';
 import { VineBuilder } from 'grapevine/export/main';
-import { retryUntil, should } from 'gs-testing/export/main';
+import { retryUntil, should, test } from 'gs-testing/export/main';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { InstanceofType, StringType } from 'gs-types/export';
 import { element } from './element-locator';
 import { ResolvedStyleLocator, style } from './style-locator';
 
-describe('locator.StyleLocator', () => {
-  const elementLocator = element('#test', InstanceofType(HTMLDivElement));
+test('locator.StyleLocator', () => {
+  const elementLocator = element('#test(', InstanceofType(HTMLDivElement));
   let locator: ResolvedStyleLocator<'minHeight'>;
 
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe('locator.StyleLocator', () => {
     const vineBuilder = new VineBuilder();
 
     // Sets up the test source and stream.
-    const testSourceId = instanceSourceId('test', StringType);
+    const testSourceId = instanceSourceId('test(', StringType);
     vineBuilder.source(testSourceId, '0');
     vineBuilder.stream(locator.getWritingId(), testValue => testValue, testSourceId);
 

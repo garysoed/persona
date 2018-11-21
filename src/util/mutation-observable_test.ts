@@ -1,8 +1,8 @@
-import { assert, retryUntil, should } from 'gs-testing/export/main';
+import { assert, retryUntil, should, test } from 'gs-testing/export/main';
 import { BehaviorSubject } from 'rxjs';
 import { mutationObservable } from './mutation-observable';
 
-describe('util.mutationObservable', () => {
+test('util.mutationObservable', () => {
   should(`emit the records correctly`, async () => {
     const rootEl = document.createElement('div').attachShadow({mode: 'open'});
     const addedEl = document.createElement('div');

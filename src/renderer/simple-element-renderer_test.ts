@@ -1,4 +1,4 @@
-import { assert, should } from 'gs-testing/export/main';
+import { assert, should, test } from 'gs-testing/export/main';
 import { IntegerParser, StringParser } from 'gs-tools/export/parse';
 import { ImmutableList } from 'gs-tools/src/immutable';
 import { __renderId } from './render-id';
@@ -9,7 +9,7 @@ interface TestObject {
   b: number;
 }
 
-describe('converter.SimpleElementConverter', () => {
+test('converter.SimpleElementConverter', () => {
   const TAG_NAME = 'tag-name';
   let converter: SimpleElementRenderer<TestObject>;
 
@@ -22,7 +22,7 @@ describe('converter.SimpleElementConverter', () => {
         });
   });
 
-  describe('getElement_', () => {
+  test('getElement_', () => {
     should(`return the correct element`, () => {
       const id = 'id';
       const el = converter['getElement_'](id, null);
@@ -49,7 +49,7 @@ describe('converter.SimpleElementConverter', () => {
     });
   });
 
-  describe('render', () => {
+  test('render', () => {
     should(`render correctly`, () => {
       const insertionNode = document.createComment('insert');
       const root = document.createElement('div');

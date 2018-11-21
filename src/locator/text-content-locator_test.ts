@@ -1,12 +1,12 @@
 import { instanceSourceId } from 'grapevine/export/component';
 import { VineBuilder } from 'grapevine/export/main';
-import { retryUntil, should } from 'gs-testing/export/main';
+import { retryUntil, should, test } from 'gs-testing/export/main';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { InstanceofType, StringType } from 'gs-types/export';
 import { element } from './element-locator';
 import { ResolvedTextContentLocator, textContent } from './text-content-locator';
 
-describe('locator.TextContentLocator', () => {
+test('locator.TextContentLocator', () => {
   const elementLocator = element('div', InstanceofType(HTMLDivElement));
   let locator: ResolvedTextContentLocator;
 
@@ -14,13 +14,13 @@ describe('locator.TextContentLocator', () => {
     locator = textContent(elementLocator);
   });
 
-  describe('startRender', () => {
+  test('startRender', () => {
     should(`render the content correctly`, async () => {
       const context = new BaseDisposable();
       const vineBuilder = new VineBuilder();
 
       // Sets up the text source and stream.
-      const testSourceId = instanceSourceId('test', StringType);
+      const testSourceId = instanceSourceId('test(', StringType);
       const text = 'text';
       vineBuilder.source(testSourceId, text);
       vineBuilder.stream(locator.getWritingId(), renderedText => renderedText, testSourceId);

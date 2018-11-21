@@ -1,6 +1,6 @@
 import { instanceSourceId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
-import { assert, match, retryUntil, should } from 'gs-testing/export/main';
+import { assert, match, retryUntil, should, test } from 'gs-testing/export/main';
 import { mocks } from 'gs-testing/export/mock';
 import { createSpyInstance, fake, resetCalls, spy, SpyObj } from 'gs-testing/export/spy';
 import { InstanceofType } from 'gs-types/export';
@@ -21,7 +21,7 @@ class TestClass extends CustomElementCtrl {
   }
 }
 
-describe('event.DomListener', () => {
+test('event.DomListener', () => {
   const EVENT_NAME = 'eventName';
 
   let mockElementLocator: SpyObj<ResolvedWatchableLocator<HTMLElement>>;
@@ -42,7 +42,7 @@ describe('event.DomListener', () => {
         options);
   });
 
-  describe('listen', () => {
+  test('listen', () => {
     should(`listen to events correctly`, async () => {
       const el = document.createElement('div');
 

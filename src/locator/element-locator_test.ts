@@ -1,11 +1,11 @@
 import 'jasmine';
 
-import { assert, should } from 'gs-testing/export/main';
+import { assert, should, test } from 'gs-testing/export/main';
 import { ElementWithTagType } from 'gs-types/export';
 import { element } from './element-locator';
 import { resolveLocators } from './resolve';
 
-describe('locator.element', () => {
+test('locator.element', () => {
   should(`resolve correctly`, () => {
     const root = {
       a: element('b.c'),

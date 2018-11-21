@@ -1,4 +1,4 @@
-import { assert, should } from 'gs-testing/export/main';
+import { assert, should, test } from 'gs-testing/export/main';
 import { ImmutableList, ImmutableMap } from 'gs-tools/export/collect';
 import { __nodeId, ElementListRenderer, ElementWithId } from './element-list-renderer';
 import { __renderId } from './render-id';
@@ -40,7 +40,7 @@ class TestRenderer implements Renderer<Data, Element> {
   }
 }
 
-describe('renderer.ElementListRenderer', () => {
+test('renderer.ElementListRenderer', () => {
   let renderer: ElementListRenderer<Data>;
   let testRenderer: TestRenderer;
 
@@ -49,7 +49,7 @@ describe('renderer.ElementListRenderer', () => {
     renderer = new ElementListRenderer(testRenderer);
   });
 
-  describe('render', () => {
+  test('render', () => {
     should(`render correctly`, () => {
       const elementA = createElement('a');
       const elementB = createElement('b');

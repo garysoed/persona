@@ -1,5 +1,5 @@
 import { VineImpl } from 'grapevine/export/main';
-import { assert, should } from 'gs-testing/export/main';
+import { assert, should, test } from 'gs-testing/export/main';
 import { mocks } from 'gs-testing/export/mock';
 import { createSpy, resetCalls } from 'gs-testing/export/spy';
 import { InstanceofType } from 'gs-types/export';
@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 import { DispatchFn, ResolvedDispatcherLocator } from './dispatcher-locator';
 import { element } from './element-locator';
 
-const CUSTOM_EVENT_NAME = 'test';
+const CUSTOM_EVENT_NAME = 'test(';
 
 /**
  * @test
@@ -18,7 +18,7 @@ class TestCustomEvent extends CustomEvent<string> {
   }
 }
 
-describe('locator.dispatcher', () => {
+test('locator.dispatcher', () => {
   let locator: ResolvedDispatcherLocator<CustomEvent>;
 
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe('locator.dispatcher', () => {
         element('div', InstanceofType(HTMLDivElement)));
   });
 
-  describe('getObservableValue', () => {
+  test('getObservableValue', () => {
     should(`emit the dispatcher`, () => {
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});
@@ -50,7 +50,7 @@ describe('locator.dispatcher', () => {
     });
   });
 
-  describe('getValue', () => {
+  test('getValue', () => {
     should(`return the dispatcher if element exists`, () => {
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});

@@ -1,6 +1,6 @@
 // tslint:disable:no-non-null-assertion
 import { VineImpl } from 'grapevine/export/main';
-import { assert, match, should } from 'gs-testing/export/main';
+import { assert, match, should, test } from 'gs-testing/export/main';
 import { createSpyInstance, spy, SpyObj } from 'gs-testing/export/spy';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
@@ -18,14 +18,14 @@ class TestClass extends CustomElementCtrl {
   }
 }
 
-describe('main.CustomElementImpl', () => {
+test('main.CustomElementImpl', () => {
   let mockVine: SpyObj<VineImpl>;
 
   beforeEach(() => {
     mockVine = createSpyInstance(VineImpl);
   });
 
-  describe(`connectedCallback`, () => {
+  test(`connectedCallback`, () => {
     should(`set the shadow correctly`, async () => {
       const element = document.createElement('div');
       const templateString = 'templateString';
@@ -129,7 +129,7 @@ describe('main.CustomElementImpl', () => {
     });
   });
 
-  describe(`disconnectedCallback`, () => {
+  test(`disconnectedCallback`, () => {
     should(`dispose the component if has been connected`, () => {
       const element = document.createElement('div');
       const templateString = 'templateString';

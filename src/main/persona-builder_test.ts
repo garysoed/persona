@@ -1,7 +1,7 @@
 import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineApp, VineBuilder, VineImpl } from 'grapevine/export/main';
 import { InstanceSourceProvider } from 'grapevine/src/node/instance-source-provider';
-import { assert, match, should } from 'gs-testing/export/main';
+import { assert, match, should, test } from 'gs-testing/export/main';
 import { mocks } from 'gs-testing/export/mock';
 import { createSpy, createSpyInstance, createSpyObject, fake, Spy, SpyObj } from 'gs-testing/export/spy';
 import { ImmutableSet } from 'gs-tools/export/collect';
@@ -26,7 +26,7 @@ class TestClass extends CustomElementCtrl {
 
 type SourceWithProvider<T> = (id: InstanceSourceId<T>, provider: InstanceSourceProvider<T>) => void;
 
-describe('main.PersonaBuilder', () => {
+test('main.PersonaBuilder', () => {
   let baseCustomElementsAnnotationsCache: Annotations<BaseComponentSpec>;
   let customElementsAnnotationsCache: Annotations<ComponentSpec>;
   let builder: PersonaBuilder;
@@ -41,7 +41,7 @@ describe('main.PersonaBuilder', () => {
     );
   });
 
-  describe('register', () => {
+  test('register', () => {
     let mockVine: VineApp;
 
     beforeEach(() => {
@@ -243,7 +243,7 @@ describe('main.PersonaBuilder', () => {
     });
   });
 
-  describe('getSpec_', () => {
+  test('getSpec_', () => {
     class ParentTestClass extends CustomElementCtrl {
       init(vine: VineImpl): void {
         throw new Error('Method not implemented.');

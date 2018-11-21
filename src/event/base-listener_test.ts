@@ -1,5 +1,5 @@
 import { VineImpl } from 'grapevine/export/main';
-import { assert, match, should } from 'gs-testing/export/main';
+import { assert, match, should, test } from 'gs-testing/export/main';
 import { mocks } from 'gs-testing/export/mock';
 import { createSpy, fake, Spy } from 'gs-testing/export/spy';
 import { createSpyInstance, spy } from 'gs-testing/src/spy/spy';
@@ -38,7 +38,7 @@ class TestCtrl extends CustomElementCtrl {
   }
 }
 
-describe('event.BaseListener', () => {
+test('event.BaseListener', () => {
   let mockListenImplSpy: Spy<Observable<Event>, [VineImpl, CustomElementCtrl]>;
   let listener: TestListener;
 
@@ -48,7 +48,7 @@ describe('event.BaseListener', () => {
     listener = new TestListener(mockListenImplSpy);
   });
 
-  describe('listen', () => {
+  test('listen', () => {
     should(`call listenImpl correctly`, () => {
       const vine = mocks.object<VineImpl>('vine');
       const mockContext = new TestCtrl();
