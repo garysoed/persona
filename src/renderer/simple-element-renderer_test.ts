@@ -1,6 +1,8 @@
 import { assert, should, test } from 'gs-testing/export/main';
-import { IntegerParser, StringParser } from 'gs-tools/export/parse';
-import { ImmutableList } from 'gs-tools/src/immutable';
+import { ImmutableList } from 'gs-tools/export/collect';
+import { integerConverter } from 'gs-tools/export/serializer';
+import { human } from 'nabu/export/grammar';
+import { compose, identity } from 'nabu/export/util';
 import { __renderId } from './render-id';
 import { __nodeId, SimpleElementRenderer } from './simple-element-renderer';
 
@@ -17,8 +19,8 @@ test('converter.SimpleElementConverter', () => {
     converter = new SimpleElementRenderer(
         TAG_NAME,
         {
-          a: StringParser,
-          b: IntegerParser,
+          a: identity(),
+          b: compose(integerConverter(), human()),
         });
   });
 

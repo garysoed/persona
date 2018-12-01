@@ -1,21 +1,17 @@
 import { ImmutableSet } from 'gs-tools/export/collect';
-import { Converter } from 'gs-tools/src/converter/converter';
 import { InstanceofType, Type } from 'gs-types/export';
+import { Converter, Result } from 'nabu/export/main';
 import { ResolvedAttributeLocator } from './attribute-locator';
 import { ResolvedWatchableLocator } from './resolved-locator';
 import { UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
 export const classListParser: Converter<ImmutableSet<string>, string> = {
-  convertBackward(input: string|null): ImmutableSet<string> {
-    if (!input) {
-      return ImmutableSet.of();
-    }
-
-    return ImmutableSet.of(input.split(' '));
+  convertBackward(input: string): Result<ImmutableSet<string>> {
+    return {result: ImmutableSet.of(input.split(' ')), success: true};
   },
 
-  convertForward(classes: ImmutableSet<string>): string {
-    return [...classes].join(' ');
+  convertForward(classes: ImmutableSet<string>): Result<string> {
+    return {result: [...classes].join(' '), success: true};
   },
 };
 

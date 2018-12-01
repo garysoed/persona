@@ -2,17 +2,16 @@ import { instanceSourceId, instanceStreamId } from 'grapevine/export/component';
 import { VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
-import { Converter } from 'gs-tools/src/converter/converter';
 import { Errors } from 'gs-tools/src/error';
 import { Type } from 'gs-types/export';
+import { Converter } from 'nabu/export/main';
 import { combineLatest, Observable, of as observableOf, Subscription } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 import { mutationObservable } from '../util/mutation-observable';
 import { ResolvedLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator, ResolvedWatchableLocators } from './resolved-locator';
 import { UnresolvedRenderableWatchableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
-function generateVineId(elementLocator: ResolvedLocator, attrName: string):
-    string {
+function generateVineId(elementLocator: ResolvedLocator, attrName: string): string {
   return `${elementLocator}[${attrName}]`;
 }
 
@@ -28,7 +27,7 @@ export class ResolvedAttributeLocator<T>
       readonly parser: Converter<T, string>,
       type: Type<T>,
       private readonly defaultValue_?: T,
-      ) {
+  ) {
     super(
         instanceStreamId(generateVineId(elementLocator, attrName), type),
         instanceSourceId(generateVineId(elementLocator, attrName), type));
@@ -75,8 +74,8 @@ export class ResolvedAttributeLocator<T>
   }
 
   private parseValue_(unparsedValue: string): T {
-    const parsedValue = this.parser.convertBackward(unparsedValue);
-    if (!this.getType().check(parsedValue)) {
+    const parseResult = this.parser.convertBackward(unparsedValue);
+    if (!parseResult.success) {
       if (this.defaultValue_ !== undefined) {
         return this.defaultValue_;
       } else {
@@ -86,7 +85,7 @@ export class ResolvedAttributeLocator<T>
       }
     }
 
-    return parsedValue;
+    return parseResult.result;
   }
 
   startRender(vine: VineImpl, context: BaseDisposable): Subscription {
@@ -98,7 +97,11 @@ export class ResolvedAttributeLocator<T>
           if (!attrEl) {
             return;
           }
-          attrEl.setAttribute(this.attrName, this.parser.convertForward(attr) || '');
+
+          const result = this.parser.convertForward(attr);
+          if (result.success) {
+            attrEl.setAttribute(this.attrName, result.result);
+          }
         });
   }
 

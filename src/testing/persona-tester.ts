@@ -1,7 +1,6 @@
 import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { fake, spy } from 'gs-testing/export/spy';
-import { Errors } from 'gs-tools/export/error';
 import { ImmutableList } from 'gs-tools/src/immutable';
 import { Observable } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
@@ -49,7 +48,7 @@ export class PersonaTester {
   ): T {
     const targetEl = getElement_(element, locator.elementLocator);
     const value = locator.parser.convertBackward(
-        targetEl.getAttribute(locator.attrName));
+        targetEl.getAttribute(locator.attrName) || '');
     if (!locator.getType().check(value)) {
       throw new Error(`Value ${value} is the wrong type for ${locator}`);
     }
@@ -123,13 +122,16 @@ export class PersonaTester {
       value: T,
   ): Promise<unknown> {
     const targetEl = getElement_(element, locator.elementLocator);
-    const strValue = locator.parser.convertForward(value) || '';
-    targetEl.setAttribute(locator.attrName, strValue);
+    const result = locator.parser.convertForward(value);
+
+    if (result.success) {
+      targetEl.setAttribute(locator.attrName, result.result);
+    }
 
     return this.vine.getObservable(locator.getReadingId(), getCtrl_(element))
         .pipe(
             map(currentValue => locator.parser.convertForward(currentValue)),
-            filter(currentValueStr => currentValueStr === strValue),
+            filter(currentValueStr => currentValueStr === result),
             take(1),
         )
         .toPromise();

@@ -1,8 +1,10 @@
 import { staticSourceId } from 'grapevine/export/component';
 import { getOrRegisterApp as vineGetOrRegisterApp } from 'grapevine/export/main';
 import { retryUntil, should, test } from 'gs-testing/export/main';
-import { IntegerParser } from 'gs-tools/export/parse';
+import { integerConverter } from 'gs-tools/export/serializer';
 import { NullableType, NumberType } from 'gs-types/export';
+import { human } from 'nabu/export/grammar';
+import { compose } from 'nabu/export/util';
 import { attribute } from '../locator/attribute-locator';
 import { resolveLocators } from '../locator/resolve';
 import { shadowHost } from '../locator/shadow-host-locator';
@@ -13,6 +15,8 @@ const vineApp = vineGetOrRegisterApp('test');
 const {builder: vineBuilder, vineIn} = vineApp;
 const {builder: personaBuilder, customElement, render} = getOrRegisterApp('test', vineApp);
 
+const integerParser = compose(integerConverter(), human());
+
 const template = '<div></div>';
 
 const $testSource = staticSourceId('testsource', NumberType);
@@ -20,9 +24,9 @@ vineBuilder.source($testSource, 2);
 
 const $ = resolveLocators({
   host: {
-    attr: attribute(shadowHost, 'attr', IntegerParser, NullableType(NumberType), 0),
-    attr2: attribute(shadowHost, 'attr2', IntegerParser, NullableType(NumberType), 0),
-    attr3: attribute(shadowHost, 'attr3', IntegerParser, NullableType(NumberType), 0),
+    attr: attribute(shadowHost, 'attr', integerParser, NullableType(NumberType), 0),
+    attr2: attribute(shadowHost, 'attr2', integerParser, NullableType(NumberType), 0),
+    attr3: attribute(shadowHost, 'attr3', integerParser, NullableType(NumberType), 0),
   },
 });
 

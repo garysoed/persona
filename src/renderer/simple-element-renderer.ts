@@ -1,4 +1,4 @@
-import { Converter } from 'gs-tools/export/converter';
+import { Converter } from 'nabu/export/main';
 import { __renderId } from './render-id';
 import { Renderer } from './renderer';
 
@@ -46,9 +46,9 @@ export class SimpleElementRenderer<T extends Value> implements
     const el = this.getElement_(currentValue[__renderId], previousRender);
     for (const key in this.attributeConverters_) {
       if (this.attributeConverters_.hasOwnProperty(key)) {
-        const value = this.attributeConverters_[key].convertForward(currentValue[key]);
-        if (value !== null) {
-          el.setAttribute(key, value);
+        const result = this.attributeConverters_[key].convertForward(currentValue[key]);
+        if (result.success) {
+          el.setAttribute(key, result.result);
         }
       }
     }
