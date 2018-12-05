@@ -47,13 +47,13 @@ export class PersonaTester {
       locator: ResolvedAttributeLocator<T>,
   ): T {
     const targetEl = getElement_(element, locator.elementLocator);
-    const value = locator.parser.convertBackward(
-        targetEl.getAttribute(locator.attrName) || '');
-    if (!locator.getType().check(value)) {
-      throw new Error(`Value ${value} is the wrong type for ${locator}`);
+    const strValue = targetEl.getAttribute(locator.attrName);
+    const value = locator.parser.convertBackward(strValue || '');
+    if (!value.success) {
+      throw new Error(`Value ${strValue} is the wrong type for ${locator}`);
     }
 
-    return value;
+    return value.result;
   }
 
   getElementsAfter(
@@ -124,14 +124,18 @@ export class PersonaTester {
     const targetEl = getElement_(element, locator.elementLocator);
     const result = locator.parser.convertForward(value);
 
-    if (result.success) {
-      targetEl.setAttribute(locator.attrName, result.result);
+    if (!result.success) {
+      throw new Error(`Invalid value: ${value}`);
     }
+
+    targetEl.setAttribute(locator.attrName, result.result);
 
     return this.vine.getObservable(locator.getReadingId(), getCtrl_(element))
         .pipe(
             map(currentValue => locator.parser.convertForward(currentValue)),
-            filter(currentValueStr => currentValueStr === result),
+            filter(currentValueStr => {
+              return currentValueStr.success && currentValueStr.result === result.result;
+            }),
             take(1),
         )
         .toPromise();
