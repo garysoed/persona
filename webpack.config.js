@@ -1,9 +1,8 @@
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const glob = require("glob");
 const path = require("path");
 
 module.exports = {
-  entry: glob.sync("./src/**/*_test.ts"),
+  entry: glob.sync("./src/**/*.test.ts"),
   output: {
     filename: "bundle.js",
     path: __dirname + "/out"
@@ -43,14 +42,5 @@ module.exports = {
 
   watch: true,
 
-  plugins: [
-    // new UglifyJsPlugin({
-    //   uglifyOptions: {
-    //     keep_classnames: true,
-    //     keep_fnames: true,
-    //     mangle: false,
-    //   },
-    //   sourceMap: true,
-    // }),
-  ]
+  plugins: [ ]
 };

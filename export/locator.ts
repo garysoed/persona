@@ -1,4 +1,4 @@
-export { attribute } from '../src/locator/attribute-locator';
+export { attributeIn } from '../src/locator/attribute-in-locator';
 export { attributeOut } from '../src/locator/attribute-out-locator';
 export { classlist } from '../src/locator/classlist-locator';
 export { dispatcher } from '../src/locator/dispatcher-locator';
@@ -8,4 +8,4 @@ export { slot } from '../src/locator/slot-locator';
 export { textContent } from '../src/locator/text-content-locator';
 export { shadowHost } from '../src/locator/shadow-host-locator';
 export { style } from '../src/locator/style-locator';
-export { ResolvedWatchableLocator, ResolvedRenderableLocator, ResolvedRenderableWatchableLocator } from '../src/locator/resolved-locator';
+export { ResolvedWatchableLocator, ResolvedRenderableLocator } from '../src/locator/resolved-locator';
