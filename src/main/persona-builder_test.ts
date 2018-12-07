@@ -7,13 +7,13 @@ import { createSpy, createSpyInstance, createSpyObject, fake, Spy, SpyObj } from
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { InstanceofType } from 'gs-types/export';
+import { ResolvedWatchableLocator } from 'src/locator/resolved-locator';
 import { classlist } from '../locator/classlist-locator';
 import { element } from '../locator/element-locator';
-import { BaseComponentSpec, ComponentSpec, OnKeydownSpec, OnDomSpec, RendererSpec } from './component-spec';
+import { BaseComponentSpec, ComponentSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { SHADOW_ROOT } from './custom-element-impl';
-import { PersonaBuilder, getSpec_ } from './persona-builder';
-import { ResolvedWatchableLocator } from 'src/locator/resolved-locator';
+import { getSpec_, PersonaBuilder } from './persona-builder';
 
 /**
  * @test

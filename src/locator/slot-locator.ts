@@ -5,7 +5,7 @@ import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Type } from 'gs-types/export';
 import { combineLatest, Subscription } from 'rxjs';
 import { Renderer } from '../renderer/renderer';
-import { ResolvedRenderableLocator, ResolvedWatchableLocator, ResolvedWatchableLocators } from './resolved-locator';
+import { ResolvedRenderableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { LocatorPathResolver, UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
 export const SLOT_ELEMENTS_ = Symbol('slotElement');
@@ -20,9 +20,9 @@ export class ResolvedSlotLocator<T, R> extends ResolvedRenderableLocator<T> {
     super(instanceStreamId(`${parentElementLocator}.slot(${slotName})`, type));
   }
 
-  getDependencies(): ImmutableSet<ResolvedWatchableLocators> {
+  getDependencies(): ImmutableSet<ResolvedWatchableLocator<any>> {
     return ImmutableSet
-        .of<ResolvedWatchableLocators>([this.parentElementLocator])
+        .of<ResolvedWatchableLocator<any>>([this.parentElementLocator])
         .addAll(this.parentElementLocator.getDependencies());
   }
 

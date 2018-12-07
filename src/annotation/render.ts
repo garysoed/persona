@@ -1,12 +1,11 @@
 import { NodeId } from 'grapevine/export/component';
 import { VineIn } from 'grapevine/src/annotation/vine-in';
 import { Annotations } from 'gs-tools/export/data';
-import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
+import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { RendererSpec } from '../main/component-spec';
 import { Input } from './input';
 
-type ForwardingInput<T> = ResolvedWatchableLocator<T>|
-    ResolvedRenderableWatchableLocator<T>|NodeId<T>;
+type ForwardingInput<T> = ResolvedWatchableLocator<T>|NodeId<T>;
 
 interface RenderDecorator<T> extends PropertyDecorator {
   withForwarding(input: ForwardingInput<T>): ClassDecorator;
@@ -19,7 +18,7 @@ export function renderFactory(
     rendererAnnotationsCache: Annotations<RendererSpec>,
     input: Input,
     vineIn: VineIn): Render {
-  return <T>(locator: ResolvedRenderableLocator<T>|ResolvedRenderableWatchableLocator<T>) => {
+  return <T>(locator: ResolvedRenderableLocator<T>) => {
     const decorator = (
         target: Object,
         propertyKey: string | symbol) => {

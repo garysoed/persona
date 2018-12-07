@@ -6,7 +6,7 @@ import { AnyType, IterableOfType } from 'gs-types/export';
 import { BaseListener } from '../event/base-listener';
 import { DomListener } from '../event/dom-listener';
 import { KeydownListener } from '../event/keydown-listener';
-import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
+import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { BaseComponentSpec, ComponentSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
 import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementCtrl } from './custom-element-ctrl';
@@ -149,7 +149,7 @@ function createCustomElementClass_(
     listeners: ImmutableSet<BaseListener>,
     rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
     templateStr: string,
-    watchers: ImmutableSet<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>,
+    watchers: ImmutableSet<ResolvedWatchableLocator<any>>,
     vine: VineImpl): CustomElementClass {
   const customElementImplFactory = (element: HTMLElement, shadowMode: 'open'|'closed') => {
     return new CustomElementImpl(

@@ -1,7 +1,8 @@
 import { Jsons } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
 import { Type } from 'gs-types/export';
-import { ResolvedAttributeLocator, UnresolvedAttributeLocator } from './attribute-locator';
+import { ResolvedAttributeInLocator, UnresolvedAttributeInLocator } from './attribute-in-locator';
+import { ResolvedAttributeOutLocator, UnresolvedAttributeOutLocator } from './attribute-out-locator';
 import { ResolvedClassListLocator, UnresolvedClassListLocator } from './classlist-locator';
 import { ResolvedDispatcherLocator, UnresolvedDispatcherLocator } from './dispatcher-locator';
 import { ResolvedElementLocator, UnresolvedElementLocator } from './element-locator';
@@ -20,7 +21,8 @@ interface LocatorObject {
 
 // tslint:disable:semicolon whitespace typedef no-empty no-unused-expression
 type Resolved<T extends ResolvedLocator|UnresolvedLocator|LocatorObject> =
-    T extends UnresolvedAttributeLocator<infer V> ? ResolvedAttributeLocator<V> :
+    T extends UnresolvedAttributeOutLocator<infer V> ? ResolvedAttributeOutLocator<V> :
+    T extends UnresolvedAttributeInLocator<infer V> ? ResolvedAttributeInLocator<V> :
     T extends UnresolvedClassListLocator ? ResolvedClassListLocator :
     T extends UnresolvedDispatcherLocator<infer V> ? ResolvedDispatcherLocator<V> :
     T extends UnresolvedElementLocator<infer E> ? ResolvedElementLocator<E> :

@@ -1,5 +1,5 @@
 import { MatchOptions } from '../event/keydown-listener';
-import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator, ResolvedWatchableLocators } from '../locator/resolved-locator';
+import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { CustomElementCtrl } from './custom-element-ctrl';
 
 /**
@@ -39,7 +39,7 @@ export interface BaseComponentSpec {
   keydownSpecs?: Iterable<OnKeydownSpec>;
   listeners?: Iterable<OnDomSpec>;
   renderers?: Iterable<RendererSpec>;
-  watchers?: Iterable<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>;
+  watchers?: Iterable<ResolvedWatchableLocator<any>>;
 }
 
 /**
@@ -51,4 +51,4 @@ export interface ComponentSpec {
   template: string;
 }
 
-export type InputSpec = ResolvedWatchableLocators;
+export type InputSpec = ResolvedWatchableLocator<any>;

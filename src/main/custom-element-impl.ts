@@ -1,9 +1,9 @@
 import { VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { cache } from 'gs-tools/export/data';
-import { BaseDisposable, DisposableFunction } from 'gs-tools/export/dispose';
+import { BaseDisposable } from 'gs-tools/export/dispose';
 import { BaseListener } from '../event/base-listener';
-import { ResolvedRenderableLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
+import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { CustomElementCtrl } from './custom-element-ctrl';
 
 export const SHADOW_ROOT = Symbol('shadowRoot');
@@ -21,8 +21,7 @@ export class CustomElementImpl {
       private readonly element_: ElementWithCtrl,
       private readonly rendererLocators_: ImmutableSet<ResolvedRenderableLocator<any>>,
       private readonly templateStr_: string,
-      private readonly watchers_:
-          ImmutableSet<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>,
+      private readonly watchers_: ImmutableSet<ResolvedWatchableLocator<any>>,
       private readonly vine_: VineImpl,
       private readonly shadowMode_: 'open' | 'closed' = 'closed') { }
 

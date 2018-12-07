@@ -5,7 +5,7 @@ import { ImmutableSet } from 'gs-tools/src/immutable';
 import { InstanceofType, Type } from 'gs-types/export';
 import { Observable } from 'rxjs';
 import { elementObservable } from '../util/element-observable';
-import { ResolvedWatchableLocator, ResolvedWatchableLocators } from './resolved-locator';
+import { ResolvedWatchableLocator } from './resolved-locator';
 import { UnresolvedWatchableLocator } from './unresolved-locator';
 
 /**
@@ -19,7 +19,7 @@ export class ResolvedElementLocator<T extends HTMLElement>
     super(sourceId);
   }
 
-  getDependencies(): ImmutableSet<ResolvedWatchableLocators> {
+  getDependencies(): ImmutableSet<ResolvedWatchableLocator<any>> {
     return ImmutableSet.of([]);
   }
 

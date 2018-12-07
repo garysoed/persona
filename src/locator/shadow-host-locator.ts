@@ -4,7 +4,7 @@ import { cache } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/src/error';
 import { InstanceofType } from 'gs-types/export';
 import { Observable, of as observableOf } from 'rxjs';
-import { ResolvedWatchableLocator, ResolvedWatchableLocators } from './resolved-locator';
+import { ResolvedWatchableLocator } from './resolved-locator';
 
 const htmlElementType = InstanceofType(HTMLElement);
 
@@ -16,7 +16,7 @@ class ShadowHostLocatorImpl extends ResolvedWatchableLocator<HTMLElement> {
     super(instanceSourceId('.host', htmlElementType));
   }
 
-  getDependencies(): ImmutableSet<ResolvedWatchableLocators> {
+  getDependencies(): ImmutableSet<ResolvedWatchableLocator<any>> {
     return ImmutableSet.of([]);
   }
 

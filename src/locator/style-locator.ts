@@ -4,7 +4,7 @@ import { ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { AnyType, Type } from 'gs-types/export';
 import { combineLatest, Subscription } from 'rxjs';
-import { ResolvedRenderableLocator, ResolvedWatchableLocator, ResolvedWatchableLocators } from './resolved-locator';
+import { ResolvedRenderableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
 /**
@@ -18,9 +18,9 @@ export class ResolvedStyleLocator<S extends keyof CSSStyleDeclaration>
     super(instanceStreamId(`${elementLocator}.${styleKey}`, AnyType()));
   }
 
-  getDependencies(): ImmutableSet<ResolvedWatchableLocators> {
+  getDependencies(): ImmutableSet<ResolvedWatchableLocator<any>> {
     return ImmutableSet
-        .of<ResolvedWatchableLocators>([this.elementLocator])
+        .of<ResolvedWatchableLocator<any>>([this.elementLocator])
         .addAll(this.elementLocator.getDependencies());
   }
 

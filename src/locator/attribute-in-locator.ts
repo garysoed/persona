@@ -1,15 +1,13 @@
-import { instanceSourceId, instanceStreamId } from 'grapevine/export/component';
-import { VineImpl } from 'grapevine/export/main';
+import { instanceSourceId } from 'grapevine/export/component';
 import { ImmutableSet } from 'gs-tools/export/collect';
-import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/src/error';
 import { Type } from 'gs-types/export';
 import { Converter } from 'nabu/export/main';
-import { combineLatest, Observable, of as observableOf, Subscription } from 'rxjs';
+import { combineLatest, Observable, of as observableOf } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 import { mutationObservable } from '../util/mutation-observable';
-import { ResolvedLocator, ResolvedRenderableWatchableLocator, ResolvedWatchableLocator, ResolvedWatchableLocators } from './resolved-locator';
-import { UnresolvedRenderableWatchableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
+import { ResolvedLocator, ResolvedWatchableLocator } from './resolved-locator';
+import { UnresolvedWatchableLocator } from './unresolved-locator';
 
 function generateVineId(elementLocator: ResolvedLocator, attrName: string): string {
   return `${elementLocator}[${attrName}]`;
@@ -18,8 +16,7 @@ function generateVineId(elementLocator: ResolvedLocator, attrName: string): stri
 /**
  * @internal
  */
-export class ResolvedAttributeLocator<T>
-    extends ResolvedRenderableWatchableLocator<T> {
+export class ResolvedAttributeInLocator<T> extends ResolvedWatchableLocator<T> {
 
   constructor(
       readonly elementLocator: ResolvedWatchableLocator<Element>,
@@ -28,14 +25,12 @@ export class ResolvedAttributeLocator<T>
       type: Type<T>,
       private readonly defaultValue_?: T,
   ) {
-    super(
-        instanceStreamId(generateVineId(elementLocator, attrName), type),
-        instanceSourceId(generateVineId(elementLocator, attrName), type));
+    super(instanceSourceId(generateVineId(elementLocator, attrName), type));
   }
 
-  getDependencies(): ImmutableSet<ResolvedWatchableLocators> {
+  getDependencies(): ImmutableSet<ResolvedWatchableLocator<any>> {
     return ImmutableSet
-        .of<ResolvedWatchableLocators>([this.elementLocator])
+        .of<ResolvedWatchableLocator<any>>([this.elementLocator])
         .addAll(this.elementLocator.getDependencies());
   }
 
@@ -88,23 +83,6 @@ export class ResolvedAttributeLocator<T>
     return parseResult.result;
   }
 
-  startRender(vine: VineImpl, context: BaseDisposable): Subscription {
-    return combineLatest(
-        vine.getObservable(this.elementLocator.getReadingId(), context),
-        vine.getObservable(this.getWritingId(), context),
-        )
-        .subscribe(([attrEl, attr]) => {
-          if (!attrEl) {
-            return;
-          }
-
-          const result = this.parser.convertForward(attr);
-          if (result.success) {
-            attrEl.setAttribute(this.attrName, result.result);
-          }
-        });
-  }
-
   toString(): string {
     return `ResolvedAttributeLocator(${this.getReadingId()})`;
   }
@@ -113,8 +91,7 @@ export class ResolvedAttributeLocator<T>
 /**
  * @internal
  */
-export class UnresolvedAttributeLocator<T>
-    extends UnresolvedRenderableWatchableLocator<T> {
+export class UnresolvedAttributeInLocator<T> extends UnresolvedWatchableLocator<T> {
   constructor(
       private readonly elementLocator_: UnresolvedWatchableLocator<Element>,
       private readonly attrName_: string,
@@ -126,8 +103,8 @@ export class UnresolvedAttributeLocator<T>
   }
 
   resolve(resolver: <S>(path: string, type: Type<S>) => S):
-      ResolvedAttributeLocator<T> {
-    return new ResolvedAttributeLocator(
+      ResolvedAttributeInLocator<T> {
+    return new ResolvedAttributeInLocator(
         this.elementLocator_.resolve(resolver),
         this.attrName_,
         this.parser_,
@@ -141,33 +118,42 @@ export class UnresolvedAttributeLocator<T>
   }
 }
 
-type AttributeLocator<T> = ResolvedAttributeLocator<T> | UnresolvedAttributeLocator<T>;
+type AttributeLocator<T> = ResolvedAttributeInLocator<T> | UnresolvedAttributeInLocator<T>;
 
 /**
  * Creates selector that selects an element.
  */
-export function attribute<T>(
+export function attributeIn<T>(
     elementLocator: UnresolvedWatchableLocator<Element>,
     attrName: string,
     converter: Converter<T, string>,
     type: Type<T>,
-    defaultValue?: T): UnresolvedAttributeLocator<T>;
-export function attribute<T>(
+    defaultValue: T,
+): UnresolvedAttributeInLocator<T>;
+export function attributeIn<T>(
     elementLocator: ResolvedWatchableLocator<Element>,
     attrName: string,
     converter: Converter<T, string>,
     type: Type<T>,
-    defaultValue?: T): ResolvedAttributeLocator<T>;
-export function attribute<T>(
+    defaultValue: T,
+): ResolvedAttributeInLocator<T>;
+export function attributeIn<T>(
     elementLocator:
         ResolvedWatchableLocator<Element>|UnresolvedWatchableLocator<Element>,
     attrName: string,
     converter: Converter<T, string>,
     type: Type<T>,
-    defaultValue?: T): AttributeLocator<T> {
+    defaultValue: T,
+): AttributeLocator<T> {
   if (elementLocator instanceof ResolvedLocator) {
-    return new ResolvedAttributeLocator(elementLocator, attrName, converter, type, defaultValue);
+    return new ResolvedAttributeInLocator(elementLocator, attrName, converter, type, defaultValue);
   } else {
-    return new UnresolvedAttributeLocator(elementLocator, attrName, converter, type, defaultValue);
+    return new UnresolvedAttributeInLocator(
+        elementLocator,
+        attrName,
+        converter,
+        type,
+        defaultValue,
+    );
   }
 }

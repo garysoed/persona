@@ -1,7 +1,7 @@
 import { VineApp } from 'grapevine/export/main';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
-import { ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
+import { ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { ComponentSpec } from '../main/component-spec';
 import { PersonaBuilder } from '../main/persona-builder';
 import { BaseCustomElement } from './base-custom-element';
@@ -10,11 +10,11 @@ import { BaseCustomElement } from './base-custom-element';
  * Specs that define a custom element.
  */
 interface Spec {
-  dependencies?: (typeof BaseDisposable)[];
+  dependencies?: Array<typeof BaseDisposable>;
   shadowMode?: 'open'|'closed';
   tag: string;
   template: string;
-  watch?: Iterable<ResolvedWatchableLocator<any>|ResolvedRenderableWatchableLocator<any>>;
+  watch?: Iterable<ResolvedWatchableLocator<any>>;
 }
 
 export type CustomElement = (spec: Spec) => ClassDecorator;

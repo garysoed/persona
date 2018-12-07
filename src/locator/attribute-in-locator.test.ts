@@ -7,17 +7,17 @@ import { InstanceofType, NumberType } from 'gs-types/export';
 import { human } from 'nabu/export/grammar';
 import { compose } from 'nabu/export/util';
 import { BehaviorSubject } from 'rxjs';
-import { attribute, ResolvedAttributeLocator } from './attribute-locator';
+import { attributeIn, ResolvedAttributeInLocator } from './attribute-in-locator';
 import { element } from './element-locator';
 
 test('locator.AttributeLocator', () => {
   const ATTR_NAME = 'attr';
   const DEFAULT_VALUE = 123;
   const elementLocator = element('div', InstanceofType(HTMLElement));
-  let locator: ResolvedAttributeLocator<number>;
+  let locator: ResolvedAttributeInLocator<number>;
 
   beforeEach(() => {
-    locator = attribute(
+    locator = attributeIn(
         elementLocator,
         ATTR_NAME,
         compose(integerConverter(), human()),
@@ -84,30 +84,6 @@ test('locator.AttributeLocator', () => {
       shadowRoot.appendChild(el);
 
       assert(locator.getValue(shadowRoot)).to.equal(DEFAULT_VALUE);
-    });
-  });
-
-  test('startRender', () => {
-    should(`render the attribute correctly`, async () => {
-      const context = new BaseDisposable();
-      const vineBuilder = new VineBuilder();
-
-      // Sets up the test source and stream.
-      const testSourceId = instanceSourceId('test(', NumberType);
-      vineBuilder.source(testSourceId, 0);
-      vineBuilder.stream(locator.getWritingId(), testValue => testValue, testSourceId);
-
-      // Sets up the element locator.
-      vineBuilder.source(elementLocator.getReadingId(), null);
-
-      const vine = vineBuilder.run();
-      locator.startRender(vine, context);
-
-      const divElement = document.createElement('div');
-      vine.setValue(elementLocator.getReadingId(), divElement, context);
-      vine.setValue(testSourceId, 123, context);
-
-      await retryUntil(() => divElement.getAttribute(ATTR_NAME)).to.equal('123');
     });
   });
 });

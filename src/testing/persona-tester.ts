@@ -3,11 +3,12 @@ import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { fake, spy } from 'gs-testing/export/spy';
 import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
 import { Observable } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
-import { ResolvedAttributeLocator } from '../locator/attribute-locator';
+import { filter, take } from 'rxjs/operators';
+import { ResolvedAttributeInLocator } from '../locator/attribute-in-locator';
+import { ResolvedAttributeOutLocator } from '../locator/attribute-out-locator';
 import { ResolvedClassListLocator } from '../locator/classlist-locator';
 import { ResolvedElementLocator } from '../locator/element-locator';
-import { ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
+import { ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { findCommentNode, ResolvedSlotLocator } from '../locator/slot-locator';
 import { ResolvedStyleLocator } from '../locator/style-locator';
 import { ResolvedTextContentLocator } from '../locator/text-content-locator';
@@ -45,7 +46,7 @@ export class PersonaTester {
 
   getAttribute<T>(
       element: ElementWithCtrl,
-      locator: ResolvedAttributeLocator<T>,
+      locator: ResolvedAttributeInLocator<T>,
   ): T {
     const targetEl = getElement_(element, locator.elementLocator);
     const strValue = targetEl.getAttribute(locator.attrName);
@@ -137,9 +138,9 @@ export class PersonaTester {
 
   setAttribute<T>(
       element: ElementWithCtrl,
-      locator: ResolvedAttributeLocator<T>,
+      locator: ResolvedAttributeOutLocator<T>,
       value: T,
-  ): Promise<unknown> {
+  ): void {
     const targetEl = getElement_(element, locator.elementLocator);
     const result = locator.parser.convertForward(value);
 
@@ -148,16 +149,6 @@ export class PersonaTester {
     }
 
     targetEl.setAttribute(locator.attrName, result.result);
-
-    return this.vine.getObservable(locator.getReadingId(), getCtrl_(element))
-        .pipe(
-            map(currentValue => locator.parser.convertForward(currentValue)),
-            filter(currentValueStr => {
-              return currentValueStr.success && currentValueStr.result === result.result;
-            }),
-            take(1),
-        )
-        .toPromise();
   }
 
   simulateKeypress(
@@ -188,7 +179,7 @@ export class PersonaTester {
   }
 
   waitForValue<T>(
-      locator: ResolvedWatchableLocator<T>|ResolvedRenderableWatchableLocator<T>,
+      locator: ResolvedWatchableLocator<T>,
       element: ElementWithCtrl,
       expectedValue: T,
   ): Promise<unknown> {

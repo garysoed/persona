@@ -1,7 +1,7 @@
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { InstanceofType, Type } from 'gs-types/export';
 import { Converter, Result } from 'nabu/export/main';
-import { ResolvedAttributeLocator } from './attribute-locator';
+import { ResolvedAttributeOutLocator } from './attribute-out-locator';
 import { ResolvedWatchableLocator } from './resolved-locator';
 import { UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
@@ -19,14 +19,13 @@ export const classListParser: Converter<ImmutableSet<string>, string> = {
  * @internal
  */
 export class ResolvedClassListLocator
-    extends ResolvedAttributeLocator<ImmutableSet<string>> {
+    extends ResolvedAttributeOutLocator<ImmutableSet<string>> {
   constructor(elementLocator: ResolvedWatchableLocator<Element>) {
     super(
         elementLocator,
         'class',
         classListParser,
         InstanceofType<ImmutableSet<string>>(ImmutableSet),
-        ImmutableSet.of(),
     );
   }
 }

@@ -1,4 +1,5 @@
 export { attribute } from '../src/locator/attribute-locator';
+export { attributeOut } from '../src/locator/attribute-out-locator';
 export { classlist } from '../src/locator/classlist-locator';
 export { dispatcher } from '../src/locator/dispatcher-locator';
 export { element } from '../src/locator/element-locator';
