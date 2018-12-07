@@ -1,10 +1,11 @@
 import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { fake, spy } from 'gs-testing/export/spy';
-import { ImmutableList } from 'gs-tools/src/immutable';
+import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
 import { Observable } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { ResolvedAttributeLocator } from '../locator/attribute-locator';
+import { ResolvedClassListLocator } from '../locator/classlist-locator';
 import { ResolvedElementLocator } from '../locator/element-locator';
 import { ResolvedRenderableWatchableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { findCommentNode, ResolvedSlotLocator } from '../locator/slot-locator';
@@ -54,6 +55,24 @@ export class PersonaTester {
     }
 
     return value.result;
+  }
+
+  getClassList(
+      element: ElementWithCtrl,
+      locator: ResolvedClassListLocator,
+  ): ImmutableSet<string> {
+    const el = getElement_(element, locator.elementLocator);
+    const classList = el.classList;
+    const classes = new Set<string>();
+    for (let i = 0; i < classList.length; i++) {
+      const classItem = classList.item(i);
+      if (!classItem) {
+        continue;
+      }
+      classes.add(classItem);
+    }
+
+    return ImmutableSet.of(classes);
   }
 
   getElementsAfter(
