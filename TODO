@@ -1,2 +1,8 @@
 persona
+  ☐ Input output should all use observables.
   ☐ Use grapevine's listen
+  ☐ Parse the template for elements, slots, attributes, etc.
+  ☐ Split locator to watcher and renderer.
+  ☐ Expose observers for outputs, instead of events (see text-input).
+  ☐ onDom should be a watcher.
+  ☐ Make sure no locators need the type. Type should be available in the ID.

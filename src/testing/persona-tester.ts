@@ -46,7 +46,7 @@ export class PersonaTester {
 
   getAttribute<T>(
       element: ElementWithCtrl,
-      locator: ResolvedAttributeInLocator<T>,
+      locator: ResolvedAttributeInLocator<T>|ResolvedAttributeOutLocator<T>,
   ): T {
     const targetEl = getElement_(element, locator.elementLocator);
     const strValue = targetEl.getAttribute(locator.attrName);
@@ -74,6 +74,13 @@ export class PersonaTester {
     }
 
     return ImmutableSet.of(classes);
+  }
+
+  getElement<T extends HTMLElement>(
+      element: ElementWithCtrl,
+      locator: ResolvedElementLocator<T>,
+  ): T {
+    return getElement_(element, locator);
   }
 
   getElementsAfter(
@@ -138,7 +145,7 @@ export class PersonaTester {
 
   setAttribute<T>(
       element: ElementWithCtrl,
-      locator: ResolvedAttributeOutLocator<T>,
+      locator: ResolvedAttributeOutLocator<T>|ResolvedAttributeInLocator<T>,
       value: T,
   ): void {
     const targetEl = getElement_(element, locator.elementLocator);
@@ -149,6 +156,29 @@ export class PersonaTester {
     }
 
     targetEl.setAttribute(locator.attrName, result.result);
+  }
+
+  setInputValue(
+      element: ElementWithCtrl,
+      locator: ResolvedElementLocator<HTMLInputElement>,
+      value: string,
+  ): void {
+    const targetEl = getElement_(element, locator);
+    targetEl.value = value;
+    targetEl.dispatchEvent(new CustomEvent('input'));
+  }
+
+  simulateEvent(
+      element: ElementWithCtrl,
+      event: Event,
+      locator: ResolvedWatchableLocator<Element>,
+  ): void {
+    const targetEl = getElement_(element, locator);
+
+    if (!(targetEl instanceof HTMLElement)) {
+      throw new Error(`Element ${targetEl} is not an HTMLElement`);
+    }
+    targetEl.dispatchEvent(event);
   }
 
   simulateKeypress(

@@ -1,32 +1,60 @@
+import { instanceStreamId } from 'grapevine/export/component';
+import { VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
+import { BaseDisposable } from 'gs-tools/export/dispose';
+import { diff } from 'gs-tools/export/util';
 import { InstanceofType, Type } from 'gs-types/export';
-import { Converter, Result } from 'nabu/export/main';
-import { ResolvedAttributeOutLocator } from './attribute-out-locator';
-import { ResolvedWatchableLocator } from './resolved-locator';
+import { combineLatest, Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { ResolvedRenderableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
-export const classListParser: Converter<ImmutableSet<string>, string> = {
-  convertBackward(input: string): Result<ImmutableSet<string>> {
-    return {result: ImmutableSet.of(input.split(' ')), success: true};
-  },
-
-  convertForward(classes: ImmutableSet<string>): Result<string> {
-    return {result: [...classes].join(' '), success: true};
-  },
-};
+const __classes = Symbol('classes');
+interface ElementWithClasses extends Element {
+  [__classes]?: ImmutableSet<string>;
+}
 
 /**
  * @internal
  */
-export class ResolvedClassListLocator
-    extends ResolvedAttributeOutLocator<ImmutableSet<string>> {
-  constructor(elementLocator: ResolvedWatchableLocator<Element>) {
+export class ResolvedClassListLocator extends ResolvedRenderableLocator<ImmutableSet<string>> {
+  constructor(readonly elementLocator: ResolvedWatchableLocator<Element>) {
     super(
-        elementLocator,
-        'class',
-        classListParser,
-        InstanceofType<ImmutableSet<string>>(ImmutableSet),
-    );
+        instanceStreamId(
+            `${elementLocator}.classList`,
+            InstanceofType<ImmutableSet<string>>(ImmutableSet)));
+  }
+
+  getDependencies(): ImmutableSet<ResolvedWatchableLocator<any>> {
+    return ImmutableSet
+        .of<ResolvedWatchableLocator<any>>([this.elementLocator])
+        .addAll(this.elementLocator.getDependencies());
+  }
+
+  startRender(vine: VineImpl, context: BaseDisposable): Subscription {
+    const elementObs = vine.getObservable(
+        this.elementLocator.getReadingId(),
+        context,
+    ) as Observable<ElementWithClasses>;
+
+    return combineLatest(
+            elementObs,
+            vine.getObservable(this.getWritingId(), context),
+        )
+        .subscribe(([element, classes]) => {
+          const existingClasses = element[__classes] || ImmutableSet.of();
+          const {added, deleted} = diff(existingClasses, classes);
+
+          for (const item of added) {
+            element.classList.add(item);
+          }
+
+          for (const item of deleted) {
+            element.classList.remove(item);
+          }
+
+          element[__classes] = classes;
+        });
   }
 }
 

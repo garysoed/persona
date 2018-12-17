@@ -8,6 +8,8 @@ import { combineLatest, Subscription } from 'rxjs';
 import { ResolvedLocator, ResolvedRenderableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 
+type ShouldDelete<T> = (value: T) => boolean;
+
 function generateVineId(elementLocator: ResolvedLocator, attrName: string): string {
   return `${elementLocator}[${attrName}]`;
 }
@@ -22,6 +24,7 @@ export class ResolvedAttributeOutLocator<T> extends ResolvedRenderableLocator<T>
       readonly attrName: string,
       readonly parser: Converter<T, string>,
       type: Type<T>,
+      private readonly shouldDelete_: ShouldDelete<T>,
   ) {
     super(instanceStreamId(generateVineId(elementLocator, attrName), type));
   }
@@ -46,6 +49,10 @@ export class ResolvedAttributeOutLocator<T> extends ResolvedRenderableLocator<T>
           if (result.success) {
             attrEl.setAttribute(this.attrName, result.result);
           }
+
+          if (this.shouldDelete_(attr)) {
+            attrEl.removeAttribute(this.attrName);
+          }
         });
   }
 
@@ -64,6 +71,7 @@ export class UnresolvedAttributeOutLocator<T>
       private readonly attrName_: string,
       private readonly parser_: Converter<T, string>,
       private readonly type_: Type<T>,
+      private readonly shouldDelete_: ShouldDelete<T>,
   ) {
     super();
   }
@@ -75,6 +83,7 @@ export class UnresolvedAttributeOutLocator<T>
         this.attrName_,
         this.parser_,
         this.type_,
+        this.shouldDelete_,
     );
   }
 
@@ -93,23 +102,37 @@ export function attributeOut<T>(
     attrName: string,
     converter: Converter<T, string>,
     type: Type<T>,
+    shouldDelete?: ShouldDelete<T>,
 ): UnresolvedAttributeOutLocator<T>;
 export function attributeOut<T>(
     elementLocator: ResolvedWatchableLocator<Element>,
     attrName: string,
     converter: Converter<T, string>,
     type: Type<T>,
+    shouldDelete?: ShouldDelete<T>,
 ): ResolvedAttributeOutLocator<T>;
 export function attributeOut<T>(
-    elementLocator:
-        ResolvedWatchableLocator<Element>|UnresolvedWatchableLocator<Element>,
+    elementLocator: ResolvedWatchableLocator<Element>|UnresolvedWatchableLocator<Element>,
     attrName: string,
     converter: Converter<T, string>,
     type: Type<T>,
+    shouldDelete: ShouldDelete<T> = () => false,
 ): AttributeLocator<T> {
   if (elementLocator instanceof ResolvedLocator) {
-    return new ResolvedAttributeOutLocator(elementLocator, attrName, converter, type);
+    return new ResolvedAttributeOutLocator(
+        elementLocator,
+        attrName,
+        converter,
+        type,
+        shouldDelete,
+    );
   } else {
-    return new UnresolvedAttributeOutLocator(elementLocator, attrName, converter, type);
+    return new UnresolvedAttributeOutLocator(
+        elementLocator,
+        attrName,
+        converter,
+        type,
+        shouldDelete,
+    );
   }
 }
