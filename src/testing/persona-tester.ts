@@ -228,15 +228,15 @@ export class PersonaTesterFactory {
       private readonly personaBuilder_: PersonaBuilder,
   ) { }
 
-  build(tags: string[]): PersonaTester {
+  build(rootTags: string[]): PersonaTester {
     const origCreateElement = document.createElement;
     const createElement = (tag: string) => origCreateElement.call(document, tag);
     const customElementRegistry = new FakeCustomElementRegistry(createElement);
     const vine = this.vineBuilder_.run();
 
-    const tagsSet = new Set(tags);
+    const tagsSet = new Set(rootTags);
 
-    this.personaBuilder_.build(tags, customElementRegistry, vine);
+    this.personaBuilder_.build(rootTags, customElementRegistry, vine);
 
     const tester = new PersonaTester(vine, customElementRegistry);
     fake(spy(document, 'createElement'))

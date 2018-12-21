@@ -11,17 +11,12 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
 
   // TODO: parent shouldn't be here.
   create(tag: string, parent: HTMLElement|null): HTMLElement {
-    const ctor = this.get(tag);
-    if (!ctor) {
-      throw Errors.assert(`Registry for [${tag}]`).shouldExist().butNot();
-    }
-
     const el = this.createElement_(tag);
     if (parent) {
       parent.appendChild(el);
     }
-    const customElement = ctor[__customElementImplFactory](el, 'open');
-    customElement.connectedCallback();
+
+    this.upgradeElement_(el);
 
     return el;
   }
@@ -41,6 +36,25 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
 
   upgrade(root: Node): void {
     throw new Error('Method not implemented.');
+  }
+
+  private upgradeElement_(el: HTMLElement): void {
+    const tag = el.tagName.toLowerCase();
+    const ctor = this.get(tag);
+    if (!ctor) {
+      return;
+    }
+    const customElement = ctor[__customElementImplFactory](el, 'open');
+    customElement.connectedCallback();
+
+    const nodeList = el.shadowRoot!.querySelectorAll('*');
+    for (let i = 0; i < nodeList.length; i++) {
+      const node = nodeList.item(i);
+      if (!(node instanceof HTMLElement)) {
+        continue;
+      }
+      this.upgradeElement_(node);
+    }
   }
 
   whenDefined(tag: string): Promise<void> {
