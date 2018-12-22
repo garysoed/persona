@@ -4,6 +4,7 @@ import { createSpyObject, fake, SpyObj } from 'gs-testing/export/spy';
 import { ImmutableList } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { HasPropertiesType, InstanceofType, StringType } from 'gs-types/export';
+import { of as observableOf } from 'rxjs';
 import { __renderId } from '../renderer/render-id';
 import { Renderer } from '../renderer/renderer';
 import { element, ResolvedElementLocator } from './element-locator';
@@ -44,7 +45,7 @@ test('locator.SlotLocator', () => {
 
       const data = {[__renderId]: 'input'};
       vineBuilder.source(elementLocator.getReadingId(), innerRoot);
-      vineBuilder.stream(locator.getWritingId(), () => data);
+      vineBuilder.stream(locator.getWritingId(), () => observableOf(data));
 
       const vine = vineBuilder.run();
       locator.startRender(vine, context);
@@ -62,7 +63,7 @@ test('locator.SlotLocator', () => {
 
       const data = {[__renderId]: 'audio'};
       vineBuilder.source(elementLocator.getReadingId(), innerRoot);
-      vineBuilder.stream(locator.getWritingId(), () => data);
+      vineBuilder.stream(locator.getWritingId(), () => observableOf(data));
 
       const vine = vineBuilder.run();
       locator.startRender(vine, context);
@@ -74,7 +75,7 @@ test('locator.SlotLocator', () => {
     should(`do nothing if the parent element does not exist`, async () => {
       const data = {[__renderId]: 'audio'};
       vineBuilder.source(elementLocator.getReadingId(), null);
-      vineBuilder.stream(locator.getWritingId(), () => data);
+      vineBuilder.stream(locator.getWritingId(), () => observableOf(data));
 
       await retryUntil(() => mockRenderer.render).toNot
           .equal(match.anySpyThat().haveBeenCalled());

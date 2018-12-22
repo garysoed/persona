@@ -28,13 +28,12 @@ test('locator.ClassListLocator', () => {
       vineBuilder.stream(locator.getWritingId(), testValue => testValue, testSourceId);
 
       // Sets up the element locator.
-      vineBuilder.source(elementLocator.getReadingId(), null);
+      const divElement = document.createElement('div');
+      vineBuilder.sourceWithProvider(elementLocator.getReadingId(), () => divElement);
 
       const vine = vineBuilder.run();
       locator.startRender(vine, context);
 
-      const divElement = document.createElement('div');
-      vine.setValue(elementLocator.getReadingId(), divElement, context);
       vine.setValue(testSourceId, ImmutableSet.of(['a', 'b', 'c']), context);
 
       await retryUntil(() => divElement.getAttribute('class')).to.equal('a b c');
