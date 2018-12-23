@@ -1,6 +1,7 @@
 import { instanceSourceId } from 'grapevine/export/component';
 import { VineBuilder } from 'grapevine/export/main';
 import { retryUntil, should, test } from 'gs-testing/export/main';
+import { Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { integerConverter } from 'gs-tools/export/serializer';
 import { InstanceofType, NumberType } from 'gs-types/export';
@@ -26,7 +27,7 @@ test('locator.AttributeOutLocator', () => {
   test('startRender', () => {
     should(`render the attribute correctly`, async () => {
       const context = new BaseDisposable();
-      const vineBuilder = new VineBuilder();
+      const vineBuilder = new VineBuilder(Annotations.of(Symbol('test')));
 
       // Sets up the test source and stream.
       const testSourceId = instanceSourceId('test(', NumberType);

@@ -3,10 +3,11 @@ import { Annotations } from 'gs-tools/export/data';
 import { BaseCustomElement, baseCustomElementFactory } from '../annotation/base-custom-element';
 import { CustomElement, customElementFactory } from '../annotation/custom-element';
 import { Input, inputFactory } from '../annotation/input';
+import { OnCreateAnnotation, onCreateFactory } from '../annotation/on-create';
 import { OnDomAnnotation, onDomFactory } from '../annotation/on-dom';
 import { OnKeydownAnnotation, onKeydownFactory } from '../annotation/on-keydown';
 import { Render, renderFactory } from '../annotation/render';
-import { BaseComponentSpec, ComponentSpec, InputSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
+import { BaseComponentSpec, ComponentSpec, InputSpec, OnCreateSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
 import { PersonaBuilder } from './persona-builder';
 
 /**
@@ -17,7 +18,7 @@ interface PersonaApp {
   builder: PersonaBuilder;
   customElement: CustomElement;
   input: Input;
-
+  onCreate: OnCreateAnnotation;
   /**
    * Annotates method to listen to dom events.
    *
@@ -48,6 +49,7 @@ export function getOrRegisterApp(
   }
 
   const inputAnnotationsCache = new Annotations<InputSpec>(Symbol(`${appName}-input`));
+  const onCreateAnnotationsCache = new Annotations<OnCreateSpec>(Symbol(`${appName}-onCreate`));
   const onDomAnnotationsCache = new Annotations<OnDomSpec>(Symbol(`${appName}-onDom`));
   const onKeydownAnnotationsCache = new Annotations<OnKeydownSpec>(Symbol(`${appName}-onKeydown`));
   const renderAnnotationsCache = new Annotations<RendererSpec>(Symbol(`${appName}-render`));
@@ -58,6 +60,7 @@ export function getOrRegisterApp(
 
   const baseCustomElement = baseCustomElementFactory(
       inputAnnotationsCache,
+      onCreateAnnotationsCache,
       onDomAnnotationsCache,
       onKeydownAnnotationsCache,
       renderAnnotationsCache,
@@ -79,6 +82,7 @@ export function getOrRegisterApp(
         baseCustomElement,
     ),
     input,
+    onCreate: onCreateFactory(onCreateAnnotationsCache),
     onDom: onDomFactory(onDomAnnotationsCache),
     onKeydown: onKeydownFactory(onKeydownAnnotationsCache),
     render: renderFactory(renderAnnotationsCache, input, vineApp.vineIn),

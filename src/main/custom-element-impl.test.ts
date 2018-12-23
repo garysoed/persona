@@ -1,9 +1,12 @@
 // tslint:disable:no-non-null-assertion
 import { VineImpl } from 'grapevine/export/main';
 import { assert, match, should, test } from 'gs-testing/export/main';
-import { createSpyInstance, spy, SpyObj } from 'gs-testing/export/spy';
-import { ImmutableSet } from 'gs-tools/export/collect';
+import { createSpyInstance, fake, spy, SpyObj } from 'gs-testing/export/spy';
+import { createSpy } from 'gs-testing/export/spy';
+import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
+import { combineLatest, Observable, of as observableOf } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { BaseListener } from '../event/base-listener';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { CustomElementCtrl } from './custom-element-ctrl';
@@ -15,6 +18,13 @@ import { CustomElementImpl } from './custom-element-impl';
 class TestClass extends CustomElementCtrl {
   init(vine: VineImpl): void {
     // noop
+  }
+
+  method(
+      _1: Observable<number>,
+      _2: Observable<number>,
+  ): Observable<number> {
+    return observableOf(1);
   }
 }
 
@@ -34,6 +44,7 @@ test('main.CustomElementImpl', () => {
           TestClass,
           ImmutableSet.of(),
           element,
+          ImmutableSet.of(),
           ImmutableSet.of(),
           templateString,
           ImmutableSet.of(),
@@ -58,6 +69,7 @@ test('main.CustomElementImpl', () => {
           TestClass,
           ImmutableSet.of([mockListener1, mockListener2]),
           element,
+          ImmutableSet.of(),
           ImmutableSet.of(),
           templateString,
           ImmutableSet.of(),
@@ -86,6 +98,7 @@ test('main.CustomElementImpl', () => {
           TestClass,
           ImmutableSet.of(),
           element,
+          ImmutableSet.of(),
           ImmutableSet.of([mockRendererLocator1, mockRendererLocator2]),
           templateString,
           ImmutableSet.of(),
@@ -112,6 +125,7 @@ test('main.CustomElementImpl', () => {
           ImmutableSet.of(),
           element,
           ImmutableSet.of(),
+          ImmutableSet.of(),
           templateString,
           ImmutableSet.of([mockWatcher1, mockWatcher2]),
           mockVine,
@@ -127,6 +141,37 @@ test('main.CustomElementImpl', () => {
           match.anyThat<TestClass>().beAnInstanceOf(TestClass),
           element.shadowRoot!);
     });
+
+    should(`setup the onCreate handlers correctly`, () => {
+      const element = document.createElement('div');
+      const templateString = 'templateString';
+
+      const methodSpy = spy(TestClass.prototype, 'method');
+      fake(methodSpy).always().return(observableOf(123));
+
+      const obs1 = observableOf(1);
+      const obs2 = observableOf(2);
+      fake(mockVine.resolveParams).always().return(ImmutableList.of([obs1, obs2]));
+
+      const customElement = new CustomElementImpl(
+          TestClass,
+          ImmutableSet.of(),
+          element,
+          ImmutableSet.of([{target: TestClass, propertyKey: 'method'}]),
+          ImmutableSet.of(),
+          templateString,
+          ImmutableSet.of(),
+          mockVine,
+          'open',
+      );
+      customElement.connectedCallback();
+
+      assert(methodSpy).to.haveBeenCalledWith(obs1, obs2);
+      assert(mockVine.resolveParams).to.haveBeenCalledWith(
+          match.anyObjectThat<TestClass>().beAnInstanceOf(TestClass),
+          'method',
+      );
+    });
   });
 
   test(`disconnectedCallback`, () => {
@@ -137,6 +182,7 @@ test('main.CustomElementImpl', () => {
           TestClass,
           ImmutableSet.of(),
           element,
+          ImmutableSet.of(),
           ImmutableSet.of(),
           templateString,
           ImmutableSet.of(),
@@ -156,6 +202,7 @@ test('main.CustomElementImpl', () => {
           TestClass,
           ImmutableSet.of(),
           element,
+          ImmutableSet.of(),
           ImmutableSet.of(),
           templateString,
           ImmutableSet.of(),

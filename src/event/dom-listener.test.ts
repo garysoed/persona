@@ -3,6 +3,7 @@ import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { assert, match, retryUntil, should, test } from 'gs-testing/export/main';
 import { mocks } from 'gs-testing/export/mock';
 import { createSpyInstance, fake, resetCalls, spy, SpyObj } from 'gs-testing/export/spy';
+import { Annotations } from 'gs-tools/export/data';
 import { InstanceofType } from 'gs-types/export';
 import { ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
@@ -46,7 +47,7 @@ test('event.DomListener', () => {
     should(`listen to events correctly`, async () => {
       const el = document.createElement('div');
 
-      const vineBuilder = new VineBuilder();
+      const vineBuilder = new VineBuilder(Annotations.of(Symbol('test')));
       const sourceId = instanceSourceId('el', InstanceofType(HTMLElement));
       vineBuilder.source(sourceId, el);
       fake(mockElementLocator.getReadingId).always().return(sourceId);
@@ -69,7 +70,7 @@ test('event.DomListener', () => {
     });
 
     should(`handle when element is removed`, async () => {
-      const vineBuilder = new VineBuilder();
+      const vineBuilder = new VineBuilder(Annotations.of(Symbol('test')));
       const sourceId = instanceSourceId('el', InstanceofType(HTMLElement));
       vineBuilder.source(sourceId, null);
       fake(mockElementLocator.getReadingId).always().return(sourceId);

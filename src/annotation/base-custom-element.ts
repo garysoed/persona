@@ -3,7 +3,7 @@ import { __class, Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { ElementInput } from '../input/element';
 import { ResolvedWatchableLocator } from '../locator/resolved-locator';
-import { BaseComponentSpec, InputSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from '../main/component-spec';
+import { BaseComponentSpec, InputSpec, OnCreateSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from '../main/component-spec';
 
 interface Spec {
   dependencies?: Array<typeof BaseDisposable>;
@@ -16,6 +16,7 @@ export type BaseCustomElement = (spec: Spec) => ClassDecorator;
 
 export function baseCustomElementFactory(
     inputAnnotationsCache: Annotations<InputSpec>,
+    onCreateAnnotationsCache: Annotations<OnCreateSpec>,
     onDomAnnotationsCache: Annotations<OnDomSpec>,
     onKeydownAnnotationsCache: Annotations<OnKeydownSpec>,
     rendererAnnotationsCache: Annotations<RendererSpec>,
@@ -47,6 +48,15 @@ export function baseCustomElementFactory(
                 return prevSet.addAll(specs);
               },
               ImmutableSet.of<OnDomSpec>());
+
+      const onCreateSpecs = onCreateAnnotationsCache
+          .forCtor(target)
+          .getAttachedValues()
+          .reduce(
+              (prevSet, specs) => {
+                return prevSet.addAll(specs);
+              },
+              ImmutableSet.of<OnCreateSpec>());
 
       const watchers = [
         ...inputAnnotationsCache.forCtor(target)
@@ -81,6 +91,7 @@ export function baseCustomElementFactory(
         input: spec.input,
         keydownSpecs,
         listeners,
+        onCreate: onCreateSpecs,
         renderers: rendererSpecs,
         watchers: ImmutableSet.of(watchers),
       });

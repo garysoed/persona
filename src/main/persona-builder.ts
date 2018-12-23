@@ -9,7 +9,7 @@ import { BaseListener } from '../event/base-listener';
 import { DomListener } from '../event/dom-listener';
 import { KeydownListener } from '../event/keydown-listener';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
-import { BaseComponentSpec, ComponentSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
+import { BaseComponentSpec, ComponentSpec, OnCreateSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
 import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl, SHADOW_ROOT } from './custom-element-impl';
@@ -54,6 +54,7 @@ export class PersonaBuilder {
       const elementClass = createCustomElementClass_(
           spec.componentClass,
           domListeners.addAll(keydownListeners),
+          ImmutableSet.of(spec.onCreate || []),
           rendererLocators,
           template,
           ImmutableSet.of(spec.watchers || []),
@@ -167,15 +168,18 @@ export function getSpec_<T extends BaseComponentSpec|ComponentSpec>(
 function createCustomElementClass_(
     componentClass: new () => CustomElementCtrl,
     listeners: ImmutableSet<BaseListener>,
+    onCreate: ImmutableSet<OnCreateSpec>,
     rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
     templateStr: string,
     watchers: ImmutableSet<ResolvedWatchableLocator<any>>,
-    vine: VineImpl): CustomElementClass {
+    vine: VineImpl,
+): CustomElementClass {
   const customElementImplFactory = (element: HTMLElement, shadowMode: 'open'|'closed') => {
     return new CustomElementImpl(
         componentClass,
         listeners,
         element,
+        onCreate,
         rendererLocators,
         templateStr,
         watchers,

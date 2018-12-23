@@ -2,6 +2,7 @@ import { VineBuilder } from 'grapevine/export/main';
 import { assert, match, retryUntil, should, test } from 'gs-testing/export/main';
 import { createSpyObject, fake, SpyObj } from 'gs-testing/export/spy';
 import { ImmutableList } from 'gs-tools/export/collect';
+import { Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { HasPropertiesType, InstanceofType, StringType } from 'gs-types/export';
 import { of as observableOf } from 'rxjs';
@@ -22,7 +23,7 @@ test('locator.SlotLocator', () => {
   let vineBuilder: VineBuilder;
 
   beforeEach(() => {
-    vineBuilder = new VineBuilder();
+    vineBuilder = new VineBuilder(Annotations.of(Symbol('test')));
     elementLocator = element('div', InstanceofType(HTMLDivElement));
     mockRenderer = createSpyObject<Renderer<Data, HTMLElement>>('Renderer', ['render']);
     locator = slot(

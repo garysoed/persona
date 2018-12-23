@@ -55,7 +55,7 @@ test('main.PersonaBuilder', () => {
       const template = 'template';
       const mockCustomElementRegistry =
           createSpyObject<CustomElementRegistry>('CustomElementRegistry', ['define']);
-      const vineBuilder = new VineBuilder();
+      const vineBuilder = new VineBuilder(Annotations.of(Symbol('test')));
       const componentSpec: ComponentSpec = {
         componentClass: TestClass,
         tag,
@@ -205,7 +205,7 @@ test('main.PersonaBuilder', () => {
     should(`throw error if the tag is already registered`, () => {
       const tag = 'tag';
       const template = 'template';
-      const vineBuilder = new VineBuilder();
+      const vineBuilder = new VineBuilder(Annotations.of(Symbol('test')));
 
       const componentSpec: ComponentSpec = {
         componentClass: TestClass,
@@ -235,7 +235,7 @@ test('main.PersonaBuilder', () => {
     });
 
     should(`throw error if annotations does not exist`, () => {
-      const vineBuilder = new VineBuilder();
+      const vineBuilder = new VineBuilder(Annotations.of(Symbol('test')));
 
       assert(() => {
         builder.register([TestClass], {builder: vineBuilder, vineOut: createSpy('VineOut')} as any);

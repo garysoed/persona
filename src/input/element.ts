@@ -10,7 +10,7 @@ interface Properties<E extends Element> {
   readonly [key: string]: ElementProperty<E, any>;
 }
 
-class ElementInput<E extends Element, P extends Properties<E>> {
+export class ElementInput<E extends Element, P extends Properties<E>> {
   readonly _: P;
   readonly id: InstanceStreamId<E>;
 
@@ -19,7 +19,7 @@ class ElementInput<E extends Element, P extends Properties<E>> {
       properties: P,
       type: Type<E>,
   ) {
-    this.id = instanceStreamId(selector, type);
+    this.id = instanceStreamId(`element(${selector})`, type);
     this._ = properties;
   }
 

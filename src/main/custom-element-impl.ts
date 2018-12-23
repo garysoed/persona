@@ -4,6 +4,7 @@ import { cache } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { BaseListener } from '../event/base-listener';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
+import { OnCreateSpec } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
 
 export const SHADOW_ROOT = Symbol('shadowRoot');
@@ -16,67 +17,81 @@ export type ElementWithCtrl = HTMLElement & {[__ctrl]?: CustomElementCtrl|null};
  */
 export class CustomElementImpl {
   constructor(
-      private readonly componentClass_: new () => CustomElementCtrl,
-      private readonly domListeners_: ImmutableSet<BaseListener>,
-      private readonly element_: ElementWithCtrl,
-      private readonly rendererLocators_: ImmutableSet<ResolvedRenderableLocator<any>>,
-      private readonly templateStr_: string,
-      private readonly watchers_: ImmutableSet<ResolvedWatchableLocator<any>>,
-      private readonly vine_: VineImpl,
-      private readonly shadowMode_: 'open' | 'closed' = 'closed') { }
+      private readonly componentClass: new () => CustomElementCtrl,
+      private readonly domListeners: ImmutableSet<BaseListener>,
+      private readonly element: ElementWithCtrl,
+      private readonly onCreateHandlers: ImmutableSet<OnCreateSpec>,
+      private readonly rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
+      private readonly templateStr: string,
+      private readonly watchers: ImmutableSet<ResolvedWatchableLocator<any>>,
+      private readonly vine: VineImpl,
+      private readonly shadowMode: 'open' | 'closed' = 'closed') { }
 
   async connectedCallback(): Promise<void> {
-    const ctor = this.componentClass_;
+    const ctor = this.componentClass;
     const componentInstance = new ctor();
-    this.element_[__ctrl] = componentInstance;
+    this.element[__ctrl] = componentInstance;
 
-    const shadowRoot = this.getShadowRoot_();
+    const shadowRoot = this.getShadowRoot();
     (componentInstance as any)[SHADOW_ROOT] = shadowRoot;
-    this.setupRenderers_(componentInstance);
-    this.setupWatchers_(componentInstance);
-    this.setupDomListeners_(componentInstance);
+    this.setupRenderers(componentInstance);
+    this.setupWatchers(componentInstance);
+    this.setupDomListeners(componentInstance);
+    this.setupOnCreateHandlers(componentInstance);
 
     await new Promise(resolve => {
       window.setTimeout(() => {
-        componentInstance.init(this.vine_);
+        componentInstance.init(this.vine);
         resolve();
       });
     });
   }
 
   disconnectedCallback(): void {
-    const ctrl = this.element_[__ctrl];
+    const ctrl = this.element[__ctrl];
     if (ctrl) {
       ctrl.dispose();
-      this.element_[__ctrl] = null;
+      this.element[__ctrl] = null;
     }
   }
 
   @cache()
-  private getShadowRoot_(): ShadowRoot {
-    const shadowRoot = this.element_.attachShadow({mode: this.shadowMode_});
-    shadowRoot.innerHTML = this.templateStr_;
+  private getShadowRoot(): ShadowRoot {
+    const shadowRoot = this.element.attachShadow({mode: this.shadowMode});
+    shadowRoot.innerHTML = this.templateStr;
 
     return shadowRoot;
   }
 
-  private setupDomListeners_(context: CustomElementCtrl): void {
-    for (const domListener of this.domListeners_) {
-      const subscription = domListener.listen(this.vine_, context);
+  private setupDomListeners(context: CustomElementCtrl): void {
+    for (const domListener of this.domListeners) {
+      const subscription = domListener.listen(this.vine, context);
       context.addSubscription(subscription);
     }
   }
 
-  private setupRenderers_(context: CustomElementCtrl): void {
-    for (const rendererLocator of this.rendererLocators_ || []) {
-      const subscription = rendererLocator.startRender(this.vine_, context);
+  private setupOnCreateHandlers(context: CustomElementCtrl): void {
+    for (const {propertyKey} of this.onCreateHandlers) {
+      const params = this.vine.resolveParams(context, propertyKey);
+      const fn = (context as any)[propertyKey];
+      if (typeof fn !== 'function') {
+        throw new Error(`Property ${propertyKey.toString()} of ${context} is not a function`);
+      }
+
+      context.addSubscription(fn.call(context, ...params).subscribe(() => undefined));
+    }
+  }
+
+  private setupRenderers(context: CustomElementCtrl): void {
+    for (const rendererLocator of this.rendererLocators || []) {
+      const subscription = rendererLocator.startRender(this.vine, context);
       context.addSubscription(subscription);
     }
   }
 
-  private setupWatchers_(context: BaseDisposable): void {
-    for (const watcher of this.watchers_) {
-      context.addSubscription(watcher.startWatch(this.vine_, context, this.getShadowRoot_()));
+  private setupWatchers(context: BaseDisposable): void {
+    for (const watcher of this.watchers) {
+      context.addSubscription(watcher.startWatch(this.vine, context, this.getShadowRoot()));
     }
   }
 }

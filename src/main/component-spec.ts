@@ -12,6 +12,11 @@ export interface RendererSpec {
   target: Object;
 }
 
+export interface OnCreateSpec {
+  propertyKey: string|symbol;
+  target: Object;
+}
+
 /**
  * Specifications for a dom listener.
  */
@@ -40,6 +45,7 @@ export interface BaseComponentSpec {
   input?: Iterable<ElementInput<any, any>>;
   keydownSpecs?: Iterable<OnKeydownSpec>;
   listeners?: Iterable<OnDomSpec>;
+  onCreate?: Iterable<OnCreateSpec>;
   renderers?: Iterable<RendererSpec>;
   watchers?: Iterable<ResolvedWatchableLocator<any>>;
 }
