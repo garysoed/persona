@@ -5,7 +5,6 @@ import { BaseDisposable } from 'gs-tools/export/dispose';
 import { diff } from 'gs-tools/export/util';
 import { InstanceofType, Type } from 'gs-types/export';
 import { combineLatest, Observable, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from './resolved-locator';
 import { UnresolvedRenderableLocator, UnresolvedWatchableLocator } from './unresolved-locator';
 

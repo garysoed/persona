@@ -1,11 +1,13 @@
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
+import { ElementInput } from '../input/element';
 import { ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { BaseComponentSpec, InputSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from '../main/component-spec';
 
 interface Spec {
   dependencies?: Array<typeof BaseDisposable>;
+  input?: Iterable<ElementInput<any, any>>;
   shadowMode?: 'open'|'closed';
   watch?: Iterable<ResolvedWatchableLocator<any>>;
 }
@@ -76,6 +78,7 @@ export function baseCustomElementFactory(
       ];
 
       baseCustomElementAnnotationsCache.forCtor(target).attachValueToProperty(__class, {
+        input: spec.input,
         keydownSpecs,
         listeners,
         renderers: rendererSpecs,

@@ -1,8 +1,10 @@
 import { VineApp, VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { __class, Annotations } from 'gs-tools/export/data';
+import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
 import { AnyType, IterableOfType } from 'gs-types/export';
+import { Observable } from 'rxjs';
 import { BaseListener } from '../event/base-listener';
 import { DomListener } from '../event/dom-listener';
 import { KeydownListener } from '../event/keydown-listener';
@@ -13,6 +15,8 @@ import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl, SHADOW_ROOT } from './custom-element-impl';
 
 interface FullComponentSpec extends ComponentSpec, BaseComponentSpec { }
+
+type ContextWithShadowRoot = BaseDisposable & {[SHADOW_ROOT]?: ShadowRoot};
 
 /**
  * Sets up the environment for Persona. Handles registrations of custom elements.
@@ -98,6 +102,21 @@ export class PersonaBuilder {
         });
       }
 
+      for (const input of baseComponentSpec.input || []) {
+        if (builder.isRegistered(input.id)) {
+          continue;
+        }
+
+        builder.stream(input.id, function(this: ContextWithShadowRoot): Observable<unknown> {
+          const shadowRoot = this[SHADOW_ROOT];
+          if (!shadowRoot) {
+            throw Errors.assert(`Shadow root of ${this}`).shouldExist().butNot();
+          }
+
+          return input.getValue(shadowRoot);
+        });
+      }
+
       for (const {locator, propertyKey, target} of baseComponentSpec.renderers || []) {
         vineOut(locator.getWritingId())(target, propertyKey);
       }
@@ -127,13 +146,14 @@ export function getSpec_<T extends BaseComponentSpec|ComponentSpec>(
     for (const key of Object.keys(spec) as Array<keyof T>) {
       const value = spec[key];
       const existingValue = combinedSpec[key];
+      const normalizedExistingValue = existingValue === undefined ? [] : existingValue;
       if (!IterableOfType(AnyType()).check(value) ||
-          !IterableOfType(AnyType()).check(existingValue)) {
+          !IterableOfType(AnyType()).check(normalizedExistingValue)) {
         // Ignore the new value, since it belongs to the ancestor class.
         continue;
       }
 
-      combinedSpec[key] = [...existingValue, ...value] as unknown as T[keyof T];
+      combinedSpec[key] = [...normalizedExistingValue, ...value] as unknown as T[keyof T];
     }
   }
 

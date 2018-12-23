@@ -1,4 +1,5 @@
 import { MatchOptions } from '../event/keydown-listener';
+import { ElementInput } from '../input/element';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { CustomElementCtrl } from './custom-element-ctrl';
 
@@ -36,6 +37,7 @@ export interface OnKeydownSpec {
  * Specification for a base custom element that doesn't get initialized.
  */
 export interface BaseComponentSpec {
+  input?: Iterable<ElementInput<any, any>>;
   keydownSpecs?: Iterable<OnKeydownSpec>;
   listeners?: Iterable<OnDomSpec>;
   renderers?: Iterable<RendererSpec>;

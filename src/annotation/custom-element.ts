@@ -1,3 +1,4 @@
+import { InstanceSourceId } from 'grapevine/export/component';
 import { VineApp } from 'grapevine/export/main';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';

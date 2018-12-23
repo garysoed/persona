@@ -19,7 +19,7 @@ test('converter.SimpleElementConverter', () => {
     converter = new SimpleElementRenderer(
         TAG_NAME,
         {
-          a: identity(),
+          a: identity<string>(),
           b: compose(integerConverter(), human()),
         });
   });
