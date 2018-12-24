@@ -2,38 +2,38 @@ import { InstanceStreamId, instanceStreamId } from 'grapevine/export/component';
 import { Errors } from 'gs-tools/src/error';
 import { InstanceofType, Type } from 'gs-types/export';
 import { Observable } from 'rxjs';
-import { distinctUntilChanged, tap } from 'rxjs/operators';
+import { distinctUntilChanged } from 'rxjs/operators';
+import { Input } from '../component/input';
+import { UnresolvedElementProperty } from '../component/unresolved-element-property';
 import { elementObservable } from '../util/element-observable';
-import { UnresolvedElementPropertyOutput, Output } from '../component/output';
 
 interface Properties<E extends Element> {
-  readonly [key: string]: UnresolvedElementPropertyOutput<E, any>;
+  readonly [key: string]: UnresolvedElementProperty<E, any>;
 }
 
 type Resolved<P extends Properties<Element>> = {
-  [K in keyof P]: P[K] extends UnresolvedElementPropertyOutput<Element, infer T> ?
-      Output<T> : never;
-}
+  [K in keyof P]: P[K] extends UnresolvedElementProperty<Element, infer R> ? R : never;
+};
 
-export class ElementInput<E extends Element, P extends Properties<E>> {
+export class ElementInput<E extends Element, P extends Properties<E>> implements Input<E> {
   readonly _: Resolved<P>;
   readonly id: InstanceStreamId<E>;
 
   constructor(
-      private readonly selector: string|null,
+      private readonly elementId: string|null,
       properties: P,
       type: Type<E>,
   ) {
-    this.id = instanceStreamId(`element(${selector})`, type);
+    this.id = instanceStreamId(`element#${elementId}`, type);
     this._ = this.resolve(properties);
   }
 
   getValue(root: ShadowRoot): Observable<E> {
     return elementObservable<E>(root, root => {
-      const el = this.selector ? root.getElementById(this.selector) : root.host;
+      const el = this.elementId ? root.getElementById(this.elementId) : root.host;
       const type = this.id.getType();
       if (!type.check(el)) {
-        throw Errors.assert(`Element of [${this.selector}]`).shouldBeA(type).butWas(el);
+        throw Errors.assert(`Element of [${this.elementId}]`).shouldBeA(type).butWas(el);
       }
 
       return el;
@@ -58,22 +58,22 @@ export function element<P extends Properties<Element>>(
     properties: P,
 ): ElementInput<Element, P>;
 export function element<E extends Element, P extends Properties<E>>(
-    selector: string,
+    id: string,
     type: Type<E>,
     properties: P,
 ): ElementInput<E, P>;
 export function element<P extends Properties<Element>>(
-    selectorOrProperties: string|P,
+    idOrProperties: string|P,
     type?: Type<Element>,
     properties?: P,
 ): ElementInput<Element, P> {
-  if (typeof selectorOrProperties === 'string') {
+  if (typeof idOrProperties === 'string') {
     if (properties && type) {
-      return new ElementInput(selectorOrProperties, properties, type);
+      return new ElementInput(idOrProperties, properties, type);
     } else {
       throw new Error('invalid input');
     }
   } else {
-    return new ElementInput(null, selectorOrProperties, InstanceofType(Element));
+    return new ElementInput(null, idOrProperties, InstanceofType(Element));
   }
 }

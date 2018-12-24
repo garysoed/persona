@@ -1,13 +1,14 @@
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
+import { Input } from '../component/input';
 import { ElementInput } from '../input/element';
 import { ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { BaseComponentSpec, InputSpec, OnCreateSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from '../main/component-spec';
 
 interface Spec {
   dependencies?: Array<typeof BaseDisposable>;
-  input?: Iterable<ElementInput<any, any>>;
+  input?: Iterable<Input<any>>;
   shadowMode?: 'open'|'closed';
   watch?: Iterable<ResolvedWatchableLocator<any>>;
 }

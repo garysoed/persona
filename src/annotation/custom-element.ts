@@ -1,7 +1,7 @@
-import { InstanceSourceId } from 'grapevine/export/component';
 import { VineApp } from 'grapevine/export/main';
 import { __class, Annotations } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
+import { Input } from '../component/input';
 import { ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { ComponentSpec } from '../main/component-spec';
 import { PersonaBuilder } from '../main/persona-builder';
@@ -12,6 +12,7 @@ import { BaseCustomElement } from './base-custom-element';
  */
 interface Spec {
   dependencies?: Array<typeof BaseDisposable>;
+  input?: Array<Input<any>>;
   shadowMode?: 'open'|'closed';
   tag: string;
   template: string;

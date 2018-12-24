@@ -3,7 +3,9 @@ import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { fake, spy } from 'gs-testing/export/spy';
 import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
 import { Observable } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
+import { filter, take, tap } from 'rxjs/operators';
+import { Input } from '../component/input';
+import { AttributeInput } from '../input/attribute';
 import { ResolvedAttributeInLocator } from '../locator/attribute-in-locator';
 import { ResolvedAttributeOutLocator } from '../locator/attribute-out-locator';
 import { ResolvedClassListLocator } from '../locator/classlist-locator';
@@ -40,7 +42,7 @@ export class PersonaTester {
       locator: ResolvedElementLocator<HTMLElement>,
       event: Event,
   ): void {
-    const targetEl = getElement_(element, locator);
+    const targetEl = getElement__(element, locator);
     targetEl.dispatchEvent(event);
   }
 
@@ -48,7 +50,7 @@ export class PersonaTester {
       element: ElementWithCtrl,
       locator: ResolvedAttributeInLocator<T>|ResolvedAttributeOutLocator<T>,
   ): T {
-    const targetEl = getElement_(element, locator.elementLocator);
+    const targetEl = getElement__(element, locator.elementLocator);
     const strValue = targetEl.getAttribute(locator.attrName);
     const value = locator.parser.convertBackward(strValue || '');
     if (!value.success) {
@@ -62,7 +64,7 @@ export class PersonaTester {
       element: ElementWithCtrl,
       locator: ResolvedClassListLocator,
   ): ImmutableSet<string> {
-    const el = getElement_(element, locator.elementLocator);
+    const el = getElement__(element, locator.elementLocator);
     const classList = el.classList;
     const classes = new Set<string>();
     for (let i = 0; i < classList.length; i++) {
@@ -76,18 +78,25 @@ export class PersonaTester {
     return ImmutableSet.of(classes);
   }
 
-  getElement<T extends HTMLElement>(
+  getElement_<T extends HTMLElement>(
       element: ElementWithCtrl,
       locator: ResolvedElementLocator<T>,
   ): T {
-    return getElement_(element, locator);
+    return getElement__(element, locator);
+  }
+
+  getElement<E extends Element>(
+      element: ElementWithCtrl,
+      input: Input<E>,
+  ): Observable<E> {
+    return getElement_(element, shadowRoot => input.getValue(shadowRoot));
   }
 
   getElementsAfter(
       element: ElementWithCtrl,
       locator: ResolvedSlotLocator<unknown, unknown>,
   ): ImmutableList<Node> {
-    const parentEl = getElement_(element, locator.parentElementLocator);
+    const parentEl = getElement__(element, locator.parentElementLocator);
     const slotEl = findCommentNode(ImmutableList.of(parentEl.childNodes), locator.slotName);
     if (!slotEl) {
       throw new Error(`Slot ${locator.slotName} cannot be found`);
@@ -120,7 +129,7 @@ export class PersonaTester {
       locator: ResolvedWatchableLocator<E>,
       key: K,
   ): E[K] {
-    const targetEl = getElement_(element, locator);
+    const targetEl = getElement__(element, locator);
 
     return targetEl[key];
   }
@@ -129,7 +138,7 @@ export class PersonaTester {
       element: ElementWithCtrl,
       locator: ResolvedStyleLocator<K>,
   ): CSSStyleDeclaration[K] {
-    const targetEl = getElement_(element, locator.elementLocator);
+    const targetEl = getElement__(element, locator.elementLocator);
 
     return targetEl.style[locator.styleKey];
   }
@@ -138,17 +147,38 @@ export class PersonaTester {
       element: ElementWithCtrl,
       locator: ResolvedTextContentLocator,
   ): string {
-    const targetEl = getElement_(element, locator.elementLocator);
+    const targetEl = getElement__(element, locator.elementLocator);
 
     return targetEl.textContent || '';
   }
 
   setAttribute<T>(
       element: ElementWithCtrl,
+      input: AttributeInput<T>,
+      value: T,
+  ): Observable<unknown> {
+    const result = input.parser.convertForward(value);
+    if (!result.success) {
+      throw new Error(`Invalid value: ${value}`);
+    }
+
+    return getElement_(element, shadowRoot => input.resolver(shadowRoot))
+        .pipe(
+            tap(targetEl => {
+              targetEl.setAttribute(input.attrName, result.result);
+            }),
+        );
+  }
+
+  /**
+   * @deprecated Use setAttribute
+   */
+  setAttribute_<T>(
+      element: ElementWithCtrl,
       locator: ResolvedAttributeOutLocator<T>|ResolvedAttributeInLocator<T>,
       value: T,
   ): void {
-    const targetEl = getElement_(element, locator.elementLocator);
+    const targetEl = getElement__(element, locator.elementLocator);
     const result = locator.parser.convertForward(value);
 
     if (!result.success) {
@@ -163,7 +193,7 @@ export class PersonaTester {
       locator: ResolvedElementLocator<HTMLInputElement>,
       value: string,
   ): void {
-    const targetEl = getElement_(element, locator);
+    const targetEl = getElement__(element, locator);
     targetEl.value = value;
     targetEl.dispatchEvent(new CustomEvent('input'));
   }
@@ -173,7 +203,7 @@ export class PersonaTester {
       event: Event,
       locator: ResolvedWatchableLocator<Element>,
   ): void {
-    const targetEl = getElement_(element, locator);
+    const targetEl = getElement__(element, locator);
 
     if (!(targetEl instanceof HTMLElement)) {
       throw new Error(`Element ${targetEl} is not an HTMLElement`);
@@ -186,7 +216,7 @@ export class PersonaTester {
       locator: ResolvedWatchableLocator<Element>,
       keys: Key[],
   ): void {
-    const targetEl = getElement_(element, locator);
+    const targetEl = getElement__(element, locator);
     for (const {key, alt, ctrl, meta, shift} of keys) {
       const keydownEvent = new KeyboardEvent('keydown', {
         altKey: alt,
@@ -262,6 +292,15 @@ function getCtrl_(element: ElementWithCtrl): CustomElementCtrl {
 }
 
 function getElement_<E extends Element>(
+    element: ElementWithCtrl,
+    resolver: (root: ShadowRoot) => Observable<E>,
+): Observable<E> {
+  const shadowRoot = getShadowRoot_(element);
+
+  return resolver(shadowRoot);
+}
+
+function getElement__<E extends Element>(
     element: ElementWithCtrl,
     locator: ResolvedWatchableLocator<E>,
 ): Exclude<E, null> {

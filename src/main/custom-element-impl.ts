@@ -2,6 +2,7 @@ import { VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { cache } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
+import { of as observableOf } from 'rxjs';
 import { BaseListener } from '../event/base-listener';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { OnCreateSpec, OutputSpec } from './component-spec';
@@ -90,15 +91,9 @@ export class CustomElementImpl {
     for (const {output, propertyKey} of this.outputs) {
       const params = this.vine.resolveParams(context, propertyKey);
       const fn = (context as any)[propertyKey];
-      if (typeof fn !== 'function') {
-        throw new Error(`Property ${propertyKey.toString()} of ${context} is not a function`);
-      }
 
-      context.addSubscription(
-          output
-              .output(shadowRoot, fn.call(context, ...params))
-              .subscribe(() => undefined),
-          );
+      const valueObs = typeof fn !== 'function' ? observableOf(fn) : fn.call(context, ...params);
+      context.addSubscription(output.output(shadowRoot, valueObs).subscribe(() => undefined));
     }
   }
 

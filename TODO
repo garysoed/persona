@@ -7,3 +7,4 @@ persona
   Next steps:
     ☐ Use grapevine's listen
     ☐ Make sure no locators need the type. Type should be available in the ID.
+    ☐ Make MutationObserver synchronous for tests.
