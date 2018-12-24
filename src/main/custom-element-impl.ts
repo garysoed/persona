@@ -4,7 +4,7 @@ import { cache } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { BaseListener } from '../event/base-listener';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
-import { OnCreateSpec } from './component-spec';
+import { OnCreateSpec, OutputSpec } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
 
 export const SHADOW_ROOT = Symbol('shadowRoot');
@@ -21,6 +21,7 @@ export class CustomElementImpl {
       private readonly domListeners: ImmutableSet<BaseListener>,
       private readonly element: ElementWithCtrl,
       private readonly onCreateHandlers: ImmutableSet<OnCreateSpec>,
+      private readonly outputs: ImmutableSet<OutputSpec>,
       private readonly rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
       private readonly templateStr: string,
       private readonly watchers: ImmutableSet<ResolvedWatchableLocator<any>>,
@@ -38,6 +39,7 @@ export class CustomElementImpl {
     this.setupWatchers(componentInstance);
     this.setupDomListeners(componentInstance);
     this.setupOnCreateHandlers(componentInstance);
+    this.setupOutput(componentInstance);
 
     await new Promise(resolve => {
       window.setTimeout(() => {
@@ -79,6 +81,24 @@ export class CustomElementImpl {
       }
 
       context.addSubscription(fn.call(context, ...params).subscribe(() => undefined));
+    }
+  }
+
+  private setupOutput(context: CustomElementCtrl): void {
+    const shadowRoot = this.getShadowRoot();
+
+    for (const {output, propertyKey} of this.outputs) {
+      const params = this.vine.resolveParams(context, propertyKey);
+      const fn = (context as any)[propertyKey];
+      if (typeof fn !== 'function') {
+        throw new Error(`Property ${propertyKey.toString()} of ${context} is not a function`);
+      }
+
+      context.addSubscription(
+          output
+              .output(shadowRoot, fn.call(context, ...params))
+              .subscribe(() => undefined),
+          );
     }
   }
 

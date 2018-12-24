@@ -1,29 +1,37 @@
 import { NodeId } from 'grapevine/export/component';
 import { VineIn } from 'grapevine/src/annotation/vine-in';
 import { Annotations } from 'gs-tools/export/data';
+import { Output } from '../component/output';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { RendererSpec } from '../main/component-spec';
 import { Input } from './input';
 
 type ForwardingInput<T> = ResolvedWatchableLocator<T>|NodeId<T>;
+type RenderInput<T> = ResolvedRenderableLocator<T>|Output<T>;
 
 interface RenderDecorator<T> extends PropertyDecorator {
   withForwarding(input: ForwardingInput<T>): ClassDecorator;
 }
 
-export type Render =
-    <T>(locator: ResolvedRenderableLocator<T>) => RenderDecorator<T>;
+export type Render = <T>(locator: RenderInput<T>) => RenderDecorator<T>;
 
 export function renderFactory(
     rendererAnnotationsCache: Annotations<RendererSpec>,
     input: Input,
     vineIn: VineIn): Render {
-  return <T>(locator: ResolvedRenderableLocator<T>) => {
+  return <T>(locator: RenderInput<T>) => {
     const decorator = (
         target: Object,
         propertyKey: string | symbol) => {
+      let spec;
+
+      if (locator instanceof ResolvedRenderableLocator) {
+        spec = {locator, propertyKey, target};
+      } else {
+        spec = {output: locator, propertyKey, target};
+      }
       rendererAnnotationsCache.forCtor(target.constructor)
-          .attachValueToProperty(propertyKey, {locator, propertyKey, target});
+          .attachValueToProperty(propertyKey, spec);
     };
 
     const forwarding = {

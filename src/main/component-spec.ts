@@ -1,3 +1,4 @@
+import { Output } from '../component/output';
 import { MatchOptions } from '../event/keydown-listener';
 import { ElementInput } from '../input/element';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
@@ -7,7 +8,8 @@ import { CustomElementCtrl } from './custom-element-ctrl';
  * Specifications for a renderer.
  */
 export interface RendererSpec {
-  locator: ResolvedRenderableLocator<any>;
+  locator?: ResolvedRenderableLocator<any>;
+  output?: Output<any>;
   propertyKey: string|symbol;
   target: Object;
 }
@@ -36,6 +38,12 @@ export interface OnKeydownSpec {
   matchOptions?: MatchOptions;
   options?: AddEventListenerOptions;
   propertyKey: string|symbol;
+}
+
+export interface OutputSpec {
+  output: Output<any>;
+  propertyKey: string|symbol;
+  target: Object;
 }
 
 /**

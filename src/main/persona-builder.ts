@@ -5,11 +5,12 @@ import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
 import { AnyType, IterableOfType } from 'gs-types/export';
 import { Observable } from 'rxjs';
+import { Output } from '../component/output';
 import { BaseListener } from '../event/base-listener';
 import { DomListener } from '../event/dom-listener';
 import { KeydownListener } from '../event/keydown-listener';
 import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
-import { BaseComponentSpec, ComponentSpec, OnCreateSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
+import { BaseComponentSpec, ComponentSpec, OnCreateSpec, OnDomSpec, OnKeydownSpec, OutputSpec, RendererSpec } from './component-spec';
 import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl, SHADOW_ROOT } from './custom-element-impl';
@@ -35,7 +36,10 @@ export class PersonaBuilder {
       vine: VineImpl): void {
     for (const spec of this.registeredComponentSpecs_.values()) {
       const rendererLocators = ImmutableSet.of<RendererSpec>(spec.renderers || [])
-          .mapItem(renderer => renderer.locator);
+          .mapItem(renderer => renderer.locator)
+          .filterItem((item): item is ResolvedRenderableLocator<any> => !!item);
+      const outputs = ImmutableSet.of<RendererSpec>(spec.renderers || [])
+          .filterItem((item): item is OutputSpec => !!item.output);
       const domListeners = ImmutableSet.of<OnDomSpec>(spec.listeners || [])
           .mapItem(({elementLocator, eventName, options, propertyKey}) => {
             return new DomListener(elementLocator, eventName, propertyKey, options);
@@ -55,6 +59,7 @@ export class PersonaBuilder {
           spec.componentClass,
           domListeners.addAll(keydownListeners),
           ImmutableSet.of(spec.onCreate || []),
+          outputs,
           rendererLocators,
           template,
           ImmutableSet.of(spec.watchers || []),
@@ -119,7 +124,9 @@ export class PersonaBuilder {
       }
 
       for (const {locator, propertyKey, target} of baseComponentSpec.renderers || []) {
-        vineOut(locator.getWritingId())(target, propertyKey);
+        if (locator) {
+          vineOut(locator.getWritingId())(target, propertyKey);
+        }
       }
     }
   }
@@ -169,6 +176,7 @@ function createCustomElementClass_(
     componentClass: new () => CustomElementCtrl,
     listeners: ImmutableSet<BaseListener>,
     onCreate: ImmutableSet<OnCreateSpec>,
+    outputs: ImmutableSet<OutputSpec>,
     rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
     templateStr: string,
     watchers: ImmutableSet<ResolvedWatchableLocator<any>>,
@@ -180,6 +188,7 @@ function createCustomElementClass_(
         listeners,
         element,
         onCreate,
+        outputs,
         rendererLocators,
         templateStr,
         watchers,

@@ -75,8 +75,10 @@ export function baseCustomElementFactory(
                 (prevSet, spec) => {
                   const set = new Set<ResolvedWatchableLocator<any>>();
                   for (const renderer of spec) {
-                    for (const watcher of renderer.locator.getDependencies()) {
-                      set.add(watcher);
+                    if (renderer.locator) {
+                      for (const watcher of renderer.locator.getDependencies()) {
+                        set.add(watcher);
+                      }
                     }
                   }
 
