@@ -2,7 +2,7 @@ import { combineLatest, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Output, UnresolvedElementPropertyOutput } from '../component/output';
 
-class InnerHtmlOutput implements Output<string> {
+export class InnerHtmlOutput implements Output<string> {
   constructor(private readonly resolver: (root: ShadowRoot) => Observable<Element>) { }
 
   output(root: ShadowRoot, valueObs: Observable<string>): Observable<unknown> {
