@@ -1,5 +1,6 @@
 persona
   v 1.1
+    ✔ Add `@onCreate` - runs function on creation @done(18-12-23 15:59)
     ☐ New interface: instead of locators, upgrade them to Observables.
       ✔ Upgrade `Element`s to Observables. @done(18-12-23 09:44)
 
