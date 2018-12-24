@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { elementObservable } from '../util/element-observable';
 import { ElementProperty } from './element-property';
+import { InstanceofType } from 'gs-types/export';
 
 interface Properties<E extends Element> {
   readonly [key: string]: ElementProperty<E, any>;
@@ -15,7 +16,7 @@ export class ElementInput<E extends Element, P extends Properties<E>> {
   readonly id: InstanceStreamId<E>;
 
   constructor(
-      private readonly selector: string,
+      private readonly selector: string|null,
       properties: P,
       type: Type<E>,
   ) {
@@ -25,7 +26,7 @@ export class ElementInput<E extends Element, P extends Properties<E>> {
 
   getValue(root: ShadowRoot): Observable<E> {
     return elementObservable<E>(root, root => {
-      const el = root.getElementById(this.selector);
+      const el = this.selector ? root.getElementById(this.selector) : root.host;
       const type = this.id.getType();
       if (!type.check(el)) {
         throw Errors.assert(`Element of [${this.selector}]`).shouldBeA(type).butWas(el);
@@ -36,10 +37,26 @@ export class ElementInput<E extends Element, P extends Properties<E>> {
   }
 }
 
+export function element<P extends Properties<Element>>(
+  properties: P,
+): ElementInput<Element, P>;
 export function element<E extends Element, P extends Properties<E>>(
-    selector: string,
-    type: Type<E>,
-    properties: P,
-): ElementInput<E, P> {
-  return new ElementInput(selector, properties, type);
+  selector: string,
+  type: Type<E>,
+  properties: P,
+): ElementInput<E, P>;
+export function element<P extends Properties<Element>>(
+    selectorOrProperties: string|P,
+    type?: Type<Element>,
+    properties?: P,
+): ElementInput<Element, P> {
+  if (typeof selectorOrProperties === 'string') {
+    if (properties && type) {
+      return new ElementInput(selectorOrProperties, properties, type);
+    } else {
+      throw new Error('invalid input');
+    }
+  } else {
+    return new ElementInput(null, selectorOrProperties, InstanceofType(Element));
+  }
 }

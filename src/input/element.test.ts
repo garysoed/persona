@@ -22,6 +22,18 @@ test('input.element', () => {
       assert(spyElementSubject.getValue()).to.equal(el);
     });
 
+    should(`handle emitting the host element`, () => {
+      const input = element({});
+
+      const root = document.createElement('div');
+      const shadowRoot = root.attachShadow({mode: 'open'});
+
+      const spyElementSubject = createSpySubject();
+      input.getValue(shadowRoot).subscribe(spyElementSubject);
+
+      assert(spyElementSubject.getValue()).to.equal(root);
+    });
+
     should(`throw error if the element is of the wrong type`, () => {
       const ID = 'id';
       const input = element(ID, InstanceofType(HTMLDivElement), {});
