@@ -8,10 +8,10 @@ type ShouldDelete<T> = (value: T) => boolean;
 
 export class AttributeOutput<T> implements Output<T> {
   constructor(
-      private readonly attrName: string,
-      private readonly parser: Converter<T, string>,
+      readonly attrName: string,
+      readonly parser: Converter<T, string>,
       private readonly shouldDelete: ShouldDelete<T>,
-      private readonly resolver: (root: ShadowRoot) => Observable<Element>,
+      readonly resolver: (root: ShadowRoot) => Observable<Element>,
   ) { }
 
   output(root: ShadowRoot, valueObs: Observable<T>): Observable<unknown> {

@@ -2,8 +2,8 @@ import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { fake, spy } from 'gs-testing/export/spy';
 import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
-import { Observable } from 'rxjs';
-import { filter, take, tap } from 'rxjs/operators';
+import { Observable, timer } from 'rxjs';
+import { filter, map, take, tap, switchMap, mapTo } from 'rxjs/operators';
 import { Input } from '../component/input';
 import { AttributeInput } from '../input/attribute';
 import { ResolvedAttributeInLocator } from '../locator/attribute-in-locator';
@@ -17,6 +17,7 @@ import { ResolvedTextContentLocator } from '../locator/text-content-locator';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { __ctrl, ElementWithCtrl } from '../main/custom-element-impl';
 import { PersonaBuilder } from '../main/persona-builder';
+import { AttributeOutput } from '../output/attribute';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
 
 interface Key {
@@ -26,6 +27,8 @@ interface Key {
   meta?: boolean;
   shift?: boolean;
 }
+
+const REFRESH_PERIOD_MS = 10;
 
 export class PersonaTester {
   constructor(
@@ -48,6 +51,26 @@ export class PersonaTester {
 
   getAttribute<T>(
       element: ElementWithCtrl,
+      output: AttributeOutput<T>,
+  ): Observable<T> {
+    return getElement_(element, shadowRoot => output.resolver(shadowRoot))
+        .pipe(
+            switchMap(targetEl => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(targetEl))),
+            map(targetEl => {
+              const strValue = targetEl.getAttribute(output.attrName);
+              const value = output.parser.convertBackward(strValue || '');
+              if (!value.success) {
+                throw new Error(`Value ${strValue} is the wrong type for ${output}`);
+              }
+
+              return value.result;
+            }),
+        );
+  }
+
+  /** @deprecated */
+  getAttribute_<T>(
+      element: ElementWithCtrl,
       locator: ResolvedAttributeInLocator<T>|ResolvedAttributeOutLocator<T>,
   ): T {
     const targetEl = getElement__(element, locator.elementLocator);
@@ -61,6 +84,32 @@ export class PersonaTester {
   }
 
   getClassList(
+      element: ElementWithCtrl,
+      output: Input<Element>,
+  ): Observable<ImmutableSet<string>> {
+    return getElement_(element, shadowRoot => output.getValue(shadowRoot))
+        .pipe(
+            switchMap(targetEl => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(targetEl))),
+            map(el => {
+              const classList = el.classList;
+              const classes = new Set<string>();
+              for (let i = 0; i < classList.length; i++) {
+                const classItem = classList.item(i);
+                if (!classItem) {
+                  continue;
+                }
+                classes.add(classItem);
+              }
+
+              return ImmutableSet.of(classes);
+            }),
+        );
+  }
+
+  /**
+   * @deprecated
+   * */
+  getClassList_(
       element: ElementWithCtrl,
       locator: ResolvedClassListLocator,
   ): ImmutableSet<string> {
@@ -78,18 +127,21 @@ export class PersonaTester {
     return ImmutableSet.of(classes);
   }
 
-  getElement_<T extends HTMLElement>(
-      element: ElementWithCtrl,
-      locator: ResolvedElementLocator<T>,
-  ): T {
-    return getElement__(element, locator);
-  }
-
   getElement<E extends Element>(
       element: ElementWithCtrl,
       input: Input<E>,
   ): Observable<E> {
     return getElement_(element, shadowRoot => input.getValue(shadowRoot));
+  }
+
+  /**
+   * @deprecated
+   */
+  getElement_<T extends HTMLElement>(
+      element: ElementWithCtrl,
+      locator: ResolvedElementLocator<T>,
+  ): T {
+    return getElement__(element, locator);
   }
 
   getElementsAfter(
@@ -144,6 +196,19 @@ export class PersonaTester {
   }
 
   getTextContent(
+      element: ElementWithCtrl,
+      input: Input<Element>,
+  ): Observable<string> {
+    return getElement_(element, shadowRoot => input.getValue(shadowRoot))
+        .pipe(
+            switchMap(targetEl => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(targetEl))),
+            map(el => el.textContent || ''));
+  }
+
+  /**
+   * @deprecated
+   */
+  getTextContent_(
       element: ElementWithCtrl,
       locator: ResolvedTextContentLocator,
   ): string {

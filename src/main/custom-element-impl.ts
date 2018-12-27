@@ -81,7 +81,7 @@ export class CustomElementImpl {
         throw new Error(`Property ${propertyKey.toString()} of ${context} is not a function`);
       }
 
-      context.addSubscription(fn.call(context, ...params).subscribe(() => undefined));
+      context.addSubscription(fn.call(context, ...params).subscribe());
     }
   }
 
@@ -93,7 +93,7 @@ export class CustomElementImpl {
       const fn = (context as any)[propertyKey];
 
       const valueObs = typeof fn !== 'function' ? observableOf(fn) : fn.call(context, ...params);
-      context.addSubscription(output.output(shadowRoot, valueObs).subscribe(() => undefined));
+      context.addSubscription(output.output(shadowRoot, valueObs).subscribe());
     }
   }
 
