@@ -3,7 +3,7 @@ import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { fake, spy } from 'gs-testing/export/spy';
 import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
 import { Observable, timer } from 'rxjs';
-import { filter, map, take, tap, switchMap, mapTo } from 'rxjs/operators';
+import { filter, map, mapTo, switchMap, take, tap } from 'rxjs/operators';
 import { Input } from '../component/input';
 import { AttributeInput } from '../input/attribute';
 import { ResolvedAttributeInLocator } from '../locator/attribute-in-locator';
@@ -108,7 +108,7 @@ export class PersonaTester {
 
   /**
    * @deprecated
-   * */
+   */
   getClassList_(
       element: ElementWithCtrl,
       locator: ResolvedClassListLocator,
@@ -277,6 +277,40 @@ export class PersonaTester {
   }
 
   simulateKeypress(
+      element: ElementWithCtrl,
+      input: Input<Element>,
+      keys: Key[],
+  ): Observable<unknown> {
+    return getElement_(element, shadowRoot => input.getValue(shadowRoot))
+        .pipe(
+            tap(targetEl => {
+              for (const {key, alt, ctrl, meta, shift} of keys) {
+                const keydownEvent = new KeyboardEvent('keydown', {
+                  altKey: alt,
+                  ctrlKey: ctrl,
+                  key,
+                  metaKey: meta,
+                  shiftKey: shift,
+                });
+                targetEl.dispatchEvent(keydownEvent);
+
+                const keyupEvent = new KeyboardEvent('keyup', {
+                  altKey: alt,
+                  ctrlKey: ctrl,
+                  key,
+                  metaKey: meta,
+                  shiftKey: shift,
+                });
+                targetEl.dispatchEvent(keyupEvent);
+              }
+            }),
+        );
+  }
+
+  /**
+   * @deprecated
+   */
+  simulateKeypress_(
       element: ElementWithCtrl,
       locator: ResolvedWatchableLocator<Element>,
       keys: Key[],

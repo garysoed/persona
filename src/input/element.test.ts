@@ -16,9 +16,7 @@ test('input.element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      const spyElementSubject = createSpySubject();
-      input.getValue(shadowRoot).subscribe(spyElementSubject);
-
+      const spyElementSubject = createSpySubject(input.getValue(shadowRoot));
       assert(spyElementSubject.getValue()).to.equal(el);
     });
 
@@ -28,9 +26,7 @@ test('input.element', () => {
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});
 
-      const spyElementSubject = createSpySubject();
-      input.getValue(shadowRoot).subscribe(spyElementSubject);
-
+      const spyElementSubject = createSpySubject(input.getValue(shadowRoot));
       assert(spyElementSubject.getValue()).to.equal(root);
     });
 
@@ -45,9 +41,7 @@ test('input.element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      const spyElementSubject = createSpySubject();
-      input.getValue(shadowRoot).subscribe(spyElementSubject);
-
+      const spyElementSubject = createSpySubject(input.getValue(shadowRoot));
       assert(spyElementSubject.thrownError.message as string).to.match(/Element of/);
     });
   });
