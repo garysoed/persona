@@ -4,4 +4,4 @@ export { element } from '../src/input/element';
 export { onDom } from '../src/input/on-dom';
 export { onInput } from '../src/input/on-input';
 export { onKeydown } from '../src/input/on-keydown';
-export { subject } from '../src/input/subject';
+export { channel as subject } from '../src/input/channel';

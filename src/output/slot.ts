@@ -11,7 +11,7 @@ type SlotNode<R> = Node & {[SLOT_ELEMENTS_]?: R};
 export class SlotOutput<T, R> implements Output<T> {
   constructor(
       private readonly renderer: Renderer<T, R>,
-      private readonly resolver: (root: ShadowRoot) => Observable<Element>,
+      readonly resolver: (root: ShadowRoot) => Observable<Element>,
       readonly slotName: string|null,
   ) { }
 

@@ -2,22 +2,17 @@ import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { fake, spy } from 'gs-testing/export/spy';
 import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
-import { Observable, timer } from 'rxjs';
+import { Observable, throwError, timer } from 'rxjs';
 import { filter, map, mapTo, switchMap, take, tap } from 'rxjs/operators';
 import { Input } from '../component/input';
 import { AttributeInput } from '../input/attribute';
-import { ResolvedAttributeInLocator } from '../locator/attribute-in-locator';
-import { ResolvedAttributeOutLocator } from '../locator/attribute-out-locator';
-import { ResolvedClassListLocator } from '../locator/classlist-locator';
-import { ResolvedElementLocator } from '../locator/element-locator';
-import { ResolvedWatchableLocator } from '../locator/resolved-locator';
-import { findCommentNode, ResolvedSlotLocator } from '../locator/slot-locator';
-import { ResolvedStyleLocator } from '../locator/style-locator';
-import { ResolvedTextContentLocator } from '../locator/text-content-locator';
+import { ChannelInput } from '../input/channel';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { __ctrl, ElementWithCtrl } from '../main/custom-element-impl';
 import { PersonaBuilder } from '../main/persona-builder';
 import { AttributeOutput } from '../output/attribute';
+import { findCommentNode, SlotOutput } from '../output/slot';
+import { StyleOutput } from '../output/style';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
 
 interface Key {
@@ -42,18 +37,21 @@ export class PersonaTester {
 
   dispatchEvent(
       element: ElementWithCtrl,
-      locator: ResolvedElementLocator<HTMLElement>,
+      input: Input<HTMLElement>,
       event: Event,
-  ): void {
-    const targetEl = getElement__(element, locator);
-    targetEl.dispatchEvent(event);
+  ): Observable<unknown> {
+    return getElement(element, shadowRoot => input.getValue(shadowRoot))
+        .pipe(
+            take(1),
+            tap(targetEl => targetEl.dispatchEvent(event)),
+        );
   }
 
   getAttribute<T>(
       element: ElementWithCtrl,
       output: AttributeOutput<T>,
   ): Observable<T> {
-    return getElement_(element, shadowRoot => output.resolver(shadowRoot))
+    return getElement(element, shadowRoot => output.resolver(shadowRoot))
         .pipe(
             switchMap(targetEl => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(targetEl))),
             map(targetEl => {
@@ -68,26 +66,11 @@ export class PersonaTester {
         );
   }
 
-  /** @deprecated */
-  getAttribute_<T>(
-      element: ElementWithCtrl,
-      locator: ResolvedAttributeInLocator<T>|ResolvedAttributeOutLocator<T>,
-  ): T {
-    const targetEl = getElement__(element, locator.elementLocator);
-    const strValue = targetEl.getAttribute(locator.attrName);
-    const value = locator.parser.convertBackward(strValue || '');
-    if (!value.success) {
-      throw new Error(`Value ${strValue} is the wrong type for ${locator}`);
-    }
-
-    return value.result;
-  }
-
   getClassList(
       element: ElementWithCtrl,
       output: Input<Element>,
   ): Observable<ImmutableSet<string>> {
-    return getElement_(element, shadowRoot => output.getValue(shadowRoot))
+    return getElement(element, shadowRoot => output.getValue(shadowRoot))
         .pipe(
             switchMap(targetEl => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(targetEl))),
             map(el => {
@@ -106,69 +89,48 @@ export class PersonaTester {
         );
   }
 
-  /**
-   * @deprecated
-   */
-  getClassList_(
-      element: ElementWithCtrl,
-      locator: ResolvedClassListLocator,
-  ): ImmutableSet<string> {
-    const el = getElement__(element, locator.elementLocator);
-    const classList = el.classList;
-    const classes = new Set<string>();
-    for (let i = 0; i < classList.length; i++) {
-      const classItem = classList.item(i);
-      if (!classItem) {
-        continue;
-      }
-      classes.add(classItem);
-    }
-
-    return ImmutableSet.of(classes);
-  }
-
   getElement<E extends Element>(
       element: ElementWithCtrl,
       input: Input<E>,
   ): Observable<E> {
-    return getElement_(element, shadowRoot => input.getValue(shadowRoot));
+    return getElement(element, shadowRoot => input.getValue(shadowRoot));
   }
 
-  /**
-   * @deprecated
-   */
-  getElement_<T extends HTMLElement>(
+  getNodesAfter(
       element: ElementWithCtrl,
-      locator: ResolvedElementLocator<T>,
-  ): T {
-    return getElement__(element, locator);
-  }
+      output: SlotOutput<any, any>,
+  ): Observable<ImmutableList<Node>> {
+    return getElement(element, shadowRoot => output.resolver(shadowRoot))
+        .pipe(
+            map(parentEl => findCommentNode(
+                ImmutableList.of(parentEl.childNodes),
+                output.slotName,
+            )),
+            switchMap(slotEl => {
+              if (!slotEl) {
+                return throwError(new Error(`Slot ${output.slotName} cannot be found`));
+              }
 
-  getElementsAfter(
-      element: ElementWithCtrl,
-      locator: ResolvedSlotLocator<unknown, unknown>,
-  ): ImmutableList<Node> {
-    const parentEl = getElement__(element, locator.parentElementLocator);
-    const slotEl = findCommentNode(ImmutableList.of(parentEl.childNodes), locator.slotName);
-    if (!slotEl) {
-      throw new Error(`Slot ${locator.slotName} cannot be found`);
-    }
+              return timer(0, REFRESH_PERIOD_MS).pipe(mapTo(slotEl));
+            }),
+            map(slotEl => {
+              const nodes = [];
+              let node = slotEl.nextSibling;
+              while (node) {
+                nodes.push(node);
+                node = node.nextSibling;
+              }
 
-    const nodes = [];
-    let node = slotEl.nextSibling;
-    while (node) {
-      nodes.push(node);
-      node = node.nextSibling;
-    }
-
-    return ImmutableList.of(nodes);
+              return ImmutableList.of(nodes);
+            }),
+        );
   }
 
   getObservable<T>(
       element: ElementWithCtrl,
       id: InstanceSourceId<T>|InstanceStreamId<T>,
   ): Observable<T> {
-    const obs = this.vine.getObservable(id, getCtrl_(element));
+    const obs = this.vine.getObservable(id, getCtrl(element));
     if (!obs) {
       throw new Error(`Observable for ${id} not found`);
     }
@@ -176,45 +138,36 @@ export class PersonaTester {
     return obs;
   }
 
-  getProperty<E extends HTMLElement, K extends keyof E>(
+  getStyle<S extends keyof CSSStyleDeclaration>(
       element: ElementWithCtrl,
-      locator: ResolvedWatchableLocator<E>,
-      key: K,
-  ): E[K] {
-    const targetEl = getElement__(element, locator);
-
-    return targetEl[key];
-  }
-
-  getStyle<K extends keyof CSSStyleDeclaration>(
-      element: ElementWithCtrl,
-      locator: ResolvedStyleLocator<K>,
-  ): CSSStyleDeclaration[K] {
-    const targetEl = getElement__(element, locator.elementLocator);
-
-    return targetEl.style[locator.styleKey];
+      output: StyleOutput<S>,
+  ): Observable<CSSStyleDeclaration[S]> {
+    return getElement(element, shadowRoot => output.resolver(shadowRoot))
+        .pipe(
+            switchMap(element => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(element))),
+            map(targetEl => targetEl.style[output.styleKey]),
+        );
   }
 
   getTextContent(
       element: ElementWithCtrl,
       input: Input<Element>,
   ): Observable<string> {
-    return getElement_(element, shadowRoot => input.getValue(shadowRoot))
+    return getElement(element, shadowRoot => input.getValue(shadowRoot))
         .pipe(
             switchMap(targetEl => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(targetEl))),
             map(el => el.textContent || ''));
   }
 
-  /**
-   * @deprecated
-   */
-  getTextContent_(
+  sendSignal<T>(
       element: ElementWithCtrl,
-      locator: ResolvedTextContentLocator,
-  ): string {
-    const targetEl = getElement__(element, locator.elementLocator);
-
-    return targetEl.textContent || '';
+      input: ChannelInput<T>,
+      signal: T,
+  ): Observable<unknown> {
+    return getElement(element, shadowRoot => input.resolver(shadowRoot))
+        .pipe(
+            tap(el => input.getSubject_(el).next(signal)),
+        );
   }
 
   setAttribute<T>(
@@ -227,53 +180,35 @@ export class PersonaTester {
       throw new Error(`Invalid value: ${value}`);
     }
 
-    return getElement_(element, shadowRoot => input.resolver(shadowRoot))
+    return getElement(element, shadowRoot => input.resolver(shadowRoot))
         .pipe(
+            take(1),
             tap(targetEl => {
               targetEl.setAttribute(input.attrName, result.result);
             }),
+            switchMap(() => this.vine.getObservable(input.id, getCtrl(element))),
+            filter(setValue => {
+              const setResult = input.parser.convertForward(setValue);
+
+              return setResult.success && setResult.result === result.result;
+            }),
+            take(1),
         );
-  }
-
-  /**
-   * @deprecated Use setAttribute
-   */
-  setAttribute_<T>(
-      element: ElementWithCtrl,
-      locator: ResolvedAttributeOutLocator<T>|ResolvedAttributeInLocator<T>,
-      value: T,
-  ): void {
-    const targetEl = getElement__(element, locator.elementLocator);
-    const result = locator.parser.convertForward(value);
-
-    if (!result.success) {
-      throw new Error(`Invalid value: ${value}`);
-    }
-
-    targetEl.setAttribute(locator.attrName, result.result);
   }
 
   setInputValue(
       element: ElementWithCtrl,
-      locator: ResolvedElementLocator<HTMLInputElement>,
+      input: Input<HTMLInputElement>,
       value: string,
-  ): void {
-    const targetEl = getElement__(element, locator);
-    targetEl.value = value;
-    targetEl.dispatchEvent(new CustomEvent('input'));
-  }
-
-  simulateEvent(
-      element: ElementWithCtrl,
-      event: Event,
-      locator: ResolvedWatchableLocator<Element>,
-  ): void {
-    const targetEl = getElement__(element, locator);
-
-    if (!(targetEl instanceof HTMLElement)) {
-      throw new Error(`Element ${targetEl} is not an HTMLElement`);
-    }
-    targetEl.dispatchEvent(event);
+  ): Observable<unknown> {
+    return getElement(element, shadowRoot => input.getValue(shadowRoot))
+        .pipe(
+            take(1),
+            tap(targetEl => {
+              targetEl.value = value;
+              targetEl.dispatchEvent(new CustomEvent('input'));
+            }),
+        );
   }
 
   simulateKeypress(
@@ -281,7 +216,7 @@ export class PersonaTester {
       input: Input<Element>,
       keys: Key[],
   ): Observable<unknown> {
-    return getElement_(element, shadowRoot => input.getValue(shadowRoot))
+    return getElement(element, shadowRoot => input.getValue(shadowRoot))
         .pipe(
             tap(targetEl => {
               for (const {key, alt, ctrl, meta, shift} of keys) {
@@ -305,49 +240,6 @@ export class PersonaTester {
               }
             }),
         );
-  }
-
-  /**
-   * @deprecated
-   */
-  simulateKeypress_(
-      element: ElementWithCtrl,
-      locator: ResolvedWatchableLocator<Element>,
-      keys: Key[],
-  ): void {
-    const targetEl = getElement__(element, locator);
-    for (const {key, alt, ctrl, meta, shift} of keys) {
-      const keydownEvent = new KeyboardEvent('keydown', {
-        altKey: alt,
-        ctrlKey: ctrl,
-        key,
-        metaKey: meta,
-        shiftKey: shift,
-      });
-      targetEl.dispatchEvent(keydownEvent);
-
-      const keyupEvent = new KeyboardEvent('keyup', {
-        altKey: alt,
-        ctrlKey: ctrl,
-        key,
-        metaKey: meta,
-        shiftKey: shift,
-      });
-      targetEl.dispatchEvent(keyupEvent);
-    }
-  }
-
-  waitForValue<T>(
-      locator: ResolvedWatchableLocator<T>,
-      element: ElementWithCtrl,
-      expectedValue: T,
-  ): Promise<unknown> {
-    return this.vine.getObservable(locator.getReadingId(), getCtrl_(element))
-        .pipe(
-            filter(currentValue => currentValue === expectedValue),
-            take(1),
-        )
-        .toPromise();
   }
 }
 
@@ -381,7 +273,7 @@ export class PersonaTesterFactory {
   }
 }
 
-function getCtrl_(element: ElementWithCtrl): CustomElementCtrl {
+function getCtrl(element: ElementWithCtrl): CustomElementCtrl {
   const ctrl = element[__ctrl];
   if (!ctrl) {
     throw new Error(`ctrl for element ${element} not found`);
@@ -390,29 +282,16 @@ function getCtrl_(element: ElementWithCtrl): CustomElementCtrl {
   return ctrl;
 }
 
-function getElement_<E extends Element>(
+function getElement<E extends Element>(
     element: ElementWithCtrl,
     resolver: (root: ShadowRoot) => Observable<E>,
 ): Observable<E> {
-  const shadowRoot = getShadowRoot_(element);
+  const shadowRoot = getShadowRoot(element);
 
   return resolver(shadowRoot);
 }
 
-function getElement__<E extends Element>(
-    element: ElementWithCtrl,
-    locator: ResolvedWatchableLocator<E>,
-): Exclude<E, null> {
-  const shadowRoot = getShadowRoot_(element);
-  const targetEl = locator.getValue(shadowRoot);
-  if (!targetEl) {
-    throw new Error(`Target element for ${locator} not found`);
-  }
-
-  return targetEl as Exclude<E, null>;
-}
-
-function getShadowRoot_(element: ElementWithCtrl): ShadowRoot {
+function getShadowRoot(element: ElementWithCtrl): ShadowRoot {
   const shadowRoot = element.shadowRoot;
   if (!shadowRoot) {
     throw new Error(`ShadowRoot for element ${element} not found`);

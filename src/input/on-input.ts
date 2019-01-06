@@ -1,7 +1,7 @@
 import { InstanceStreamId, instanceStreamId } from 'grapevine/export/component';
 import { StringType } from 'gs-types/export';
 import { fromEvent, Observable, SchedulerLike } from 'rxjs';
-import { debounceTime, map, startWith, switchMap } from 'rxjs/operators';
+import { debounceTime, map, switchMap } from 'rxjs/operators';
 import { Input } from '../component/input';
 import { UnresolvedElementProperty } from '../component/unresolved-element-property';
 
@@ -25,7 +25,6 @@ export class OnInputInput implements Input<string> {
                   .pipe(
                       map(() => el.value),
                       debounceTime(this.debounceMs, this.scheduler),
-                      startWith(el.value),
                   );
             }),
         );

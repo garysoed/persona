@@ -5,8 +5,8 @@ import { UnresolvedElementProperty } from '../component/unresolved-element-prope
 
 export class StyleOutput<S extends keyof CSSStyleDeclaration> implements Output<string> {
   constructor(
-      private readonly resolver: (root: ShadowRoot) => Observable<HTMLElement>,
-      private readonly styleKey: S,
+      readonly resolver: (root: ShadowRoot) => Observable<HTMLElement>,
+      readonly styleKey: S,
   ) { }
 
   output(root: ShadowRoot, valueObs: Observable<string>): Observable<unknown> {

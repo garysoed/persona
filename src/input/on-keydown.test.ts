@@ -1,7 +1,7 @@
 import { assert, should, test } from 'gs-testing/export/main';
 import { createSpySubject } from 'gs-testing/export/spy';
 import { InstanceofType } from 'gs-types/export';
-import { MatchOptions } from 'src/event/keydown-listener';
+import { MatchOptions } from '../event/keydown-listener';
 import { element } from './element';
 import { onKeydown, OnKeydownInput } from './on-keydown';
 

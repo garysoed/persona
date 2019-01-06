@@ -30,21 +30,23 @@ test('input.onInput', () => {
   });
 
   test('getValue', () => {
-    should(`create observable that emits the values`, () => {
+    should(`create observable that emits the values`, async () => {
       const inputEvent = new CustomEvent('input');
 
       const initValue = 'initValue';
       const value1 = 'value1';
 
-      el.value = initValue;
       const spySubject = createSpySubject(input.getValue(shadowRoot));
-      assert(spySubject.getValue()).to.equal(initValue);
 
-      // Immediately change the value again. This time nothing should happen because of the
+      el.value = initValue;
+      el.dispatchEvent(inputEvent);
+      spySubject.reset();
+
+      // Immediately change the value. This time nothing should happen because of the
       // debounce.
       el.value = value1;
       el.dispatchEvent(inputEvent);
-      assert(spySubject.getValue()).to.equal(initValue);
+      assert(spySubject.hasValue()).to.beFalse();
 
       mockScheduler.tick(DEBOUNCE_MS);
 
