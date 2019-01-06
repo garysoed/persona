@@ -5,12 +5,7 @@ import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
 import { AnyType, IterableOfType } from 'gs-types/export';
 import { Observable } from 'rxjs';
-import { Output } from '../component/output';
-import { BaseListener } from '../event/base-listener';
-import { DomListener } from '../event/dom-listener';
-import { KeydownListener } from '../event/keydown-listener';
-import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
-import { BaseComponentSpec, ComponentSpec, OnCreateSpec, OnDomSpec, OnKeydownSpec, OutputSpec, RendererSpec } from './component-spec';
+import { BaseComponentSpec, ComponentSpec, OnCreateSpec, OutputSpec, RendererSpec } from './component-spec';
 import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl, SHADOW_ROOT } from './custom-element-impl';
@@ -35,34 +30,15 @@ export class PersonaBuilder {
       customElementRegistry: CustomElementRegistry,
       vine: VineImpl): void {
     for (const spec of this.registeredComponentSpecs_.values()) {
-      const rendererLocators = ImmutableSet.of<RendererSpec>(spec.renderers || [])
-          .mapItem(renderer => renderer.locator)
-          .filterItem((item): item is ResolvedRenderableLocator<any> => !!item);
       const outputs = ImmutableSet.of<RendererSpec>(spec.renderers || [])
           .filterItem((item): item is OutputSpec => !!item.output);
-      const domListeners = ImmutableSet.of<OnDomSpec>(spec.listeners || [])
-          .mapItem(({elementLocator, eventName, options, propertyKey}) => {
-            return new DomListener(elementLocator, eventName, propertyKey, options);
-          });
-      const keydownListeners = ImmutableSet.of<OnKeydownSpec>(spec.keydownSpecs || [])
-          .mapItem(({elementLocator, key, matchOptions, options, propertyKey}) => {
-            return new KeydownListener(
-                key,
-                matchOptions || {},
-                elementLocator,
-                propertyKey,
-                options);
-          });
 
       const template = spec.template;
       const elementClass = createCustomElementClass_(
           spec.componentClass,
-          domListeners.addAll(keydownListeners),
           ImmutableSet.of(spec.onCreate || []),
           outputs,
-          rendererLocators,
           template,
-          ImmutableSet.of(spec.watchers || []),
           vine);
 
       customElementRegistry.define(spec.tag, elementClass);
@@ -93,21 +69,6 @@ export class PersonaBuilder {
           {...baseComponentSpec, ...componentSpec},
       );
 
-      for (const watcher of baseComponentSpec.watchers || []) {
-        if (builder.isRegistered(watcher.getReadingId())) {
-          continue;
-        }
-
-        builder.sourceWithProvider(watcher.getReadingId(), context => {
-          const shadowRoot = (context as any)[SHADOW_ROOT];
-          if (!shadowRoot) {
-            throw Errors.assert(`Shadow root of ${context}`).shouldExist().butNot();
-          }
-
-          return watcher.getValue(shadowRoot);
-        });
-      }
-
       for (const input of baseComponentSpec.input || []) {
         if (builder.isRegistered(input.id)) {
           continue;
@@ -121,12 +82,6 @@ export class PersonaBuilder {
 
           return input.getValue(shadowRoot);
         });
-      }
-
-      for (const {locator, propertyKey, target} of baseComponentSpec.renderers || []) {
-        if (locator) {
-          vineOut(locator.getWritingId())(target, propertyKey);
-        }
       }
     }
   }
@@ -174,24 +129,18 @@ export function getSpec_<T extends BaseComponentSpec|ComponentSpec>(
 
 function createCustomElementClass_(
     componentClass: new () => CustomElementCtrl,
-    listeners: ImmutableSet<BaseListener>,
     onCreate: ImmutableSet<OnCreateSpec>,
     outputs: ImmutableSet<OutputSpec>,
-    rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
     templateStr: string,
-    watchers: ImmutableSet<ResolvedWatchableLocator<any>>,
     vine: VineImpl,
 ): CustomElementClass {
   const customElementImplFactory = (element: HTMLElement, shadowMode: 'open'|'closed') => {
     return new CustomElementImpl(
         componentClass,
-        listeners,
         element,
         onCreate,
         outputs,
-        rendererLocators,
         templateStr,
-        watchers,
         vine,
         shadowMode);
   };

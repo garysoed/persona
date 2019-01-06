@@ -3,8 +3,6 @@ import { ImmutableSet } from 'gs-tools/export/collect';
 import { cache } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { of as observableOf } from 'rxjs';
-import { BaseListener } from '../event/base-listener';
-import { ResolvedRenderableLocator, ResolvedWatchableLocator } from '../locator/resolved-locator';
 import { OnCreateSpec, OutputSpec } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
 
@@ -19,13 +17,10 @@ export type ElementWithCtrl = HTMLElement & {[__ctrl]?: CustomElementCtrl|null};
 export class CustomElementImpl {
   constructor(
       private readonly componentClass: new () => CustomElementCtrl,
-      private readonly domListeners: ImmutableSet<BaseListener>,
       private readonly element: ElementWithCtrl,
       private readonly onCreateHandlers: ImmutableSet<OnCreateSpec>,
       private readonly outputs: ImmutableSet<OutputSpec>,
-      private readonly rendererLocators: ImmutableSet<ResolvedRenderableLocator<any>>,
       private readonly templateStr: string,
-      private readonly watchers: ImmutableSet<ResolvedWatchableLocator<any>>,
       private readonly vine: VineImpl,
       private readonly shadowMode: 'open' | 'closed' = 'closed') { }
 
@@ -36,9 +31,6 @@ export class CustomElementImpl {
 
     const shadowRoot = this.getShadowRoot();
     (componentInstance as any)[SHADOW_ROOT] = shadowRoot;
-    this.setupRenderers(componentInstance);
-    this.setupWatchers(componentInstance);
-    this.setupDomListeners(componentInstance);
     this.setupOnCreateHandlers(componentInstance);
     this.setupOutput(componentInstance);
 
@@ -66,13 +58,6 @@ export class CustomElementImpl {
     return shadowRoot;
   }
 
-  private setupDomListeners(context: CustomElementCtrl): void {
-    for (const domListener of this.domListeners) {
-      const subscription = domListener.listen(this.vine, context);
-      context.addSubscription(subscription);
-    }
-  }
-
   private setupOnCreateHandlers(context: CustomElementCtrl): void {
     for (const {propertyKey} of this.onCreateHandlers) {
       const params = this.vine.resolveParams(context, propertyKey);
@@ -94,19 +79,6 @@ export class CustomElementImpl {
 
       const valueObs = typeof fn !== 'function' ? observableOf(fn) : fn.call(context, ...params);
       context.addSubscription(output.output(shadowRoot, valueObs).subscribe());
-    }
-  }
-
-  private setupRenderers(context: CustomElementCtrl): void {
-    for (const rendererLocator of this.rendererLocators || []) {
-      const subscription = rendererLocator.startRender(this.vine, context);
-      context.addSubscription(subscription);
-    }
-  }
-
-  private setupWatchers(context: BaseDisposable): void {
-    for (const watcher of this.watchers) {
-      context.addSubscription(watcher.startWatch(this.vine, context, this.getShadowRoot()));
     }
   }
 }

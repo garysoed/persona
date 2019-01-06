@@ -2,15 +2,14 @@ import { staticSourceId } from 'grapevine/export/component';
 import { getOrRegisterApp as vineGetOrRegisterApp } from 'grapevine/export/main';
 import { retryUntil, should, test } from 'gs-testing/export/main';
 import { integerConverter } from 'gs-tools/export/serializer';
-import { NullableType, NumberType } from 'gs-types/export';
+import { NumberType } from 'gs-types/export';
 import { human } from 'nabu/export/grammar';
 import { compose } from 'nabu/export/util';
-import { attributeIn } from '../locator/attribute-in-locator';
-import { attributeOut } from '../locator/attribute-out-locator';
-import { resolveLocators } from '../locator/resolve';
-import { shadowHost } from '../locator/shadow-host-locator';
+import { attribute as attributeIn } from '../input/attribute';
+import { element } from '../input/element';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { getOrRegisterApp } from '../main/persona';
+import { attribute as attributeOut } from '../output/attribute';
 
 const vineApp = vineGetOrRegisterApp('test');
 const {builder: vineBuilder, vineIn} = vineApp;
@@ -23,34 +22,36 @@ const template = '<div></div>';
 const $testSource = staticSourceId('testsource', NumberType);
 vineBuilder.source($testSource, 2);
 
-const $ = resolveLocators({
-  host: {
-    attr: attributeOut(shadowHost, 'attr', integerParser, NullableType(NumberType)),
-    attr2: attributeIn(shadowHost, 'attr2', integerParser, NullableType(NumberType), 123),
-    attr3: attributeOut(shadowHost, 'attr3', integerParser, NullableType(NumberType)),
-    attr4: attributeOut(shadowHost, 'attr4', integerParser, NullableType(NumberType)),
-  },
-});
+const $ = {
+  host: element({
+    attr: attributeOut('attr', integerParser),
+    attr2: attributeIn('attr2', integerParser, NumberType, 123),
+    attr3: attributeOut('attr3', integerParser),
+    attr4: attributeOut('attr4', integerParser),
+  }),
+};
 
 /**
  * @test
  */
 @customElement({
+  input: [
+    $.host._.attr2,
+  ],
   shadowMode: 'open',
   tag: 'p-test',
   template,
-  watch: [shadowHost, $.host.attr2],
 })
-@render($.host.attr3).withForwarding($.host.attr2)
+@render($.host._.attr3).withForwarding($.host._.attr2.id)
 // tslint:disable-next-line:no-unused-variable
 class TestClass extends CustomElementCtrl {
-  @render($.host.attr4) readonly attr4: number = 456;
+  @render($.host._.attr4) readonly attr4: number = 456;
 
   init(): void {
     // noop
   }
 
-  @render($.host.attr)
+  @render($.host._.attr)
   renderInteger(@vineIn($testSource) test: number): number {
     return test;
   }

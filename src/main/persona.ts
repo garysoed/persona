@@ -2,12 +2,10 @@ import { VineApp } from 'grapevine/export/main';
 import { Annotations } from 'gs-tools/export/data';
 import { BaseCustomElement, baseCustomElementFactory } from '../annotation/base-custom-element';
 import { CustomElement, customElementFactory } from '../annotation/custom-element';
-import { Input, inputFactory } from '../annotation/input';
+import { InputAnnotation, inputFactory } from '../annotation/input';
 import { OnCreateAnnotation, onCreateFactory } from '../annotation/on-create';
-import { OnDomAnnotation, onDomFactory } from '../annotation/on-dom';
-import { OnKeydownAnnotation, onKeydownFactory } from '../annotation/on-keydown';
 import { Render, renderFactory } from '../annotation/render';
-import { BaseComponentSpec, ComponentSpec, InputSpec, OnCreateSpec, OnDomSpec, OnKeydownSpec, RendererSpec } from './component-spec';
+import { BaseComponentSpec, ComponentSpec, OnCreateSpec, RendererSpec } from './component-spec';
 import { PersonaBuilder } from './persona-builder';
 
 /**
@@ -17,18 +15,8 @@ interface PersonaApp {
   baseCustomElement: BaseCustomElement;
   builder: PersonaBuilder;
   customElement: CustomElement;
-  input: Input;
+  input: InputAnnotation;
   onCreate: OnCreateAnnotation;
-  /**
-   * Annotates method to listen to dom events.
-   *
-   * The method should take in two arguments:
-   *
-   * -   The event object.
-   * -   The Vine object.
-   */
-  onDom: OnDomAnnotation;
-  onKeydown: OnKeydownAnnotation;
   render: Render;
 }
 
@@ -48,10 +36,7 @@ export function getOrRegisterApp(
     return createdApp;
   }
 
-  const inputAnnotationsCache = new Annotations<InputSpec>(Symbol(`${appName}-input`));
   const onCreateAnnotationsCache = new Annotations<OnCreateSpec>(Symbol(`${appName}-onCreate`));
-  const onDomAnnotationsCache = new Annotations<OnDomSpec>(Symbol(`${appName}-onDom`));
-  const onKeydownAnnotationsCache = new Annotations<OnKeydownSpec>(Symbol(`${appName}-onKeydown`));
   const renderAnnotationsCache = new Annotations<RendererSpec>(Symbol(`${appName}-render`));
   const customElementAnnotationsCache =
       new Annotations<ComponentSpec>(Symbol(`${appName}-component`));
@@ -59,10 +44,7 @@ export function getOrRegisterApp(
       new Annotations<BaseComponentSpec>(Symbol(`${appName}-baseComponent`));
 
   const baseCustomElement = baseCustomElementFactory(
-      inputAnnotationsCache,
       onCreateAnnotationsCache,
-      onDomAnnotationsCache,
-      onKeydownAnnotationsCache,
       renderAnnotationsCache,
       baseCustomElementAnnotationsCache,
   );
@@ -71,7 +53,7 @@ export function getOrRegisterApp(
       baseCustomElementAnnotationsCache,
       customElementAnnotationsCache,
   );
-  const input = inputFactory(inputAnnotationsCache, vineApp);
+  const input = inputFactory(vineApp);
   const newApp = {
     baseCustomElement,
     builder: personaBuilder,
@@ -83,9 +65,7 @@ export function getOrRegisterApp(
     ),
     input,
     onCreate: onCreateFactory(onCreateAnnotationsCache),
-    onDom: onDomFactory(onDomAnnotationsCache),
-    onKeydown: onKeydownFactory(onKeydownAnnotationsCache),
-    render: renderFactory(renderAnnotationsCache, input, vineApp.vineIn),
+    render: renderFactory(renderAnnotationsCache, vineApp.vineIn),
   };
   apps.set(appName, newApp);
 
