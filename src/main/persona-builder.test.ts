@@ -1,16 +1,14 @@
-import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
+import { InstanceStreamId } from 'grapevine/export/component';
 import { VineApp, VineBuilder, VineImpl } from 'grapevine/export/main';
-import { InstanceSourceProvider } from 'grapevine/src/node/instance-source-provider';
 import { assert, match, should, test } from 'gs-testing/export/main';
 import { mocks } from 'gs-testing/export/mock';
 import { createSpy, createSpyInstance, createSpyObject, fake, Spy, SpyObj } from 'gs-testing/export/spy';
-import { ImmutableSet } from 'gs-tools/export/collect';
-import { __class, Annotations } from 'gs-tools/export/data';
-import { InstanceofType } from 'gs-types/export';
+import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
+import { __class, Annotations, ClassAnnotation } from 'gs-tools/export/data';
+import { Spec } from '../annotation/base-custom-element';
 import { BaseComponentSpec, ComponentSpec, RendererSpec } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
-import { SHADOW_ROOT } from './custom-element-impl';
-import { getSpec_, PersonaBuilder } from './persona-builder';
+import { FullComponentSpec, getSpec_, PersonaBuilder } from './persona-builder';
 
 /**
  * @test
@@ -21,30 +19,27 @@ class TestClass extends CustomElementCtrl {
   }
 }
 
-type SourceWithProvider<T> = (id: InstanceSourceId<T>, provider: InstanceSourceProvider<T>) => void;
-
 test('main.PersonaBuilder', () => {
   let baseCustomElementsAnnotationsCache: Annotations<BaseComponentSpec>;
-  let customElementsAnnotationsCache: Annotations<ComponentSpec>;
+  let mockBaseCustomElement: Spy<ClassDecorator, [Spec]>;
+  let mockComponentSpecAnnotation: SpyObj<ClassAnnotation<FullComponentSpec, [any]>>;
   let builder: PersonaBuilder;
 
   beforeEach(() => {
+    mockBaseCustomElement = createSpy('baseCustomElement');
     baseCustomElementsAnnotationsCache =
         Annotations.of<BaseComponentSpec>(Symbol('testBaseComponentSpec'));
-    customElementsAnnotationsCache = Annotations.of<ComponentSpec>(Symbol('testComponentSpec'));
+    mockComponentSpecAnnotation = createSpyInstance(ClassAnnotation);
     builder = new PersonaBuilder(
         baseCustomElementsAnnotationsCache,
-        customElementsAnnotationsCache,
+        mockBaseCustomElement,
+        mockComponentSpecAnnotation,
     );
   });
 
   test('register', () => {
-    let mockVine: VineApp;
-
     beforeEach(() => {
-      const mockVineBuilder = createSpyInstance(VineBuilder);
-      const mockVineOut = createSpy<MethodDecorator, [InstanceStreamId<unknown>]>('VineOut');
-      mockVine = {builder: mockVineBuilder, vineOut: mockVineOut} as any;
+      fake(mockBaseCustomElement).always().return(() => undefined);
     });
 
     should(`register the components correctly`, () => {
@@ -63,51 +58,35 @@ test('main.PersonaBuilder', () => {
         renderers: ImmutableSet.of(),
       };
 
-      customElementsAnnotationsCache.forCtor(TestClass)
-          .attachValueToProperty(__class, componentSpec);
+      fake(mockComponentSpecAnnotation.getAttachedValues)
+          .when(TestClass)
+          .return(
+              ImmutableList.of([
+                [TestClass, componentSpec] as [Function, ComponentSpec],
+              ]));
       baseCustomElementsAnnotationsCache.forCtor(TestClass)
           .attachValueToProperty(__class, baseComponentSpec);
 
-      builder.register([TestClass], {builder: vineBuilder, vineOut: createSpy('VineOut')} as any);
-      builder.build([tag], mockCustomElementRegistry, vineBuilder.run());
+      builder.build([TestClass], mockCustomElementRegistry, vineBuilder);
 
       assert(mockCustomElementRegistry.define).to.haveBeenCalledWith(tag, match.anyThing());
     });
 
-    should(`throw error if the tag is already registered`, () => {
-      const tag = 'tag';
-      const template = 'template';
-      const vineBuilder = new VineBuilder(Annotations.of(Symbol('test')));
-
-      const componentSpec: ComponentSpec = {
-        componentClass: TestClass,
-        tag,
-        template,
-      };
-
-      const baseComponentSpec: BaseComponentSpec = {
-        renderers: ImmutableSet.of(),
-      };
-
-      customElementsAnnotationsCache.forCtor(TestClass)
-          .attachValueToProperty(__class, componentSpec);
-      baseCustomElementsAnnotationsCache.forCtor(TestClass)
-          .attachValueToProperty(__class, baseComponentSpec);
-
-      const vineApp: any = {builder: vineBuilder, vineOut: createSpy('VineOut')};
-
-      builder.register([TestClass], vineApp);
-
-      assert(() => {
-        builder.register([TestClass], vineApp);
-      }).to.throwErrorWithMessage(/unregistered/);
-    });
-
     should(`throw error if annotations does not exist`, () => {
+      const mockCustomElementRegistry =
+          createSpyObject<CustomElementRegistry>('CustomElementRegistry', ['define']);
       const vineBuilder = new VineBuilder(Annotations.of(Symbol('test')));
 
+      fake(mockComponentSpecAnnotation.getAttachedValues)
+          .when(TestClass)
+          .return(ImmutableList.of([]));
+
       assert(() => {
-        builder.register([TestClass], {builder: vineBuilder, vineOut: createSpy('VineOut')} as any);
+        builder.build(
+            [TestClass],
+            mockCustomElementRegistry,
+            {builder: vineBuilder, vineOut: createSpy('VineOut')} as any,
+        );
       }).to.throwErrorWithMessage(/Annotations for/);
     });
   });
@@ -122,66 +101,50 @@ test('main.PersonaBuilder', () => {
     class TestClass extends ParentTestClass { }
 
     should(`combine the specs correctly for BaseComponentSpec`, () => {
-      const cache = Annotations.of<BaseComponentSpec>(Symbol('baseComponentSpec'));
-
       const rendererSpec1 = mocks.object<RendererSpec>('rendererSpec1');
       const rendererSpec2 = mocks.object<RendererSpec>('rendererSpec2');
       const rendererSpec3 = mocks.object<RendererSpec>('rendererSpec3');
 
-      cache.forCtor(ParentTestClass).attachValueToProperty(
-          __class,
-          {
-            renderers: [rendererSpec1],
-          },
+      const spec = getSpec_(
+          ImmutableList.of([
+            {renderers: [rendererSpec2, rendererSpec3]},
+            {renderers: [rendererSpec1]},
+          ]),
+          TestClass,
       );
-      cache.forCtor(TestClass).attachValueToProperty(
-          __class,
-          {
-            renderers: [rendererSpec2, rendererSpec3],
-          },
-      );
-
-      const spec = getSpec_(cache, TestClass);
       // tslint:disable-next-line:no-non-null-assertion
       assert(spec.renderers!).to.haveElements([rendererSpec1, rendererSpec2, rendererSpec3]);
     });
 
     should(`combine the specs correctly for ComponentSpec`, () => {
-      const cache = Annotations.of<ComponentSpec>(Symbol('componentSpec'));
-
       const tag1 = 'tag1';
       const tag2 = 'tag2';
       const template1 = 'template1';
       const template2 = 'template2';
 
-      cache.forCtor(ParentTestClass).attachValueToProperty(
-          __class,
-          {
-            componentClass: ParentTestClass,
-            tag: tag1,
-            template: template1,
-          },
+      const spec = getSpec_(
+          ImmutableList.of([
+            {
+              componentClass: TestClass,
+              tag: tag2,
+              template: template2,
+            },
+            {
+              componentClass: ParentTestClass,
+              tag: tag1,
+              template: template1,
+            },
+          ]),
+          TestClass,
       );
-      cache.forCtor(TestClass).attachValueToProperty(
-          __class,
-          {
-            componentClass: TestClass,
-            tag: tag2,
-            template: template2,
-          },
-      );
-
-      const spec = getSpec_(cache, TestClass);
       assert(spec.componentClass).to.equal(TestClass);
       assert(spec.tag).to.equal(tag2);
       assert(spec.template).to.equal(template2);
     });
 
     should(`throw error if there are no annotations`, () => {
-      const cache = Annotations.of<ComponentSpec>(Symbol('componentSpec'));
-
       assert(() => {
-        getSpec_(cache, TestClass);
+        getSpec_(ImmutableList.of(), TestClass);
       }).to.throwErrorWithMessage(/should exist/);
     });
   });

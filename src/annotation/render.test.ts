@@ -1,5 +1,5 @@
 import { staticSourceId } from 'grapevine/export/component';
-import { getOrRegisterApp as vineGetOrRegisterApp } from 'grapevine/export/main';
+import { getOrRegisterApp as vineGetOrRegisterApp, VineImpl } from 'grapevine/export/main';
 import { retryUntil, should, test } from 'gs-testing/export/main';
 import { integerConverter } from 'gs-tools/export/serializer';
 import { NumberType } from 'gs-types/export';
@@ -57,11 +57,13 @@ class TestClass extends CustomElementCtrl {
   }
 }
 
-// Runs persona and grapevine.
-const vine = vineBuilder.run();
-personaBuilder.build(['p-test'], window.customElements, vine);
-
 test('annotation.render', () => {
+  let vine: VineImpl;
+  beforeEach(() => {
+    const {vine: builtVine} = personaBuilder.build([TestClass], window.customElements, vineBuilder);
+    vine = builtVine;
+  });
+
   should(`update the element correctly`, async () => {
     const testElement = document.createElement('p-test');
     document.body.appendChild(testElement);

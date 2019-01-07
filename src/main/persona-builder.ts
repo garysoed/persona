@@ -1,16 +1,24 @@
-import { VineApp, VineImpl } from 'grapevine/export/main';
-import { ImmutableSet } from 'gs-tools/export/collect';
-import { __class, Annotations } from 'gs-tools/export/data';
+import { VineBuilder, VineImpl } from 'grapevine/export/main';
+import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
+import { __class, Annotations, ClassAnnotation } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
 import { AnyType, IterableOfType } from 'gs-types/export';
 import { Observable } from 'rxjs';
-import { BaseComponentSpec, ComponentSpec, OnCreateSpec, OutputSpec, RendererSpec } from './component-spec';
+import { BaseCustomElement } from '../annotation/base-custom-element';
+import { BaseComponentSpec, OnCreateSpec, OutputSpec, RendererSpec } from './component-spec';
 import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl, SHADOW_ROOT } from './custom-element-impl';
 
-interface FullComponentSpec extends ComponentSpec, BaseComponentSpec { }
+export type CustomElementCtrlCtor = new (...args: any[]) => CustomElementCtrl;
+
+interface CustomElementData {
+  componentClass: CustomElementCtrlCtor;
+  tag: string;
+  template: string;
+}
+export interface FullComponentSpec extends CustomElementData, BaseComponentSpec { }
 
 type ContextWithShadowRoot = BaseDisposable & {[SHADOW_ROOT]?: ShadowRoot};
 
@@ -18,18 +26,21 @@ type ContextWithShadowRoot = BaseDisposable & {[SHADOW_ROOT]?: ShadowRoot};
  * Sets up the environment for Persona. Handles registrations of custom elements.
  */
 export class PersonaBuilder {
-  private readonly registeredComponentSpecs_: Map<string, FullComponentSpec> = new Map();
 
   constructor(
       private readonly baseCustomElementAnnotationsCache_: Annotations<BaseComponentSpec>,
-      private readonly customElementAnnotationsCache_: Annotations<ComponentSpec>,
+      private readonly baseCustomElement: BaseCustomElement,
+      private readonly customElementAnnotation: ClassAnnotation<FullComponentSpec, [any]>,
   ) { }
 
   build(
-      rootTags: string[],
+      rootCtrls: CustomElementCtrlCtor[],
       customElementRegistry: CustomElementRegistry,
-      vine: VineImpl): void {
-    for (const spec of this.registeredComponentSpecs_.values()) {
+      vineBuilder: VineBuilder,
+  ): {vine: VineImpl} {
+    const registeredComponentSpecs = this.register(new Set(rootCtrls), vineBuilder);
+    const vine = vineBuilder.run();
+    for (const spec of registeredComponentSpecs.values()) {
       const outputs = ImmutableSet.of<RendererSpec>(spec.renderers || [])
           .filterItem((item): item is OutputSpec => !!item.output);
 
@@ -39,32 +50,31 @@ export class PersonaBuilder {
           ImmutableSet.of(spec.onCreate || []),
           outputs,
           template,
-          vine);
+          vine,
+      );
 
       customElementRegistry.define(spec.tag, elementClass);
     }
+
+    return {vine};
   }
 
-  getComponentSpec(tag: string): ComponentSpec|null {
-    return this.registeredComponentSpecs_.get(tag) || null;
-  }
+  private register(
+      rootCtrls: Set<CustomElementCtrlCtor>,
+      builder: VineBuilder,
+  ): Map<string, FullComponentSpec> {
+    const registeredComponentSpecs = new Map<string, FullComponentSpec>();
 
-  /**
-   * @TODO This should only take in one root ctrl.
-   */
-  register(
-      rootCtrls: Array<typeof CustomElementCtrl>,
-      {builder, vineOut}: VineApp): void {
     for (const ctrl of rootCtrls) {
-      const baseComponentSpec = getSpec_(this.baseCustomElementAnnotationsCache_, ctrl);
-      const componentSpec = getSpec_(this.customElementAnnotationsCache_, ctrl);
-      if (this.registeredComponentSpecs_.has(componentSpec.tag)) {
-        throw Errors.assert(`Component with tag ${componentSpec.tag}`)
-            .shouldBe('unregistered')
-            .butNot();
-      }
+      const componentSpec = getSpecFromClassAnnotation(this.customElementAnnotation, ctrl);
+      this.baseCustomElement(componentSpec)(ctrl);
 
-      this.registeredComponentSpecs_.set(
+      const baseComponentSpec = getSpecFromBaseAnnotation(
+          this.baseCustomElementAnnotationsCache_,
+          ctrl,
+      );
+
+      registeredComponentSpecs.set(
           componentSpec.tag,
           {...baseComponentSpec, ...componentSpec},
       );
@@ -84,14 +94,16 @@ export class PersonaBuilder {
         });
       }
     }
+
+    return registeredComponentSpecs;
   }
 }
 
-export function getSpec_<T extends BaseComponentSpec|ComponentSpec>(
-    annotationsCache: Annotations<T>,
+function getSpecFromBaseAnnotation<T extends BaseComponentSpec>(
+    cache: Annotations<T>,
     ctrl: typeof CustomElementCtrl,
 ): T {
-  const annotations = annotationsCache
+  const annotations = cache
       .forCtor(ctrl)
       .getAttachedValues()
       .get(__class);
@@ -99,6 +111,23 @@ export function getSpec_<T extends BaseComponentSpec|ComponentSpec>(
     throw Errors.assert(`Annotations for ${ctrl.name}`).shouldExist().butNot();
   }
 
+  return getSpec_(annotations, ctrl);
+}
+
+function getSpecFromClassAnnotation<T extends CustomElementData>(
+    annotation: ClassAnnotation<T, [any]>,
+    ctrl: typeof CustomElementCtrl,
+): T {
+  return getSpec_(
+      annotation.getAttachedValues(ctrl).mapItem(([, data]) => data),
+      ctrl,
+  );
+}
+
+export function getSpec_<T extends BaseComponentSpec|CustomElementData>(
+    annotations: ImmutableList<T>,
+    ctrl: typeof CustomElementCtrl,
+): T {
   let combinedSpec: T|null = null;
   for (const spec of annotations) {
     if (!combinedSpec) {
@@ -128,7 +157,7 @@ export function getSpec_<T extends BaseComponentSpec|ComponentSpec>(
 }
 
 function createCustomElementClass_(
-    componentClass: new () => CustomElementCtrl,
+    componentClass: CustomElementCtrlCtor,
     onCreate: ImmutableSet<OnCreateSpec>,
     outputs: ImmutableSet<OutputSpec>,
     templateStr: string,

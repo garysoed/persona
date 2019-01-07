@@ -4,7 +4,7 @@ import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Input } from '../component/input';
 import { BaseComponentSpec, OnCreateSpec, RendererSpec } from '../main/component-spec';
 
-interface Spec {
+export interface Spec {
   dependencies?: Array<typeof BaseDisposable>;
   input?: Iterable<Input<any>>;
   shadowMode?: 'open'|'closed';

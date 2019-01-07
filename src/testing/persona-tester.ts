@@ -9,7 +9,7 @@ import { AttributeInput } from '../input/attribute';
 import { ChannelInput } from '../input/channel';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { __ctrl, ElementWithCtrl } from '../main/custom-element-impl';
-import { PersonaBuilder } from '../main/persona-builder';
+import { CustomElementCtrlCtor, PersonaBuilder } from '../main/persona-builder';
 import { AttributeOutput } from '../output/attribute';
 import { findCommentNode, SlotOutput } from '../output/slot';
 import { StyleOutput } from '../output/style';
@@ -249,20 +249,17 @@ export class PersonaTesterFactory {
       private readonly personaBuilder_: PersonaBuilder,
   ) { }
 
-  build(rootTags: string[]): PersonaTester {
+  build(rootCtors: CustomElementCtrlCtor[]): PersonaTester {
     const origCreateElement = document.createElement;
     const createElement = (tag: string) => origCreateElement.call(document, tag);
     const customElementRegistry = new FakeCustomElementRegistry(createElement);
-    const vine = this.vineBuilder_.run();
 
-    const tagsSet = new Set(rootTags);
-
-    this.personaBuilder_.build(rootTags, customElementRegistry, vine);
+    const {vine} = this.personaBuilder_.build(rootCtors, customElementRegistry, this.vineBuilder_);
 
     const tester = new PersonaTester(vine, customElementRegistry);
     fake(spy(document, 'createElement'))
         .always().call(tag => {
-          if (tagsSet.has(tag)) {
+          if (customElementRegistry.get(tag)) {
             return tester.createElement(tag, null);
           } else {
             return createElement(tag);
