@@ -1,7 +1,7 @@
 // tslint:disable:no-non-null-assertion
 import { VineImpl } from 'grapevine/export/main';
 import { assert, match, should, test } from 'gs-testing/export/main';
-import { createSpyInstance, fake, spy, SpyObj } from 'gs-testing/export/spy';
+import { createSpy, createSpyInstance, fake, spy, SpyObj } from 'gs-testing/export/spy';
 import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Observable, of as observableOf } from 'rxjs';
@@ -41,7 +41,6 @@ test('main.CustomElementImpl', () => {
           TestClass,
           element,
           ImmutableSet.of(),
-          ImmutableSet.of(),
           templateString,
           mockVine,
           'open');
@@ -57,62 +56,32 @@ test('main.CustomElementImpl', () => {
       const element = document.createElement('div');
       const templateString = 'templateString';
 
-      const methodSpy = spy(TestClass.prototype, 'method');
-      fake(methodSpy).always().return(observableOf('123'));
+      const mockHandler1 = createSpy<
+          Observable<unknown>,
+          [CustomElementCtrl, VineImpl, ShadowRoot]
+      >('Handler1');
+      fake(mockHandler1).always().return(observableOf(1));
 
-      const obs1 = observableOf('1');
-      const obs2 = observableOf('2');
-      fake(mockVine.resolveParams).always().return(ImmutableList.of([obs1, obs2]));
+      const mockHandler2 = createSpy<
+          Observable<unknown>,
+          [CustomElementCtrl, VineImpl, ShadowRoot]
+      >('Handler2');
+      fake(mockHandler2).always().return(observableOf(2));
 
       const customElement = new CustomElementImpl(
           TestClass,
           element,
-          ImmutableSet.of([{target: TestClass, propertyKey: 'method'}]),
-          ImmutableSet.of(),
+          ImmutableSet.of([mockHandler1, mockHandler2]),
           templateString,
           mockVine,
           'open',
       );
       customElement.connectedCallback();
 
-      assert(methodSpy).to.haveBeenCalledWith(obs1, obs2);
-      assert(mockVine.resolveParams).to.haveBeenCalledWith(
-          match.anyObjectThat<TestClass>().beAnInstanceOf(TestClass),
-          'method',
-      );
-    });
-
-    should(`setup the outputs correctly`, () => {
-      const element = document.createElement('div');
-      const templateString = 'templateString';
-
-      const methodSpy = spy(TestClass.prototype, 'method');
-      const resultObs = observableOf('123');
-      fake(methodSpy).always().return(resultObs);
-
-      const obs1 = observableOf('a');
-      const obs2 = observableOf('b');
-      fake(mockVine.resolveParams).always().return(ImmutableList.of([obs1, obs2]));
-
-      const mockOutput = createSpyInstance(InnerHtmlOutput);
-
-      const customElement = new CustomElementImpl(
-          TestClass,
-          element,
-          ImmutableSet.of(),
-          ImmutableSet.of([{target: TestClass, propertyKey: 'method', output: mockOutput}]),
-          templateString,
-          mockVine,
-          'open',
-      );
-      customElement.connectedCallback();
-
-      assert(mockOutput.output).to.haveBeenCalledWith(element.shadowRoot!, resultObs);
-      assert(methodSpy).to.haveBeenCalledWith(obs1, obs2);
-      assert(mockVine.resolveParams).to.haveBeenCalledWith(
-          match.anyObjectThat<TestClass>().beAnInstanceOf(TestClass),
-          'method',
-      );
+      const testClassMatcher = match.anyObjectThat<TestClass>().beAnInstanceOf(TestClass);
+      const shadowRootMatcher = match.anyThing<ShadowRoot>();
+      assert(mockHandler1).to.haveBeenCalledWith(testClassMatcher, mockVine, shadowRootMatcher);
+      assert(mockHandler2).to.haveBeenCalledWith(testClassMatcher, mockVine, shadowRootMatcher);
     });
   });
 
@@ -123,7 +92,6 @@ test('main.CustomElementImpl', () => {
       const customElement = new CustomElementImpl(
           TestClass,
           element,
-          ImmutableSet.of(),
           ImmutableSet.of(),
           templateString,
           mockVine,
@@ -141,7 +109,6 @@ test('main.CustomElementImpl', () => {
       const customElement = new CustomElementImpl(
           TestClass,
           element,
-          ImmutableSet.of(),
           ImmutableSet.of(),
           templateString,
           mockVine,

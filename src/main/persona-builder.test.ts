@@ -1,151 +1,96 @@
-import { InstanceStreamId } from 'grapevine/export/component';
-import { VineApp, VineBuilder, VineImpl } from 'grapevine/export/main';
-import { assert, match, should, test } from 'gs-testing/export/main';
-import { mocks } from 'gs-testing/export/mock';
-import { createSpy, createSpyInstance, createSpyObject, fake, Spy, SpyObj } from 'gs-testing/export/spy';
-import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
-import { __class, Annotations, ClassAnnotation } from 'gs-tools/export/data';
-import { Spec } from '../annotation/base-custom-element';
-import { BaseComponentSpec, ComponentSpec, RendererSpec } from './component-spec';
+import { instanceStreamId } from 'grapevine/export/component';
+import { staticSourceId } from 'grapevine/export/component';
+import { getOrRegisterApp as getOrRegisterVineApp } from 'grapevine/export/main';
+import { assert, should, test } from 'gs-testing/export/main';
+import { Spy } from 'gs-testing/export/spy';
+import { createSpy } from 'gs-testing/export/spy';
+import { __class } from 'gs-tools/export/data';
+import { StringType } from 'gs-types/export';
+import { InstanceofType } from 'gs-types/export';
+import { identity } from 'nabu/export/util';
+import { Observable, of as observableOf } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { element } from '../input/element';
+import { attribute } from '../output/attribute';
+import { PersonaTester, PersonaTesterFactory } from '../testing/persona-tester';
 import { CustomElementCtrl } from './custom-element-ctrl';
-import { FullComponentSpec, getSpec_, PersonaBuilder } from './persona-builder';
+import { getOrRegisterApp as getOrRegisterPersonaApp } from './persona';
+
+const _v = getOrRegisterVineApp('test');
+const _p = getOrRegisterPersonaApp('test', _v);
+const $ = {
+  host: element({
+    attr1: attribute('attr1', identity()),
+    attr2: attribute('attr2', identity()),
+  }),
+};
+
+const $value = instanceStreamId('value', StringType);
+const $handler = staticSourceId('handler', InstanceofType(Function));
+_v.builder.source($handler, () => undefined);
+
+@_p.baseCustomElement({
+  shadowMode: 'open',
+})
+class ParentTestClass extends CustomElementCtrl {
+  @_p.render($.host._.attr1)
+  overriddenRender(_: Observable<string>): Observable<string> {
+    return observableOf('abc');
+  }
+}
 
 /**
  * @test
  */
-class TestClass extends CustomElementCtrl {
-  init(): void {
-    // noop
+@_p.customElement({
+  tag: 'test-el',
+  template: '',
+})
+@_p.render($.host._.attr2).withForwarding($value)
+class TestClass extends ParentTestClass {
+  @_p.onCreate()
+  onCreate(
+      @_v.vineIn($handler) handlerObs: Observable<Function>,
+  ): Observable<unknown> {
+    return handlerObs
+        .pipe(
+            tap(handler => handler()),
+        );
+  }
+
+  @_p.render($.host._.attr1)
+  overriddenRender(
+      @_v.vineIn($value) valueObs: Observable<string>,
+  ): Observable<string> {
+    return valueObs.pipe(map(value => `${value}abc`));
+  }
+
+  @_v.vineOut($value)
+  providesValue(): Observable<string> {
+    return observableOf('123');
   }
 }
 
+const testerFactory = new PersonaTesterFactory(_v.builder, _p.builder);
+
 test('main.PersonaBuilder', () => {
-  let baseCustomElementsAnnotationsCache: Annotations<BaseComponentSpec>;
-  let mockBaseCustomElement: Spy<ClassDecorator, [Spec]>;
-  let mockComponentSpecAnnotation: SpyObj<ClassAnnotation<FullComponentSpec, [any]>>;
-  let builder: PersonaBuilder;
+  let mockHandler: Spy;
+  let tester: PersonaTester;
+  let el: HTMLElement;
 
   beforeEach(() => {
-    mockBaseCustomElement = createSpy('baseCustomElement');
-    baseCustomElementsAnnotationsCache =
-        Annotations.of<BaseComponentSpec>(Symbol('testBaseComponentSpec'));
-    mockComponentSpecAnnotation = createSpyInstance(ClassAnnotation);
-    builder = new PersonaBuilder(
-        baseCustomElementsAnnotationsCache,
-        mockBaseCustomElement,
-        mockComponentSpecAnnotation,
-    );
+    mockHandler = createSpy('handler');
+    tester = testerFactory.build([TestClass]);
+    tester.vine.setValue($handler, mockHandler);
+
+    el = tester.createElement('test-el', document.body);
   });
 
-  test('register', () => {
-    beforeEach(() => {
-      fake(mockBaseCustomElement).always().return(() => undefined);
-    });
-
-    should(`register the components correctly`, () => {
-      const tag = 'tag';
-      const template = 'template';
-      const mockCustomElementRegistry =
-          createSpyObject<CustomElementRegistry>('CustomElementRegistry', ['define']);
-      const vineBuilder = new VineBuilder(Annotations.of(Symbol('test')));
-      const componentSpec: ComponentSpec = {
-        componentClass: TestClass,
-        tag,
-        template,
-      };
-
-      const baseComponentSpec: BaseComponentSpec = {
-        renderers: ImmutableSet.of(),
-      };
-
-      fake(mockComponentSpecAnnotation.getAttachedValues)
-          .when(TestClass)
-          .return(
-              ImmutableList.of([
-                [TestClass, componentSpec] as [Function, ComponentSpec],
-              ]));
-      baseCustomElementsAnnotationsCache.forCtor(TestClass)
-          .attachValueToProperty(__class, baseComponentSpec);
-
-      builder.build([TestClass], mockCustomElementRegistry, vineBuilder);
-
-      assert(mockCustomElementRegistry.define).to.haveBeenCalledWith(tag, match.anyThing());
-    });
-
-    should(`throw error if annotations does not exist`, () => {
-      const mockCustomElementRegistry =
-          createSpyObject<CustomElementRegistry>('CustomElementRegistry', ['define']);
-      const vineBuilder = new VineBuilder(Annotations.of(Symbol('test')));
-
-      fake(mockComponentSpecAnnotation.getAttachedValues)
-          .when(TestClass)
-          .return(ImmutableList.of([]));
-
-      assert(() => {
-        builder.build(
-            [TestClass],
-            mockCustomElementRegistry,
-            {builder: vineBuilder, vineOut: createSpy('VineOut')} as any,
-        );
-      }).to.throwErrorWithMessage(/Annotations for/);
-    });
-  });
-
-  test('getSpec_', () => {
-    class ParentTestClass extends CustomElementCtrl {
-      init(vine: VineImpl): void {
-        throw new Error('Method not implemented.');
-      }
-    }
-
-    class TestClass extends ParentTestClass { }
-
-    should(`combine the specs correctly for BaseComponentSpec`, () => {
-      const rendererSpec1 = mocks.object<RendererSpec>('rendererSpec1');
-      const rendererSpec2 = mocks.object<RendererSpec>('rendererSpec2');
-      const rendererSpec3 = mocks.object<RendererSpec>('rendererSpec3');
-
-      const spec = getSpec_(
-          ImmutableList.of([
-            {renderers: [rendererSpec2, rendererSpec3]},
-            {renderers: [rendererSpec1]},
-          ]),
-          TestClass,
-      );
-      // tslint:disable-next-line:no-non-null-assertion
-      assert(spec.renderers!).to.haveElements([rendererSpec1, rendererSpec2, rendererSpec3]);
-    });
-
-    should(`combine the specs correctly for ComponentSpec`, () => {
-      const tag1 = 'tag1';
-      const tag2 = 'tag2';
-      const template1 = 'template1';
-      const template2 = 'template2';
-
-      const spec = getSpec_(
-          ImmutableList.of([
-            {
-              componentClass: TestClass,
-              tag: tag2,
-              template: template2,
-            },
-            {
-              componentClass: ParentTestClass,
-              tag: tag1,
-              template: template1,
-            },
-          ]),
-          TestClass,
-      );
-      assert(spec.componentClass).to.equal(TestClass);
-      assert(spec.tag).to.equal(tag2);
-      assert(spec.template).to.equal(template2);
-    });
-
-    should(`throw error if there are no annotations`, () => {
-      assert(() => {
-        getSpec_(ImmutableList.of(), TestClass);
-      }).to.throwErrorWithMessage(/should exist/);
-    });
+  should(`set up the component correctly`, async () => {
+    await assert(tester.getAttribute(el, $.host._.attr1)).to.emitWith('123abc');
+    await assert(tester.getAttribute(el, $.host._.attr2)).to.emitWith('123');
+    // tslint:disable-next-line:no-non-null-assertion
+    assert(el.shadowRoot!.mode).to.equal('open');
+    assert(mockHandler).to.haveBeenCalledWith();
   });
 });

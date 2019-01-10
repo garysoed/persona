@@ -1,9 +1,7 @@
 import { VineImpl } from 'grapevine/export/main';
 import { ImmutableSet } from 'gs-tools/export/collect';
 import { cache } from 'gs-tools/export/data';
-import { BaseDisposable } from 'gs-tools/export/dispose';
-import { of as observableOf } from 'rxjs';
-import { OnCreateSpec, OutputSpec } from './component-spec';
+import { OnCreateHandler } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
 
 export const SHADOW_ROOT = Symbol('shadowRoot');
@@ -18,11 +16,11 @@ export class CustomElementImpl {
   constructor(
       private readonly componentClass: new () => CustomElementCtrl,
       private readonly element: ElementWithCtrl,
-      private readonly onCreateHandlers: ImmutableSet<OnCreateSpec>,
-      private readonly outputs: ImmutableSet<OutputSpec>,
+      private readonly onCreateHandlers: ImmutableSet<OnCreateHandler>,
       private readonly templateStr: string,
       private readonly vine: VineImpl,
-      private readonly shadowMode: 'open' | 'closed' = 'closed') { }
+      private readonly shadowMode: 'open' | 'closed' = 'closed',
+  ) { }
 
   async connectedCallback(): Promise<void> {
     const ctor = this.componentClass;
@@ -31,8 +29,7 @@ export class CustomElementImpl {
 
     const shadowRoot = this.getShadowRoot();
     (componentInstance as any)[SHADOW_ROOT] = shadowRoot;
-    this.setupOnCreateHandlers(componentInstance);
-    this.setupOutput(componentInstance);
+    this.setupOnCreateHandlers(componentInstance, shadowRoot);
 
     await new Promise(resolve => {
       window.setTimeout(() => {
@@ -58,27 +55,9 @@ export class CustomElementImpl {
     return shadowRoot;
   }
 
-  private setupOnCreateHandlers(context: CustomElementCtrl): void {
-    for (const {propertyKey} of this.onCreateHandlers) {
-      const params = this.vine.resolveParams(context, propertyKey);
-      const fn = (context as any)[propertyKey];
-      if (typeof fn !== 'function') {
-        throw new Error(`Property ${propertyKey.toString()} of ${context} is not a function`);
-      }
-
-      context.addSubscription(fn.call(context, ...params).subscribe());
-    }
-  }
-
-  private setupOutput(context: CustomElementCtrl): void {
-    const shadowRoot = this.getShadowRoot();
-
-    for (const {output, propertyKey} of this.outputs) {
-      const params = this.vine.resolveParams(context, propertyKey);
-      const fn = (context as any)[propertyKey];
-
-      const valueObs = typeof fn !== 'function' ? observableOf(fn) : fn.call(context, ...params);
-      context.addSubscription(output.output(shadowRoot, valueObs).subscribe());
+  private setupOnCreateHandlers(context: CustomElementCtrl, root: ShadowRoot): void {
+    for (const handler of this.onCreateHandlers) {
+      context.addSubscription(handler(context, this.vine, root).subscribe());
     }
   }
 }

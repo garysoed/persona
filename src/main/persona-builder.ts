@@ -1,24 +1,29 @@
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
-import { __class, Annotations, ClassAnnotation } from 'gs-tools/export/data';
+import { __class, ClassAnnotation, PropertyAnnotation } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
 import { AnyType, IterableOfType } from 'gs-types/export';
 import { Observable } from 'rxjs';
-import { BaseCustomElement } from '../annotation/base-custom-element';
-import { BaseComponentSpec, OnCreateSpec, OutputSpec, RendererSpec } from './component-spec';
+import { OnCreateHandler } from './component-spec';
 import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl, SHADOW_ROOT } from './custom-element-impl';
+import { BaseCustomElementSpec, CustomElementSpec } from './persona';
 
 export type CustomElementCtrlCtor = new (...args: any[]) => CustomElementCtrl;
 
-interface CustomElementData {
+export interface FullComponentData extends CustomElementSpec {
   componentClass: CustomElementCtrlCtor;
+}
+
+interface RegistrationSpec {
+  componentClass: CustomElementCtrlCtor;
+  onCreate: OnCreateHandler[];
   tag: string;
   template: string;
 }
-export interface FullComponentSpec extends CustomElementData, BaseComponentSpec { }
+
 
 type ContextWithShadowRoot = BaseDisposable & {[SHADOW_ROOT]?: ShadowRoot};
 
@@ -28,9 +33,11 @@ type ContextWithShadowRoot = BaseDisposable & {[SHADOW_ROOT]?: ShadowRoot};
 export class PersonaBuilder {
 
   constructor(
-      private readonly baseCustomElementAnnotationsCache_: Annotations<BaseComponentSpec>,
-      private readonly baseCustomElement: BaseCustomElement,
-      private readonly customElementAnnotation: ClassAnnotation<FullComponentSpec, [any]>,
+      private readonly baseCustomElementAnnotation: ClassAnnotation<BaseCustomElementSpec, any>,
+      private readonly customElementAnnotation: ClassAnnotation<FullComponentData, any>,
+      private readonly onCreateAnnotation: PropertyAnnotation<OnCreateHandler, any>,
+      private readonly renderPropertyAnnotation: PropertyAnnotation<OnCreateHandler, any>,
+      private readonly renderWithForwardingAnnotation: ClassAnnotation<OnCreateHandler, any>,
   ) { }
 
   build(
@@ -41,14 +48,10 @@ export class PersonaBuilder {
     const registeredComponentSpecs = this.register(new Set(rootCtrls), vineBuilder);
     const vine = vineBuilder.run();
     for (const spec of registeredComponentSpecs.values()) {
-      const outputs = ImmutableSet.of<RendererSpec>(spec.renderers || [])
-          .filterItem((item): item is OutputSpec => !!item.output);
-
       const template = spec.template;
       const elementClass = createCustomElementClass_(
           spec.componentClass,
           ImmutableSet.of(spec.onCreate || []),
-          outputs,
           template,
           vine,
       );
@@ -59,27 +62,63 @@ export class PersonaBuilder {
     return {vine};
   }
 
+  // TODO: Combine annotations.
+  private getOnCreateHandlers(ctor: CustomElementCtrlCtor): ImmutableSet<OnCreateHandler> {
+    return this.onCreateAnnotation.getAttachedValuesForCtor(ctor)
+        .entries()
+        .mapItem(([key, entries]) => entries.getAt(0))
+        .filterItem((item): item is [Object, OnCreateHandler] => !!item)
+        .mapItem(([_, renderData]) => renderData);
+  }
+
+  private getRenderPropertyOnCreateHandlers(
+      ctor: CustomElementCtrlCtor,
+  ): ImmutableSet<OnCreateHandler> {
+    return this.renderPropertyAnnotation.getAttachedValuesForCtor(ctor)
+        .entries()
+        .mapItem(([key, entries]) => entries.getAt(0))
+        .filterItem((item): item is [Object, OnCreateHandler] => !!item)
+        .mapItem(([_, renderData]) => renderData);
+  }
+
+  private getRenderWithForwardingOnCreateHandlers(
+      ctor: CustomElementCtrlCtor,
+  ): ImmutableSet<OnCreateHandler> {
+    return ImmutableSet.of(
+        this.renderWithForwardingAnnotation.getAttachedValues(ctor)
+            .mapItem(([, handler]) => handler),
+        );
+  }
+
   private register(
       rootCtrls: Set<CustomElementCtrlCtor>,
       builder: VineBuilder,
-  ): Map<string, FullComponentSpec> {
-    const registeredComponentSpecs = new Map<string, FullComponentSpec>();
+  ): Map<string, RegistrationSpec> {
+    const registeredComponentSpecs = new Map<string, RegistrationSpec>();
 
     for (const ctrl of rootCtrls) {
       const componentSpec = getSpecFromClassAnnotation(this.customElementAnnotation, ctrl);
-      this.baseCustomElement(componentSpec)(ctrl);
-
-      const baseComponentSpec = getSpecFromBaseAnnotation(
-          this.baseCustomElementAnnotationsCache_,
-          ctrl,
-      );
+      const baseComponentSpec = getSpecFromClassAnnotation(this.baseCustomElementAnnotation, ctrl);
 
       registeredComponentSpecs.set(
           componentSpec.tag,
-          {...baseComponentSpec, ...componentSpec},
+          {
+            componentClass: componentSpec.componentClass,
+            onCreate: [
+              ...this.getOnCreateHandlers(ctrl),
+              ...this.getRenderPropertyOnCreateHandlers(ctrl),
+              ...this.getRenderWithForwardingOnCreateHandlers(ctrl),
+            ],
+            tag: componentSpec.tag,
+            template: componentSpec.template,
+          },
       );
 
-      for (const input of baseComponentSpec.input || []) {
+      const inputs = new Set([
+        ...(componentSpec.input || []),
+        ...(baseComponentSpec.input || []),
+      ]);
+      for (const input of inputs) {
         if (builder.isRegistered(input.id)) {
           continue;
         }
@@ -99,22 +138,7 @@ export class PersonaBuilder {
   }
 }
 
-function getSpecFromBaseAnnotation<T extends BaseComponentSpec>(
-    cache: Annotations<T>,
-    ctrl: typeof CustomElementCtrl,
-): T {
-  const annotations = cache
-      .forCtor(ctrl)
-      .getAttachedValues()
-      .get(__class);
-  if (!annotations) {
-    throw Errors.assert(`Annotations for ${ctrl.name}`).shouldExist().butNot();
-  }
-
-  return getSpec_(annotations, ctrl);
-}
-
-function getSpecFromClassAnnotation<T extends CustomElementData>(
+function getSpecFromClassAnnotation<T extends CustomElementSpec|BaseCustomElementSpec>(
     annotation: ClassAnnotation<T, [any]>,
     ctrl: typeof CustomElementCtrl,
 ): T {
@@ -124,7 +148,7 @@ function getSpecFromClassAnnotation<T extends CustomElementData>(
   );
 }
 
-export function getSpec_<T extends BaseComponentSpec|CustomElementData>(
+export function getSpec_<T extends CustomElementSpec|BaseCustomElementSpec>(
     annotations: ImmutableList<T>,
     ctrl: typeof CustomElementCtrl,
 ): T {
@@ -158,8 +182,7 @@ export function getSpec_<T extends BaseComponentSpec|CustomElementData>(
 
 function createCustomElementClass_(
     componentClass: CustomElementCtrlCtor,
-    onCreate: ImmutableSet<OnCreateSpec>,
-    outputs: ImmutableSet<OutputSpec>,
+    onCreate: ImmutableSet<OnCreateHandler>,
     templateStr: string,
     vine: VineImpl,
 ): CustomElementClass {
@@ -168,7 +191,6 @@ function createCustomElementClass_(
         componentClass,
         element,
         onCreate,
-        outputs,
         templateStr,
         vine,
         shadowMode);
