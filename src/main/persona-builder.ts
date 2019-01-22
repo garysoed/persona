@@ -1,6 +1,7 @@
+import { NodeId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
-import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
-import { __class, ClassAnnotation, PropertyAnnotation } from 'gs-tools/export/data';
+import { $exec, $filter, $head, $map, $scan, $tail, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
+import { ClassAnnotator, ParameterAnnotator, PropertyAnnotator } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
 import { AnyType, IterableOfType } from 'gs-types/export';
@@ -24,6 +25,12 @@ interface RegistrationSpec {
   template: string;
 }
 
+interface InputData {
+  id: NodeId<unknown>;
+  index: number;
+  key: string|symbol;
+  target: Object;
+}
 
 type ContextWithShadowRoot = BaseDisposable & {[SHADOW_ROOT]?: ShadowRoot};
 
@@ -33,11 +40,12 @@ type ContextWithShadowRoot = BaseDisposable & {[SHADOW_ROOT]?: ShadowRoot};
 export class PersonaBuilder {
 
   constructor(
-      private readonly baseCustomElementAnnotation: ClassAnnotation<BaseCustomElementSpec, any>,
-      private readonly customElementAnnotation: ClassAnnotation<FullComponentData, any>,
-      private readonly onCreateAnnotation: PropertyAnnotation<OnCreateHandler, any>,
-      private readonly renderPropertyAnnotation: PropertyAnnotation<OnCreateHandler, any>,
-      private readonly renderWithForwardingAnnotation: ClassAnnotation<OnCreateHandler, any>,
+      private readonly baseCustomElementAnnotation: ClassAnnotator<BaseCustomElementSpec, any>,
+      private readonly customElementAnnotation: ClassAnnotator<FullComponentData, any>,
+      private readonly inputAnnotator: ParameterAnnotator<InputData, any>,
+      private readonly onCreateAnnotation: PropertyAnnotator<OnCreateHandler, any>,
+      private readonly renderPropertyAnnotation: PropertyAnnotator<OnCreateHandler, any>,
+      private readonly renderWithForwardingAnnotation: ClassAnnotator<OnCreateHandler, any>,
   ) { }
 
   build(
@@ -46,12 +54,12 @@ export class PersonaBuilder {
       vineBuilder: VineBuilder,
   ): {vine: VineImpl} {
     const registeredComponentSpecs = this.register(new Set(rootCtrls), vineBuilder);
-    const vine = vineBuilder.run();
+    const vine = vineBuilder.run(rootCtrls);
     for (const spec of registeredComponentSpecs.values()) {
       const template = spec.template;
       const elementClass = createCustomElementClass_(
           spec.componentClass,
-          ImmutableSet.of(spec.onCreate || []),
+          createImmutableSet(spec.onCreate || []),
           template,
           vine,
       );
@@ -64,30 +72,44 @@ export class PersonaBuilder {
 
   // TODO: Combine annotations.
   private getOnCreateHandlers(ctor: CustomElementCtrlCtor): ImmutableSet<OnCreateHandler> {
-    return this.onCreateAnnotation.getAttachedValuesForCtor(ctor)
-        .entries()
-        .mapItem(([key, entries]) => entries.getAt(0))
-        .filterItem((item): item is [Object, OnCreateHandler] => !!item)
-        .mapItem(([_, renderData]) => renderData);
+    return $exec(
+        this.onCreateAnnotation.data.getAttachedValuesForCtor(ctor),
+        // Get the implementation in the descendant class
+        $map(([_, entries]) => $exec(entries, $head())),
+        $filter((item): item is [Object, ImmutableList<OnCreateHandler>] => !!item),
+        // Get the first annotation
+        $map(([_, renderDataList]) => $exec(renderDataList, $head())),
+        $filter((renderData): renderData is OnCreateHandler => !!renderData),
+        asImmutableSet(),
+    );
   }
 
   private getRenderPropertyOnCreateHandlers(
       ctor: CustomElementCtrlCtor,
   ): ImmutableSet<OnCreateHandler> {
-    return this.renderPropertyAnnotation.getAttachedValuesForCtor(ctor)
-        .entries()
-        .mapItem(([key, entries]) => entries.getAt(0))
-        .filterItem((item): item is [Object, OnCreateHandler] => !!item)
-        .mapItem(([_, renderData]) => renderData);
+    return $exec(
+        this.renderPropertyAnnotation.data.getAttachedValuesForCtor(ctor),
+        // Get the implementation in the descendant class
+        $map(([_, entries]) => $exec(entries, $head())),
+        $filter((item): item is [Object, ImmutableList<OnCreateHandler>] => !!item),
+        // Get the first annotation
+        $map(([_, renderDataList]) => $exec(renderDataList, $head())),
+        $filter((renderData): renderData is OnCreateHandler => !!renderData),
+        asImmutableSet(),
+    );
   }
 
   private getRenderWithForwardingOnCreateHandlers(
       ctor: CustomElementCtrlCtor,
   ): ImmutableSet<OnCreateHandler> {
-    return ImmutableSet.of(
-        this.renderWithForwardingAnnotation.getAttachedValues(ctor)
-            .mapItem(([, handler]) => handler),
-        );
+    return createImmutableSet(
+        $exec(
+            this.renderWithForwardingAnnotation.data.getAttachedValues(ctor),
+            $map(([, handler]) => handler),
+            $scan((prev, item) => [...prev, ...item], [] as OnCreateHandler[]),
+            $tail(),
+        ),
+    );
   }
 
   private register(
@@ -139,11 +161,17 @@ export class PersonaBuilder {
 }
 
 function getSpecFromClassAnnotation<T extends CustomElementSpec|BaseCustomElementSpec>(
-    annotation: ClassAnnotation<T, [any]>,
+    annotation: ClassAnnotator<T, [any]>,
     ctrl: typeof CustomElementCtrl,
 ): T {
   return getSpec_(
-      annotation.getAttachedValues(ctrl).mapItem(([, data]) => data),
+      $exec(
+          annotation.data.getAttachedValues(ctrl),
+          $map(([, dataList]) => $exec(dataList, $head())),
+          // Only take the first item
+          $filter((data): data is T => !!data),
+          asImmutableList(),
+      ),
       ctrl,
   );
 }

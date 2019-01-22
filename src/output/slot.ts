@@ -1,4 +1,4 @@
-import { ImmutableList } from 'gs-tools/export/collect';
+import { $exec, $filter, $head, createImmutableList, ImmutableList } from 'gs-tools/export/collect';
 import { Observable } from 'rxjs';
 import { scan, switchMap } from 'rxjs/operators';
 import { Output } from '../component/output';
@@ -20,7 +20,7 @@ export class SlotOutput<T, R> implements Output<T> {
         .pipe(
             switchMap(parentEl => {
               const slotNode = findCommentNode<R>(
-                  ImmutableList.of(parentEl.childNodes),
+                  createImmutableList(parentEl.childNodes),
                   this.slotName,
               );
 
@@ -76,9 +76,13 @@ export function findCommentNode<R>(
     return null;
   }
 
-  return childNodes.find(node => {
-    return node.nodeName === '#comment' &&
-        !!node.nodeValue &&
-        node.nodeValue.trim() === commentContent;
-  });
+  return $exec(
+      childNodes,
+      $filter(node => {
+        return node.nodeName === '#comment' &&
+            !!node.nodeValue &&
+            node.nodeValue.trim() === commentContent;
+      }),
+      $head(),
+  ) || null;
 }

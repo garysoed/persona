@@ -1,12 +1,8 @@
-import { instanceStreamId } from 'grapevine/export/component';
-import { staticSourceId } from 'grapevine/export/component';
+import { instanceStreamId, staticSourceId } from 'grapevine/export/component';
 import { getOrRegisterApp as getOrRegisterVineApp } from 'grapevine/export/main';
 import { assert, should, test } from 'gs-testing/export/main';
-import { Spy } from 'gs-testing/export/spy';
-import { createSpy } from 'gs-testing/export/spy';
-import { __class } from 'gs-tools/export/data';
-import { StringType } from 'gs-types/export';
-import { InstanceofType } from 'gs-types/export';
+import { createSpy, Spy } from 'gs-testing/export/spy';
+import { InstanceofType, StringType } from 'gs-types/export';
 import { identity } from 'nabu/export/util';
 import { Observable, of as observableOf } from 'rxjs';
 import { map, tap } from 'rxjs/operators';

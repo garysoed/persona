@@ -2,10 +2,9 @@
 import { VineImpl } from 'grapevine/export/main';
 import { assert, match, should, test } from 'gs-testing/export/main';
 import { createSpy, createSpyInstance, fake, spy, SpyObj } from 'gs-testing/export/spy';
-import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
+import { createImmutableSet } from 'gs-tools/export/collect';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Observable, of as observableOf } from 'rxjs';
-import { InnerHtmlOutput } from '../output/inner-html';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl } from './custom-element-impl';
 
@@ -40,10 +39,11 @@ test('main.CustomElementImpl', () => {
       const customElement = new CustomElementImpl(
           TestClass,
           element,
-          ImmutableSet.of(),
+          createImmutableSet(),
           templateString,
           mockVine,
-          'open');
+          'open',
+      );
 
       await customElement.connectedCallback();
       // tslint:disable-next-line:no-non-null-assertion
@@ -71,7 +71,7 @@ test('main.CustomElementImpl', () => {
       const customElement = new CustomElementImpl(
           TestClass,
           element,
-          ImmutableSet.of([mockHandler1, mockHandler2]),
+          createImmutableSet([mockHandler1, mockHandler2]),
           templateString,
           mockVine,
           'open',
@@ -92,10 +92,11 @@ test('main.CustomElementImpl', () => {
       const customElement = new CustomElementImpl(
           TestClass,
           element,
-          ImmutableSet.of(),
+          createImmutableSet(),
           templateString,
           mockVine,
-          'open');
+          'open',
+      );
 
       const disposeSpy = spy(BaseDisposable.prototype, 'dispose');
       customElement.connectedCallback();
@@ -109,10 +110,11 @@ test('main.CustomElementImpl', () => {
       const customElement = new CustomElementImpl(
           TestClass,
           element,
-          ImmutableSet.of(),
+          createImmutableSet(),
           templateString,
           mockVine,
-          'open');
+          'open',
+      );
 
       assert(() => {
         customElement.disconnectedCallback();

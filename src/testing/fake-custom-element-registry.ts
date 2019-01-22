@@ -1,4 +1,3 @@
-import { Errors } from 'gs-tools/src/error';
 import { __customElementImplFactory, CustomElementClass } from '../main/custom-element-class';
 
 type Listener = () => void;

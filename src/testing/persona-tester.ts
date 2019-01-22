@@ -1,7 +1,7 @@
 import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { fake, spy } from 'gs-testing/export/spy';
-import { ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
+import { createImmutableList, createImmutableSet, ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
 import { Observable, throwError, timer } from 'rxjs';
 import { filter, map, mapTo, switchMap, take, tap } from 'rxjs/operators';
 import { Input } from '../component/input';
@@ -84,7 +84,7 @@ export class PersonaTester {
                 classes.add(classItem);
               }
 
-              return ImmutableSet.of(classes);
+              return createImmutableSet(classes);
             }),
         );
   }
@@ -103,7 +103,7 @@ export class PersonaTester {
     return getElement(element, shadowRoot => output.resolver(shadowRoot))
         .pipe(
             map(parentEl => findCommentNode(
-                ImmutableList.of(parentEl.childNodes),
+                createImmutableList(parentEl.childNodes),
                 output.slotName,
             )),
             switchMap(slotEl => {
@@ -121,7 +121,7 @@ export class PersonaTester {
                 node = node.nextSibling;
               }
 
-              return ImmutableList.of(nodes);
+              return createImmutableList(nodes);
             }),
         );
   }

@@ -1,9 +1,8 @@
 import { InstanceSourceId, InstanceStreamId, NodeId, StaticSourceId } from 'grapevine/export/component';
 import { VineApp, VineImpl } from 'grapevine/export/main';
-import { ClassAnnotation, PropertyAnnotation } from 'gs-tools/export/data';
+import { ClassAnnotator, ParameterAnnotator, PropertyAnnotator } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Observable, of as observableOf } from 'rxjs';
-import { InputAnnotation, inputFactory } from '../annotation/input';
 import { Render, renderFactory } from '../annotation/render';
 import { Input } from '../component/input';
 import { Output } from '../component/output';
@@ -31,12 +30,14 @@ export interface RendererSpec {
   target: Object;
 }
 
+export type InputAnnotator = (input: Input<any>) => ParameterDecorator;
+
 /**
  * Describes a Persona App.
  */
 interface PersonaApp {
   builder: PersonaBuilder;
-  input: InputAnnotation;
+  input: InputAnnotator;
   render: Render;
   baseCustomElement(spec: BaseCustomElementSpec): ClassDecorator;
   customElement(spec: CustomElementSpec): ClassDecorator;
@@ -59,7 +60,7 @@ export function getOrRegisterApp(
     return createdApp;
   }
 
-  const baseCustomElementAnnotation = new ClassAnnotation(
+  const baseCustomElementAnnotator = new ClassAnnotator(
       (target: Function, spec: BaseCustomElementSpec) => ({
         data: {
           ...spec,
@@ -68,7 +69,7 @@ export function getOrRegisterApp(
       }),
   );
 
-  const customElementAnnotation = new ClassAnnotation(
+  const customElementAnnotator = new ClassAnnotator(
       (target: Function, spec: CustomElementSpec) => ({
         data: {
           componentClass: target as CustomElementCtrlCtor,
@@ -78,14 +79,19 @@ export function getOrRegisterApp(
       }),
   );
 
-  const onCreateAnnotation = new PropertyAnnotation(
+  const inputAnnotator = new ParameterAnnotator((target, key, index, input: Input<unknown>) => ({
+    id: input.id,
+    index,
+    key,
+    target,
+  }));
+
+  const onCreateAnnotator = new PropertyAnnotator(
       (target: Object, key: string|symbol) =>
-          (context: CustomElementCtrl, vine: VineImpl) => {
-            return vine.run(context, key);
-          },
+          (context: CustomElementCtrl, vine: VineImpl) => vine.run(context, key),
   );
 
-  const renderPropertyAnnotation = new PropertyAnnotation(
+  const renderPropertyAnnotator = new PropertyAnnotator(
       (target: Object, key: string|symbol, output: Output<unknown>) =>
           (context: CustomElementCtrl, vine: VineImpl, root: ShadowRoot) => {
             const property = (context as any)[key];
@@ -101,7 +107,7 @@ export function getOrRegisterApp(
             return output.output(root, obs);
           },
   );
-  const renderWithForwardingAnnotation = new ClassAnnotation(
+  const renderWithForwardingAnnotator = new ClassAnnotator(
       (target: Function, output: Output<unknown>, sourceId: NodeId<unknown>) => ({
         data(context: CustomElementCtrl, vine: VineImpl, root: ShadowRoot): Observable<unknown> {
           let obs;
@@ -120,21 +126,21 @@ export function getOrRegisterApp(
   );
 
   const personaBuilder = new PersonaBuilder(
-      baseCustomElementAnnotation,
-      customElementAnnotation,
-      onCreateAnnotation,
-      renderPropertyAnnotation,
-      renderWithForwardingAnnotation,
+      baseCustomElementAnnotator,
+      customElementAnnotator,
+      inputAnnotator,
+      onCreateAnnotator,
+      renderPropertyAnnotator,
+      renderWithForwardingAnnotator,
   );
-  const input = inputFactory(vineApp);
 
   const newApp = {
-    baseCustomElement: baseCustomElementAnnotation.getDecorator(),
+    baseCustomElement: baseCustomElementAnnotator.decorator,
     builder: personaBuilder,
-    customElement: customElementAnnotation.getDecorator(),
-    input,
-    onCreate: onCreateAnnotation.getDecorator(),
-    render: renderFactory(renderPropertyAnnotation, renderWithForwardingAnnotation),
+    customElement: customElementAnnotator.decorator,
+    input: inputAnnotator.decorator,
+    onCreate: onCreateAnnotator.decorator,
+    render: renderFactory(renderPropertyAnnotator, renderWithForwardingAnnotator),
   };
   apps.set(appName, newApp);
 

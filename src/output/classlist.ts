@@ -1,4 +1,4 @@
-import { ImmutableSet } from 'gs-tools/export/collect';
+import { createImmutableSet } from 'gs-tools/export/collect';
 import { diff } from 'gs-tools/export/util';
 import { combineLatest, Observable } from 'rxjs';
 import { pairwise, startWith, tap } from 'rxjs/operators';
@@ -13,7 +13,7 @@ export class ClasslistOutput implements Output<Iterable<string>> {
   output(root: ShadowRoot, valueObs: Observable<Iterable<string>>): Observable<unknown> {
     return combineLatest(
             this.resolver(root),
-            valueObs.pipe(startWith(ImmutableSet.of<string>()), pairwise()),
+            valueObs.pipe(startWith(createImmutableSet<string>()), pairwise()),
         )
         .pipe(
             tap(([el, [prevClasses, currClasses]]) => {

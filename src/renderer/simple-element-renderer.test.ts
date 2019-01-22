@@ -1,5 +1,5 @@
 import { assert, should, test } from 'gs-testing/export/main';
-import { ImmutableList } from 'gs-tools/export/collect';
+import { createImmutableList, ImmutableList } from 'gs-tools/export/collect';
 import { integerConverter } from 'gs-tools/export/serializer';
 import { human } from 'nabu/export/grammar';
 import { compose, identity } from 'nabu/export/util';
@@ -60,7 +60,7 @@ test('converter.SimpleElementConverter', () => {
       const el = converter.render({a: 'a', b: 2, [__renderId]: 'id'}, null, root, insertionNode);
       assert(el.getAttribute('a')).to.equal('a');
       assert(el.getAttribute('b')).to.equal('2');
-      assert(ImmutableList.of(root.childNodes)).to.haveElements([insertionNode, el]);
+      assert([...createImmutableList(root.childNodes)]).to.haveExactElements([insertionNode, el]);
     });
 
     should(`ignore null values`, () => {
@@ -72,7 +72,7 @@ test('converter.SimpleElementConverter', () => {
       const el = converter.render(data, null, root, insertionNode);
       assert(el.getAttribute('a')).to.equal('a');
       assert(el.hasAttribute('b')).to.beFalse();
-      assert(ImmutableList.of(root.childNodes)).to.haveElements([insertionNode, el]);
+      assert([...createImmutableList(root.childNodes)]).to.haveExactElements([insertionNode, el]);
     });
   });
 });

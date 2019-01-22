@@ -1,5 +1,5 @@
 import { assert, should, test } from 'gs-testing/export/main';
-import { ImmutableSet } from 'gs-tools/export/collect';
+import { createImmutableSet, ImmutableSet } from 'gs-tools/export/collect';
 import { Subject } from 'gs-tools/node_modules/rxjs';
 import { InstanceofType } from 'gs-types/export';
 import { element } from '../input/element';
@@ -31,7 +31,7 @@ test('output.classlist', () => {
       const valueSubject = new Subject<ImmutableSet<string>>();
 
       output.output(shadowRoot, valueSubject).subscribe();
-      valueSubject.next(ImmutableSet.of(['a', 'b', 'c']));
+      valueSubject.next(createImmutableSet(['a', 'b', 'c']));
       assert(el.getAttribute('class')).to.equal(`a b c`);
     });
   });
