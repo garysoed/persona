@@ -1,10 +1,11 @@
 import { NodeId } from 'grapevine/export/component';
 import { ClassAnnotator, PropertyAnnotator } from 'gs-tools/export/data';
+import { Input } from '../component/input';
 import { Output } from '../component/output';
 import { OnCreateHandler } from '../main/component-spec';
 
 interface RenderDecorator<T> extends PropertyDecorator {
-  withForwarding(input: NodeId<T>): ClassDecorator;
+  withForwarding(input: NodeId<T>|Input<T>): ClassDecorator;
 }
 
 export type Render = <T>(locator: Output<T>) => RenderDecorator<T>;

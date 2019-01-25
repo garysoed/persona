@@ -12,7 +12,6 @@ import { CustomElementCtrlCtor, PersonaBuilder } from './persona-builder';
 
 export interface BaseCustomElementSpec {
   dependencies?: Array<typeof BaseDisposable>;
-  input?: Array<Input<any>>;
   shadowMode?: 'open'|'closed';
 }
 
@@ -80,8 +79,8 @@ export function getOrRegisterApp(
   );
 
   const inputAnnotator = new ParameterAnnotator((target, key, index, input: Input<unknown>) => ({
-    id: input.id,
     index,
+    input,
     key,
     target,
   }));
@@ -108,30 +107,40 @@ export function getOrRegisterApp(
           },
   );
   const renderWithForwardingAnnotator = new ClassAnnotator(
-      (target: Function, output: Output<unknown>, sourceId: NodeId<unknown>) => ({
-        data(context: CustomElementCtrl, vine: VineImpl, root: ShadowRoot): Observable<unknown> {
+      (_: Function, output: Output<unknown>, source: NodeId<unknown>|Input<unknown>) => {
+        const handler = (
+            context: CustomElementCtrl,
+            vine: VineImpl,
+            root: ShadowRoot,
+        ): Observable<unknown> => {
           let obs;
-          if (sourceId instanceof InstanceSourceId || sourceId instanceof InstanceStreamId) {
-            obs = vine.getObservable(sourceId, context);
-          } else if (sourceId instanceof StaticSourceId || sourceId instanceof StaticSourceId) {
-            obs = vine.getObservable(sourceId);
+          if (!(source instanceof NodeId)) {
+            obs = source.getValue(root);
+          } else if (source instanceof InstanceSourceId || source instanceof InstanceStreamId) {
+            obs = vine.getObservable(source, context);
+          } else if (source instanceof StaticSourceId || source instanceof StaticSourceId) {
+            obs = vine.getObservable(source);
           } else {
-            throw new Error(`Unhandled node: ${sourceId}`);
+            throw new Error(`Unhandled node: ${source}`);
           }
 
           return output.output(root, obs);
-        },
-        newTarget: undefined,
-      }),
+        };
+
+        return {
+          data: handler,
+          newTarget: undefined,
+        };
+      },
   );
 
   const personaBuilder = new PersonaBuilder(
-      baseCustomElementAnnotator,
       customElementAnnotator,
       inputAnnotator,
       onCreateAnnotator,
       renderPropertyAnnotator,
       renderWithForwardingAnnotator,
+      vineApp.vineIn,
   );
 
   const newApp = {

@@ -29,7 +29,7 @@ export interface OutputSpec {
  * Specification for a base custom element that doesn't get initialized.
  */
 export interface BaseComponentSpec {
-  input?: Iterable<Input<any>>;
+  configure?(vine: VineImpl): void;
 }
 
 /**

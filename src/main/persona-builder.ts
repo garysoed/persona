@@ -1,11 +1,12 @@
 import { NodeId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
-import { $exec, $filter, $head, $map, $scan, $tail, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
-import { ClassAnnotator, ParameterAnnotator, PropertyAnnotator } from 'gs-tools/export/data';
+import { $declareFinite, $exec, $filter, $filterNotEqual, $flat, $head, $map, $pick, $scan, $tail, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableMap, ImmutableSet } from 'gs-tools/export/collect';
+import { ClassAnnotation, ClassAnnotator, ParameterAnnotation, ParameterAnnotator, PropertyAnnotator } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
 import { AnyType, IterableOfType } from 'gs-types/export';
 import { Observable } from 'rxjs';
+import { Input } from '../component/input';
 import { OnCreateHandler } from './component-spec';
 import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementCtrl } from './custom-element-ctrl';
@@ -26,8 +27,8 @@ interface RegistrationSpec {
 }
 
 interface InputData {
-  id: NodeId<unknown>;
   index: number;
+  input: Input<unknown>;
   key: string|symbol;
   target: Object;
 }
@@ -40,12 +41,12 @@ type ContextWithShadowRoot = BaseDisposable & {[SHADOW_ROOT]?: ShadowRoot};
 export class PersonaBuilder {
 
   constructor(
-      private readonly baseCustomElementAnnotation: ClassAnnotator<BaseCustomElementSpec, any>,
       private readonly customElementAnnotation: ClassAnnotator<FullComponentData, any>,
       private readonly inputAnnotator: ParameterAnnotator<InputData, any>,
       private readonly onCreateAnnotation: PropertyAnnotator<OnCreateHandler, any>,
       private readonly renderPropertyAnnotation: PropertyAnnotator<OnCreateHandler, any>,
       private readonly renderWithForwardingAnnotation: ClassAnnotator<OnCreateHandler, any>,
+      private readonly vineInDecorator: (id: NodeId<unknown>) => ParameterDecorator,
   ) { }
 
   build(
@@ -53,8 +54,14 @@ export class PersonaBuilder {
       customElementRegistry: CustomElementRegistry,
       vineBuilder: VineBuilder,
   ): {vine: VineImpl} {
-    const registeredComponentSpecs = this.register(new Set(rootCtrls), vineBuilder);
+    const inputDataSet = getInputDataSet(this.inputAnnotator.data);
+    addInputsAsVineIn(inputDataSet, this.vineInDecorator);
+    const registeredComponentSpecs = this.register(new Set(rootCtrls));
+    registerInputs(inputDataSet, vineBuilder);
+
     const vine = vineBuilder.run(rootCtrls);
+    runConfigures(this.customElementAnnotation.data, vine);
+
     for (const spec of registeredComponentSpecs.values()) {
       const template = spec.template;
       const elementClass = createCustomElementClass_(
@@ -102,25 +109,22 @@ export class PersonaBuilder {
   private getRenderWithForwardingOnCreateHandlers(
       ctor: CustomElementCtrlCtor,
   ): ImmutableSet<OnCreateHandler> {
-    return createImmutableSet(
-        $exec(
-            this.renderWithForwardingAnnotation.data.getAttachedValues(ctor),
-            $map(([, handler]) => handler),
-            $scan((prev, item) => [...prev, ...item], [] as OnCreateHandler[]),
-            $tail(),
-        ),
+    return $exec(
+        this.renderWithForwardingAnnotation.data.getAttachedValues(ctor),
+        $pick(1),
+        $flat<OnCreateHandler>(),
+        $declareFinite(),
+        asImmutableSet(),
     );
   }
 
   private register(
       rootCtrls: Set<CustomElementCtrlCtor>,
-      builder: VineBuilder,
   ): Map<string, RegistrationSpec> {
     const registeredComponentSpecs = new Map<string, RegistrationSpec>();
 
     for (const ctrl of rootCtrls) {
       const componentSpec = getSpecFromClassAnnotation(this.customElementAnnotation, ctrl);
-      const baseComponentSpec = getSpecFromClassAnnotation(this.baseCustomElementAnnotation, ctrl);
 
       registeredComponentSpecs.set(
           componentSpec.tag,
@@ -135,29 +139,35 @@ export class PersonaBuilder {
             template: componentSpec.template,
           },
       );
-
-      const inputs = new Set([
-        ...(componentSpec.input || []),
-        ...(baseComponentSpec.input || []),
-      ]);
-      for (const input of inputs) {
-        if (builder.isRegistered(input.id)) {
-          continue;
-        }
-
-        builder.stream(input.id, function(this: ContextWithShadowRoot): Observable<unknown> {
-          const shadowRoot = this[SHADOW_ROOT];
-          if (!shadowRoot) {
-            throw Errors.assert(`Shadow root of ${this}`).shouldExist().butNot();
-          }
-
-          return input.getValue(shadowRoot);
-        });
-      }
     }
 
     return registeredComponentSpecs;
   }
+}
+
+function addInputsAsVineIn(
+    inputDataSet: ImmutableSet<InputData>,
+    vineInDecorator: (id: NodeId<unknown>) => ParameterDecorator,
+): void {
+  for (const {index, input, key, target} of inputDataSet) {
+    vineInDecorator(input.id)(target, key, index);
+  }
+}
+
+function getInputDataSet(
+    inputAnnotation: ParameterAnnotation<InputData>,
+): ImmutableSet<InputData> {
+  return $exec(
+      inputAnnotation.getAllValues(),
+      $pick(1),
+      $flat<[string|symbol, ImmutableMap<number, ImmutableList<InputData>>]>(),
+      $pick(1),
+      $flat<[number, ImmutableList<InputData>]>(),
+      $pick(1),
+      $flat<InputData>(),
+      $declareFinite(),
+      asImmutableSet(),
+  );
 }
 
 function getSpecFromClassAnnotation<T extends CustomElementSpec|BaseCustomElementSpec>(
@@ -242,4 +252,50 @@ function createCustomElementClass_(
 
   // tslint:disable-next-line:prefer-object-spread
   return Object.assign(htmlClass, {[__customElementImplFactory]: customElementImplFactory});
+}
+
+function registerInputs(
+    inputDataSet: ImmutableSet<InputData>,
+    vineBuilder: VineBuilder,
+): void {
+  const inputs: ImmutableSet<Input<unknown>> = $exec(
+      inputDataSet,
+      $map(({input}) => input),
+      asImmutableSet(),
+  );
+
+  for (const input of inputs) {
+    const inputId = input.id;
+    if (vineBuilder.isRegistered(inputId)) {
+      continue;
+    }
+
+    vineBuilder.stream(inputId, function(this: ContextWithShadowRoot): Observable<unknown> {
+      const shadowRoot = this[SHADOW_ROOT];
+      if (!shadowRoot) {
+        throw Errors.assert(`Shadow root of ${this}`).shouldExist().butNot();
+      }
+
+      return input.getValue(shadowRoot);
+    });
+  }
+}
+
+function runConfigures(
+    customElementAnnotation: ClassAnnotation<FullComponentData>,
+    vine: VineImpl,
+): void {
+  const configureList = $exec(
+      customElementAnnotation.getAllValues(),
+      $pick(1),
+      $flat<FullComponentData>(),
+      $map(({configure}) => configure),
+      $filterNotEqual(undefined),
+      $declareFinite(),
+      asImmutableList(),
+  );
+
+  for (const configure of configureList) {
+    configure(vine);
+  }
 }
