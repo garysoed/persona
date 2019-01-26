@@ -1,24 +1,26 @@
 import { InstanceSourceId, InstanceStreamId, NodeId, StaticSourceId } from 'grapevine/export/component';
 import { VineApp, VineImpl } from 'grapevine/export/main';
 import { ClassAnnotator, ParameterAnnotator, PropertyAnnotator } from 'gs-tools/export/data';
-import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Observable, of as observableOf } from 'rxjs';
 import { Render, renderFactory } from '../annotation/render';
 import { Input } from '../component/input';
 import { Output } from '../component/output';
-import { BaseComponentSpec } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
-import { CustomElementCtrlCtor, PersonaBuilder } from './persona-builder';
+import { PersonaBuilder } from './persona-builder';
+
+
+export type CustomElementCtrlCtor = new (...args: any[]) => CustomElementCtrl;
 
 export interface BaseCustomElementSpec {
-  dependencies?: Array<typeof BaseDisposable>;
+  dependencies?: CustomElementCtrlCtor[];
   shadowMode?: 'open'|'closed';
+  configure?(vine: VineImpl): void;
 }
 
 /**
  * Specs that define a custom element.
  */
-export interface CustomElementSpec extends BaseComponentSpec {
+export interface CustomElementSpec extends BaseCustomElementSpec {
   tag: string;
   template: string;
 }

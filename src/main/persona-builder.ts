@@ -1,6 +1,6 @@
 import { NodeId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
-import { $declareFinite, $exec, $filter, $filterNotEqual, $flat, $head, $map, $pick, $scan, $tail, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableMap, ImmutableSet } from 'gs-tools/export/collect';
+import { $declareFinite, $exec, $filter, $filterNotEqual, $flat, $getKey, $head, $map, $pick, $scan, $tail, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableMap, ImmutableSet } from 'gs-tools/export/collect';
 import { ClassAnnotation, ClassAnnotator, ParameterAnnotation, ParameterAnnotator, PropertyAnnotator } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
@@ -11,9 +11,7 @@ import { OnCreateHandler } from './component-spec';
 import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl, SHADOW_ROOT } from './custom-element-impl';
-import { BaseCustomElementSpec, CustomElementSpec } from './persona';
-
-export type CustomElementCtrlCtor = new (...args: any[]) => CustomElementCtrl;
+import { BaseCustomElementSpec, CustomElementCtrlCtor, CustomElementSpec } from './persona';
 
 export interface FullComponentData extends CustomElementSpec {
   componentClass: CustomElementCtrlCtor;
@@ -41,7 +39,7 @@ type ContextWithShadowRoot = BaseDisposable & {[SHADOW_ROOT]?: ShadowRoot};
 export class PersonaBuilder {
 
   constructor(
-      private readonly customElementAnnotation: ClassAnnotator<FullComponentData, any>,
+      private readonly customElementAnnotator: ClassAnnotator<FullComponentData, any>,
       private readonly inputAnnotator: ParameterAnnotator<InputData, any>,
       private readonly onCreateAnnotation: PropertyAnnotator<OnCreateHandler, any>,
       private readonly renderPropertyAnnotation: PropertyAnnotator<OnCreateHandler, any>,
@@ -54,13 +52,15 @@ export class PersonaBuilder {
       customElementRegistry: CustomElementRegistry,
       vineBuilder: VineBuilder,
   ): {vine: VineImpl} {
+    const customElementAnnotation = this.customElementAnnotator.data;
+    const ctrls = getAllCtrls(rootCtrls, customElementAnnotation);
     const inputDataSet = getInputDataSet(this.inputAnnotator.data);
     addInputsAsVineIn(inputDataSet, this.vineInDecorator);
-    const registeredComponentSpecs = this.register(new Set(rootCtrls));
+    const registeredComponentSpecs = this.register(new Set(ctrls));
     registerInputs(inputDataSet, vineBuilder);
 
-    const vine = vineBuilder.run(rootCtrls);
-    runConfigures(this.customElementAnnotation.data, vine);
+    const vine = vineBuilder.run([...ctrls]);
+    runConfigures(customElementAnnotation, ctrls, vine);
 
     for (const spec of registeredComponentSpecs.values()) {
       const template = spec.template;
@@ -124,7 +124,7 @@ export class PersonaBuilder {
     const registeredComponentSpecs = new Map<string, RegistrationSpec>();
 
     for (const ctrl of rootCtrls) {
-      const componentSpec = getSpecFromClassAnnotation(this.customElementAnnotation, ctrl);
+      const componentSpec = getSpecFromClassAnnotation(this.customElementAnnotator, ctrl);
 
       registeredComponentSpecs.set(
           componentSpec.tag,
@@ -254,6 +254,33 @@ function createCustomElementClass_(
   return Object.assign(htmlClass, {[__customElementImplFactory]: customElementImplFactory});
 }
 
+function getAllCtrls(
+    rootCtrls: CustomElementCtrlCtor[],
+    customElementAnnotation: ClassAnnotation<FullComponentData>,
+): ImmutableSet<CustomElementCtrlCtor> {
+  const ctrls = new Set(rootCtrls);
+  for (const checkedCtrl of ctrls) {
+    const additionalCtors = $exec(
+        customElementAnnotation.getAttachedValues(checkedCtrl),
+        $pick(1),
+        $flat<FullComponentData>(),
+        $map(data => data.dependencies),
+        $filterNotEqual(undefined),
+        $flat<CustomElementCtrlCtor>(),
+        $declareFinite(),
+        asImmutableSet(),
+    );
+
+    for (const additionalCtor of additionalCtors) {
+      if (!ctrls.has(additionalCtor)) {
+        ctrls.add(additionalCtor);
+      }
+    }
+  }
+
+  return createImmutableSet(ctrls);
+}
+
 function registerInputs(
     inputDataSet: ImmutableSet<InputData>,
     vineBuilder: VineBuilder,
@@ -283,10 +310,12 @@ function registerInputs(
 
 function runConfigures(
     customElementAnnotation: ClassAnnotation<FullComponentData>,
+    ctrls: ImmutableSet<Function>,
     vine: VineImpl,
 ): void {
   const configureList = $exec(
       customElementAnnotation.getAllValues(),
+      $getKey(...ctrls),
       $pick(1),
       $flat<FullComponentData>(),
       $map(({configure}) => configure),

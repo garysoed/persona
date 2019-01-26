@@ -26,13 +26,6 @@ export interface OutputSpec {
 }
 
 /**
- * Specification for a base custom element that doesn't get initialized.
- */
-export interface BaseComponentSpec {
-  configure?(vine: VineImpl): void;
-}
-
-/**
  * Specifications for a custom element.
  */
 export interface ComponentSpec {
