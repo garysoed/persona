@@ -1,5 +1,5 @@
 import { assert, should, test } from 'gs-testing/export/main';
-import { $exec, $getKey, $head, $map, $pick, createImmutableList, createImmutableMap, ImmutableMap } from 'gs-tools/export/collect';
+import { $pipe, $getKey, $head, $map, $pick, createImmutableList, createImmutableMap, ImmutableMap } from 'gs-tools/export/collect';
 import { __nodeId, ElementListRenderer, ElementWithId } from './element-list-renderer';
 import { __renderId } from './render-id';
 import { Renderer } from './renderer';
@@ -25,7 +25,7 @@ class TestRenderer implements Renderer<Data, Element> {
       parentNode: Node,
       insertionPoint: Node|null): Element {
     const renderId = currentValue[__renderId];
-    const el = $exec(this.idMap, $getKey(renderId), $pick(1), $head());
+    const el = $pipe(this.idMap, $getKey(renderId), $pick(1), $head());
     if (!el) {
       throw new Error(`Unhandled renderId ${renderId}`);
     }
@@ -69,9 +69,9 @@ test('renderer.ElementListRenderer', () => {
           null,
           root,
           insertionPoint);
-      assert([...$exec(childrenList, $map(child => (child as Element)))()])
+      assert([...$pipe(childrenList, $map(child => (child as Element)))()])
           .to.haveExactElements([elementA, elementB, elementC]);
-      assert([...$exec(childrenList, $map(child => (child as any)[__nodeId]))()])
+      assert([...$pipe(childrenList, $map(child => (child as any)[__nodeId]))()])
           .to.haveExactElements(['a', 'b', 'c']);
       assert([...createImmutableList<Node>(root.childNodes)]).to.haveExactElements([
         insertionPoint,
@@ -123,7 +123,7 @@ test('renderer.ElementListRenderer', () => {
           root,
           insertionPoint);
       assert(childrenList).to.haveElements([element2, element3, element4, element6, element7]);
-      assert([...$exec(childrenList, $map(child => (child as any)[__nodeId]))()])
+      assert([...$pipe(childrenList, $map(child => (child as any)[__nodeId]))()])
           .to.haveExactElements(['2', '3', '4', '6', '7']);
       assert(createImmutableList(root.childNodes)).to.haveElements([
         insertionPoint,

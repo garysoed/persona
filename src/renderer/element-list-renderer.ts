@@ -1,4 +1,4 @@
-import { $deleteAt, $exec, $hasEntry, $head, $insertAt, $map, $size, $skip, asImmutableList, createImmutableList, ImmutableList } from 'gs-tools/export/collect';
+import { $deleteAt, $pipe, $hasEntry, $head, $insertAt, $map, $size, $skip, asImmutableList, createImmutableList, ImmutableList } from 'gs-tools/export/collect';
 import { __renderId } from './render-id';
 import { Renderer } from './renderer';
 
@@ -17,43 +17,43 @@ export class ElementListRenderer<V extends {[__renderId]: string}> implements
       insertionPoint: Node,
   ): ImmutableList<ElementWithId> {
     const previousChildren = previousRender || createImmutableList([]);
-    const currentIds = $exec(currentValues, $map(value => value[__renderId]));
+    const currentIds = $pipe(currentValues, $map(value => value[__renderId]));
 
     // Delete children that have been deleted.
     let newChildren = previousChildren;
-    for (let i = 0; i < $exec(newChildren, $size());) {
-      const previousChild = $exec(newChildren, $skip(i), $head());
+    for (let i = 0; i < $pipe(newChildren, $size());) {
+      const previousChild = $pipe(newChildren, $skip(i), $head());
       if (previousChild === undefined) {
         i++;
         continue;
       }
 
       const id = previousChild[__nodeId];
-      if ($exec(currentIds, $hasEntry(id))) {
+      if ($pipe(currentIds, $hasEntry(id))) {
         i++;
         continue;
       }
 
       // TODO: Add animation.
       previousChild.remove();
-      newChildren = $exec(newChildren, $deleteAt(i), asImmutableList());
+      newChildren = $pipe(newChildren, $deleteAt(i), asImmutableList());
     }
 
     // Add the new children.
     let p = 0;
-    for (let c = 0; c < $exec(currentValues, $size()); c++) {
-      const currentValue = $exec(currentValues, $skip(c), $head());
+    for (let c = 0; c < $pipe(currentValues, $size()); c++) {
+      const currentValue = $pipe(currentValues, $skip(c), $head());
       if (currentValue === undefined) {
         continue;
       }
       const currentId = currentValue[__renderId];
 
-      const previousChild = $exec(newChildren, $skip(p), $head());
+      const previousChild = $pipe(newChildren, $skip(p), $head());
       // There are no child at this spot, so insert at the end.
       if (!previousChild) {
-        const lastNewChild = $exec(
+        const lastNewChild = $pipe(
             newChildren,
-            $skip($exec(newChildren, $size()) - 1),
+            $skip($pipe(newChildren, $size()) - 1),
             $head(),
         ) || insertionPoint;
         const newNode = Object.assign(
@@ -65,7 +65,7 @@ export class ElementListRenderer<V extends {[__renderId]: string}> implements
             ),
             {[__nodeId]: currentId});
         if (newNode) {
-          newChildren = $exec(newChildren, $insertAt([newNode, c]), asImmutableList());
+          newChildren = $pipe(newChildren, $insertAt([newNode, c]), asImmutableList());
           p++;
         }
         continue;
@@ -87,7 +87,7 @@ export class ElementListRenderer<V extends {[__renderId]: string}> implements
           {[__nodeId]: currentId});
       if (newNode) {
         p++;
-        newChildren = $exec(newChildren, $insertAt([newNode, c]), asImmutableList());
+        newChildren = $pipe(newChildren, $insertAt([newNode, c]), asImmutableList());
       }
     }
 

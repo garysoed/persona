@@ -1,6 +1,6 @@
 import { NodeId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
-import { $declareFinite, $exec, $filter, $filterNotEqual, $flat, $getKey, $head, $map, $pick, $scan, $tail, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableMap, ImmutableSet } from 'gs-tools/export/collect';
+import { $declareFinite, $filter, $filterNotEqual, $flat, $getKey, $head, $map, $pick, $pipe, $scan, $tail, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableMap, ImmutableSet } from 'gs-tools/export/collect';
 import { ClassAnnotation, ClassAnnotator, ParameterAnnotation, ParameterAnnotator, PropertyAnnotator } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
@@ -62,30 +62,40 @@ export class PersonaBuilder {
     const vine = vineBuilder.run([...ctrls]);
     runConfigures(customElementAnnotation, ctrls, vine);
 
-    for (const spec of registeredComponentSpecs.values()) {
-      const template = spec.template;
-      const elementClass = createCustomElementClass_(
-          spec.componentClass,
-          createImmutableSet(spec.onCreate || []),
-          template,
-          vine,
-      );
+    [...registeredComponentSpecs.values()]
+        .map(spec => {
+          const template = spec.template;
+          const elementClass = createCustomElementClass_(
+              spec.componentClass,
+              createImmutableSet(spec.onCreate || []),
+              template,
+              vine,
+          );
 
-      customElementRegistry.define(spec.tag, elementClass);
-    }
+          const msg = `creating ${spec.tag}`;
+
+          return new Promise(resolve => {
+            window.setTimeout(() => {
+              console.time(msg);
+              customElementRegistry.define(spec.tag, elementClass);
+              console.timeEnd(msg);
+              resolve();
+            });
+          });
+        });
 
     return {vine};
   }
 
   // TODO: Combine annotations.
   private getOnCreateHandlers(ctor: CustomElementCtrlCtor): ImmutableSet<OnCreateHandler> {
-    return $exec(
+    return $pipe(
         this.onCreateAnnotation.data.getAttachedValuesForCtor(ctor),
         // Get the implementation in the descendant class
-        $map(([_, entries]) => $exec(entries, $head())),
+        $map(([_, entries]) => $pipe(entries, $head())),
         $filter((item): item is [Object, ImmutableList<OnCreateHandler>] => !!item),
         // Get the first annotation
-        $map(([_, renderDataList]) => $exec(renderDataList, $head())),
+        $map(([_, renderDataList]) => $pipe(renderDataList, $head())),
         $filter((renderData): renderData is OnCreateHandler => !!renderData),
         asImmutableSet(),
     );
@@ -94,13 +104,13 @@ export class PersonaBuilder {
   private getRenderPropertyOnCreateHandlers(
       ctor: CustomElementCtrlCtor,
   ): ImmutableSet<OnCreateHandler> {
-    return $exec(
+    return $pipe(
         this.renderPropertyAnnotation.data.getAttachedValuesForCtor(ctor),
         // Get the implementation in the descendant class
-        $map(([_, entries]) => $exec(entries, $head())),
+        $map(([_, entries]) => $pipe(entries, $head())),
         $filter((item): item is [Object, ImmutableList<OnCreateHandler>] => !!item),
         // Get the first annotation
-        $map(([_, renderDataList]) => $exec(renderDataList, $head())),
+        $map(([_, renderDataList]) => $pipe(renderDataList, $head())),
         $filter((renderData): renderData is OnCreateHandler => !!renderData),
         asImmutableSet(),
     );
@@ -109,7 +119,7 @@ export class PersonaBuilder {
   private getRenderWithForwardingOnCreateHandlers(
       ctor: CustomElementCtrlCtor,
   ): ImmutableSet<OnCreateHandler> {
-    return $exec(
+    return $pipe(
         this.renderWithForwardingAnnotation.data.getAttachedValues(ctor),
         $pick(1),
         $flat<OnCreateHandler>(),
@@ -157,7 +167,7 @@ function addInputsAsVineIn(
 function getInputDataSet(
     inputAnnotation: ParameterAnnotation<InputData>,
 ): ImmutableSet<InputData> {
-  return $exec(
+  return $pipe(
       inputAnnotation.getAllValues(),
       $pick(1),
       $flat<[string|symbol, ImmutableMap<number, ImmutableList<InputData>>]>(),
@@ -175,9 +185,9 @@ function getSpecFromClassAnnotation<T extends CustomElementSpec|BaseCustomElemen
     ctrl: typeof CustomElementCtrl,
 ): T {
   return getSpec_(
-      $exec(
+      $pipe(
           annotation.data.getAttachedValues(ctrl),
-          $map(([, dataList]) => $exec(dataList, $head())),
+          $map(([, dataList]) => $pipe(dataList, $head())),
           // Only take the first item
           $filter((data): data is T => !!data),
           asImmutableList(),
@@ -260,7 +270,7 @@ function getAllCtrls(
 ): ImmutableSet<CustomElementCtrlCtor> {
   const ctrls = new Set(rootCtrls);
   for (const checkedCtrl of ctrls) {
-    const additionalCtors = $exec(
+    const additionalCtors = $pipe(
         customElementAnnotation.getAttachedValues(checkedCtrl),
         $pick(1),
         $flat<FullComponentData>(),
@@ -285,7 +295,7 @@ function registerInputs(
     inputDataSet: ImmutableSet<InputData>,
     vineBuilder: VineBuilder,
 ): void {
-  const inputs: ImmutableSet<Input<unknown>> = $exec(
+  const inputs: ImmutableSet<Input<unknown>> = $pipe(
       inputDataSet,
       $map(({input}) => input),
       asImmutableSet(),
@@ -313,7 +323,7 @@ function runConfigures(
     ctrls: ImmutableSet<Function>,
     vine: VineImpl,
 ): void {
-  const configureList = $exec(
+  const configureList = $pipe(
       customElementAnnotation.getAllValues(),
       $getKey(...ctrls),
       $pick(1),

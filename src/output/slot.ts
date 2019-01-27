@@ -1,4 +1,4 @@
-import { $exec, $filter, $head, createImmutableList, ImmutableList } from 'gs-tools/export/collect';
+import { $pipe, $filter, $head, createImmutableList, ImmutableList } from 'gs-tools/export/collect';
 import { Observable } from 'rxjs';
 import { scan, switchMap } from 'rxjs/operators';
 import { Output } from '../component/output';
@@ -76,7 +76,7 @@ export function findCommentNode<R>(
     return null;
   }
 
-  return $exec(
+  return $pipe(
       childNodes,
       $filter(node => {
         return node.nodeName === '#comment' &&
