@@ -1,0 +1,53 @@
+import { InstanceStreamId, instanceStreamId } from 'grapevine/export/component';
+import { BooleanType, Type } from 'gs-types/export';
+import { Observable } from 'rxjs';
+import { distinctUntilChanged, map, shareReplay, switchMap, startWith } from 'rxjs/operators';
+import { Input } from '../component/input';
+import { UnresolvedElementProperty } from '../component/unresolved-element-property';
+import { mutationObservable } from '../util/mutation-observable';
+
+export class HasAttributeInput implements Input<boolean> {
+  readonly id: InstanceStreamId<boolean>;
+
+  constructor(
+      readonly attrName: string,
+      readonly resolver: (root: ShadowRoot) => Observable<Element>,
+  ) {
+    this.id = instanceStreamId(`attr[${attrName}]`, BooleanType);
+  }
+
+  getValue(root: ShadowRoot): Observable<boolean> {
+    return this.resolver(root)
+        .pipe(
+            switchMap(el =>
+                mutationObservable(
+                    el,
+                    {
+                      attributeFilter: [this.attrName],
+                      attributes: true,
+                    },
+                )
+                .pipe(
+                    map(() => el.hasAttribute(this.attrName)),
+                    startWith(el.hasAttribute(this.attrName)),
+                ),
+            ),
+            distinctUntilChanged(),
+            shareReplay(1),
+        );
+  }
+}
+
+class UnresolvedHasAttributeInput implements UnresolvedElementProperty<Element, HasAttributeInput> {
+  constructor(
+      private readonly attrName: string,
+  ) { }
+
+  resolve(resolver: (root: ShadowRoot) => Observable<Element>): HasAttributeInput {
+    return new HasAttributeInput(this.attrName, resolver);
+  }
+}
+
+export function hasAttribute(attrName: string): UnresolvedHasAttributeInput {
+  return new UnresolvedHasAttributeInput(attrName);
+}

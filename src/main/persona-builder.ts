@@ -72,15 +72,9 @@ export class PersonaBuilder {
               vine,
           );
 
-          const msg = `creating ${spec.tag}`;
-
           return new Promise(resolve => {
-            window.setTimeout(() => {
-              console.time(msg);
-              customElementRegistry.define(spec.tag, elementClass);
-              console.timeEnd(msg);
-              resolve();
-            });
+            customElementRegistry.define(spec.tag, elementClass);
+            resolve();
           });
         });
 

@@ -69,7 +69,7 @@ class TestClass extends ParentTestClass {
 
 const testerFactory = new PersonaTesterFactory(_v.builder, _p.builder);
 
-test('main.PersonaBuilder', () => {
+test('persona.main.PersonaBuilder', () => {
   let mockHandler: Spy;
   let tester: PersonaTester;
   let el: HTMLElement;
