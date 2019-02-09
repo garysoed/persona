@@ -1,7 +1,7 @@
 import { InstanceStreamId, instanceStreamId } from 'grapevine/export/component';
-import { BooleanType, Type } from 'gs-types/export';
+import { BooleanType } from 'gs-types/export';
 import { Observable } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, switchMap, startWith } from 'rxjs/operators';
+import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 import { Input } from '../component/input';
 import { UnresolvedElementProperty } from '../component/unresolved-element-property';
 import { mutationObservable } from '../util/mutation-observable';

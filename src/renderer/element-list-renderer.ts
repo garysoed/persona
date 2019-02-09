@@ -1,4 +1,4 @@
-import { $deleteAt, $pipe, $hasEntry, $head, $insertAt, $map, $size, $skip, asImmutableList, createImmutableList, ImmutableList } from 'gs-tools/export/collect';
+import { $deleteAt, $hasEntry, $head, $insertAt, $map, $pipe, $size, $skip, asImmutableList, createImmutableList, ImmutableList, Stream } from 'gs-tools/export/collect';
 import { __renderId } from './render-id';
 import { Renderer } from './renderer';
 
@@ -51,11 +51,8 @@ export class ElementListRenderer<V extends {[__renderId]: string}> implements
       const previousChild = $pipe(newChildren, $skip(p), $head());
       // There are no child at this spot, so insert at the end.
       if (!previousChild) {
-        const lastNewChild = $pipe(
-            newChildren,
-            $skip($pipe(newChildren, $size()) - 1),
-            $head(),
-        ) || insertionPoint;
+        const array = [...newChildren()];
+        const lastNewChild = array[array.length - 1] || insertionPoint;
         const newNode = Object.assign(
             this.itemRenderer_.render(
                 currentValue,
@@ -91,7 +88,7 @@ export class ElementListRenderer<V extends {[__renderId]: string}> implements
       }
     }
 
-    return newChildren;
+    return $pipe(newChildren, asImmutableList());
   }
 }
 

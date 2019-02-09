@@ -44,7 +44,7 @@ class UnresolvedOnInputInput implements UnresolvedElementProperty<HTMLInputEleme
 }
 
 export function onInput(
-    debounceMs: number,
+    debounceMs: number = 0,
     options: AddEventListenerOptions = {},
     scheduler?: SchedulerLike,
 ): UnresolvedOnInputInput {

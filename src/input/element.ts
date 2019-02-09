@@ -11,12 +11,12 @@ interface Properties<E extends Element> {
   readonly [key: string]: UnresolvedElementProperty<E, any>;
 }
 
-type Resolved<P extends Properties<Element>> = {
-  [K in keyof P]: P[K] extends UnresolvedElementProperty<Element, infer R> ? R : never;
+type Resolved<E extends Element, P extends Properties<E>> = {
+  [K in keyof P]: P[K] extends UnresolvedElementProperty<E, infer R> ? R : never;
 };
 
 export class ElementInput<E extends Element, P extends Properties<E>> implements Input<E> {
-  readonly _: Resolved<P>;
+  readonly _: Resolved<E, P>;
   readonly id: InstanceStreamId<E>;
 
   constructor(
@@ -40,8 +40,8 @@ export class ElementInput<E extends Element, P extends Properties<E>> implements
     }).pipe(distinctUntilChanged());
   }
 
-  private resolve(properties: P): Resolved<P> {
-    const resolvedProperties: Resolved<any> = {};
+  private resolve(properties: P): Resolved<E, P> {
+    const resolvedProperties: Resolved<any, any> = {};
     for (const key in properties) {
       if (!properties.hasOwnProperty(key)) {
         continue;

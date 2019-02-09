@@ -1,6 +1,6 @@
 import { NodeId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
-import { $declareFinite, $filter, $filterNotEqual, $flat, $getKey, $head, $map, $pick, $pipe, $scan, $tail, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableMap, ImmutableSet } from 'gs-tools/export/collect';
+import { $debug, $declareFinite, $filter, $filterNotEqual, $flat, $getKey, $head, $map, $pick, $pipe, $scan, $tail, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableMap, ImmutableSet } from 'gs-tools/export/collect';
 import { ClassAnnotation, ClassAnnotator, ParameterAnnotation, ParameterAnnotator, PropertyAnnotator } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
@@ -162,7 +162,7 @@ function getInputDataSet(
     inputAnnotation: ParameterAnnotation<InputData>,
 ): ImmutableSet<InputData> {
   return $pipe(
-      inputAnnotation.getAllValues(),
+      inputAnnotation.getAll(),
       $pick(1),
       $flat<[string|symbol, ImmutableMap<number, ImmutableList<InputData>>]>(),
       $pick(1),
