@@ -6,7 +6,7 @@ import { Observable, throwError, timer } from 'rxjs';
 import { filter, map, mapTo, switchMap, take, tap } from 'rxjs/operators';
 import { Input } from '../component/input';
 import { AttributeInput } from '../input/attribute';
-import { ChannelInput } from '../input/channel';
+import { ChannelInput } from '../input/channel-in';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { __ctrl, ElementWithCtrl } from '../main/custom-element-impl';
 import { CustomElementCtrlCtor } from '../main/persona';
@@ -14,6 +14,7 @@ import { PersonaBuilder } from '../main/persona-builder';
 import { AttributeOutput } from '../output/attribute';
 import { findCommentNode, SlotOutput } from '../output/slot';
 import { StyleOutput } from '../output/style';
+import { getChannel } from '../util/get-channel';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
 
 interface Key {
@@ -50,7 +51,7 @@ export class PersonaTester {
 
   getAttribute<T>(
       element: ElementWithCtrl,
-      output: AttributeOutput<T>,
+      output: AttributeOutput<T>|AttributeInput<T>,
   ): Observable<T> {
     return getElement(element, shadowRoot => output.resolver(shadowRoot))
         .pipe(
@@ -167,7 +168,7 @@ export class PersonaTester {
   ): Observable<unknown> {
     return getElement(element, shadowRoot => input.resolver(shadowRoot))
         .pipe(
-            tap(el => input.getSubject_(el).next(signal)),
+            tap(el => getChannel(el, input.channelName).next(signal)),
         );
   }
 
