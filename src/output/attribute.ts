@@ -1,6 +1,6 @@
 import { Converter } from 'nabu/export/main';
-import { combineLatest, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { tap, withLatestFrom } from 'rxjs/operators';
 import { Output } from '../component/output';
 import { UnresolvedElementProperty } from '../component/unresolved-element-property';
 
@@ -15,9 +15,10 @@ export class AttributeOutput<T> implements Output<T> {
   ) { }
 
   output(root: ShadowRoot, valueObs: Observable<T>): Observable<unknown> {
-    return combineLatest(this.resolver(root), valueObs)
+    return valueObs
         .pipe(
-            tap(([el, value]) => {
+            withLatestFrom(this.resolver(root)),
+            tap(([value, el]) => {
               const result = this.parser.convertForward(value);
               if (result.success) {
                 el.setAttribute(this.attrName, result.result);

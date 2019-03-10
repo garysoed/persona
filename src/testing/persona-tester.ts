@@ -6,15 +6,15 @@ import { Observable, throwError, timer } from 'rxjs';
 import { filter, map, mapTo, switchMap, take, tap } from 'rxjs/operators';
 import { Input } from '../component/input';
 import { AttributeInput } from '../input/attribute';
-import { ChannelInput } from '../input/channel-in';
+import { HandlerInput } from '../input/handler';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { __ctrl, ElementWithCtrl } from '../main/custom-element-impl';
 import { CustomElementCtrlCtor } from '../main/persona';
 import { PersonaBuilder } from '../main/persona-builder';
 import { AttributeOutput } from '../output/attribute';
+import { CallerOutput } from '../output/caller';
 import { findCommentNode, SlotOutput } from '../output/slot';
 import { StyleOutput } from '../output/style';
-import { getChannel } from '../util/get-channel';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
 
 interface Key {
@@ -160,18 +160,6 @@ export class PersonaTester {
             switchMap(targetEl => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(targetEl))),
             map(el => el.textContent || ''));
   }
-
-  sendSignal<T>(
-      element: ElementWithCtrl,
-      input: ChannelInput<T>,
-      signal: T,
-  ): Observable<unknown> {
-    return getElement(element, shadowRoot => input.resolver(shadowRoot))
-        .pipe(
-            tap(el => getChannel(el, input.channelName).next(signal)),
-        );
-  }
-
   setAttribute<T>(
       element: ElementWithCtrl,
       input: AttributeInput<T>,
