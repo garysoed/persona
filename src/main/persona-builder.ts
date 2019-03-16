@@ -1,6 +1,6 @@
 import { NodeId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
-import { $debug, $declareFinite, $filter, $filterNotEqual, $flat, $getKey, $head, $map, $pick, $pipe, $scan, $tail, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableMap, ImmutableSet } from 'gs-tools/export/collect';
+import { $declareFinite, $filter, $filterNotEqual, $flat, $getKey, $head, $map, $pick, $pipe, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableMap, ImmutableSet } from 'gs-tools/export/collect';
 import { ClassAnnotation, ClassAnnotator, ParameterAnnotation, ParameterAnnotator, PropertyAnnotator } from 'gs-tools/export/data';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Errors } from 'gs-tools/export/error';
@@ -63,7 +63,7 @@ export class PersonaBuilder {
     runConfigures(customElementAnnotation, ctrls, vine);
 
     [...registeredComponentSpecs.values()]
-        .map(spec => {
+        .map(async spec => {
           const template = spec.template;
           const elementClass = createCustomElementClass_(
               spec.componentClass,
@@ -204,6 +204,7 @@ export function getSpec_<T extends CustomElementSpec|BaseCustomElementSpec>(
     for (const key of Object.keys(spec) as Array<keyof T>) {
       const value = spec[key];
       const existingValue = combinedSpec[key];
+      // tslint:disable-next-line: strict-type-predicates
       const normalizedExistingValue = existingValue === undefined ? [] : existingValue;
       if (!IterableOfType(AnyType()).check(value) ||
           !IterableOfType(AnyType()).check(normalizedExistingValue)) {
@@ -245,8 +246,8 @@ function createCustomElementClass_(
       super();
     }
 
-    connectedCallback(): void {
-      this.customElementImpl_.connectedCallback();
+    async connectedCallback(): Promise<void> {
+      return this.customElementImpl_.connectedCallback();
     }
 
     disconnectedCallback(): void {

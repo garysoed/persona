@@ -29,6 +29,9 @@ interface Key {
 
 const REFRESH_PERIOD_MS = 10;
 
+/**
+ * Used to test UI implemented using Persona.
+ */
 export class PersonaTester {
   constructor(
       readonly vine: VineImpl,
@@ -257,6 +260,11 @@ export class PersonaTester {
   }
 }
 
+/**
+ * Test UI elements built by Persona.
+ *
+ * Instantiate the factory once. You will need to call build at the beginning of every test.
+ */
 export class PersonaTesterFactory {
   constructor(
       private readonly vineBuilder_: VineBuilder,
@@ -264,6 +272,7 @@ export class PersonaTesterFactory {
   ) { }
 
   build(rootCtors: CustomElementCtrlCtor[]): PersonaTester {
+    // tslint:disable-next-line: deprecation
     const origCreateElement = document.createElement;
     const createElement = (tag: string) => origCreateElement.call(document, tag);
     const customElementRegistry = new FakeCustomElementRegistry(createElement);

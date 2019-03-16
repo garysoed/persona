@@ -46,8 +46,8 @@ test('input.attribute', () => {
 
     should(
         `create observable that returns the default value if the element's attribute is missing`,
-        () => {
-          assert(input.getValue(shadowRoot)).to.emitWith(DEFAULT_VALUE);
+        async () => {
+          await assert(input.getValue(shadowRoot)).to.emitWith(DEFAULT_VALUE);
         });
   });
 });

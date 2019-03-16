@@ -1,4 +1,4 @@
-import { $pipe, $filter, $head, createImmutableList, ImmutableList } from 'gs-tools/export/collect';
+import { $filter, $head, $pipe, createImmutableList, ImmutableList } from 'gs-tools/export/collect';
 import { Observable } from 'rxjs';
 import { scan, switchMap } from 'rxjs/operators';
 import { Output } from '../component/output';

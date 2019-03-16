@@ -44,8 +44,11 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
       return;
     }
     const customElement = ctor[__customElementImplFactory](el, 'open');
+
+    // tslint:disable-next-line: no-floating-promises
     customElement.connectedCallback();
 
+    // tslint:disable-next-line: no-non-null-assertion
     const nodeList = el.shadowRoot!.querySelectorAll('*');
     for (let i = 0; i < nodeList.length; i++) {
       const node = nodeList.item(i);
@@ -56,7 +59,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     }
   }
 
-  whenDefined(tag: string): Promise<void> {
+  async whenDefined(tag: string): Promise<void> {
     return new Promise(resolve => {
       // Already defined.
       if (this.get(tag)) {

@@ -1,5 +1,8 @@
 import { fake, spy } from 'gs-testing/export/spy';
 
+/**
+ * @internal
+ */
 export class FakeMediaQuery extends EventTarget implements MediaQueryList {
   onchange: ((this: MediaQueryList, ev: MediaQueryListEvent) => any)|null = null;
   private readonly eventTarget: EventTarget = document.createElement('div');

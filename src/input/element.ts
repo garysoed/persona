@@ -29,7 +29,7 @@ export class ElementInput<E extends Element, P extends Properties<E>> implements
   }
 
   getValue(root: ShadowRoot): Observable<E> {
-    return elementObservable<E>(root, root => {
+    return elementObservable<E, ShadowRoot>(root, root => {
       const el = this.elementId ? root.getElementById(this.elementId) : root.host;
       const type = this.id.getType();
       if (!type.check(el)) {

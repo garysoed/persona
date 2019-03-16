@@ -52,7 +52,7 @@ test('main.CustomElementImpl', () => {
       assert(spyInit).to.haveBeenCalledWith(mockVine);
     });
 
-    should(`setup the onCreate handlers correctly`, () => {
+    should(`setup the onCreate handlers correctly`, async () => {
       const element = document.createElement('div');
       const templateString = 'templateString';
 
@@ -76,7 +76,7 @@ test('main.CustomElementImpl', () => {
           mockVine,
           'open',
       );
-      customElement.connectedCallback();
+      await customElement.connectedCallback();
 
       const testClassMatcher = match.anyObjectThat<TestClass>().beAnInstanceOf(TestClass);
       const shadowRootMatcher = match.anyThing<ShadowRoot>();
@@ -86,7 +86,7 @@ test('main.CustomElementImpl', () => {
   });
 
   test(`disconnectedCallback`, () => {
-    should(`dispose the component if has been connected`, () => {
+    should(`dispose the component if has been connected`, async () => {
       const element = document.createElement('div');
       const templateString = 'templateString';
       const customElement = new CustomElementImpl(
@@ -99,7 +99,7 @@ test('main.CustomElementImpl', () => {
       );
 
       const disposeSpy = spy(BaseDisposable.prototype, 'dispose');
-      customElement.connectedCallback();
+      await customElement.connectedCallback();
       customElement.disconnectedCallback();
       assert(disposeSpy).to.haveBeenCalledWith();
     });
