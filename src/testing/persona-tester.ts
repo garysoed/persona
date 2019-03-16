@@ -2,20 +2,22 @@ import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
 import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { fake, spy } from 'gs-testing/export/spy';
 import { createImmutableList, createImmutableSet, ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
+import { Errors } from 'gs-tools/src/error';
 import { Observable, throwError, timer } from 'rxjs';
 import { filter, map, mapTo, switchMap, take, tap } from 'rxjs/operators';
 import { Input } from '../component/input';
 import { AttributeInput } from '../input/attribute';
 import { HandlerInput } from '../input/handler';
+import { MediaQueryInput } from '../input/media-query';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { __ctrl, ElementWithCtrl } from '../main/custom-element-impl';
 import { CustomElementCtrlCtor } from '../main/persona';
 import { PersonaBuilder } from '../main/persona-builder';
 import { AttributeOutput } from '../output/attribute';
-import { CallerOutput } from '../output/caller';
 import { findCommentNode, SlotOutput } from '../output/slot';
 import { StyleOutput } from '../output/style';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
+import { FakeMediaQuery, mockMatchMedia } from './mock-match-media';
 
 interface Key {
   alt?: boolean;
@@ -32,6 +34,18 @@ export class PersonaTester {
       readonly vine: VineImpl,
       private readonly customElementRegistry_: FakeCustomElementRegistry,
   ) { }
+
+  callFunction<A extends any[]>(
+      element: ElementWithCtrl,
+      input: HandlerInput<A>,
+      args: A,
+  ): Observable<unknown> {
+    return getElement(element, shadowRoot => input.resolver(shadowRoot))
+        .pipe(
+            take(1),
+            tap(el => (el as any)[input.functionName](...args)),
+        );
+  }
 
   createElement(tag: string, parent: HTMLElement|null): HTMLElement {
     return this.customElementRegistry_.create(tag, parent);
@@ -160,6 +174,7 @@ export class PersonaTester {
             switchMap(targetEl => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(targetEl))),
             map(el => el.textContent || ''));
   }
+
   setAttribute<T>(
       element: ElementWithCtrl,
       input: AttributeInput<T>,
@@ -199,6 +214,15 @@ export class PersonaTester {
               targetEl.dispatchEvent(new CustomEvent('input'));
             }),
         );
+  }
+
+  setMedia(input: MediaQueryInput, value: boolean): void {
+    const mediaQuery = window.matchMedia(input.query);
+    if (!(mediaQuery instanceof FakeMediaQuery)) {
+      throw Errors.assert('mediaQuery').shouldBeAnInstanceOf(FakeMediaQuery).butWas(mediaQuery);
+    }
+
+    (mediaQuery as FakeMediaQuery).matches = value;
   }
 
   simulateKeypress(
@@ -255,6 +279,8 @@ export class PersonaTesterFactory {
             return createElement(tag);
           }
         });
+
+    mockMatchMedia(window);
 
     return tester;
   }
