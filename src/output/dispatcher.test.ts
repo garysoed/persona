@@ -1,12 +1,12 @@
 import { assert, should, test } from 'gs-testing/export/main';
 import { createSpy, createSpySubject } from 'gs-testing/export/spy';
 import { InstanceofType } from 'gs-types/export';
-import { dispatcher, DispatcherInput } from './dispatcher';
-import { element } from './element';
+import { element } from '../input/element';
+import { dispatcher, DispatcherOutput } from './dispatcher';
 
-test('input.dispatcher', () => {
+test('output.dispatcher', () => {
   const ELEMENT_ID = 'test';
-  let input: DispatcherInput<Event>;
+  let input: DispatcherOutput<Event>;
   let shadowRoot: ShadowRoot;
   let el: HTMLDivElement;
 
