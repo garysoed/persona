@@ -38,7 +38,9 @@ export function api<U extends UnconvertedSpec>(spec: U): ConvertedSpec<U> {
 
     const value = unconvertedSpec[key];
     if (!(value instanceof UnresolvedAttributeInput)
-        && !(value instanceof UnresolvedAttributeOutput)) {
+        && !(value instanceof UnresolvedAttributeOutput)
+        && !(value instanceof UnresolvedHandlerInput)
+        && !(value instanceof UnresolvedCallerOutput)) {
       continue;
     }
 
@@ -61,6 +63,11 @@ function convert(property: ConvertibleProperty): ConvertibleProperty {
         property.parser,
         property.deleteValue,
     );
+  } else if (property instanceof UnresolvedHandlerInput) {
+    return new UnresolvedCallerOutput(property.functionName);
+  } else if (property instanceof UnresolvedCallerOutput) {
+    return new UnresolvedHandlerInput(property.functionName);
+  } else {
+    throw new Error('unimplemented');
   }
-  throw new Error('unimplemented');
 }

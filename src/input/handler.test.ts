@@ -1,5 +1,5 @@
 import { assert, should, test } from 'gs-testing/export/main';
-import { InstanceofType, NumberType, TupleOfType } from 'gs-types/export';
+import { InstanceofType } from 'gs-types/export';
 import { of as observableOf } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { caller, CallerOutput } from '../output/caller';
@@ -17,7 +17,7 @@ test('input.handler', () => {
   beforeEach(() => {
     const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
       caller: caller<[number]>(FUNCTION_NAME),
-      handler: handler<[number]>(FUNCTION_NAME, TupleOfType([NumberType])),
+      handler: handler<[number]>(FUNCTION_NAME),
     });
 
     const root = document.createElement('div');

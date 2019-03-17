@@ -1,5 +1,5 @@
 import { InstanceStreamId, instanceStreamId } from 'grapevine/export/component';
-import { Type } from 'gs-types/export';
+import { AnyType, Type } from 'gs-types/export';
 import { Observable, Subject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Input } from '../component/input';
@@ -13,9 +13,8 @@ export class HandlerInput<T extends any[]> implements Input<T> {
   constructor(
       readonly functionName: string,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
-      type: Type<T>,
   ) {
-    this.id = instanceStreamId(`fn(${functionName})`, type);
+    this.id = instanceStreamId(`fn(${functionName})`, AnyType<T>());
   }
 
   getValue(root: ShadowRoot): Observable<T> {
@@ -43,20 +42,16 @@ export class HandlerInput<T extends any[]> implements Input<T> {
 export class UnresolvedHandlerInput<T extends any[]> implements
     UnresolvedElementProperty<Element, HandlerInput<T>> {
   constructor(
-      private readonly channelName: string,
-      private readonly type: Type<T>,
+      readonly functionName: string,
   ) { }
 
   resolve(resolver: (root: ShadowRoot) => Observable<Element>): HandlerInput<T> {
-    return new HandlerInput(this.channelName, resolver, this.type);
+    return new HandlerInput(this.functionName, resolver);
   }
 }
 
-export function handler<T extends any[]>(
-    functionName: string,
-    type: Type<T>,
-): UnresolvedHandlerInput<T> {
-  return new UnresolvedHandlerInput(functionName, type);
+export function handler<T extends any[]>(functionName: string): UnresolvedHandlerInput<T> {
+  return new UnresolvedHandlerInput(functionName);
 }
 
 function getSubject<T>(el: any, functionName: string): Subject<T>|null {

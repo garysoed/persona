@@ -1,12 +1,16 @@
 import { assert, should, test } from 'gs-testing/export/main';
+import { createSpySubject } from 'gs-testing/export/spy';
 import { integerConverter } from 'gs-tools/export/serializer';
 import { InstanceofType } from 'gs-types/export';
 import { human } from 'nabu/export/grammar';
 import { compose } from 'nabu/export/util';
-import { Subject } from 'rxjs';
+import { of as observableOf, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { attribute as attributeIn } from '../input/attribute';
 import { element } from '../input/element';
+import { handler } from '../input/handler';
 import { attribute as attributeOut } from '../output/attribute';
+import { caller } from '../output/caller';
 import { api } from './api';
 
 test('persona.main.api', () => {
@@ -14,6 +18,8 @@ test('persona.main.api', () => {
   const $ = {
     attrIn: attributeIn('attr-in', compose(integerConverter(), human()), 234),
     attrOut: attributeOut('attr-out', compose(integerConverter(), human()), 345),
+    caller: caller('caller'),
+    handler: handler('handler'),
   };
 
   let shadowRoot: ShadowRoot;
@@ -52,5 +58,29 @@ test('persona.main.api', () => {
 
     el.removeAttribute('attr-out');
     await assert(input.getValue(shadowRoot)).to.emitWith(345);
+  });
+
+  should(`handle handlers correctly`, async () => {
+    const output = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.handler;
+
+    const spySubject = createSpySubject();
+    (el as any)['handler'] = (v: number) => spySubject.next(v);
+
+    const value = 123;
+    output.output(shadowRoot, observableOf([value] as [number])).subscribe();
+
+    await assert(spySubject).to.emitWith(value);
+  });
+
+  should(`handle callers correctly`, async () => {
+    const input = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.caller;
+    const output = element(ELEMENT_ID, InstanceofType(HTMLDivElement), $)._.caller;
+
+    const value = 123;
+
+    const subject = input.getValue(shadowRoot).pipe(map(([v]) => v));
+
+    output.output(shadowRoot, observableOf([value] as [number])).subscribe();
+    await assert(subject).to.emitWith(value);
   });
 });

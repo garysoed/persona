@@ -27,7 +27,7 @@ export class CallerOutput<T extends any[]> implements Output<T> {
 
 export class UnresolvedCallerOutput<T extends any[]> implements
     UnresolvedElementProperty<Element, CallerOutput<T>> {
-  constructor(private readonly functionName: string) { }
+  constructor(readonly functionName: string) { }
 
   resolve(resolver: (root: ShadowRoot) => Observable<Element>): CallerOutput<T> {
     return new CallerOutput(resolver, this.functionName);
