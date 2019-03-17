@@ -1,12 +1,13 @@
 import { assert, should, test } from 'gs-testing/export/main';
 import { createSpy, createSpySubject } from 'gs-testing/export/spy';
 import { InstanceofType } from 'gs-types/export';
+import { fromEvent, Subject } from 'rxjs';
 import { element } from '../input/element';
 import { dispatcher, DispatcherOutput } from './dispatcher';
 
 test('output.dispatcher', () => {
   const ELEMENT_ID = 'test';
-  let input: DispatcherOutput<Event>;
+  let output: DispatcherOutput<Event>;
   let shadowRoot: ShadowRoot;
   let el: HTMLDivElement;
 
@@ -22,20 +23,22 @@ test('output.dispatcher', () => {
     el.id = ELEMENT_ID;
     shadowRoot.appendChild(el);
 
-    input = $._.dispatch;
+    output = $._.dispatch;
   });
 
-  test('getValue', () => {
-    should(`create observable that emits the dispatcher`, () => {
+  test('output', () => {
+    should(`create observable that emits the dispatcher`, async () => {
       const eventName = 'eventName';
-      const spy = createSpy<void, [Event]>('EventHandler');
-      el.addEventListener(eventName, spy);
 
-      const spySubject = createSpySubject(input.getValue(shadowRoot));
+      const calledSubject = createSpySubject();
+      fromEvent(el, 'eventName').subscribe(calledSubject);
+
+      const eventSubject = new Subject<Event>();
+      output.output(shadowRoot, eventSubject).subscribe();
       const event = new CustomEvent(eventName);
-      spySubject.getValue()(event);
+      eventSubject.next(event);
 
-      assert(spy).to.haveBeenCalledWith(event);
+      await assert(calledSubject).to.emitWith(event);
     });
   });
 });
