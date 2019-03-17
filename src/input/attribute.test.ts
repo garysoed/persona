@@ -1,6 +1,6 @@
 import { assert, should, test } from 'gs-testing/export/main';
 import { integerConverter } from 'gs-tools/export/serializer';
-import { InstanceofType, NumberType } from 'gs-types/export';
+import { InstanceofType } from 'gs-types/export';
 import { human } from 'nabu/export/grammar';
 import { compose } from 'nabu/export/util';
 import { attribute, AttributeInput } from './attribute';
@@ -19,7 +19,6 @@ test('input.attribute', () => {
       attr: attribute(
           ATTR_NAME,
           compose(integerConverter(), human()),
-          NumberType,
           DEFAULT_VALUE,
       ),
     });

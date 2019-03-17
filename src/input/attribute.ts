@@ -1,6 +1,6 @@
 import { InstanceStreamId, instanceStreamId } from 'grapevine/export/component';
 import { Errors } from 'gs-tools/export/error';
-import { Type } from 'gs-types/export';
+import { AnyType, InstanceofType, Type } from 'gs-types/export';
 import { Converter } from 'nabu/export/main';
 import { Observable } from 'rxjs';
 import { Input } from '../component/input';
@@ -13,11 +13,10 @@ export class AttributeInput<T> implements Input<T> {
   constructor(
       readonly attrName: string,
       readonly parser: Converter<T, string>,
-      private readonly type: Type<T>,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
       private readonly defaultValue?: T,
   ) {
-    this.id = instanceStreamId(`attr[${attrName}]`, type);
+    this.id = instanceStreamId(`attr[${attrName}]`, AnyType());
   }
 
   getValue(root: ShadowRoot): Observable<T> {
@@ -34,9 +33,7 @@ export class AttributeInput<T> implements Input<T> {
       if (this.defaultValue !== undefined) {
         return this.defaultValue;
       } else {
-        throw Errors.assert(`Value of ${this.attrName}`)
-            .shouldBeA(this.type)
-            .butWas(unparsed);
+        throw Errors.assert(`Value of ${this.attrName}`).shouldBe('parsable').butWas(unparsed);
       }
     }
 
@@ -44,19 +41,18 @@ export class AttributeInput<T> implements Input<T> {
   }
 }
 
-class UnresolvedAttributeInput<T> implements UnresolvedElementProperty<Element, AttributeInput<T>> {
+export class UnresolvedAttributeInput<T> implements
+    UnresolvedElementProperty<Element, AttributeInput<T>> {
   constructor(
-      private readonly attrName: string,
-      private readonly parser: Converter<T, string>,
-      private readonly type: Type<T>,
-      private readonly defaultValue?: T,
+      readonly attrName: string,
+      readonly parser: Converter<T, string>,
+      readonly defaultValue: T|undefined,
   ) { }
 
   resolve(resolver: (root: ShadowRoot) => Observable<Element>): AttributeInput<T> {
     return new AttributeInput(
         this.attrName,
         this.parser,
-        this.type,
         resolver,
         this.defaultValue,
     );
@@ -66,8 +62,7 @@ class UnresolvedAttributeInput<T> implements UnresolvedElementProperty<Element, 
 export function attribute<T>(
     attrName: string,
     parser: Converter<T, string>,
-    type: Type<T>,
     defaultValue?: T,
 ): UnresolvedAttributeInput<T> {
-  return new UnresolvedAttributeInput(attrName, parser, type, defaultValue);
+  return new UnresolvedAttributeInput(attrName, parser, defaultValue);
 }

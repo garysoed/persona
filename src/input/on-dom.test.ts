@@ -7,13 +7,13 @@ import { onDom, OnDomInput } from './on-dom';
 test('input.onDom', () => {
   const ELEMENT_ID = 'test';
   const EVENT_NAME = 'eventName';
-  let input: OnDomInput;
+  let input: OnDomInput<CustomEvent>;
   let shadowRoot: ShadowRoot;
   let el: HTMLDivElement;
 
   beforeEach(() => {
     const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
-      onDom: onDom(EVENT_NAME),
+      onDom: onDom<CustomEvent>(EVENT_NAME),
     });
 
     const root = document.createElement('div');

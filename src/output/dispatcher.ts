@@ -24,7 +24,7 @@ export class DispatcherOutput<E extends Event> implements Output<E> {
   }
 }
 
-class UnresolvedDispatcherOutput<E extends Event> implements
+export class UnresolvedDispatcherOutput<E extends Event> implements
     UnresolvedElementProperty<Element, DispatcherOutput<E>> {
   resolve(resolver: (root: ShadowRoot) => Observable<Element>): DispatcherOutput<E> {
     return new DispatcherOutput(resolver);

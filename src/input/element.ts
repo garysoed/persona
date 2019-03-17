@@ -22,7 +22,7 @@ export class ElementInput<E extends Element, P extends Properties<E>> implements
   constructor(
       private readonly elementId: string|null,
       properties: P,
-      type: Type<E>,
+      private readonly type: Type<E>,
   ) {
     this.id = instanceStreamId(`element#${elementId}`, type);
     this._ = this.resolve(properties);
@@ -31,9 +31,8 @@ export class ElementInput<E extends Element, P extends Properties<E>> implements
   getValue(root: ShadowRoot): Observable<E> {
     return elementObservable<E, ShadowRoot>(root, root => {
       const el = this.elementId ? root.getElementById(this.elementId) : root.host;
-      const type = this.id.getType();
-      if (!type.check(el)) {
-        throw Errors.assert(`Element of [${this.elementId}]`).shouldBeA(type).butWas(el);
+      if (!this.type.check(el)) {
+        throw Errors.assert(`Element of [${this.elementId}]`).shouldBeA(this.type).butWas(el);
       }
 
       return el;

@@ -40,7 +40,7 @@ export class HandlerInput<T extends any[]> implements Input<T> {
   }
 }
 
-class UnresolvedHandlerInput<T extends any[]> implements
+export class UnresolvedHandlerInput<T extends any[]> implements
     UnresolvedElementProperty<Element, HandlerInput<T>> {
   constructor(
       private readonly channelName: string,

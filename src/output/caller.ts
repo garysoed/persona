@@ -25,7 +25,7 @@ export class CallerOutput<T extends any[]> implements Output<T> {
   }
 }
 
-class UnresolvedCallerOutput<T extends any[]> implements
+export class UnresolvedCallerOutput<T extends any[]> implements
     UnresolvedElementProperty<Element, CallerOutput<T>> {
   constructor(private readonly functionName: string) { }
 

@@ -18,7 +18,7 @@ export interface MatchOptions {
   shift?: boolean;
 }
 
-export class OnKeydownInput extends OnDomInput {
+export class OnKeydownInput extends OnDomInput<KeyboardEvent> {
   constructor(
       private readonly key: string,
       private readonly matchOptions: MatchOptions,
@@ -28,14 +28,10 @@ export class OnKeydownInput extends OnDomInput {
     super('keydown', options, resolver);
   }
 
-  getValue(root: ShadowRoot): Observable<Event> {
+  getValue(root: ShadowRoot): Observable<KeyboardEvent> {
     return super.getValue(root)
         .pipe(
             filter(event => {
-              if (!(event instanceof KeyboardEvent)) {
-                return false;
-              }
-
               if (event.key !== this.key) {
                 return false;
               }

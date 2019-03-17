@@ -5,37 +5,38 @@ import { switchMap } from 'rxjs/operators';
 import { Input } from '../component/input';
 import { UnresolvedElementProperty } from '../component/unresolved-element-property';
 
-export class OnDomInput implements Input<Event> {
-  readonly id: InstanceStreamId<Event>;
+export class OnDomInput<E extends Event> implements Input<E> {
+  readonly id: InstanceStreamId<E>;
 
   constructor(
       private readonly eventName: string,
       private readonly options: AddEventListenerOptions,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
   ) {
-    this.id = instanceStreamId(`onDom(${eventName})`, InstanceofType(Event));
+    this.id = instanceStreamId(`onDom(${eventName})`, InstanceofType<E>(Event));
   }
 
-  getValue(root: ShadowRoot): Observable<Event> {
+  getValue(root: ShadowRoot): Observable<E> {
     return this.resolver(root)
-        .pipe(switchMap(el => fromEvent(el, this.eventName, this.options)));
+        .pipe(switchMap(el => fromEvent<E>(el, this.eventName, this.options)));
   }
 }
 
-class UnresolvedOnDomInput implements UnresolvedElementProperty<Element, OnDomInput> {
+export class UnresolvedOnDomInput<E extends Event>
+    implements UnresolvedElementProperty<Element, OnDomInput<E>> {
   constructor(
       private readonly eventName: string,
       private readonly options: AddEventListenerOptions,
   ) { }
 
-  resolve(resolver: (root: ShadowRoot) => Observable<Element>): OnDomInput {
+  resolve(resolver: (root: ShadowRoot) => Observable<Element>): OnDomInput<E> {
     return new OnDomInput(this.eventName, this.options, resolver);
   }
 }
 
-export function onDom(
+export function onDom<E extends Event>(
     eventName: string,
     options: AddEventListenerOptions = {},
-): UnresolvedOnDomInput {
+): UnresolvedOnDomInput<E> {
   return new UnresolvedOnDomInput(eventName, options);
 }

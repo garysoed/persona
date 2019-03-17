@@ -1,5 +1,5 @@
 import { assert, should, test } from 'gs-testing/export/main';
-import { createSpy, createSpySubject } from 'gs-testing/export/spy';
+import { createSpySubject } from 'gs-testing/export/spy';
 import { InstanceofType } from 'gs-types/export';
 import { fromEvent, Subject } from 'rxjs';
 import { element } from '../input/element';

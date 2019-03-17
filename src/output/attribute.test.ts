@@ -19,7 +19,7 @@ test('output.attribute', () => {
       attr: attribute(
           ATTR_NAME,
           compose(integerConverter(), human()),
-          value => value % 2 === 0,
+          234,
       ),
     });
 
