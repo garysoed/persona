@@ -19,11 +19,6 @@ export class DispatcherOutput<E extends Event> implements Output<E> {
     this.caller = new CallerOutput(resolver, 'dispatchEvent');
   }
 
-  getValue(root: ShadowRoot): Observable<DispatchFn<E>> {
-    return this.resolver(root)
-        .pipe(map(el => (event: E) => el.dispatchEvent(event)));
-  }
-
   output(root: ShadowRoot, valueObs: Observable<E>): Observable<unknown> {
     return this.caller.output(root, valueObs.pipe(map(event => [event] as [E])));
   }
