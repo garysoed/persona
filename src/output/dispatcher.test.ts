@@ -6,6 +6,7 @@ import { element } from '../input/element';
 import { dispatcher, DispatcherOutput } from './dispatcher';
 
 test('output.dispatcher', () => {
+  const EVENT_NAME = 'eventName';
   const ELEMENT_ID = 'test';
   let output: DispatcherOutput<Event>;
   let shadowRoot: ShadowRoot;
@@ -13,7 +14,7 @@ test('output.dispatcher', () => {
 
   beforeEach(() => {
     const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
-      dispatch: dispatcher(),
+      dispatch: dispatcher('eventName'),
     });
 
     const root = document.createElement('div');
@@ -28,14 +29,12 @@ test('output.dispatcher', () => {
 
   test('output', () => {
     should(`create observable that emits the dispatcher`, async () => {
-      const eventName = 'eventName';
-
       const calledSubject = createSpySubject();
       fromEvent(el, 'eventName').subscribe(calledSubject);
 
       const eventSubject = new Subject<Event>();
       output.output(shadowRoot, eventSubject).subscribe();
-      const event = new CustomEvent(eventName);
+      const event = new CustomEvent(EVENT_NAME);
       eventSubject.next(event);
 
       await assert(calledSubject).to.emitWith(event);

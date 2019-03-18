@@ -25,7 +25,7 @@ export class OnDomInput<E extends Event> implements Input<E> {
 export class UnresolvedOnDomInput<E extends Event>
     implements UnresolvedElementProperty<Element, OnDomInput<E>> {
   constructor(
-      private readonly eventName: string,
+      readonly eventName: string,
       private readonly options: AddEventListenerOptions,
   ) { }
 

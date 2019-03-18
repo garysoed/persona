@@ -4,13 +4,15 @@ import { integerConverter } from 'gs-tools/export/serializer';
 import { InstanceofType } from 'gs-types/export';
 import { human } from 'nabu/export/grammar';
 import { compose } from 'nabu/export/util';
-import { of as observableOf, Subject } from 'rxjs';
+import { fromEvent, of as observableOf, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { attribute as attributeIn } from '../input/attribute';
 import { element } from '../input/element';
 import { handler } from '../input/handler';
+import { onDom } from '../input/on-dom';
 import { attribute as attributeOut } from '../output/attribute';
 import { caller } from '../output/caller';
+import { dispatcher } from '../output/dispatcher';
 import { api } from './api';
 
 test('persona.main.api', () => {
@@ -19,14 +21,15 @@ test('persona.main.api', () => {
     attrIn: attributeIn('attr-in', compose(integerConverter(), human()), 234),
     attrOut: attributeOut('attr-out', compose(integerConverter(), human()), 345),
     caller: caller('caller'),
+    dispatcher: dispatcher('dispatch'),
     handler: handler('handler'),
+    onDom: onDom('ondom'),
   };
 
   let shadowRoot: ShadowRoot;
   let el: HTMLDivElement;
 
   beforeEach(() => {
-
     const root = document.createElement('div');
     shadowRoot = root.attachShadow({mode: 'open'});
 
@@ -82,5 +85,30 @@ test('persona.main.api', () => {
 
     output.output(shadowRoot, observableOf([value] as [number])).subscribe();
     await assert(subject).to.emitWith(value);
+  });
+
+  should(`handle on dom correctly`, async () => {
+    const output = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.onDom;
+
+    const calledSubject = createSpySubject();
+    fromEvent(el, 'ondom').subscribe(calledSubject);
+
+    const eventSubject = new Subject<Event>();
+    output.output(shadowRoot, eventSubject).subscribe();
+    const event = new CustomEvent('ondom');
+    eventSubject.next(event);
+
+    await assert(calledSubject).to.emitWith(event);
+  });
+
+  should(`handle dispatchers correctly`, async () => {
+    const input = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.dispatcher;
+
+    const event = new CustomEvent('dispatch');
+    const valueSpySubject = createSpySubject();
+    input.getValue(shadowRoot).subscribe(valueSpySubject);
+    el.dispatchEvent(event);
+
+    await assert(valueSpySubject).to.emitWith(event);
   });
 });

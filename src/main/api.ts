@@ -1,3 +1,4 @@
+import { assertUnreachable } from 'gs-tools/export/typescript';
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHandlerInput } from '../input/handler';
 import { UnresolvedOnDomInput } from '../input/on-dom';
@@ -36,15 +37,7 @@ export function api<U extends UnconvertedSpec>(spec: U): ConvertedSpec<U> {
       continue;
     }
 
-    const value = unconvertedSpec[key];
-    if (!(value instanceof UnresolvedAttributeInput)
-        && !(value instanceof UnresolvedAttributeOutput)
-        && !(value instanceof UnresolvedHandlerInput)
-        && !(value instanceof UnresolvedCallerOutput)) {
-      continue;
-    }
-
-    convertedSpecs[key] = convert(value);
+    convertedSpecs[key] = convert(unconvertedSpec[key]);
   }
 
   return convertedSpecs as ConvertedSpec<U>;
@@ -67,7 +60,11 @@ function convert(property: ConvertibleProperty): ConvertibleProperty {
     return new UnresolvedCallerOutput(property.functionName);
   } else if (property instanceof UnresolvedCallerOutput) {
     return new UnresolvedHandlerInput(property.functionName);
+  } else if (property instanceof UnresolvedOnDomInput) {
+    return new UnresolvedDispatcherOutput(property.eventName);
+  } else if (property instanceof UnresolvedDispatcherOutput) {
+    return new UnresolvedOnDomInput(property.eventName, {});
   } else {
-    throw new Error('unimplemented');
+    throw assertUnreachable(property);
   }
 }
