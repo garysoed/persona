@@ -38,10 +38,9 @@ export class HasAttributeInput implements Input<boolean> {
   }
 }
 
-class UnresolvedHasAttributeInput implements UnresolvedElementProperty<Element, HasAttributeInput> {
-  constructor(
-      private readonly attrName: string,
-  ) { }
+export class UnresolvedHasAttributeInput implements
+    UnresolvedElementProperty<Element, HasAttributeInput> {
+  constructor(readonly attrName: string) { }
 
   resolve(resolver: (root: ShadowRoot) => Observable<Element>): HasAttributeInput {
     return new HasAttributeInput(this.attrName, resolver);

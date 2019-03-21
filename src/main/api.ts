@@ -1,18 +1,22 @@
 import { assertUnreachable } from 'gs-tools/export/typescript';
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHandlerInput } from '../input/handler';
+import { UnresolvedHasAttributeInput } from '../input/has-attribute';
 import { UnresolvedOnDomInput } from '../input/on-dom';
 import { UnresolvedAttributeOutput } from '../output/attribute';
 import { UnresolvedCallerOutput } from '../output/caller';
 import { UnresolvedDispatcherOutput } from '../output/dispatcher';
+import { UnresolvedSetAttributeOutput } from '../output/set-attribute';
 
 type ConvertibleProperty =
     UnresolvedAttributeInput<any>|
     UnresolvedHandlerInput<any>|
     UnresolvedOnDomInput<any>|
+    UnresolvedHasAttributeInput|
     UnresolvedAttributeOutput<any>|
     UnresolvedCallerOutput<any>|
-    UnresolvedDispatcherOutput<any>;
+    UnresolvedDispatcherOutput<any>|
+    UnresolvedSetAttributeOutput;
 
 interface UnconvertedSpec {
   readonly [key: string]: ConvertibleProperty;
@@ -22,9 +26,11 @@ type ConvertedSpec<S> = S extends UnconvertedSpec ? {[K in keyof S]: ConvertedSp
     S extends UnresolvedAttributeInput<infer T> ? UnresolvedAttributeOutput<T> :
     S extends UnresolvedHandlerInput<infer T> ? UnresolvedCallerOutput<T> :
     S extends UnresolvedOnDomInput<infer T> ? UnresolvedDispatcherOutput<T> :
+    S extends UnresolvedHasAttributeInput ? UnresolvedSetAttributeOutput :
     S extends UnresolvedAttributeOutput<infer T> ? UnresolvedAttributeInput<T> :
     S extends UnresolvedCallerOutput<infer T> ? UnresolvedHandlerInput<T> :
-    S extends UnresolvedDispatcherOutput<infer T> ? UnresolvedOnDomInput<T> : never;
+    S extends UnresolvedDispatcherOutput<infer T> ? UnresolvedOnDomInput<T> :
+    S extends UnresolvedSetAttributeOutput ? UnresolvedHasAttributeInput : never;
 
 /**
  * Takes a spec, and converts it to an API.
@@ -58,12 +64,16 @@ function convert(property: ConvertibleProperty): ConvertibleProperty {
     );
   } else if (property instanceof UnresolvedHandlerInput) {
     return new UnresolvedCallerOutput(property.functionName);
+  } else if (property instanceof UnresolvedHasAttributeInput) {
+    return new UnresolvedSetAttributeOutput(property.attrName);
   } else if (property instanceof UnresolvedCallerOutput) {
     return new UnresolvedHandlerInput(property.functionName);
   } else if (property instanceof UnresolvedOnDomInput) {
     return new UnresolvedDispatcherOutput(property.eventName);
   } else if (property instanceof UnresolvedDispatcherOutput) {
     return new UnresolvedOnDomInput(property.eventName, {});
+  } else if (property instanceof UnresolvedSetAttributeOutput) {
+    return new UnresolvedHasAttributeInput(property.attrName);
   } else {
     throw assertUnreachable(property);
   }

@@ -9,10 +9,12 @@ import { map } from 'rxjs/operators';
 import { attribute as attributeIn } from '../input/attribute';
 import { element } from '../input/element';
 import { handler } from '../input/handler';
+import { hasAttribute } from '../input/has-attribute';
 import { onDom } from '../input/on-dom';
 import { attribute as attributeOut } from '../output/attribute';
 import { caller } from '../output/caller';
 import { dispatcher } from '../output/dispatcher';
+import { setAttribute } from '../output/set-attribute';
 import { api } from './api';
 
 test('persona.main.api', () => {
@@ -23,7 +25,9 @@ test('persona.main.api', () => {
     caller: caller('caller'),
     dispatcher: dispatcher('dispatch'),
     handler: handler('handler'),
+    hasAttr: hasAttribute('has-attr'),
     onDom: onDom('ondom'),
+    setAttr: setAttribute('set-attr'),
   };
 
   let shadowRoot: ShadowRoot;
@@ -75,6 +79,18 @@ test('persona.main.api', () => {
     await assert(spySubject).to.emitWith(value);
   });
 
+  should(`handle hasAttribute correctly`, () => {
+    const output = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.hasAttr;
+    const valueSubject = new Subject<boolean>();
+
+    output.output(shadowRoot, valueSubject).subscribe();
+    valueSubject.next(true);
+    assert(el.hasAttribute('has-attr')).to.beTrue();
+
+    valueSubject.next(false);
+    assert(el.hasAttribute('has-attr')).to.beFalse();
+  });
+
   should(`handle callers correctly`, async () => {
     const input = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.caller;
     const output = element(ELEMENT_ID, InstanceofType(HTMLDivElement), $)._.caller;
@@ -110,5 +126,15 @@ test('persona.main.api', () => {
     el.dispatchEvent(event);
 
     await assert(valueSpySubject).to.emitWith(event);
+  });
+
+  should(`handle setAttribute correctly`, async () => {
+    const input = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.setAttr;
+
+    el.setAttribute('set-attr', '');
+    await assert(input.getValue(shadowRoot)).to.emitWith(true);
+
+    el.removeAttribute('set-attr');
+    await assert(input.getValue(shadowRoot)).to.emitWith(false);
   });
 });
