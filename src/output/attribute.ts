@@ -8,7 +8,7 @@ export class AttributeOutput<T> implements Output<T> {
   constructor(
       readonly attrName: string,
       readonly parser: Converter<T, string>,
-      private readonly deleteValue: T|undefined,
+      readonly defaultValue: T|undefined,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
   ) { }
 
@@ -22,7 +22,7 @@ export class AttributeOutput<T> implements Output<T> {
                 el.setAttribute(this.attrName, result.result);
               }
 
-              if (value === this.deleteValue) {
+              if (value === this.defaultValue) {
                 el.removeAttribute(this.attrName);
               }
             }),

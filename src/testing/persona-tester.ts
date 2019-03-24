@@ -3,17 +3,20 @@ import { VineBuilder, VineImpl } from 'grapevine/export/main';
 import { fake, spy } from 'gs-testing/export/spy';
 import { createImmutableList, createImmutableSet, ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
 import { Errors } from 'gs-tools/src/error';
+import { stringify, Verbosity } from 'moirai/export';
 import { Observable, throwError, timer } from 'rxjs';
 import { filter, map, mapTo, switchMap, take, tap } from 'rxjs/operators';
 import { Input } from '../component/input';
 import { AttributeInput } from '../input/attribute';
 import { HandlerInput } from '../input/handler';
+import { HasAttributeInput } from '../input/has-attribute';
 import { MediaQueryInput } from '../input/media-query';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { __ctrl, ElementWithCtrl } from '../main/custom-element-impl';
 import { CustomElementCtrlCtor } from '../main/persona';
 import { PersonaBuilder } from '../main/persona-builder';
 import { AttributeOutput } from '../output/attribute';
+import { SetAttributeOutput } from '../output/set-attribute';
 import { findCommentNode, SlotOutput } from '../output/slot';
 import { StyleOutput } from '../output/style';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
@@ -56,7 +59,7 @@ export class PersonaTester {
 
   dispatchEvent(
       element: ElementWithCtrl,
-      input: Input<HTMLElement>,
+      input: Input<Element>,
       event: Event,
   ): Observable<unknown> {
     return getElement(element, shadowRoot => input.getValue(shadowRoot))
@@ -77,7 +80,14 @@ export class PersonaTester {
               const strValue = targetEl.getAttribute(output.attrName);
               const value = output.parser.convertBackward(strValue || '');
               if (!value.success) {
-                throw new Error(`Value ${strValue} is the wrong type for ${output}`);
+                if (output.defaultValue !== undefined) {
+                  return output.defaultValue;
+                }
+
+                throw new Error(
+                    `Value ${stringify(strValue, Verbosity.DEBUG)} is the wrong type for ` +
+                    `${stringify(output, Verbosity.DEBUG)}`,
+                );
               }
 
               return value.result;
@@ -201,6 +211,24 @@ export class PersonaTester {
               return setResult.success && setResult.result === result.result;
             }),
             take(1),
+        );
+  }
+
+  setHasAttribute(
+      element: ElementWithCtrl,
+      output: SetAttributeOutput|HasAttributeInput,
+      value: boolean,
+  ): Observable<unknown> {
+    return getElement(element, shadowRoot => output.resolver(shadowRoot))
+        .pipe(
+            take(1),
+            tap(targetEl => {
+              if (value) {
+                targetEl.setAttribute(output.attrName, '');
+              } else {
+                targetEl.removeAttribute(output.attrName);
+              }
+            }),
         );
   }
 

@@ -13,8 +13,8 @@ export class AttributeInput<T> implements Input<T> {
   constructor(
       readonly attrName: string,
       readonly parser: Converter<T, string>,
+      readonly defaultValue: T|undefined,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
-      private readonly defaultValue?: T,
   ) {
     this.id = instanceStreamId(`attr[${attrName}]`, AnyType());
   }
@@ -53,8 +53,8 @@ export class UnresolvedAttributeInput<T> implements
     return new AttributeInput(
         this.attrName,
         this.parser,
-        resolver,
         this.defaultValue,
+        resolver,
     );
   }
 }

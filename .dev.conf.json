@@ -2,7 +2,7 @@
   "commands": [
     {
       "command": "link",
-      "actions": ["npm link gs-tools gs-testing gs-types grapevine dev nabu"]
+      "actions": ["npm link gs-tools gs-testing gs-types grapevine dev moirai nabu"]
     }
   ]
 }
