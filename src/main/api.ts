@@ -2,9 +2,11 @@ import { assertUnreachable } from 'gs-tools/export/typescript';
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHandlerInput } from '../input/handler';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';
+import { UnresolvedHasClassInput } from '../input/has-class';
 import { UnresolvedOnDomInput } from '../input/on-dom';
 import { UnresolvedAttributeOutput } from '../output/attribute';
 import { UnresolvedCallerOutput } from '../output/caller';
+import { UnresolvedClassToggleOutput } from '../output/class-toggle';
 import { UnresolvedDispatcherOutput } from '../output/dispatcher';
 import { UnresolvedSetAttributeOutput } from '../output/set-attribute';
 
@@ -13,10 +15,12 @@ type ConvertibleProperty =
     UnresolvedHandlerInput<any>|
     UnresolvedOnDomInput<any>|
     UnresolvedHasAttributeInput|
+    UnresolvedHasClassInput|
     UnresolvedAttributeOutput<any>|
     UnresolvedCallerOutput<any>|
     UnresolvedDispatcherOutput<any>|
-    UnresolvedSetAttributeOutput;
+    UnresolvedSetAttributeOutput|
+    UnresolvedClassToggleOutput;
 
 interface UnconvertedSpec {
   readonly [key: string]: ConvertibleProperty;
@@ -27,10 +31,12 @@ type ConvertedSpec<S> = S extends UnconvertedSpec ? {[K in keyof S]: ConvertedSp
     S extends UnresolvedHandlerInput<infer T> ? UnresolvedCallerOutput<T> :
     S extends UnresolvedOnDomInput<infer T> ? UnresolvedDispatcherOutput<T> :
     S extends UnresolvedHasAttributeInput ? UnresolvedSetAttributeOutput :
+    S extends UnresolvedHasClassInput ? UnresolvedClassToggleOutput :
     S extends UnresolvedAttributeOutput<infer T> ? UnresolvedAttributeInput<T> :
     S extends UnresolvedCallerOutput<infer T> ? UnresolvedHandlerInput<T> :
     S extends UnresolvedDispatcherOutput<infer T> ? UnresolvedOnDomInput<T> :
-    S extends UnresolvedSetAttributeOutput ? UnresolvedHasAttributeInput : never;
+    S extends UnresolvedSetAttributeOutput ? UnresolvedHasAttributeInput :
+    S extends UnresolvedClassToggleOutput ? UnresolvedHasClassInput : never;
 
 /**
  * Takes a spec, and converts it to an API.
@@ -66,6 +72,8 @@ function convert(property: ConvertibleProperty): ConvertibleProperty {
     return new UnresolvedCallerOutput(property.functionName);
   } else if (property instanceof UnresolvedHasAttributeInput) {
     return new UnresolvedSetAttributeOutput(property.attrName);
+  } else if (property instanceof UnresolvedHasClassInput) {
+    return new UnresolvedClassToggleOutput(property.className);
   } else if (property instanceof UnresolvedCallerOutput) {
     return new UnresolvedHandlerInput(property.functionName);
   } else if (property instanceof UnresolvedOnDomInput) {
@@ -74,6 +82,8 @@ function convert(property: ConvertibleProperty): ConvertibleProperty {
     return new UnresolvedOnDomInput(property.eventName, {});
   } else if (property instanceof UnresolvedSetAttributeOutput) {
     return new UnresolvedHasAttributeInput(property.attrName);
+  } else if (property instanceof UnresolvedClassToggleOutput) {
+    return new UnresolvedHasClassInput(property.className);
   } else {
     throw assertUnreachable(property);
   }

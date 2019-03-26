@@ -39,7 +39,6 @@ test('input.attribute', () => {
       await assert(input.getValue(shadowRoot)).to.emitWith(456);
 
       el.setAttribute(ATTR_NAME, '789');
-
       await assert(input.getValue(shadowRoot)).to.emitWith(789);
     });
 

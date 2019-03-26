@@ -7,15 +7,17 @@ import { stringify, Verbosity } from 'moirai/export';
 import { Observable, throwError, timer } from 'rxjs';
 import { filter, map, mapTo, switchMap, take, tap } from 'rxjs/operators';
 import { Input } from '../component/input';
-import { AttributeInput } from '../input/attribute';
+import { AttributeInput, UnresolvedAttributeInput } from '../input/attribute';
 import { HandlerInput } from '../input/handler';
 import { HasAttributeInput } from '../input/has-attribute';
+import { HasClassInput } from '../input/has-class';
 import { MediaQueryInput } from '../input/media-query';
 import { CustomElementCtrl } from '../main/custom-element-ctrl';
 import { __ctrl, ElementWithCtrl } from '../main/custom-element-impl';
 import { CustomElementCtrlCtor } from '../main/persona';
 import { PersonaBuilder } from '../main/persona-builder';
 import { AttributeOutput } from '../output/attribute';
+import { ClassToggleOutput } from '../output/class-toggle';
 import { SetAttributeOutput } from '../output/set-attribute';
 import { findCommentNode, SlotOutput } from '../output/slot';
 import { StyleOutput } from '../output/style';
@@ -123,6 +125,17 @@ export class PersonaTester {
       input: Input<E>,
   ): Observable<E> {
     return getElement(element, shadowRoot => input.getValue(shadowRoot));
+  }
+
+  getHasClass(
+      element: ElementWithCtrl,
+      ioutput: ClassToggleOutput|HasClassInput,
+  ): Observable<boolean> {
+    return getElement(element, shadowRoot => ioutput.resolver(shadowRoot))
+        .pipe(
+            switchMap(el => timer(0, REFRESH_PERIOD_MS)
+                .pipe(map(() => el.classList.contains(ioutput.className)))),
+        );
   }
 
   getNodesAfter(
