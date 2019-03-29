@@ -1,5 +1,5 @@
-import { InstanceStreamId } from 'grapevine/export/component';
-import { Observable } from 'gs-tools/node_modules/rxjs';
+import { InstanceStreamId } from '@grapevine/component';
+import { Observable } from 'rxjs';
 
 export interface Input<T> {
   readonly id: InstanceStreamId<T>;

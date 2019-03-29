@@ -1,5 +1,5 @@
-import { InstanceStreamId, instanceStreamId } from 'grapevine/export/component';
-import { Errors } from 'gs-tools/export/error';
+import { InstanceStreamId, instanceStreamId } from '@grapevine/component';
+import { Errors } from '@gs-tools/error';
 import { AnyType, InstanceofType, Type } from 'gs-types/export';
 import { Converter } from 'nabu/export/main';
 import { Observable } from 'rxjs';

@@ -1,6 +1,6 @@
-import { assert, should, test } from 'gs-testing/export/main';
-import { createImmutableList, ImmutableList } from 'gs-tools/export/collect';
-import { integerConverter } from 'gs-tools/export/serializer';
+import { assert, should, test } from '@gs-testing/main';
+import { createImmutableList, ImmutableList } from '@gs-tools/collect';
+import { integerConverter } from '@gs-tools/serializer';
 import { human } from 'nabu/export/grammar';
 import { compose, identity } from 'nabu/export/util';
 import { __renderId } from './render-id';

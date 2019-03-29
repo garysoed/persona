@@ -1,9 +1,9 @@
 // tslint:disable:no-non-null-assertion
-import { VineImpl } from 'grapevine/export/main';
-import { assert, match, should, test } from 'gs-testing/export/main';
-import { createSpy, createSpyInstance, fake, spy, SpyObj } from 'gs-testing/export/spy';
-import { createImmutableSet } from 'gs-tools/export/collect';
-import { BaseDisposable } from 'gs-tools/export/dispose';
+import { VineImpl } from '@grapevine/main';
+import { assert, match, should, test } from '@gs-testing/main';
+import { createSpy, createSpyInstance, fake, spy, SpyObj } from '@gs-testing/spy';
+import { createImmutableSet } from '@gs-tools/collect';
+import { BaseDisposable } from '@gs-tools/dispose';
 import { Observable, of as observableOf } from 'rxjs';
 import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl } from './custom-element-impl';

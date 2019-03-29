@@ -1,5 +1,5 @@
-import { assert, should, test } from 'gs-testing/export/main';
-import { Subject } from 'gs-tools/node_modules/rxjs';
+import { assert, should, test } from '@gs-testing/main';
+import { Subject } from 'rxjs';
 import { InstanceofType } from 'gs-types/export';
 import { element } from '../input/element';
 import { textContent, TextContentOutput } from './text-content';

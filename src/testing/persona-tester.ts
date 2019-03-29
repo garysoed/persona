@@ -1,8 +1,8 @@
-import { InstanceSourceId, InstanceStreamId } from 'grapevine/export/component';
-import { VineBuilder, VineImpl } from 'grapevine/export/main';
-import { fake, spy } from 'gs-testing/export/spy';
-import { createImmutableList, createImmutableSet, ImmutableList, ImmutableSet } from 'gs-tools/export/collect';
-import { Errors } from 'gs-tools/src/error';
+import { InstanceSourceId, InstanceStreamId } from '@grapevine/component';
+import { VineBuilder, VineImpl } from '@grapevine/main';
+import { fake, spy } from '@gs-testing/spy';
+import { createImmutableList, createImmutableSet, ImmutableList, ImmutableSet } from '@gs-tools/collect';
+import { Errors } from '@gs-tools/error';
 import { stringify, Verbosity } from 'moirai/export';
 import { Observable, throwError, timer } from 'rxjs';
 import { filter, map, mapTo, switchMap, take, tap } from 'rxjs/operators';

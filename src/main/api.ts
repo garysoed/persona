@@ -1,4 +1,4 @@
-import { assertUnreachable } from 'gs-tools/export/typescript';
+import { assertUnreachable } from '@gs-tools/typescript';
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHandlerInput } from '../input/handler';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';

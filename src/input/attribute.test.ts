@@ -1,5 +1,5 @@
-import { assert, should, test } from 'gs-testing/export/main';
-import { integerConverter } from 'gs-tools/export/serializer';
+import { assert, should, test } from '@gs-testing/main';
+import { integerConverter } from '@gs-tools/serializer';
 import { InstanceofType } from 'gs-types/export';
 import { human } from 'nabu/export/grammar';
 import { compose } from 'nabu/export/util';

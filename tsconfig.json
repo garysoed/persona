@@ -13,6 +13,12 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "outDir": "out",
+    "paths": {
+      "@grapevine/*": ["node_modules/grapevine/export/*"],
+      "@gs-testing/*": ["node_modules/gs-testing/export/*"],
+      "@gs-tools/*": ["node_modules/gs-tools/export/*"],
+      "@moirai": ["node_modules/moirai/export/index.ts"],
+    },
     "pretty": true,
     "sourceMap": true,
     "strict": true,

@@ -1,5 +1,5 @@
-import { assert, should, test } from 'gs-testing/export/main';
-import { $getKey, $head, $map, $pick, $pipe, createImmutableList, createImmutableMap, ImmutableMap } from 'gs-tools/export/collect';
+import { assert, should, test } from '@gs-testing/main';
+import { $getKey, $head, $map, $pick, $pipe, createImmutableList, createImmutableMap, ImmutableMap } from '@gs-tools/collect';
 import { __nodeId, ElementListRenderer, ElementWithId } from './element-list-renderer';
 import { __renderId } from './render-id';
 import { Renderer } from './renderer';

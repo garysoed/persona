@@ -1,6 +1,6 @@
-import { VineImpl } from 'grapevine/export/main';
-import { ImmutableSet } from 'gs-tools/export/collect';
-import { cache } from 'gs-tools/export/data';
+import { VineImpl } from '@grapevine/main';
+import { ImmutableSet } from '@gs-tools/collect';
+import { cache } from '@gs-tools/data';
 import { OnCreateHandler } from './component-spec';
 import { CustomElementCtrl } from './custom-element-ctrl';
 

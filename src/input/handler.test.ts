@@ -1,4 +1,4 @@
-import { assert, should, test } from 'gs-testing/export/main';
+import { assert, should, test } from '@gs-testing/main';
 import { InstanceofType } from 'gs-types/export';
 import { of as observableOf } from 'rxjs';
 import { map } from 'rxjs/operators';

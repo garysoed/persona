@@ -1,5 +1,5 @@
-import { VineImpl } from 'grapevine/export/main';
-import { BaseDisposable } from 'gs-tools/export/dispose';
+import { VineImpl } from '@grapevine/main';
+import { BaseDisposable } from '@gs-tools/dispose';
 
 /**
  * Base class of all custom elements.

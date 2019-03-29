@@ -1,9 +1,9 @@
-import { NodeId } from 'grapevine/export/component';
-import { VineBuilder, VineImpl } from 'grapevine/export/main';
-import { $declareFinite, $filter, $filterNotEqual, $flat, $getKey, $head, $map, $pick, $pipe, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableMap, ImmutableSet } from 'gs-tools/export/collect';
-import { ClassAnnotation, ClassAnnotator, ParameterAnnotation, ParameterAnnotator, PropertyAnnotator } from 'gs-tools/export/data';
-import { BaseDisposable } from 'gs-tools/export/dispose';
-import { Errors } from 'gs-tools/export/error';
+import { NodeId } from '@grapevine/component';
+import { VineBuilder, VineImpl } from '@grapevine/main';
+import { $declareFinite, $filter, $filterNotEqual, $flat, $getKey, $head, $map, $pick, $pipe, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableMap, ImmutableSet } from '@gs-tools/collect';
+import { ClassAnnotation, ClassAnnotator, ParameterAnnotation, ParameterAnnotator, PropertyAnnotator } from '@gs-tools/data';
+import { BaseDisposable } from '@gs-tools/dispose';
+import { Errors } from '@gs-tools/error';
 import { AnyType, IterableOfType } from 'gs-types/export';
 import { Observable } from 'rxjs';
 import { Input } from '../component/input';

@@ -1,6 +1,6 @@
-import { $filter, $head, $pipe, createImmutableList, ImmutableList } from 'gs-tools/export/collect';
-import { filterNonNull } from 'gs-tools/export/rxjs';
-import { assertUnreachable } from 'gs-tools/export/typescript';
+import { $filter, $head, $pipe, createImmutableList, ImmutableList } from '@gs-tools/collect';
+import { filterNonNull } from '@gs-tools/rxjs';
+import { assertUnreachable } from '@gs-tools/typescript';
 import { Observable } from 'rxjs';
 import { map, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { Output } from '../component/output';

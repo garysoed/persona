@@ -1,4 +1,4 @@
-import { $deleteAt, $hasEntry, $head, $insertAt, $map, $pipe, $size, $skip, asImmutableList, createImmutableList, ImmutableList, Stream } from 'gs-tools/export/collect';
+import { $deleteAt, $hasEntry, $head, $insertAt, $map, $pipe, $size, $skip, asImmutableList, createImmutableList, ImmutableList, Stream } from '@gs-tools/collect';
 import { __renderId } from './render-id';
 import { Renderer } from './renderer';
 

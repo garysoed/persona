@@ -1,4 +1,4 @@
-import { InstanceStreamId, instanceStreamId } from 'grapevine/export/component';
+import { InstanceStreamId, instanceStreamId } from '@grapevine/component';
 import { AnyType, Type } from 'gs-types/export';
 import { Observable, Subject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';

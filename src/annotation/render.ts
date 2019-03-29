@@ -1,5 +1,5 @@
-import { NodeId } from 'grapevine/export/component';
-import { ClassAnnotator, PropertyAnnotator } from 'gs-tools/export/data';
+import { NodeId } from '@grapevine/component';
+import { ClassAnnotator, PropertyAnnotator } from '@gs-tools/data';
 import { Input } from '../component/input';
 import { Output } from '../component/output';
 import { OnCreateHandler } from '../main/component-spec';

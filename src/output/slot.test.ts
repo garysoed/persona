@@ -1,6 +1,6 @@
-import { assert, should, test } from 'gs-testing/export/main';
-import { createSpyObject, fake, SpyObj } from 'gs-testing/export/spy';
-import { Subject } from 'gs-tools/node_modules/rxjs';
+import { assert, should, test } from '@gs-testing/main';
+import { createSpyObject, fake, SpyObj } from '@gs-testing/spy';
+import { Subject } from 'rxjs';
 import { InstanceofType } from 'gs-types/export';
 import { element } from '../input/element';
 import { Renderer } from '../renderer/renderer';

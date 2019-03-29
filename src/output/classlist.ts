@@ -1,5 +1,5 @@
-import { createImmutableSet } from 'gs-tools/export/collect';
-import { diff } from 'gs-tools/export/util';
+import { createImmutableSet } from '@gs-tools/collect';
+import { diff } from '@gs-tools/util';
 import { combineLatest, Observable } from 'rxjs';
 import { pairwise, startWith, tap } from 'rxjs/operators';
 import { Output } from '../component/output';

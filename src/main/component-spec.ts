@@ -1,4 +1,4 @@
-import { VineImpl } from 'grapevine/export/main';
+import { VineImpl } from '@grapevine/main';
 import { Observable } from 'rxjs';
 import { Input } from '../component/input';
 import { Output } from '../component/output';

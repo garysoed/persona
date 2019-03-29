@@ -1,6 +1,6 @@
-import { InstanceSourceId, InstanceStreamId, NodeId, StaticSourceId } from 'grapevine/export/component';
-import { VineApp, VineImpl } from 'grapevine/export/main';
-import { ClassAnnotator, ParameterAnnotator, PropertyAnnotator } from 'gs-tools/export/data';
+import { InstanceSourceId, InstanceStreamId, NodeId, StaticSourceId } from '@grapevine/component';
+import { VineApp, VineImpl } from '@grapevine/main';
+import { ClassAnnotator, ParameterAnnotator, PropertyAnnotator } from '@gs-tools/data';
 import { Observable, of as observableOf } from 'rxjs';
 import { Render, renderFactory } from '../annotation/render';
 import { Input } from '../component/input';
