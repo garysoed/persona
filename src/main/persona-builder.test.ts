@@ -18,6 +18,7 @@ const $ = {
   host: element({
     attr1: attribute('attr1', identity()),
     attr2: attribute('attr2', identity()),
+    attr3: attribute('attr3', identity()),
   }),
 };
 
@@ -55,6 +56,7 @@ class TestClass extends ParentTestClass {
   }
 
   @_p.render($.host._.attr1)
+  @_p.render($.host._.attr3)
   overriddenRender(
       @_v.vineIn($value) valueObs: Observable<string>,
   ): Observable<string> {
@@ -85,6 +87,7 @@ test('persona.main.PersonaBuilder', () => {
   should(`set up the component correctly`, async () => {
     await assert(tester.getAttribute(el, $.host._.attr1)).to.emitWith('123abc');
     await assert(tester.getAttribute(el, $.host._.attr2)).to.emitWith('123');
+    await assert(tester.getAttribute(el, $.host._.attr3)).to.emitWith('123abc');
     // tslint:disable-next-line:no-non-null-assertion
     assert(el.shadowRoot!.mode).to.equal('open');
     assert(mockHandler).to.haveBeenCalledWith();

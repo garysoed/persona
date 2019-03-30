@@ -103,9 +103,10 @@ export class PersonaBuilder {
         // Get the implementation in the descendant class
         $map(([_, entries]) => $pipe(entries, $head())),
         $filter((item): item is [Object, ImmutableList<OnCreateHandler>] => !!item),
-        // Get the first annotation
-        $map(([_, renderDataList]) => $pipe(renderDataList, $head())),
+        $map(([_, renderDataList]) => renderDataList),
+        $flat(),
         $filter((renderData): renderData is OnCreateHandler => !!renderData),
+        $declareFinite(),
         asImmutableSet(),
     );
   }
