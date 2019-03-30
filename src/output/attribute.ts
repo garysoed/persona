@@ -1,4 +1,4 @@
-import { Converter } from 'nabu/export/main';
+import { Converter } from '@nabu/main';
 import { Observable } from 'rxjs';
 import { tap, withLatestFrom } from 'rxjs/operators';
 import { Output } from '../component/output';

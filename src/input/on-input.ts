@@ -1,5 +1,5 @@
 import { InstanceStreamId, instanceStreamId } from '@grapevine/component';
-import { StringType } from 'gs-types/export';
+import { StringType } from '@gs-types';
 import { fromEvent, Observable, SchedulerLike } from 'rxjs';
 import { debounceTime, map, switchMap } from 'rxjs/operators';
 import { Input } from '../component/input';

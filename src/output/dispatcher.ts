@@ -1,5 +1,5 @@
 import { InstanceStreamId, instanceStreamId } from '@grapevine/component';
-import { InstanceofType } from 'gs-types/export';
+import { InstanceofType } from '@gs-types';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Output } from '../component/output';

@@ -1,6 +1,6 @@
 import { assert, should, test } from '@gs-testing/main';
 import { Subject } from 'rxjs';
-import { InstanceofType } from 'gs-types/export';
+import { InstanceofType } from '@gs-types';
 import { element } from '../input/element';
 import { innerHtml, InnerHtmlOutput } from './inner-html';
 

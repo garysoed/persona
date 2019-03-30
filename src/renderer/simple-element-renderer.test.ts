@@ -1,8 +1,8 @@
 import { assert, should, test } from '@gs-testing/main';
 import { createImmutableList, ImmutableList } from '@gs-tools/collect';
 import { integerConverter } from '@gs-tools/serializer';
-import { human } from 'nabu/export/grammar';
-import { compose, identity } from 'nabu/export/util';
+import { human } from '@nabu/grammar';
+import { compose, identity } from '@nabu/util';
 import { __renderId } from './render-id';
 import { __nodeId, SimpleElementRenderer } from './simple-element-renderer';
 

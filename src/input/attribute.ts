@@ -1,7 +1,7 @@
 import { InstanceStreamId, instanceStreamId } from '@grapevine/component';
 import { Errors } from '@gs-tools/error';
-import { AnyType, InstanceofType, Type } from 'gs-types/export';
-import { Converter } from 'nabu/export/main';
+import { AnyType, InstanceofType, Type } from '@gs-types';
+import { Converter } from '@nabu/main';
 import { Observable } from 'rxjs';
 import { Input } from '../component/input';
 import { UnresolvedElementProperty } from '../component/unresolved-element-property';

@@ -1,6 +1,6 @@
 import { InstanceStreamId, instanceStreamId } from '@grapevine/component';
 import { Errors } from '@gs-tools/error';
-import { InstanceofType, Type } from 'gs-types/export';
+import { InstanceofType, Type } from '@gs-types';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 import { Input } from '../component/input';

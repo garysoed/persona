@@ -1,4 +1,4 @@
-import { BooleanType } from 'gs-types/export';
+import { BooleanType } from '@gs-types';
 import { Observable } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
 import { UnresolvedElementProperty } from '../component/unresolved-element-property';

@@ -1,5 +1,5 @@
 import { assert, should, test } from '@gs-testing/main';
-import { InstanceofType } from 'gs-types/export';
+import { InstanceofType } from '@gs-types';
 import { Subject } from 'rxjs';
 import { element } from '../input/element';
 import { classToggle, ClassToggleOutput } from './class-toggle';

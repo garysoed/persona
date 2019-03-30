@@ -1,4 +1,4 @@
-import { Converter } from 'nabu/export/main';
+import { Converter } from '@nabu/main';
 import { __renderId } from './render-id';
 import { Renderer } from './renderer';
 

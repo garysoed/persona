@@ -1,9 +1,9 @@
 import { assert, should, test } from '@gs-testing/main';
 import { createSpySubject } from '@gs-testing/spy';
 import { integerConverter } from '@gs-tools/serializer';
-import { InstanceofType } from 'gs-types/export';
-import { human } from 'nabu/export/grammar';
-import { compose } from 'nabu/export/util';
+import { InstanceofType } from '@gs-types';
+import { human } from '@nabu/grammar';
+import { compose } from '@nabu/util';
 import { fromEvent, of as observableOf, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { attribute as attributeIn } from '../input/attribute';

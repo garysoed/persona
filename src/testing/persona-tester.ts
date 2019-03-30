@@ -3,7 +3,7 @@ import { VineBuilder, VineImpl } from '@grapevine/main';
 import { fake, spy } from '@gs-testing/spy';
 import { createImmutableList, createImmutableSet, ImmutableList, ImmutableSet } from '@gs-tools/collect';
 import { Errors } from '@gs-tools/error';
-import { stringify, Verbosity } from 'moirai/export';
+import { stringify, Verbosity } from '@moirai';
 import { Observable, throwError, timer } from 'rxjs';
 import { filter, map, mapTo, switchMap, take, tap } from 'rxjs/operators';
 import { Input } from '../component/input';

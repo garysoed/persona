@@ -1,5 +1,5 @@
 import { instanceStreamId, InstanceStreamId } from '@grapevine/component';
-import { BooleanType } from 'gs-types/export';
+import { BooleanType } from '@gs-types';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 import { Input } from '../component/input';

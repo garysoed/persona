@@ -4,7 +4,7 @@ import { $declareFinite, $filter, $filterNotEqual, $flat, $getKey, $head, $map, 
 import { ClassAnnotation, ClassAnnotator, ParameterAnnotation, ParameterAnnotator, PropertyAnnotator } from '@gs-tools/data';
 import { BaseDisposable } from '@gs-tools/dispose';
 import { Errors } from '@gs-tools/error';
-import { AnyType, IterableOfType } from 'gs-types/export';
+import { AnyType, IterableOfType } from '@gs-types';
 import { Observable } from 'rxjs';
 import { Input } from '../component/input';
 import { OnCreateHandler } from './component-spec';
