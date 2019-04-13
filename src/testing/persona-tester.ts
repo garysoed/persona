@@ -7,7 +7,7 @@ import { stringify, Verbosity } from '@moirai';
 import { Observable, throwError, timer } from 'rxjs';
 import { filter, map, mapTo, switchMap, take, tap } from 'rxjs/operators';
 import { Input } from '../component/input';
-import { AttributeInput, UnresolvedAttributeInput } from '../input/attribute';
+import { AttributeInput } from '../input/attribute';
 import { HandlerInput } from '../input/handler';
 import { HasAttributeInput } from '../input/has-attribute';
 import { HasClassInput } from '../input/has-class';

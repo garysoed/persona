@@ -1,35 +1,11 @@
 import { $filter, $head, $pipe, createImmutableList, ImmutableList } from '@gs-tools/collect';
-import { filterNonNull } from '@gs-tools/rxjs';
+import { ArrayDiff, filterNonNull } from '@gs-tools/rxjs';
 import { assertUnreachable } from '@gs-tools/typescript';
 import { Observable } from 'rxjs';
 import { map, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 import { Output } from '../component/output';
 import { UnresolvedElementProperty } from '../component/unresolved-element-property';
 import { mutationObservable } from '../util/mutation-observable';
-
-interface ArrayInit<T> {
-  payload: T[];
-  type: 'init';
-}
-
-interface ArrayInsert<T> {
-  index: number;
-  payload: T;
-  type: 'insert';
-}
-
-interface ArrayDelete {
-  index: number;
-  type: 'delete';
-}
-
-interface ArraySet<T> {
-  index: number;
-  payload: T;
-  type: 'set';
-}
-
-export type ArrayDiff<T> = ArrayInit<T>|ArrayInsert<T>|ArrayDelete|ArraySet<T>;
 
 interface Payload {
   [key: string]: string;
