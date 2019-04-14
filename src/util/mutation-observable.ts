@@ -17,9 +17,7 @@ export function mutationObservable(
 
         return mutationObserver;
       },
-      (_, mutationObserver: MutationObserver) => {
-        mutationObserver.disconnect();
-      },
+      (_, mutationObserver: MutationObserver) => mutationObserver.disconnect(),
   )
   .pipe(shareReplay(1));
 }

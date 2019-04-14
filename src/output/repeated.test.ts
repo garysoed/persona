@@ -1,8 +1,9 @@
 import { assert, setup, should, test } from '@gs-testing/main';
+import { ArrayDiff } from '@gs-tools/rxjs';
 import { InstanceofType } from '@gs-types';
 import { Subject } from 'rxjs';
 import { element } from '../input/element';
-import { ArrayDiff, repeated, RepeatedOutput } from './repeated';
+import { repeated, RepeatedOutput } from './repeated';
 
 type Payload = {a: string; b: string};
 
