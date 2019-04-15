@@ -96,7 +96,7 @@ export class Builder {
               return subject;
             },
             context,
-            )
+        )
         .asObservable();
   }
 
