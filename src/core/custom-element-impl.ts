@@ -30,7 +30,8 @@ export class CustomElementImpl {
       window.setTimeout(() => {
         for (const fn of componentInstance.getInitFunctions()) {
           componentInstance.addSubscription(
-              fn(this.vine, componentInstance, shadowRoot).subscribe());
+              fn.call(componentInstance, this.vine, shadowRoot).subscribe(),
+          );
         }
 
         injectVine(this.vine, componentInstance);

@@ -10,7 +10,7 @@ export interface BaseCustomElementSpec {
   configure?(vine: Vine): void;
 }
 
-export type InitFn = (vine: Vine, context: unknown, root: ShadowRoot) => Observable<unknown>;
+export type InitFn = (vine: Vine, root: ShadowRoot) => Observable<unknown>;
 
 /**
  * Specs that define a custom element.

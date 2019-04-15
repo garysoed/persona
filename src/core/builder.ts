@@ -85,14 +85,19 @@ export class Builder {
     return this.customElementAnnotator.decorator(spec);
   }
 
-  input<T>(input: Input<T>): DelayedObservable<T, CustomElementCtrl> {
-    return this.vineBuilder.stream<T, CustomElementCtrl>(function(): Observable<T> {
-      // TODO: This subject should be customized for each input.
-      const subject = new ReplaySubject<T>(1);
-      this.addSubscription(input.getValue(this.shadowRoot).subscribe(subject));
+  input<T>(input: Input<T>, context: CustomElementCtrl): DelayedObservable<T> {
+    return this.vineBuilder
+        .stream<T, CustomElementCtrl>(
+            function(this: CustomElementCtrl): Observable<T> {
+              // TODO: This subject should be customized for each input.
+              const subject = new ReplaySubject<T>(1);
+              this.addSubscription(input.getValue(this.shadowRoot).subscribe(subject));
 
-      return subject;
-    }).asObservable();
+              return subject;
+            },
+            context,
+            )
+        .asObservable();
   }
 
   private register(

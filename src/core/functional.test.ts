@@ -1,7 +1,6 @@
 import { VineBuilder } from '@grapevine';
 import { assert, should, test } from '@gs-testing/main';
 import { createSpy, Spy } from '@gs-testing/spy';
-import { debug } from '@gs-tools/rxjs';
 import { identity } from '@nabu/util';
 import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -24,9 +23,10 @@ const $ = {
   }),
 };
 
-const $HANDLER = _v.source(() => {
-  return new BehaviorSubject(() => undefined);
-});
+const $HANDLER = _v.source(
+    () => new BehaviorSubject(() => undefined),
+    globalThis,
+);
 
 @_p.baseCustomElement({
   shadowMode: 'open',
@@ -36,7 +36,7 @@ class ParentTestClass extends CustomElementCtrl {
     return [
       _p
           .render($.host._.attr1)
-          .with(_v.stream(ParentTestClass.prototype.overriddenRender)),
+          .with(_v.stream(this.overriddenRender, this)),
     ];
   }
 
@@ -53,19 +53,20 @@ class ParentTestClass extends CustomElementCtrl {
   template: '',
 })
 class TestClass extends ParentTestClass {
-  private readonly attr4 = _p.input($.host._.attr4);
+  private readonly attr4 = _p.input($.host._.attr4, this);
   private readonly handlerSbj = $HANDLER.asSubject();
-  private readonly valueObs = _v.stream(this.providesValue).asObservable();
+  private readonly providesValueStream = _v.stream(this.providesValue, this);
+  private readonly valueObs = this.providesValueStream.asObservable();
 
   getInitFunctions(): InitFn[] {
     return [
       () => this.handlerSbj.pipe(tap(handler => handler())),
       _p
           .render($.host._.attr2)
-          .with(_v.stream(TestClass.prototype.providesValue)),
+          .with(this.providesValueStream),
       _p
           .render($.host._.attr1, $.host._.attr3)
-          .with(_v.stream(TestClass.prototype.overriddenRender)),
+          .with(_v.stream(this.overriddenRender, this)),
     ];
   }
 
@@ -89,7 +90,7 @@ test('persona.core.functional', () => {
   beforeEach(() => {
     mockHandler = createSpy('handler');
     tester = testerFactory.build([TestClass]);
-    const s = $HANDLER.get(tester.vine, globalThis);
+    const s = $HANDLER.get(tester.vine);
     s.next(mockHandler);
 
     el = tester.createElement('test-el', document.body);
