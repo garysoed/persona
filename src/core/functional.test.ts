@@ -55,15 +55,15 @@ class ParentTestClass extends CustomElementCtrl {
 class TestClass extends ParentTestClass {
   private readonly attr4 = _p.input($.host._.attr4, this);
   private readonly handlerSbj = $HANDLER.asSubject();
-  private readonly providesValueStream = _v.stream(this.providesValue, this);
-  private readonly valueObs = this.providesValueStream.asObservable();
+  private readonly providesValueStream = _v.stream(this.providesValue, this).asObservable();
 
   getInitFunctions(): InitFn[] {
     return [
+      ...super.getInitFunctions(),
       () => this.handlerSbj.pipe(tap(handler => handler())),
       _p
           .render($.host._.attr2)
-          .with(this.providesValueStream),
+          .withObservable(this.providesValueStream),
       _p
           .render($.host._.attr1, $.host._.attr3)
           .with(_v.stream(this.overriddenRender, this)),
@@ -71,7 +71,7 @@ class TestClass extends ParentTestClass {
   }
 
   overriddenRender(): Observable<string> {
-    return this.valueObs.pipe(map(value => `${value}abc`));
+    return this.providesValueStream.pipe(map(value => `${value}abc`));
   }
 
   // tslint:disable-next-line: prefer-function-over-method
