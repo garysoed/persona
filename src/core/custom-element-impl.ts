@@ -26,18 +26,13 @@ export class CustomElementImpl {
     const componentInstance = new ctor(shadowRoot);
     this.element[__ctrl] = componentInstance;
 
-    await new Promise(resolve => {
-      window.setTimeout(() => {
-        for (const fn of componentInstance.getInitFunctions()) {
-          componentInstance.addSubscription(
-              fn.call(componentInstance, this.vine, shadowRoot).subscribe(),
-          );
-        }
+    for (const fn of componentInstance.getInitFunctions()) {
+      componentInstance.addSubscription(
+          fn.call(componentInstance, this.vine, shadowRoot).subscribe(),
+      );
+    }
 
-        injectVine(this.vine, componentInstance);
-        resolve();
-      });
-    });
+    injectVine(this.vine, componentInstance);
   }
 
   disconnectedCallback(): void {

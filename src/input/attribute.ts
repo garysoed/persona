@@ -22,12 +22,12 @@ export class AttributeInput<T> implements Input<T> {
   getValue(root: ShadowRoot): Observable<T> {
     return attributeObservable(
         this.attrName,
-        unparsed => this.parseValue(unparsed),
+        unparsed => this.parseValue(unparsed, root),
         this.resolver(root),
     );
   }
 
-  private parseValue(unparsed: string): T {
+  private parseValue(unparsed: string, root: any): T {
     const parseResult = this.parser.convertBackward(unparsed);
     if (!parseResult.success) {
       if (this.defaultValue !== undefined) {

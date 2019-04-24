@@ -5,13 +5,12 @@ import { Subject } from 'rxjs';
 import { element } from '../input/element';
 import { repeated, RepeatedOutput } from './repeated';
 
-type Payload = {a: string; b: string};
 
 test('persona.output.repeated', () => {
   const ELEMENT_ID = 'elementId';
   const SLOT_NAME = 'slotName';
   const TAG_NAME = 'tag-name';
-  let output: RepeatedOutput<Payload>;
+  let output: RepeatedOutput<Map<string, string>>;
   let shadowRoot: ShadowRoot;
   let parentEl: HTMLElement;
   let slot: Node;
@@ -36,22 +35,22 @@ test('persona.output.repeated', () => {
   });
 
   test('output', () => {
-    let diffSubject: Subject<ArrayDiff<Payload>>;
+    let diffSubject: Subject<ArrayDiff<Map<string, string>>>;
 
     setup(() => {
-      diffSubject = new Subject<ArrayDiff<Payload>>();
+      diffSubject = new Subject<ArrayDiff<Map<string, string>>>();
 
       output.output(shadowRoot, diffSubject).subscribe();
     });
 
     should(`process 'init' correctly`, () => {
       diffSubject.next({
-        payload: [
-          {a: '1', b: '2'},
-          {a: 'a', b: 'b'},
-          {a: '3', b: '4'},
-        ],
         type: 'init',
+        value: [
+          new Map([['a', '1'], ['b', '2']]),
+          new Map([['a', 'a'], ['b', 'b']]),
+          new Map([['a', '3'], ['b', '4']]),
+        ],
       });
 
       const el1 = slot.nextSibling as HTMLElement;
@@ -72,15 +71,15 @@ test('persona.output.repeated', () => {
 
     should(`process 'insert' correctly for index 0`, () => {
       diffSubject.next({
-        payload: [
-          {a: '1', b: '2'},
-          {a: '1', b: '2'},
-          {a: '1', b: '2'},
-        ],
         type: 'init',
+        value: [
+          new Map([['a', '1'], ['b', '2']]),
+          new Map([['a', '1'], ['b', '2']]),
+          new Map([['a', '1'], ['b', '2']]),
+        ],
       });
 
-      diffSubject.next({index: 0, payload: {a: '0', b: '0'}, type: 'insert'});
+      diffSubject.next({index: 0, value: new Map([['a', '0'], ['b', '0']]), type: 'insert'});
 
       const el = slot.nextSibling as HTMLElement;
       assert(el.tagName.toLowerCase()).to.equal(TAG_NAME);
@@ -90,15 +89,15 @@ test('persona.output.repeated', () => {
 
     should(`process 'insert' correctly for index 2`, () => {
       diffSubject.next({
-        payload: [
-          {a: '1', b: '2'},
-          {a: '1', b: '2'},
-          {a: '1', b: '2'},
-        ],
         type: 'init',
+        value: [
+          new Map([['a', '1'], ['b', '2']]),
+          new Map([['a', '1'], ['b', '2']]),
+          new Map([['a', '1'], ['b', '2']]),
+        ],
       });
 
-      diffSubject.next({index: 2, payload: {a: '0', b: '0'}, type: 'insert'});
+      diffSubject.next({index: 2, value: new Map([['a', '0'], ['b', '0']]), type: 'insert'});
 
       // tslint:disable-next-line: no-non-null-assertion
       const el = slot.nextSibling!.nextSibling!.nextSibling as HTMLElement;
@@ -109,15 +108,15 @@ test('persona.output.repeated', () => {
 
     should(`process 'insert' correctly for large index`, () => {
       diffSubject.next({
-        payload: [
-          {a: '1', b: '2'},
-          {a: '1', b: '2'},
-          {a: '1', b: '2'},
-        ],
         type: 'init',
+        value: [
+          new Map([['a', '1'], ['b', '2']]),
+          new Map([['a', '1'], ['b', '2']]),
+          new Map([['a', '1'], ['b', '2']]),
+        ],
       });
 
-      diffSubject.next({index: 4, payload: {a: '0', b: '0'}, type: 'insert'});
+      diffSubject.next({index: 4, value: new Map([['a', '0'], ['b', '0']]), type: 'insert'});
 
       // tslint:disable-next-line: no-non-null-assertion
       const el = slot.nextSibling!.nextSibling!.nextSibling!.nextSibling as HTMLElement;
@@ -128,12 +127,12 @@ test('persona.output.repeated', () => {
 
     should(`process 'delete' correctly`, () => {
       diffSubject.next({
-        payload: [
-          {a: '1', b: '2'},
-          {a: '3', b: '4'},
-          {a: '5', b: '6'},
-        ],
         type: 'init',
+        value: [
+          new Map([['a', '1'], ['b', '2']]),
+          new Map([['a', '3'], ['b', '4']]),
+          new Map([['a', '5'], ['b', '6']]),
+        ],
       });
 
       diffSubject.next({index: 1, type: 'delete'});
@@ -157,8 +156,8 @@ test('persona.output.repeated', () => {
 
       diffSubject.next({
         index: 0,
-        payload: {a: 'a', b: 'b'},
         type: 'set',
+        value: new Map([['a', 'a'], ['b', 'b']]),
       });
 
       const el1 = slot.nextSibling as HTMLElement;
@@ -175,8 +174,8 @@ test('persona.output.repeated', () => {
 
       diffSubject.next({
         index: 0,
-        payload: {a: 'a', b: 'b'},
         type: 'set',
+        value: new Map([['a', 'a'], ['b', 'b']]),
       });
 
       const el1 = slot.nextSibling as HTMLElement;
@@ -193,8 +192,8 @@ test('persona.output.repeated', () => {
 
       diffSubject.next({
         index: 0,
-        payload: {a: 'a', b: 'b'},
         type: 'set',
+        value: new Map([['a', 'a'], ['b', 'b']]),
       });
 
       assert(slot.nextSibling).to.equal(existingElement);

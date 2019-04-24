@@ -7,9 +7,7 @@ import { Output } from '../component/output';
 import { UnresolvedElementProperty } from '../component/unresolved-element-property';
 import { mutationObservable } from '../util/mutation-observable';
 
-interface Payload {
-  [key: string]: string;
-}
+type Payload = Map<string, string>;
 
 export class RepeatedOutput<T extends Payload> implements Output<ArrayDiff<T>> {
   constructor(
@@ -52,18 +50,18 @@ export class RepeatedOutput<T extends Payload> implements Output<ArrayDiff<T>> {
             tap(([diff, parentEl, slotNode]) => {
               switch (diff.type) {
                 case 'init':
-                  for (let i = 0; i < diff.payload.length; i++) {
-                    this.insertEl(parentEl, slotNode, diff.payload[i], i);
+                  for (let i = 0; i < diff.value.length; i++) {
+                    this.insertEl(parentEl, slotNode, diff.value[i], i);
                   }
                   break;
                 case 'insert':
-                  this.insertEl(parentEl, slotNode, diff.payload, diff.index);
+                  this.insertEl(parentEl, slotNode, diff.value, diff.index);
                   break;
                 case 'delete':
                   this.deleteEl(parentEl, slotNode, diff.index);
                   break;
                 case 'set':
-                  this.setEl(parentEl, slotNode, diff.payload, diff.index);
+                  this.setEl(parentEl, slotNode, diff.value, diff.index);
                   break;
                 default:
                   assertUnreachable(diff);
@@ -107,12 +105,8 @@ export function repeated<T extends Payload>(
 }
 
 function applyAttributes(element: HTMLElement, payload: Payload): void {
-  for (const key in payload) {
-    if (!payload.hasOwnProperty(key)) {
-      continue;
-    }
-
-    element.setAttribute(key, payload[key]);
+  for (const [key, value] of payload) {
+    element.setAttribute(key, value);
   }
 }
 

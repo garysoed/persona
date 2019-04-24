@@ -1,4 +1,4 @@
-import { Vine, VineBuilder } from '@grapevine';
+import { Vine } from '@grapevine';
 import { fake, spy } from '@gs-testing/spy';
 import { createImmutableList, createImmutableSet, ImmutableList, ImmutableSet } from '@gs-tools/collect';
 import { Errors } from '@gs-tools/error';
@@ -11,16 +11,18 @@ import { HandlerInput } from '../input/handler';
 import { HasAttributeInput } from '../input/has-attribute';
 import { HasClassInput } from '../input/has-class';
 import { MediaQueryInput } from '../input/media-query';
-import { __ctrl, ElementWithCtrl } from '../main/custom-element-impl';
+import { ElementWithCtrl } from '../main/custom-element-impl';
 import { AttributeOutput } from '../output/attribute';
 import { ClassToggleOutput } from '../output/class-toggle';
+import { RepeatedOutput } from '../output/repeated';
 import { SetAttributeOutput } from '../output/set-attribute';
-import { findCommentNode, SlotOutput } from '../output/slot';
+import { findCommentNode } from '../output/slot';
 import { StyleOutput } from '../output/style';
 import { FakeMediaQuery, mockMatchMedia } from '../testing/mock-match-media';
 import { Builder as PersonaBuilder } from './builder';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
 import { CustomElementCtrlCtor } from './types';
+
 interface Key {
   alt?: boolean;
   ctrl?: boolean;
@@ -137,7 +139,7 @@ export class PersonaTester {
 
   getNodesAfter(
       element: ElementWithCtrl,
-      output: SlotOutput<any, any>,
+      output: RepeatedOutput<any>,
   ): Observable<ImmutableList<Node>> {
     return getElement(element, shadowRoot => output.resolver(shadowRoot))
         .pipe(
@@ -298,7 +300,6 @@ export class PersonaTester {
  */
 export class PersonaTesterFactory {
   constructor(
-      private readonly vineBuilder: VineBuilder,
       private readonly personaBuilder: PersonaBuilder,
   ) { }
 

@@ -36,7 +36,7 @@ class ParentTestClass extends CustomElementCtrl {
     return [
       _p
           .render($.host._.attr1)
-          .with(_v.stream(this.overriddenRender, this)),
+          .withVine(_v.stream(this.overriddenRender, this)),
     ];
   }
 
@@ -66,7 +66,7 @@ class TestClass extends ParentTestClass {
           .withObservable(this.providesValueStream),
       _p
           .render($.host._.attr1, $.host._.attr3)
-          .with(_v.stream(this.overriddenRender, this)),
+          .withVine(_v.stream(this.overriddenRender, this)),
     ];
   }
 
@@ -80,7 +80,7 @@ class TestClass extends ParentTestClass {
   }
 }
 
-const testerFactory = new PersonaTesterFactory(_v, _p);
+const testerFactory = new PersonaTesterFactory(_p);
 
 test('persona.core.functional', () => {
   let mockHandler: Spy<undefined, []>;
