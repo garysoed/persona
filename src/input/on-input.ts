@@ -1,21 +1,15 @@
-import { InstanceStreamId, instanceStreamId } from '@grapevine/component';
-import { StringType } from '@gs-types';
 import { fromEvent, Observable, SchedulerLike } from 'rxjs';
 import { debounceTime, map, switchMap } from 'rxjs/operators';
 import { Input } from '../component/input';
 import { UnresolvedElementProperty } from '../component/unresolved-element-property';
 
 export class OnInputInput implements Input<string> {
-  readonly id: InstanceStreamId<string>;
-
   constructor(
       private readonly debounceMs: number,
       private readonly options: AddEventListenerOptions,
       readonly resolver: (root: ShadowRoot) => Observable<HTMLInputElement>,
       private readonly scheduler?: SchedulerLike,
-  ) {
-    this.id = instanceStreamId(`onInput`, StringType);
-  }
+  ) { }
 
   getValue(root: ShadowRoot): Observable<string> {
     return this.resolver(root)

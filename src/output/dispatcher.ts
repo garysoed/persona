@@ -1,5 +1,3 @@
-import { InstanceStreamId, instanceStreamId } from '@grapevine/component';
-import { InstanceofType } from '@gs-types';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Output } from '../component/output';
@@ -9,13 +7,11 @@ import { CallerOutput } from './caller';
 export type DispatchFn<E extends Event> = (event: E) => void;
 
 export class DispatcherOutput<E extends Event> implements Output<E> {
-  readonly id: InstanceStreamId<DispatchFn<E>>;
   private readonly caller: CallerOutput<[E]>;
 
   constructor(
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
   ) {
-    this.id = instanceStreamId(`dispatcher`, InstanceofType<DispatchFn<E>>(Function));
     this.caller = new CallerOutput(resolver, 'dispatchEvent');
   }
 

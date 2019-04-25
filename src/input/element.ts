@@ -1,4 +1,3 @@
-import { InstanceStreamId, instanceStreamId } from '@grapevine/component';
 import { Errors } from '@gs-tools/error';
 import { InstanceofType, Type } from '@gs-types';
 import { Observable } from 'rxjs';
@@ -17,14 +16,12 @@ type Resolved<E extends Element, P extends Properties<E>> = {
 
 export class ElementInput<E extends Element, P extends Properties<E>> implements Input<E> {
   readonly _: Resolved<E, P>;
-  readonly id: InstanceStreamId<E>;
 
   constructor(
       private readonly elementId: string|null,
       properties: P,
       private readonly type: Type<E>,
   ) {
-    this.id = instanceStreamId(`element#${elementId}`, type);
     this._ = this.resolve(properties);
   }
 

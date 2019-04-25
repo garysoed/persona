@@ -1,5 +1,3 @@
-import { InstanceStreamId, instanceStreamId } from '@grapevine/component';
-import { AnyType, Type } from '@gs-types';
 import { Observable, Subject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Input } from '../component/input';
@@ -8,14 +6,10 @@ import { UnresolvedElementProperty } from '../component/unresolved-element-prope
 const __subject = Symbol('subject');
 
 export class HandlerInput<T extends any[]> implements Input<T> {
-  readonly id: InstanceStreamId<T>;
-
   constructor(
       readonly functionName: string,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
-  ) {
-    this.id = instanceStreamId(`fn(${functionName})`, AnyType<T>());
-  }
+  ) { }
 
   getValue(root: ShadowRoot): Observable<T> {
     return this.resolver(root)

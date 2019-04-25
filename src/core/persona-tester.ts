@@ -11,7 +11,6 @@ import { HandlerInput } from '../input/handler';
 import { HasAttributeInput } from '../input/has-attribute';
 import { HasClassInput } from '../input/has-class';
 import { MediaQueryInput } from '../input/media-query';
-import { ElementWithCtrl } from '../main/custom-element-impl';
 import { AttributeOutput } from '../output/attribute';
 import { ClassToggleOutput } from '../output/class-toggle';
 import { RepeatedOutput } from '../output/repeated';
@@ -43,7 +42,7 @@ export class PersonaTester {
   ) { }
 
   callFunction<A extends any[]>(
-      element: ElementWithCtrl,
+      element: HTMLElement,
       input: HandlerInput<A>,
       args: A,
   ): Observable<unknown> {
@@ -59,7 +58,7 @@ export class PersonaTester {
   }
 
   dispatchEvent(
-      element: ElementWithCtrl,
+      element: HTMLElement,
       input: Input<Element>,
       event: Event,
   ): Observable<unknown> {
@@ -71,7 +70,7 @@ export class PersonaTester {
   }
 
   getAttribute<T>(
-      element: ElementWithCtrl,
+      element: HTMLElement,
       output: AttributeOutput<T>|AttributeInput<T>,
   ): Observable<T> {
     return getElement(element, shadowRoot => output.resolver(shadowRoot))
@@ -97,7 +96,7 @@ export class PersonaTester {
   }
 
   getClassList(
-      element: ElementWithCtrl,
+      element: HTMLElement,
       output: Input<Element>,
   ): Observable<ImmutableSet<string>> {
     return getElement(element, shadowRoot => output.getValue(shadowRoot))
@@ -120,14 +119,14 @@ export class PersonaTester {
   }
 
   getElement<E extends Element>(
-      element: ElementWithCtrl,
+      element: HTMLElement,
       input: Input<E>,
   ): Observable<E> {
     return getElement(element, shadowRoot => input.getValue(shadowRoot));
   }
 
   getHasClass(
-      element: ElementWithCtrl,
+      element: HTMLElement,
       ioutput: ClassToggleOutput|HasClassInput,
   ): Observable<boolean> {
     return getElement(element, shadowRoot => ioutput.resolver(shadowRoot))
@@ -138,7 +137,7 @@ export class PersonaTester {
   }
 
   getNodesAfter(
-      element: ElementWithCtrl,
+      element: HTMLElement,
       output: RepeatedOutput<any>,
   ): Observable<ImmutableList<Node>> {
     return getElement(element, shadowRoot => output.resolver(shadowRoot))
@@ -168,7 +167,7 @@ export class PersonaTester {
   }
 
   // getObservable<T>(
-  //     element: ElementWithCtrl,
+  //     element: HTMLElement,
   //     id: InstanceSourceId<T>|InstanceStreamId<T>,
   // ): Observable<T> {
   //   const obs = this.vine.getObservable(id, getCtrl(element));
@@ -180,7 +179,7 @@ export class PersonaTester {
   // }
 
   getStyle<S extends keyof CSSStyleDeclaration>(
-      element: ElementWithCtrl,
+      element: HTMLElement,
       output: StyleOutput<S>,
   ): Observable<CSSStyleDeclaration[S]> {
     return getElement(element, shadowRoot => output.resolver(shadowRoot))
@@ -191,7 +190,7 @@ export class PersonaTester {
   }
 
   getTextContent(
-      element: ElementWithCtrl,
+      element: HTMLElement,
       input: Input<Element>,
   ): Observable<string> {
     return getElement(element, shadowRoot => input.getValue(shadowRoot))
@@ -201,7 +200,7 @@ export class PersonaTester {
   }
 
   setAttribute<T>(
-      element: ElementWithCtrl,
+      element: HTMLElement,
       input: AttributeInput<T>,
       value: T,
   ): Observable<unknown> {
@@ -220,7 +219,7 @@ export class PersonaTester {
   }
 
   setHasAttribute(
-      element: ElementWithCtrl,
+      element: HTMLElement,
       output: SetAttributeOutput|HasAttributeInput,
       value: boolean,
   ): Observable<unknown> {
@@ -238,7 +237,7 @@ export class PersonaTester {
   }
 
   setInputValue(
-      element: ElementWithCtrl,
+      element: HTMLElement,
       input: Input<HTMLInputElement>,
       value: string,
   ): Observable<unknown> {
@@ -262,7 +261,7 @@ export class PersonaTester {
   }
 
   simulateKeypress(
-      element: ElementWithCtrl,
+      element: HTMLElement,
       input: Input<Element>,
       keys: Key[],
   ): Observable<unknown> {
@@ -332,7 +331,7 @@ export class PersonaTesterFactory {
 }
 
 function getElement<E extends Element>(
-    element: ElementWithCtrl,
+    element: HTMLElement,
     resolver: (root: ShadowRoot) => Observable<E>,
 ): Observable<E> {
   const shadowRoot = getShadowRoot(element);
@@ -340,7 +339,7 @@ function getElement<E extends Element>(
   return resolver(shadowRoot);
 }
 
-function getShadowRoot(element: ElementWithCtrl): ShadowRoot {
+function getShadowRoot(element: HTMLElement): ShadowRoot {
   const shadowRoot = element.shadowRoot;
   if (!shadowRoot) {
     throw new Error(`ShadowRoot for element ${element} not found`);

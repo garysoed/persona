@@ -1,6 +1,4 @@
-import { InstanceStreamId, instanceStreamId } from '@grapevine/component';
 import { Errors } from '@gs-tools/error';
-import { AnyType, InstanceofType, Type } from '@gs-types';
 import { Converter } from '@nabu/main';
 import { Observable } from 'rxjs';
 import { Input } from '../component/input';
@@ -8,16 +6,12 @@ import { UnresolvedElementProperty } from '../component/unresolved-element-prope
 import { attributeObservable } from '../util/attribute-observable';
 
 export class AttributeInput<T> implements Input<T> {
-  readonly id: InstanceStreamId<T>;
-
   constructor(
       readonly attrName: string,
       readonly parser: Converter<T, string>,
       readonly defaultValue: T|undefined,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
-  ) {
-    this.id = instanceStreamId(`attr[${attrName}]`, AnyType());
-  }
+  ) { }
 
   getValue(root: ShadowRoot): Observable<T> {
     return attributeObservable(

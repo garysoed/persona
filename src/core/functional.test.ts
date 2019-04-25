@@ -82,7 +82,7 @@ class TestClass extends ParentTestClass {
 
 const testerFactory = new PersonaTesterFactory(_p);
 
-test('persona.core.functional', () => {
+test('@persona/core/functional', () => {
   let mockHandler: Spy<undefined, []>;
   let tester: PersonaTester;
   let el: HTMLElement;

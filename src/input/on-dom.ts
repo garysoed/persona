@@ -1,20 +1,14 @@
-import { InstanceStreamId, instanceStreamId } from '@grapevine/component';
-import { InstanceofType } from '@gs-types';
 import { fromEvent, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { Input } from '../component/input';
 import { UnresolvedElementProperty } from '../component/unresolved-element-property';
 
 export class OnDomInput<E extends Event> implements Input<E> {
-  readonly id: InstanceStreamId<E>;
-
   constructor(
       private readonly eventName: string,
       private readonly options: AddEventListenerOptions,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
-  ) {
-    this.id = instanceStreamId(`onDom(${eventName})`, InstanceofType<E>(Event));
-  }
+  ) { }
 
   getValue(root: ShadowRoot): Observable<E> {
     return this.resolver(root)
