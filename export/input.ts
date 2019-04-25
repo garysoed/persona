@@ -1,5 +1,4 @@
 export { attribute as attributeIn } from '../src/input/attribute';
-export { element } from '../src/input/element';
 export { handler } from '../src/input/handler';
 export { hasAttribute } from '../src/input/has-attribute';
 export { hasClass } from '../src/input/has-class';
