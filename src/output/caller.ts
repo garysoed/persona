@@ -1,7 +1,7 @@
 import { combineLatest, interval, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
-import { Output } from '../component/output';
-import { UnresolvedElementProperty } from '../component/unresolved-element-property';
+import { Output } from '../types/output';
+import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 type ElFunction<T extends any[]> = (arg: T) => void;
 

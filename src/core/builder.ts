@@ -1,18 +1,17 @@
-import { Source, Vine, VineBuilder } from '@grapevine';
+import { Vine, VineBuilder } from '@grapevine';
 import { DelayedObservable } from '@grapevine/internal';
 import { $declareFinite, $filter, $filterNotEqual, $flat, $getKey, $head, $map, $pick, $pipe, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableSet } from '@gs-tools/collect';
-import { ClassAnnotation, ClassAnnotator, PropertyAnnotator } from '@gs-tools/data';
+import { ClassAnnotation, ClassAnnotator } from '@gs-tools/data';
 import { Errors } from '@gs-tools/error';
-import { debug } from '@gs-tools/rxjs';
 import { AnyType, IterableOfType } from '@gs-types';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
-import { Input } from '../component/input';
-import { Output } from '../component/output';
+import { Observable, ReplaySubject } from 'rxjs';
+import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
+import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec';
+import { Input } from '../types/input';
+import { Output } from '../types/output';
 import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
-import { CustomElementCtrl } from './custom-element-ctrl';
 import { CustomElementImpl } from './custom-element-impl';
 import { RenderBuilder } from './render-builder';
-import { BaseCustomElementSpec, CustomElementCtrlCtor, CustomElementSpec, InitFn } from './types';
 
 interface FullComponentData extends CustomElementSpec {
   componentClass: CustomElementCtrlCtor;

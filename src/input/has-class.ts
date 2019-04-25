@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
-import { Input } from '../component/input';
-import { UnresolvedElementProperty } from '../component/unresolved-element-property';
+import { Input } from '../types/input';
+import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { mutationObservable } from '../util/mutation-observable';
 
 export class HasClassInput implements Input<boolean> {

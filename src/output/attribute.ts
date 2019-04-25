@@ -1,8 +1,8 @@
 import { Converter } from '@nabu/main';
 import { Observable } from 'rxjs';
 import { tap, withLatestFrom } from 'rxjs/operators';
-import { Output } from '../component/output';
-import { UnresolvedElementProperty } from '../component/unresolved-element-property';
+import { Output } from '../types/output';
+import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 export class AttributeOutput<T> implements Output<T> {
   constructor(

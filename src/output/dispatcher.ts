@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Output } from '../component/output';
-import { UnresolvedElementProperty } from '../component/unresolved-element-property';
+import { Output } from '../types/output';
+import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { CallerOutput } from './caller';
 
 export type DispatchFn<E extends Event> = (event: E) => void;

@@ -2,8 +2,8 @@ import { createImmutableSet } from '@gs-tools/collect';
 import { diff } from '@gs-tools/util';
 import { combineLatest, Observable } from 'rxjs';
 import { pairwise, startWith, tap } from 'rxjs/operators';
-import { Output } from '../component/output';
-import { UnresolvedElementProperty } from '../component/unresolved-element-property';
+import { Output } from '../types/output';
+import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 export class ClasslistOutput implements Output<Iterable<string>> {
   constructor(

@@ -1,7 +1,7 @@
 import { fromEvent, Observable, SchedulerLike } from 'rxjs';
 import { debounceTime, map, switchMap } from 'rxjs/operators';
-import { Input } from '../component/input';
-import { UnresolvedElementProperty } from '../component/unresolved-element-property';
+import { Input } from '../types/input';
+import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 export class OnInputInput implements Input<string> {
   constructor(

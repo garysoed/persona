@@ -5,7 +5,6 @@ import { Errors } from '@gs-tools/error';
 import { stringify, Verbosity } from '@moirai';
 import { Observable, throwError, timer } from 'rxjs';
 import { map, mapTo, switchMap, take, tap } from 'rxjs/operators';
-import { Input } from '../component/input';
 import { AttributeInput } from '../input/attribute';
 import { HandlerInput } from '../input/handler';
 import { HasAttributeInput } from '../input/has-attribute';
@@ -18,9 +17,10 @@ import { SetAttributeOutput } from '../output/set-attribute';
 import { findCommentNode } from '../output/slot';
 import { StyleOutput } from '../output/style';
 import { FakeMediaQuery, mockMatchMedia } from '../testing/mock-match-media';
+import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
+import { Input } from '../types/input';
 import { Builder as PersonaBuilder } from './builder';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
-import { CustomElementCtrlCtor } from './types';
 
 interface Key {
   alt?: boolean;

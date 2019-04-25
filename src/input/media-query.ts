@@ -1,6 +1,6 @@
 import { fromEvent, Observable } from 'rxjs';
 import { map, shareReplay, startWith } from 'rxjs/operators';
-import { Input } from '../component/input';
+import { Input } from '../types/input';
 
 export class MediaQueryInput implements Input<boolean> {
   constructor(

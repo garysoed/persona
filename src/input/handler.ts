@@ -1,7 +1,7 @@
 import { Observable, Subject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { Input } from '../component/input';
-import { UnresolvedElementProperty } from '../component/unresolved-element-property';
+import { Input } from '../types/input';
+import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 const __subject = Symbol('subject');
 

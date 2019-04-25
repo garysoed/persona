@@ -1,9 +1,9 @@
 import { $filter, $head, $pipe, createImmutableList, ImmutableList } from '@gs-tools/collect';
 import { Observable } from 'rxjs';
 import { scan, switchMap } from 'rxjs/operators';
-import { Output } from '../component/output';
-import { UnresolvedElementProperty } from '../component/unresolved-element-property';
 import { Renderer } from '../renderer/renderer';
+import { Output } from '../types/output';
+import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 export const SLOT_ELEMENTS_ = Symbol('slotElement');
 type SlotNode<R> = Node & {[SLOT_ELEMENTS_]?: R};

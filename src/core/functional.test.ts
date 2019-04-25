@@ -7,10 +7,10 @@ import { map, tap } from 'rxjs/operators';
 import { attribute as attributeIn } from '../input/attribute';
 import { element } from '../input/element';
 import { attribute as attributeOut } from '../output/attribute';
+import { CustomElementCtrl } from '../types/custom-element-ctrl';
+import { InitFn } from '../types/init-fn';
 import { Builder as PersonaBuilder } from './builder';
-import { CustomElementCtrl } from './custom-element-ctrl';
 import { PersonaTester, PersonaTesterFactory } from './persona-tester';
-import { InitFn } from './types';
 
 const _v = new VineBuilder();
 const _p = new PersonaBuilder(_v);

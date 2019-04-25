@@ -1,7 +1,7 @@
 import { Source, Stream, Vine } from '@grapevine';
 import { combineLatest, Observable, of as observableOf } from 'rxjs';
-import { Output } from '../component/output';
-import { InitFn } from './types';
+import { InitFn } from '../types/init-fn';
+import { Output } from '../types/output';
 
 export class RenderBuilder<T> {
   constructor(private readonly outputs: Array<Output<T>>) {}

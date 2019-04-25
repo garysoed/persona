@@ -2,8 +2,8 @@ import { Errors } from '@gs-tools/error';
 import { InstanceofType, Type } from '@gs-types';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
-import { Input } from '../component/input';
-import { UnresolvedElementProperty } from '../component/unresolved-element-property';
+import { Input } from '../types/input';
+import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { elementObservable } from '../util/element-observable';
 
 interface Properties<E extends Element> {

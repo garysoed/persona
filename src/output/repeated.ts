@@ -3,8 +3,8 @@ import { ArrayDiff, filterNonNull } from '@gs-tools/rxjs';
 import { assertUnreachable } from '@gs-tools/typescript';
 import { Observable } from 'rxjs';
 import { map, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-import { Output } from '../component/output';
-import { UnresolvedElementProperty } from '../component/unresolved-element-property';
+import { Output } from '../types/output';
+import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { mutationObservable } from '../util/mutation-observable';
 
 type Payload = Map<string, string>;
