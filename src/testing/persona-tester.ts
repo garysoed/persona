@@ -1,6 +1,6 @@
 import { Vine } from '@grapevine';
 import { fake, spy } from '@gs-testing/spy';
-import { createImmutableList, createImmutableSet, ImmutableList, ImmutableSet } from '@gs-tools/collect';
+import { $filter, $head, $pipe, createImmutableList, createImmutableSet, ImmutableList, ImmutableSet } from '@gs-tools/collect';
 import { Errors } from '@gs-tools/error';
 import { stringify, Verbosity } from '@moirai';
 import { Observable, throwError, timer } from 'rxjs';
@@ -15,7 +15,6 @@ import { AttributeOutput } from '../output/attribute';
 import { ClassToggleOutput } from '../output/class-toggle';
 import { RepeatedOutput } from '../output/repeated';
 import { SetAttributeOutput } from '../output/set-attribute';
-import { findCommentNode } from '../output/slot';
 import { StyleOutput } from '../output/style';
 import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { Input } from '../types/input';
@@ -328,6 +327,25 @@ export class PersonaTesterFactory {
 
     return tester;
   }
+}
+
+function findCommentNode<R>(
+    childNodes: ImmutableList<Node>,
+    commentContent: string|null,
+): Node|null {
+  if (!commentContent) {
+    return null;
+  }
+
+  return $pipe(
+      childNodes,
+      $filter(node => {
+        return node.nodeName === '#comment' &&
+            !!node.nodeValue &&
+            node.nodeValue.trim() === commentContent;
+      }),
+      $head(),
+  ) || null;
 }
 
 function getElement<E extends Element>(
