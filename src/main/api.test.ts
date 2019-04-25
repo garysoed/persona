@@ -7,7 +7,6 @@ import { compose } from '@nabu/util';
 import { fromEvent, of as observableOf, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { attribute as attributeIn } from '../input/attribute';
-import { element } from '../input/element';
 import { handler } from '../input/handler';
 import { hasAttribute } from '../input/has-attribute';
 import { hasClass } from '../input/has-class';
@@ -18,6 +17,7 @@ import { classToggle } from '../output/class-toggle';
 import { dispatcher } from '../output/dispatcher';
 import { setAttribute } from '../output/set-attribute';
 import { api } from './api';
+import { element } from './element';
 
 test('persona.main.api', () => {
   const ELEMENT_ID = 'test';

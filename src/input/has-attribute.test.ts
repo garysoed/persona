@@ -1,6 +1,6 @@
 import { assert, should, test } from '@gs-testing/main';
 import { InstanceofType } from '@gs-types';
-import { element } from './element';
+import { element } from '../main/element';
 import { hasAttribute, HasAttributeInput } from './has-attribute';
 
 test('persona.input.hasAttribute', () => {

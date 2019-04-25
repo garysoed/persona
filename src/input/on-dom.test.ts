@@ -1,7 +1,7 @@
 import { assert, should, test } from '@gs-testing/main';
 import { createSpySubject } from '@gs-testing/spy';
 import { InstanceofType } from '@gs-types';
-import { element } from './element';
+import { element } from '../main/element';
 import { onDom, OnDomInput } from './on-dom';
 
 test('input.onDom', () => {

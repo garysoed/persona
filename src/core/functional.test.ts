@@ -5,12 +5,12 @@ import { identity } from '@nabu/util';
 import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { attribute as attributeIn } from '../input/attribute';
-import { element } from '../input/element';
+import { element } from '../main/element';
 import { attribute as attributeOut } from '../output/attribute';
+import { PersonaTester, PersonaTesterFactory } from '../testing/persona-tester';
 import { CustomElementCtrl } from '../types/custom-element-ctrl';
 import { InitFn } from '../types/init-fn';
 import { Builder as PersonaBuilder } from './builder';
-import { PersonaTester, PersonaTesterFactory } from './persona-tester';
 
 const _v = new VineBuilder();
 const _p = new PersonaBuilder(_v);

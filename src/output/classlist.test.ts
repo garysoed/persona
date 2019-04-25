@@ -1,8 +1,8 @@
 import { assert, should, test } from '@gs-testing/main';
 import { createImmutableSet, ImmutableSet } from '@gs-tools/collect';
-import { Subject } from 'rxjs';
 import { InstanceofType } from '@gs-types';
-import { element } from '../input/element';
+import { Subject } from 'rxjs';
+import { element } from '../main/element';
 import { classlist, ClasslistOutput } from './classlist';
 
 test('output.classlist', () => {

@@ -1,7 +1,7 @@
 import { assert, should, test } from '@gs-testing/main';
 import { InstanceofType } from '@gs-types';
 import { Subject } from 'rxjs';
-import { element } from '../input/element';
+import { element } from '../main/element';
 import { textContent, TextContentOutput } from './text-content';
 
 test('output.textContent', () => {

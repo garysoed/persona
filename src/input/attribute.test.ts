@@ -3,8 +3,8 @@ import { integerConverter } from '@gs-tools/serializer';
 import { InstanceofType } from '@gs-types';
 import { human } from '@nabu/grammar';
 import { compose } from '@nabu/util';
+import { element } from '../main/element';
 import { attribute, AttributeInput } from './attribute';
-import { element } from './element';
 
 test('input.attribute', () => {
   const ELEMENT_ID = 'test';

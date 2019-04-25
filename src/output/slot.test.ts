@@ -2,7 +2,7 @@ import { assert, should, test } from '@gs-testing/main';
 import { createSpyObject, fake, SpyObj } from '@gs-testing/spy';
 import { InstanceofType } from '@gs-types';
 import { Subject } from 'rxjs';
-import { element } from '../input/element';
+import { element } from '../main/element';
 import { Renderer } from '../renderer/renderer';
 import { slot, SlotOutput } from './slot';
 

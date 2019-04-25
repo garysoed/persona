@@ -1,7 +1,7 @@
 import { assert, should, test } from '@gs-testing/main';
-import { Subject } from 'rxjs';
 import { InstanceofType } from '@gs-types';
-import { element } from '../input/element';
+import { Subject } from 'rxjs';
+import { element } from '../main/element';
 import { setAttribute, SetAttributeOutput } from './set-attribute';
 
 test('output.setAttribute', () => {

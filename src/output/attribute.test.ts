@@ -1,10 +1,10 @@
 import { assert, should, test } from '@gs-testing/main';
 import { integerConverter } from '@gs-tools/serializer';
-import { Subject } from 'rxjs';
 import { InstanceofType } from '@gs-types';
 import { human } from '@nabu/grammar';
 import { compose } from '@nabu/util';
-import { element } from '../input/element';
+import { Subject } from 'rxjs';
+import { element } from '../main/element';
 import { attribute, AttributeOutput } from './attribute';
 
 test('output.attribute', () => {
