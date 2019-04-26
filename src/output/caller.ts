@@ -1,5 +1,5 @@
-import { combineLatest, interval, Observable } from 'rxjs';
-import { distinctUntilChanged, filter, map, shareReplay, switchMap, take, tap } from 'rxjs/operators';
+import { combineLatest, concat, interval, Observable } from 'rxjs';
+import { filter, map, shareReplay, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { Output } from '../types/output';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
@@ -14,14 +14,16 @@ export class CallerOutput<T extends any[]> implements Output<T> {
   ) { }
 
   output(root: ShadowRoot, valueObs: Observable<T>): Observable<unknown> {
-    return combineLatest(
-        valueObs,
-        createFnObs<T>(this.resolver(root), this.functionName),
+    const fnObs = createFnObs<T>(this.resolver(root), this.functionName);
+
+    return concat(
+        // Wait for the fn to exist.
+        combineLatest(valueObs, fnObs).pipe(take(1)),
+        valueObs.pipe(withLatestFrom(fnObs)),
     )
-        .pipe(
-            distinctUntilChanged((prev, next) => prev[0] !== next[0]),
-            tap(([value, fn]) => fn(value)),
-        );
+    .pipe(
+        tap(([value, fn]) => fn(value)),
+    );
   }
 }
 
