@@ -29,7 +29,6 @@ export { repeated } from '../src/output/repeated';
 export { style } from '../src/output/style';
 export { textContent } from '../src/output/text-content';
 
-
 // Types
 export { CustomElementCtrl } from '../src/types/custom-element-ctrl';
 export { InitFn } from '../src/types/init-fn';

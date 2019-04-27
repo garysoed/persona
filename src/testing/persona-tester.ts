@@ -19,6 +19,7 @@ import { StyleOutput } from '../output/style';
 import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { Input } from '../types/input';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
+import { installFakeMutationObserver } from './fake-mutation-observer';
 import { FakeMediaQuery, mockMatchMedia } from './mock-match-media';
 
 interface Key {
@@ -324,6 +325,8 @@ export class PersonaTesterFactory {
         });
 
     mockMatchMedia(window);
+
+    installFakeMutationObserver();
 
     return tester;
   }
