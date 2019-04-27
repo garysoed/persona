@@ -3,7 +3,7 @@ import { __customElementImplFactory, CustomElementClass } from '../core/custom-e
 type Listener = () => void;
 
 export class FakeCustomElementRegistry implements CustomElementRegistry {
-  private readonly definedElements_: Map<string, CustomElementClass> = new Map();
+  private readonly definedElements: Map<string, CustomElementClass> = new Map();
   private readonly listeners_: Map<string, Listener[]> = new Map();
 
   constructor(private readonly createElement_: (tag: string) => HTMLElement) { }
@@ -21,7 +21,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
   }
 
   define(tag: string, constructor: CustomElementClass): void {
-    this.definedElements_.set(tag, constructor);
+    this.definedElements.set(tag, constructor);
 
     const listeners = this.listeners_.get(tag) || [];
     for (const listener of listeners) {
@@ -30,11 +30,26 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
   }
 
   get(tag: string): CustomElementClass|null {
-    return this.definedElements_.get(tag) || null;
+    return this.definedElements.get(tag) || null;
   }
 
   upgrade(root: Node): void {
     throw new Error('Method not implemented.');
+  }
+
+  async whenDefined(tag: string): Promise<void> {
+    return new Promise(resolve => {
+      // Already defined.
+      if (this.get(tag)) {
+        resolve();
+
+        return;
+      }
+
+      const listeners = this.listeners_.get(tag) || [];
+      listeners.push(resolve);
+      this.listeners_.set(tag, listeners);
+    });
   }
 
   private upgradeElement_(el: HTMLElement): void {
@@ -57,20 +72,5 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
       }
       this.upgradeElement_(node);
     }
-  }
-
-  async whenDefined(tag: string): Promise<void> {
-    return new Promise(resolve => {
-      // Already defined.
-      if (this.get(tag)) {
-        resolve();
-
-        return;
-      }
-
-      const listeners = this.listeners_.get(tag) || [];
-      listeners.push(resolve);
-      this.listeners_.set(tag, listeners);
-    });
   }
 }

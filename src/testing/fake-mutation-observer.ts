@@ -23,4 +23,13 @@ export function installFakeMutationObserver(): void {
         origSetAttribute.call(this, tag, value);
         this.dispatchEvent(new CustomEvent('mk-fake-mutation'));
       });
+
+  const origRemoveAttribute = HTMLElement.prototype.removeAttribute;
+  fake(spy(HTMLElement.prototype, 'removeAttribute'))
+      .always()
+      // tslint:disable-next-line: typedef
+      .call(function(this: HTMLElement, tag) {
+        origRemoveAttribute.call(this, tag);
+        this.dispatchEvent(new CustomEvent('mk-fake-mutation'));
+      });
 }

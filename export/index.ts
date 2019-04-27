@@ -25,7 +25,9 @@ export { classlist } from '../src/output/classlist';
 export { classToggle } from '../src/output/class-toggle';
 export { dispatcher, DispatchFn } from '../src/output/dispatcher';
 export { innerHtml } from '../src/output/inner-html';
+export { noop } from '../src/output/noop';
 export { repeated } from '../src/output/repeated';
+export { setAttribute } from '../src/output/set-attribute';;
 export { style } from '../src/output/style';
 export { textContent } from '../src/output/text-content';
 

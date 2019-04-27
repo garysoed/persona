@@ -166,18 +166,6 @@ export class PersonaTester {
         );
   }
 
-  // getObservable<T>(
-  //     element: HTMLElement,
-  //     id: InstanceSourceId<T>|InstanceStreamId<T>,
-  // ): Observable<T> {
-  //   const obs = this.vine.getObservable(id, getCtrl(element));
-  //   if (!obs) {
-  //     throw new Error(`Observable for ${id} not found`);
-  //   }
-
-  //   return obs;
-  // }
-
   getStyle<S extends keyof CSSStyleDeclaration>(
       element: HTMLElement,
       output: StyleOutput<S>,
