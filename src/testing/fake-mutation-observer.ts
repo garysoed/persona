@@ -12,7 +12,8 @@ class FakeMutationObserver extends MutationObserver {
   }
 }
 
-export function installFakeMutationObserver(): void {
+export function installFakeMutationObserver(): () => void {
+  const origMutationObserver = globalThis.MutationObserver;
   globalThis.MutationObserver = FakeMutationObserver;
 
   const origSetAttribute = HTMLElement.prototype.setAttribute;
@@ -32,4 +33,8 @@ export function installFakeMutationObserver(): void {
         origRemoveAttribute.call(this, tag);
         this.dispatchEvent(new CustomEvent('mk-fake-mutation'));
       });
+
+  return () => {
+    globalThis.MutationObserver = origMutationObserver;
+  };
 }

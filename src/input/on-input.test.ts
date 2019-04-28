@@ -7,7 +7,6 @@ import { onInput, OnInputInput } from './on-input';
 
 test('input.onInput', () => {
   const ELEMENT_ID = 'test';
-  const DEBOUNCE_MS = 123;
   let input: OnInputInput;
   let shadowRoot: ShadowRoot;
   let el: HTMLInputElement;
@@ -42,14 +41,8 @@ test('input.onInput', () => {
       el.dispatchEvent(inputEvent);
       spySubject.reset();
 
-      // Immediately change the value. This time nothing should happen because of the
-      // debounce.
       el.value = value1;
       el.dispatchEvent(inputEvent);
-      assert(spySubject.hasValue()).to.beFalse();
-
-      mockScheduler.tick(DEBOUNCE_MS);
-
       assert(spySubject.getValue()).to.equal(value1);
     });
   });

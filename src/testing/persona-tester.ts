@@ -314,8 +314,6 @@ export class PersonaTesterFactory {
 
     mockMatchMedia(window);
 
-    installFakeMutationObserver();
-
     return tester;
   }
 }
