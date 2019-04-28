@@ -1,4 +1,4 @@
-import { assert, should, test } from '@gs-testing/main';
+import { assert, should, test } from '@gs-testing';
 import { createImmutableSet, ImmutableSet } from '@gs-tools/collect';
 import { InstanceofType } from '@gs-types';
 import { Subject } from '@rxjs';

@@ -1,4 +1,4 @@
-import { assert, setup, should, test } from '@gs-testing/main';
+import { assert, setup, should, test } from '@gs-testing';
 import { ArrayDiff } from '@gs-tools/rxjs';
 import { InstanceofType } from '@gs-types';
 import { Subject } from '@rxjs';

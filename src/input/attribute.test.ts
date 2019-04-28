@@ -1,4 +1,4 @@
-import { assert, should, test } from '@gs-testing/main';
+import { assert, should, test } from '@gs-testing';
 import { integerConverter } from '@gs-tools/serializer';
 import { InstanceofType } from '@gs-types';
 import { human } from '@nabu/grammar';

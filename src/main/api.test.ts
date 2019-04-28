@@ -1,5 +1,4 @@
-import { assert, should, test } from '@gs-testing/main';
-import { createSpySubject } from '@gs-testing/spy';
+import { assert, createSpySubject, should, test } from '@gs-testing';
 import { integerConverter } from '@gs-tools/serializer';
 import { InstanceofType } from '@gs-types';
 import { human } from '@nabu/grammar';

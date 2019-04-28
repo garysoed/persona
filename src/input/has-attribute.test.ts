@@ -1,4 +1,4 @@
-import { assert, should, test } from '@gs-testing/main';
+import { assert, should, test } from '@gs-testing';
 import { InstanceofType } from '@gs-types';
 import { element } from '../main/element';
 import { hasAttribute, HasAttributeInput } from './has-attribute';

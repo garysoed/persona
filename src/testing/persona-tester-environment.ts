@@ -5,7 +5,9 @@ export class PersonaTesterEnvironment implements Environment {
   private uninstallFakeMutationObserver: (() => void)|null = null;
 
   afterEach(): void {
-    throw new Error('Method not implemented.');
+    if (this.uninstallFakeMutationObserver) {
+      this.uninstallFakeMutationObserver();
+    }
   }
 
   beforeEach(): void {

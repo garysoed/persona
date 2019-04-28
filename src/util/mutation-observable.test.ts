@@ -1,4 +1,4 @@
-import { assert, retryUntil, should, test } from '@gs-testing/main';
+import { assert, retryUntil, should, test } from '@gs-testing';
 import { BehaviorSubject } from '@rxjs';
 import { mutationObservable } from './mutation-observable';
 

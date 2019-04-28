@@ -1,6 +1,5 @@
 import { VineBuilder } from '@grapevine';
-import { assert, should, test } from '@gs-testing/main';
-import { createSpy, Spy } from '@gs-testing/spy';
+import { assert, createSpy, should, Spy, test } from '@gs-testing';
 import { identity } from '@nabu/util';
 import { BehaviorSubject, Observable, of as observableOf } from '@rxjs';
 import { map, tap } from '@rxjs/operators';

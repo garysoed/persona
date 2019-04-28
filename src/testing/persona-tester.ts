@@ -1,5 +1,5 @@
 import { Vine } from '@grapevine';
-import { fake, spy } from '@gs-testing/spy';
+import { fake, spy } from '@gs-testing';
 import { $filter, $head, $pipe, createImmutableList, createImmutableSet, ImmutableList, ImmutableSet } from '@gs-tools/collect';
 import { Errors } from '@gs-tools/error';
 import { stringify, Verbosity } from '@moirai';
