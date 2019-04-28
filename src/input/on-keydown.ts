@@ -1,6 +1,6 @@
 import { BooleanType } from '@gs-types';
-import { Observable } from 'rxjs';
-import { filter, tap } from 'rxjs/operators';
+import { Observable } from '@rxjs';
+import { filter, tap } from '@rxjs/operators';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { OnDomInput } from './on-dom';
 

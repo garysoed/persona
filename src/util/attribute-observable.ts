@@ -1,5 +1,5 @@
-import { combineLatest, Observable, of as observableOf } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
+import { combineLatest, Observable, of as observableOf } from '@rxjs';
+import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from '@rxjs/operators';
 import { mutationObservable } from './mutation-observable';
 
 /**

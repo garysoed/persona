@@ -16,7 +16,7 @@ test('input.onInput', () => {
   beforeEach(() => {
     mockScheduler = new MockScheduler();
     const $ = element(ELEMENT_ID, InstanceofType(HTMLInputElement), {
-      onInput: onInput(DEBOUNCE_MS, undefined, mockScheduler),
+      onInput: onInput(),
     });
 
     const root = document.createElement('div');

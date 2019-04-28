@@ -4,7 +4,7 @@ import { $declareFinite, $filter, $filterNotEqual, $flat, $getKey, $head, $map, 
 import { ClassAnnotation, ClassAnnotator } from '@gs-tools/data';
 import { Errors } from '@gs-tools/error';
 import { AnyType, IterableOfType } from '@gs-types';
-import { Observable, ReplaySubject } from 'rxjs';
+import { Observable, ReplaySubject } from '@rxjs';
 import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec';
 import { Input } from '../types/input';

@@ -1,7 +1,7 @@
 import { assert, should, test } from '@gs-testing/main';
 import { InstanceofType } from '@gs-types';
-import { of as observableOf } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { of as observableOf } from '@rxjs';
+import { map } from '@rxjs/operators';
 import { element } from '../main/element';
 import { caller, CallerOutput } from '../output/caller';
 import { handler, HandlerInput } from './handler';

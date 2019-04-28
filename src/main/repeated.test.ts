@@ -1,8 +1,8 @@
 import { assert, setup, should, test } from '@gs-testing/main';
 import { ArrayDiff } from '@gs-tools/rxjs';
 import { InstanceofType } from '@gs-types';
-import { Subject } from 'rxjs';
-import { element } from '../main/element';
+import { Subject } from '@rxjs';
+import { element } from './element';
 import { repeated, RepeatedOutput } from './repeated';
 
 
@@ -10,7 +10,7 @@ test('persona.output.repeated', () => {
   const ELEMENT_ID = 'elementId';
   const SLOT_NAME = 'slotName';
   const TAG_NAME = 'tag-name';
-  let output: RepeatedOutput<Map<string, string>>;
+  let output: RepeatedOutput;
   let shadowRoot: ShadowRoot;
   let parentEl: HTMLElement;
   let slot: Node;

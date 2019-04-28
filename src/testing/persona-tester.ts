@@ -3,17 +3,17 @@ import { fake, spy } from '@gs-testing/spy';
 import { $filter, $head, $pipe, createImmutableList, createImmutableSet, ImmutableList, ImmutableSet } from '@gs-tools/collect';
 import { Errors } from '@gs-tools/error';
 import { stringify, Verbosity } from '@moirai';
-import { Observable, throwError, timer } from 'rxjs';
-import { map, mapTo, switchMap, take, tap } from 'rxjs/operators';
+import { Observable, throwError, timer } from '@rxjs';
+import { map, mapTo, switchMap, take, tap } from '@rxjs/operators';
 import { Builder as PersonaBuilder } from '../core/builder';
 import { AttributeInput } from '../input/attribute';
 import { HandlerInput } from '../input/handler';
 import { HasAttributeInput } from '../input/has-attribute';
 import { HasClassInput } from '../input/has-class';
 import { MediaQueryInput } from '../input/media-query';
+import { RepeatedOutput } from '../main/repeated';
 import { AttributeOutput } from '../output/attribute';
 import { ClassToggleOutput } from '../output/class-toggle';
-import { RepeatedOutput } from '../output/repeated';
 import { SetAttributeOutput } from '../output/set-attribute';
 import { StyleOutput } from '../output/style';
 import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
@@ -138,7 +138,7 @@ export class PersonaTester {
 
   getNodesAfter(
       element: HTMLElement,
-      output: RepeatedOutput<any>,
+      output: RepeatedOutput,
   ): Observable<ImmutableList<Node>> {
     return getElement(element, shadowRoot => output.resolver(shadowRoot))
         .pipe(

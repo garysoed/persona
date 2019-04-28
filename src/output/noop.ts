@@ -1,4 +1,4 @@
-import { EMPTY, Observable } from 'rxjs';
+import { EMPTY, Observable } from '@rxjs';
 import { Output } from '../types/output';
 
 class Noop implements Output<any> {

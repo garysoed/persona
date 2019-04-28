@@ -1,8 +1,8 @@
 import { assert, retryUntil, should, test } from '@gs-testing/main';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from '@rxjs';
 import { elementObservable } from './element-observable';
 
-test('util.elementObservable', () => {
+test('@persona/util/elementObservable', () => {
   should(`emit the elements correctly`, async () => {
     const rootEl = document.createElement('div').attachShadow({mode: 'open'});
     const addedEl = document.createElement('div');

@@ -1,51 +1,31 @@
 import { $filter, $head, $pipe, createImmutableList, ImmutableList } from '@gs-tools/collect';
 import { ArrayDiff, filterNonNull } from '@gs-tools/rxjs';
 import { assertUnreachable } from '@gs-tools/typescript';
-import { Observable } from 'rxjs';
-import { map, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import { Observable } from '@rxjs';
+import { map, startWith, switchMap, tap, withLatestFrom } from '@rxjs/operators';
 import { Output } from '../types/output';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { mutationObservable } from '../util/mutation-observable';
+import { applyAttributes, AttributesSpec, createElementFromSpec } from './create-element-from-spec';
+import { createSlotObs } from './create-slot-obs';
 
 type Payload = Map<string, string>;
 
-export class RepeatedOutput<T extends Payload> implements Output<ArrayDiff<T>> {
+export class RepeatedOutput implements Output<ArrayDiff<AttributesSpec>> {
   constructor(
       readonly slotName: string,
       readonly tagName: string,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
   ) { }
 
-  // tslint:disable-next-line: prefer-function-over-method
-  private deleteEl(parentNode: Node, slotNode: Node, index: number): void {
-    const curr = getEl(slotNode, index);
-
-    if (!curr) {
-      return;
-    }
-
-    parentNode.removeChild(curr);
-  }
-
-  private insertEl(parentNode: Node, slotNode: Node, payload: T, index: number): void {
-    let curr = slotNode.nextSibling;
-    for (let i = 0; i < index && curr !== null; i++) {
-      curr = curr.nextSibling;
-    }
-
-    const newEl = document.createElement(this.tagName);
-    applyAttributes(newEl, payload);
-    parentNode.insertBefore(newEl, curr);
-  }
-
-  output(root: ShadowRoot, valueObs: Observable<ArrayDiff<T>>): Observable<unknown> {
+  output(root: ShadowRoot, valueObs: Observable<ArrayDiff<AttributesSpec>>): Observable<unknown> {
     const parentElObs = this.resolver(root);
 
     return valueObs
         .pipe(
             withLatestFrom(
                 parentElObs,
-                createCommentNodeObs(parentElObs, this.slotName).pipe(filterNonNull()),
+                createSlotObs(parentElObs, this.slotName).pipe(filterNonNull()),
             ),
             tap(([diff, parentEl, slotNode]) => {
               switch (diff.type) {
@@ -70,29 +50,60 @@ export class RepeatedOutput<T extends Payload> implements Output<ArrayDiff<T>> {
         );
   }
 
-  private setEl(parentNode: Node, slotNode: Node, payload: T, index: number): void {
+  // tslint:disable-next-line: prefer-function-over-method
+  private deleteEl(parentNode: Node, slotNode: Node, index: number): void {
+    const curr = getEl(slotNode, index);
+
+    if (!curr) {
+      return;
+    }
+
+    parentNode.removeChild(curr);
+  }
+
+  private insertEl(
+      parentNode: Element,
+      slotNode: Node,
+      attributes: AttributesSpec,
+      index: number,
+  ): void {
+    let curr = slotNode.nextSibling;
+    for (let i = 0; i < index && curr !== null; i++) {
+      curr = curr.nextSibling;
+    }
+
+    const newEl = createElementFromSpec(this.tagName, attributes);
+    parentNode.insertBefore(newEl, curr);
+  }
+
+  private setEl(
+      parentNode: Element,
+      slotNode: Node,
+      attributes: AttributesSpec,
+      index: number,
+  ): void {
     const existingEl = getEl(slotNode, index);
 
     if (!(existingEl instanceof HTMLElement) ||
         existingEl.tagName.toLowerCase() !== this.tagName) {
       this.deleteEl(parentNode, slotNode, index);
-      this.insertEl(parentNode, slotNode, payload, index);
+      this.insertEl(parentNode, slotNode, attributes, index);
 
       return;
     }
 
-    applyAttributes(existingEl, payload);
+    applyAttributes(existingEl, attributes);
   }
 }
 
 class UnresolvedRepeatedOutput<T extends Payload>
-    implements UnresolvedElementProperty<Element, RepeatedOutput<T>> {
+    implements UnresolvedElementProperty<Element, RepeatedOutput> {
   constructor(
       private readonly slotName: string,
       private readonly tagName: string,
   ) { }
 
-  resolve(resolver: (root: ShadowRoot) => Observable<Element>): RepeatedOutput<T> {
+  resolve(resolver: (root: ShadowRoot) => Observable<Element>): RepeatedOutput {
     return new RepeatedOutput(this.slotName, this.tagName, resolver);
   }
 }
@@ -102,44 +113,6 @@ export function repeated<T extends Payload>(
     tagName: string,
 ): UnresolvedRepeatedOutput<T> {
   return new UnresolvedRepeatedOutput<T>(slotName, tagName);
-}
-
-function applyAttributes(element: HTMLElement, payload: Payload): void {
-  for (const [key, value] of payload) {
-    element.setAttribute(key, value);
-  }
-}
-
-function createCommentNodeObs(
-    parentElObs: Observable<Element>,
-    slotName: string,
-): Observable<Node|null> {
-  return parentElObs
-      .pipe(
-          switchMap(parentEl => {
-            return mutationObservable(parentEl, {childList: true})
-                .pipe(
-                    map(() => parentEl.childNodes),
-                    startWith(parentEl.childNodes),
-                );
-          }),
-          map(childNodes => findCommentNode(createImmutableList(childNodes), slotName)),
-      );
-}
-
-function findCommentNode(
-    childNodes: ImmutableList<Node>,
-    commentContent: string,
-): Node|null {
-  return $pipe(
-      childNodes,
-      $filter(node => {
-        return node.nodeName === '#comment' &&
-            !!node.nodeValue &&
-            node.nodeValue.trim() === commentContent;
-      }),
-      $head(),
-  ) || null;
 }
 
 function getEl(slotNode: Node, index: number): Node|null {

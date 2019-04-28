@@ -1,7 +1,7 @@
 import { assert, should, test } from '@gs-testing/main';
 import { createSpySubject } from '@gs-testing/spy';
 import { InstanceofType } from '@gs-types';
-import { of as observableOf } from 'rxjs';
+import { of as observableOf } from '@rxjs';
 import { element } from '../main/element';
 import { caller, CallerOutput } from './caller';
 

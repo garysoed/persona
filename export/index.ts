@@ -17,6 +17,8 @@ export { onKeydown } from '../src/input/on-keydown';
 // Main
 export { api } from '../src/main/api';
 export { element } from '../src/main/element';
+export { repeated } from '../src/main/repeated';
+export { single } from '../src/main/single';
 
 // Outputs
 export { attribute as attributeOut } from '../src/output/attribute';
@@ -26,8 +28,7 @@ export { classToggle } from '../src/output/class-toggle';
 export { dispatcher, DispatchFn } from '../src/output/dispatcher';
 export { innerHtml } from '../src/output/inner-html';
 export { noop } from '../src/output/noop';
-export { repeated } from '../src/output/repeated';
-export { setAttribute } from '../src/output/set-attribute';;
+export { setAttribute } from '../src/output/set-attribute';
 export { style } from '../src/output/style';
 export { textContent } from '../src/output/text-content';
 

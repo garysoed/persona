@@ -14,7 +14,6 @@ module.exports = {
 
   resolve: {
     alias: {
-      'rxjs': path.resolve(__dirname, './node_modules/rxjs'),
       'tslib': path.resolve(__dirname, './node_modules/tslib'),
     },
     // Add '.ts' and '.tsx' as resolvable extensions.
