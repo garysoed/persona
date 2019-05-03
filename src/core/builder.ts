@@ -88,15 +88,15 @@ export class Builder {
     return this.vineBuilder
         .stream<T, CustomElementCtrl>(
             function(this: CustomElementCtrl): Observable<T> {
-              // TODO: This subject should be customized for each input.
-              const subject = new ReplaySubject<T>(1);
-              this.addSubscription(input.getValue(this.shadowRoot).subscribe(subject));
-
-              return subject;
+              return input.getValue(this.shadowRoot);
             },
             context,
         )
         .asObservable();
+  }
+
+  render<T>(...outputs: Array<Output<T>>): RenderBuilder<T> {
+    return new RenderBuilder(outputs);
   }
 
   private register(
@@ -118,10 +118,6 @@ export class Builder {
     }
 
     return registeredComponentSpecs;
-  }
-
-  render<T>(...outputs: Array<Output<T>>): RenderBuilder<T> {
-    return new RenderBuilder(outputs);
   }
 }
 
