@@ -11,6 +11,7 @@ import { HandlerInput } from '../input/handler';
 import { HasAttributeInput } from '../input/has-attribute';
 import { HasClassInput } from '../input/has-class';
 import { MediaQueryInput } from '../input/media-query';
+import { OnDomInput } from '../input/on-dom';
 import { RepeatedOutput } from '../main/repeated';
 import { SingleOutput } from '../main/single';
 import { AttributeOutput } from '../output/attribute';
@@ -57,12 +58,12 @@ export class PersonaTester {
     return this.customElementRegistry_.create(tag, parent);
   }
 
-  dispatchEvent(
+  dispatchEvent<E extends Event>(
       element: HTMLElement,
-      input: Input<Element>,
-      event: Event,
+      spec: OnDomInput<E>,
+      event: E,
   ): Observable<unknown> {
-    return getElement(element, shadowRoot => input.getValue(shadowRoot))
+    return getElement(element, shadowRoot => spec.resolver(shadowRoot))
         .pipe(
             take(1),
             tap(targetEl => targetEl.dispatchEvent(event)),
@@ -185,6 +186,16 @@ export class PersonaTester {
         .pipe(
             switchMap(targetEl => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(targetEl))),
             map(el => el.textContent || ''));
+  }
+
+  hasAttribute(
+      element: HTMLElement,
+      spec: SetAttributeOutput|HasAttributeInput,
+  ): Observable<boolean> {
+    return getElement(element, shadowRoot => spec.resolver(shadowRoot))
+        .pipe(
+            map(el => el.hasAttribute(spec.attrName)),
+        );
   }
 
   setAttribute<T>(
