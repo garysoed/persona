@@ -1,6 +1,7 @@
 const glob = require("glob");
 const path = require("path");
 const { TsConfigPathsPlugin } = require('awesome-typescript-loader');
+const WebpackNotifierPlugin = require('webpack-notifier');
 
 module.exports = {
   entry: glob.sync("./src/**/*.test.ts"),

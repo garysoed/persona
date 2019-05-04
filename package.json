@@ -27,7 +27,8 @@
     "ts-loader": "^4.4.1",
     "typescript": "^3.4.3",
     "uglifyjs-webpack-plugin": "^1.2.5",
-    "webpack": "^4.9.2"
+    "webpack": "^4.9.2",
+    "webpack-notifier": "^1.7.0"
   },
   "peerDependencies": {
     "rxjs": "^6.3.3"
