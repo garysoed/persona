@@ -12,6 +12,7 @@ import { HasAttributeInput } from '../input/has-attribute';
 import { HasClassInput } from '../input/has-class';
 import { MediaQueryInput } from '../input/media-query';
 import { RepeatedOutput } from '../main/repeated';
+import { SingleOutput } from '../main/single';
 import { AttributeOutput } from '../output/attribute';
 import { ClassToggleOutput } from '../output/class-toggle';
 import { SetAttributeOutput } from '../output/set-attribute';
@@ -19,7 +20,6 @@ import { StyleOutput } from '../output/style';
 import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { Input } from '../types/input';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
-import { installFakeMutationObserver } from './fake-mutation-observer';
 import { FakeMediaQuery, mockMatchMedia } from './mock-match-media';
 
 interface Key {
@@ -138,8 +138,8 @@ export class PersonaTester {
 
   getNodesAfter(
       element: HTMLElement,
-      output: RepeatedOutput,
-  ): Observable<ImmutableList<Node>> {
+      output: RepeatedOutput|SingleOutput,
+  ): Observable<Node[]> {
     return getElement(element, shadowRoot => output.resolver(shadowRoot))
         .pipe(
             map(parentEl => findCommentNode(
@@ -161,7 +161,7 @@ export class PersonaTester {
                 node = node.nextSibling;
               }
 
-              return createImmutableList(nodes);
+              return nodes;
             }),
         );
   }

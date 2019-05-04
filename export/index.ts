@@ -18,7 +18,7 @@ export { onKeydown } from '../src/input/on-keydown';
 export { api } from '../src/main/api';
 export { element } from '../src/main/element';
 export { repeated } from '../src/main/repeated';
-export { single } from '../src/main/single';
+export { single, RenderData as SingleRenderSpec } from '../src/main/single';
 
 // Outputs
 export { attribute as attributeOut } from '../src/output/attribute';
