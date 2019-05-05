@@ -12,5 +12,6 @@ export class PersonaTesterEnvironment implements Environment {
 
   beforeEach(): void {
     this.uninstallFakeMutationObserver = installFakeMutationObserver();
+    window.localStorage.clear();
   }
 }

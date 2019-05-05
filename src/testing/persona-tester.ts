@@ -4,7 +4,7 @@ import { $filter, $head, $pipe, createImmutableList, createImmutableSet, Immutab
 import { Errors } from '@gs-tools/error';
 import { stringify, Verbosity } from '@moirai';
 import { Observable, throwError, timer } from '@rxjs';
-import { map, mapTo, switchMap, take, tap } from '@rxjs/operators';
+import { map, mapTo, startWith, switchMap, take, tap } from '@rxjs/operators';
 import { Builder as PersonaBuilder } from '../core/builder';
 import { AttributeInput } from '../input/attribute';
 import { HandlerInput } from '../input/handler';
@@ -152,7 +152,11 @@ export class PersonaTester {
                 return throwError(new Error(`Slot ${output.slotName} cannot be found`));
               }
 
-              return timer(0, REFRESH_PERIOD_MS).pipe(mapTo(slotEl));
+              return timer(0, REFRESH_PERIOD_MS)
+                  .pipe(
+                      mapTo(slotEl),
+                      startWith(slotEl),
+                  );
             }),
             map(slotEl => {
               const nodes = [];
