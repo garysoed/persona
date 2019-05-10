@@ -44,5 +44,11 @@ module.exports = {
 
   watch: true,
 
-  plugins: [ ]
+  plugins: [
+    new WebpackNotifierPlugin({
+      alwaysNotify: true,
+      contentImage: '',
+      title: 'Thoth',
+    }),
+  ]
 };

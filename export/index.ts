@@ -35,3 +35,6 @@ export { textContent } from '../src/output/text-content';
 // Types
 export { CustomElementCtrl } from '../src/types/custom-element-ctrl';
 export { InitFn } from '../src/types/init-fn';
+
+// Location
+export { LocationService, RouteSpec } from '../src/location/location-service';
