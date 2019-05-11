@@ -5,7 +5,7 @@ import { UnresolvedElementProperty } from '../types/unresolved-element-property'
 
 export class OnDomInput<E extends Event> implements Input<E> {
   constructor(
-      private readonly eventName: string,
+      readonly eventName: string,
       private readonly options: AddEventListenerOptions,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
   ) { }

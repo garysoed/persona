@@ -62,6 +62,12 @@ export class PersonaTester {
       element: HTMLElement,
       spec: OnDomInput<E>,
       event: E,
+  ): Observable<unknown>;
+  dispatchEvent(element: HTMLElement, spec: OnDomInput<Event>): Observable<unknown>;
+  dispatchEvent(
+      element: HTMLElement,
+      spec: OnDomInput<Event>,
+      event: Event = new CustomEvent(spec.eventName),
   ): Observable<unknown> {
     return getElement(element, shadowRoot => spec.resolver(shadowRoot))
         .pipe(
