@@ -12,14 +12,21 @@ export interface Route<M, T extends keyof M> {
   type: T;
 }
 
+export interface Routes {
+  'MAIN': {};
+  'PROJECT': {projectId: string};
+}
+
+type RoutesOf<M> = {[K in keyof M]: {payload: M[K]; type: K}}[keyof M];
+
 export class LocationService<M> {
   constructor(
       private readonly specs: Array<RouteSpec<keyof M>>,
-      private readonly defaultPath: Route<M, keyof M>,
+      private readonly defaultPath: RoutesOf<M>,
       private readonly windowObj: Window = window,
   ) { }
 
-  getLocation(): Observable<Route<M, keyof M>> {
+  getLocation(): Observable<RoutesOf<M>> {
     return fromEvent<PopStateEvent>(this.windowObj, 'popstate')
         .pipe(
             map(() => this.windowObj.location.pathname),
@@ -31,6 +38,8 @@ export class LocationService<M> {
                   return {payload: result.value, type: spec.type};
                 }
               }
+
+              this.goToPath(this.defaultPath.type, this.defaultPath.payload);
 
               return this.defaultPath;
             }),
@@ -80,7 +89,14 @@ type MatchResult<T> = SuccessResult<T>|FailedResult;
 function parseLocation<M>(
     location: string,
     spec: RouteSpec<keyof M>): MatchResult<M[keyof M]> {
-  const regex = new RegExp(`^${spec.path.replace(/:([^\/]+)/g, (_, p) => `(?<${p}>[^/]+)`)}$`);
+  const replacedSpec = spec.path.replace(
+      /:([^\/?]+)(\??)/g,
+      (_, key, optional) => {
+        const match = optional ? '*' : '+';
+
+        return `(?<${key}>[^/]${match})`;
+      });
+  const regex = new RegExp(`^${replacedSpec}$`);
   const match = location.match(regex);
   if (!match) {
     return {success: false};

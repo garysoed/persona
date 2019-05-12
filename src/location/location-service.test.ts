@@ -5,8 +5,9 @@ import { LocationService, Route } from './location-service';
 interface TestRoutes {
   'default': {};
   'notexist': {};
-  'pathA': {b: string};
-  'pathB': {n: string};
+  'pathA': {a: string};
+  'pathB': {b: string};
+  'pathC': {n: string};
 }
 
 test('@persona/location/location-service', () => {
@@ -26,8 +27,10 @@ test('@persona/location/location-service', () => {
 
     service = new LocationService(
         [
-          {path: '/a/:b', type: 'pathA'},
-          {path: '/:n', type: 'pathB'},
+          {path: '/a/:a', type: 'pathA'},
+          {path: '/b/:b?', type: 'pathB'},
+          {path: '/:n', type: 'pathC'},
+          {path: '/default', type: 'default'},
         ],
         {payload: {}, type: 'default'},
         mockWindow,
@@ -40,8 +43,30 @@ test('@persona/location/location-service', () => {
 
       await assert(service.getLocation()).to.emitWith(
           match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
-            payload: match.anyObjectThat().haveProperties({b: 'abc'}),
+            payload: match.anyObjectThat().haveProperties({a: 'abc'}),
             type: 'pathA',
+          }),
+      );
+    });
+
+    should(`match optional parameters`, async () => {
+      mockLocation.pathname = '/b/abc';
+
+      await assert(service.getLocation()).to.emitWith(
+          match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
+            payload: match.anyObjectThat().haveProperties({b: 'abc'}),
+            type: 'pathB',
+          }),
+      );
+    });
+
+    should(`match optional parameters when omitted`, async () => {
+      mockLocation.pathname = '/b/';
+
+      await assert(service.getLocation()).to.emitWith(
+          match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
+            payload: match.anyObjectThat().haveProperties({b: ''}),
+            type: 'pathB',
           }),
       );
     });
@@ -55,19 +80,25 @@ test('@persona/location/location-service', () => {
             type: 'default',
           }),
       );
+
+      assert(mockHistory.pushState).to.haveBeenCalledWith(
+          match.anyObjectThat().haveProperties({}),
+          'TODO',
+          `/default`,
+      );
     });
   });
 
   test('goToPath', () => {
     should(`push the history correctly`, () => {
-      const b = '123';
+      const a = '123';
 
-      service.goToPath('pathA', {b});
+      service.goToPath('pathA', {a});
 
       assert(mockHistory.pushState).to.haveBeenCalledWith(
           match.anyObjectThat().haveProperties({}),
           'TODO',
-          `/a/${b}`,
+          `/a/${a}`,
       );
     });
 
