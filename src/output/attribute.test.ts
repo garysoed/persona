@@ -1,8 +1,8 @@
 import { assert, setup, should, test } from '@gs-testing';
 import { integerConverter } from '@gs-tools/serializer';
 import { InstanceofType } from '@gs-types';
-import { human } from '@nabu/grammar';
-import { compose } from '@nabu/util';
+import { human } from '@nabu';
+import { compose } from '@nabu';
 import { Subject } from '@rxjs';
 import { element } from '../main/element';
 import { attribute, AttributeOutput } from './attribute';

@@ -1,5 +1,5 @@
 import { Errors } from '@gs-tools/error';
-import { Converter } from '@nabu/main';
+import { Converter } from '@nabu';
 import { Observable } from '@rxjs';
 import { Input } from '../types/input';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
