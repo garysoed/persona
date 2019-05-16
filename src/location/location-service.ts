@@ -1,6 +1,6 @@
 import { cache } from '@gs-tools/data';
-import { fromEvent, Observable } from '@rxjs';
-import { map, startWith } from '@rxjs/operators';
+import { fromEvent, merge, Observable, Subject } from '@rxjs';
+import { filter, map, startWith } from '@rxjs/operators';
 
 export interface RouteSpec<T> {
   path: string;
@@ -20,6 +20,8 @@ export interface Routes {
 type RoutesOf<M> = {[K in keyof M]: {payload: M[K]; type: K}}[keyof M];
 
 export class LocationService<M> {
+  private readonly onPushState: Subject<{}> = new Subject();
+
   constructor(
       private readonly specs: Array<RouteSpec<keyof M>>,
       private readonly defaultPath: RoutesOf<M>,
@@ -27,7 +29,10 @@ export class LocationService<M> {
   ) { }
 
   getLocation(): Observable<RoutesOf<M>> {
-    return fromEvent<PopStateEvent>(this.windowObj, 'popstate')
+    return merge(
+            fromEvent<PopStateEvent>(this.windowObj, 'popstate'),
+            this.onPushState,
+        )
         .pipe(
             map(() => this.windowObj.location.pathname),
             startWith(this.windowObj.location.pathname),
@@ -46,6 +51,13 @@ export class LocationService<M> {
         );
   }
 
+  getLocationOfType<K extends keyof M>(type: K): Observable<Route<M, K>|null> {
+    return this.getLocation()
+        .pipe(map((location): Route<M, K>|null => {
+          return location.type === type ? location as Route<M, K> : null;
+        }));
+  }
+
   goToPath<T extends keyof M>(type: T, payload: M[T]): void {
     const spec = this.getPathSpecMap().get(type);
     if (!spec) {
@@ -58,10 +70,11 @@ export class LocationService<M> {
         continue;
       }
 
-      path = path.replace(`:${key}`, payload[key].toString());
+      path = path.replace(new RegExp(`:${key}\\??`), payload[key].toString());
     }
 
     this.windowObj.history.pushState({}, 'TODO', path);
+    this.onPushState.next({});
   }
 
   @cache()

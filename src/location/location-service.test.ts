@@ -89,6 +89,25 @@ test('@persona/location/location-service', () => {
     });
   });
 
+  test('getLocationOfType', () => {
+    should(`emit the location if it has the correct type`, async () => {
+      mockLocation.pathname = '/a/abc';
+
+      await assert(service.getLocationOfType('pathA')).to.emitWith(
+          match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
+            payload: match.anyObjectThat().haveProperties({a: 'abc'}),
+            type: 'pathA',
+          }),
+      );
+    });
+
+    should(`emit null if location is of the wrong type`, async () => {
+      mockLocation.pathname = '/b/abc';
+
+      await assert(service.getLocationOfType('pathA')).to.emitWith(null);
+    });
+  });
+
   test('goToPath', () => {
     should(`push the history correctly`, () => {
       const a = '123';
