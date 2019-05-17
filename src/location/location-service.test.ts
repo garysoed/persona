@@ -1,7 +1,6 @@
-import { assert, createSpyInstance, createSpyObject, match, setup, should, SpyObj, test } from '@gs-testing';
-import { mixinDomListenable } from '../testing/mixin-dom-listenable';
+import { assert, match, setup, should, test } from '@gs-testing';
+import { createFakeWindow } from '../testing/fake-window';
 import { LocationService, Route } from './location-service';
-
 interface TestRoutes {
   'default': {};
   'notexist': {};
@@ -12,18 +11,10 @@ interface TestRoutes {
 
 test('@persona/location/location-service', () => {
   let service: LocationService<TestRoutes>;
-  let mockHistory: SpyObj<History>;
-  let mockLocation: {pathname: string};
+  let fakeWindow: Window;
 
   setup(() => {
-    mockHistory = createSpyInstance(History);
-    mockLocation = {pathname: ''};
-    const mockWindow = mixinDomListenable(
-        Object.assign(
-            createSpyObject<Window>('Window', []),
-            {history: mockHistory, location: mockLocation},
-        ),
-    );
+    fakeWindow = createFakeWindow();
 
     service = new LocationService(
         [
@@ -33,13 +24,13 @@ test('@persona/location/location-service', () => {
           {path: '/default', type: 'default'},
         ],
         {payload: {}, type: 'default'},
-        mockWindow,
+        fakeWindow,
     );
   });
 
   test('getLocation', () => {
     should(`emit the first matching path`, async () => {
-      mockLocation.pathname = '/a/abc';
+      fakeWindow.history.pushState({}, '', '/a/abc');
 
       await assert(service.getLocation()).to.emitWith(
           match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
@@ -50,7 +41,7 @@ test('@persona/location/location-service', () => {
     });
 
     should(`match optional parameters`, async () => {
-      mockLocation.pathname = '/b/abc';
+      fakeWindow.history.pushState({}, '', '/b/abc');
 
       await assert(service.getLocation()).to.emitWith(
           match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
@@ -61,7 +52,7 @@ test('@persona/location/location-service', () => {
     });
 
     should(`match optional parameters when omitted`, async () => {
-      mockLocation.pathname = '/b/';
+      fakeWindow.history.pushState({}, '', '/b/');
 
       await assert(service.getLocation()).to.emitWith(
           match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
@@ -72,7 +63,7 @@ test('@persona/location/location-service', () => {
     });
 
     should(`emit the default path if none of the specs match`, async () => {
-      mockLocation.pathname = '/un/match';
+      fakeWindow.history.pushState({}, '', '/un/match');
 
       await assert(service.getLocation()).to.emitWith(
           match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
@@ -81,17 +72,13 @@ test('@persona/location/location-service', () => {
           }),
       );
 
-      assert(mockHistory.pushState).to.haveBeenCalledWith(
-          match.anyObjectThat().haveProperties({}),
-          'TODO',
-          `/default`,
-      );
+      assert(fakeWindow.location.pathname).to.equal(`/default`);
     });
   });
 
   test('getLocationOfType', () => {
     should(`emit the location if it has the correct type`, async () => {
-      mockLocation.pathname = '/a/abc';
+      fakeWindow.history.pushState({}, '', '/a/abc');
 
       await assert(service.getLocationOfType('pathA')).to.emitWith(
           match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
@@ -102,7 +89,7 @@ test('@persona/location/location-service', () => {
     });
 
     should(`emit null if location is of the wrong type`, async () => {
-      mockLocation.pathname = '/b/abc';
+      fakeWindow.history.pushState({}, '', '/b/abc');
 
       await assert(service.getLocationOfType('pathA')).to.emitWith(null);
     });
@@ -114,11 +101,7 @@ test('@persona/location/location-service', () => {
 
       service.goToPath('pathA', {a});
 
-      assert(mockHistory.pushState).to.haveBeenCalledWith(
-          match.anyObjectThat().haveProperties({}),
-          'TODO',
-          `/a/${a}`,
-      );
+      assert(fakeWindow.location.pathname).to.equal(`/a/${a}`);
     });
 
     should(`throw error if the type cannot be found`, () => {

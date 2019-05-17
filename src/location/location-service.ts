@@ -1,6 +1,6 @@
 import { cache } from '@gs-tools/data';
 import { fromEvent, merge, Observable, Subject } from '@rxjs';
-import { filter, map, startWith } from '@rxjs/operators';
+import { map, startWith } from '@rxjs/operators';
 
 export interface RouteSpec<T> {
   path: string;
@@ -17,7 +17,7 @@ export interface Routes {
   'PROJECT': {projectId: string};
 }
 
-type RoutesOf<M> = {[K in keyof M]: {payload: M[K]; type: K}}[keyof M];
+type RoutesOf<M> = {[K in keyof M]: Route<M, K>}[keyof M];
 
 export class LocationService<M> {
   private readonly onPushState: Subject<{}> = new Subject();
@@ -25,7 +25,7 @@ export class LocationService<M> {
   constructor(
       private readonly specs: Array<RouteSpec<keyof M>>,
       private readonly defaultPath: RoutesOf<M>,
-      private readonly windowObj: Window = window,
+      private readonly windowObj: Window,
   ) { }
 
   getLocation(): Observable<RoutesOf<M>> {

@@ -37,4 +37,4 @@ export { CustomElementCtrl } from '../src/types/custom-element-ctrl';
 export { InitFn } from '../src/types/init-fn';
 
 // Location
-export { LocationService, RouteSpec } from '../src/location/location-service';
+export { LocationService, Route, RouteSpec } from '../src/location/location-service';
