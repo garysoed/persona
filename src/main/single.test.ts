@@ -41,22 +41,36 @@ test('@persona/main/single', () => {
     });
 
     should(`process correctly for adding a node`, () => {
-      renderSubject.next({tag: 'tag-name', attr: new Map([['a', '1'], ['b', '2']])});
+      renderSubject.next({
+        attr: new Map([['a', '1'], ['b', '2']]),
+        innerText: 'content',
+        tag: 'tag-name',
+      });
 
       const el = slot.nextSibling as HTMLElement;
       assert(el.tagName.toLowerCase()).to.equal('tag-name');
       assert(el.getAttribute('a')).to.equal('1');
       assert(el.getAttribute('b')).to.equal('2');
+      assert(el.innerText).to.equal('content');
     });
 
     should(`process correctly for replacing a node`, () => {
-      renderSubject.next({tag: 'tag-name', attr: new Map([['a', '1'], ['b', '2']])});
-      renderSubject.next({tag: 'tag-name-2', attr: new Map([['c', '3'], ['d', '4']])});
+      renderSubject.next({
+        attr: new Map([['a', '1'], ['b', '2']]),
+        innerText: 'content1',
+        tag: 'tag-name',
+      });
+      renderSubject.next({
+        attr: new Map([['c', '3'], ['d', '4']]),
+        innerText: 'content2',
+        tag: 'tag-name-2',
+      });
 
       const el = slot.nextSibling as HTMLElement;
       assert(el.tagName.toLowerCase()).to.equal('tag-name-2');
       assert(el.getAttribute('c')).to.equal('3');
       assert(el.getAttribute('d')).to.equal('4');
+      assert(el.innerText).to.equal('content2');
 
       assert(el.nextSibling).to.beNull();
     });
@@ -69,16 +83,25 @@ test('@persona/main/single', () => {
     });
 
     should(`not delete the node if the tag name does not change`, () => {
-      renderSubject.next({tag: 'tag-name', attr: new Map([['a', '1'], ['b', '2']])});
+      renderSubject.next({
+        attr: new Map([['a', '1'], ['b', '2']]),
+        innerText: 'content1',
+        tag: 'tag-name',
+      });
       const el = slot.nextSibling as HTMLElement;
 
-      renderSubject.next({tag: 'tag-name', attr: new Map([['c', '3'], ['d', '4']])});
+      renderSubject.next({
+        attr: new Map([['c', '3'], ['d', '4']]),
+        innerText: 'content2',
+        tag: 'tag-name',
+      });
 
       const el2 = slot.nextSibling as HTMLElement;
       assert(el2).to.equal(el);
       assert(el2.tagName.toLowerCase()).to.equal('tag-name');
       assert(el2.getAttribute('c')).to.equal('3');
       assert(el2.getAttribute('d')).to.equal('4');
+      assert(el2.innerText).to.equal('content2');
     });
   });
 });

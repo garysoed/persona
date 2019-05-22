@@ -4,19 +4,24 @@ import { Observable } from '@rxjs';
 import { tap, withLatestFrom } from '@rxjs/operators';
 import { Output } from '../types/output';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
-import { applyAttributes, AttributesSpec, createElementFromSpec } from './create-element-from-spec';
+import { applyAttributes, applyInnerText, AttributesSpec, createElementFromSpec } from './create-element-from-spec';
 import { createSlotObs } from './create-slot-obs';
 
 type Payload = Map<string, string>;
 
-export class RepeatedOutput implements Output<ArrayDiff<AttributesSpec>> {
+export interface RepeatedSpec {
+  attr?: AttributesSpec;
+  innerText?: string;
+}
+
+export class RepeatedOutput implements Output<ArrayDiff<RepeatedSpec>> {
   constructor(
       readonly slotName: string,
       readonly tagName: string,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
   ) { }
 
-  output(root: ShadowRoot, valueObs: Observable<ArrayDiff<AttributesSpec>>): Observable<unknown> {
+  output(root: ShadowRoot, valueObs: Observable<ArrayDiff<RepeatedSpec>>): Observable<unknown> {
     const parentElObs = this.resolver(root);
 
     return valueObs
@@ -62,7 +67,7 @@ export class RepeatedOutput implements Output<ArrayDiff<AttributesSpec>> {
   private insertEl(
       parentNode: Element,
       slotNode: Node,
-      attributes: AttributesSpec,
+      spec: RepeatedSpec,
       index: number,
   ): void {
     let curr = slotNode.nextSibling;
@@ -70,14 +75,14 @@ export class RepeatedOutput implements Output<ArrayDiff<AttributesSpec>> {
       curr = curr.nextSibling;
     }
 
-    const newEl = createElementFromSpec(this.tagName, attributes);
+    const newEl = createElementFromSpec(this.tagName, spec.attr || new Map(), spec.innerText || '');
     parentNode.insertBefore(newEl, curr);
   }
 
   private setEl(
       parentNode: Element,
       slotNode: Node,
-      attributes: AttributesSpec,
+      spec: RepeatedSpec,
       index: number,
   ): void {
     const existingEl = getEl(slotNode, index);
@@ -85,12 +90,13 @@ export class RepeatedOutput implements Output<ArrayDiff<AttributesSpec>> {
     if (!(existingEl instanceof HTMLElement) ||
         existingEl.tagName.toLowerCase() !== this.tagName) {
       this.deleteEl(parentNode, slotNode, index);
-      this.insertEl(parentNode, slotNode, attributes, index);
+      this.insertEl(parentNode, slotNode, spec, index);
 
       return;
     }
 
-    applyAttributes(existingEl, attributes);
+    applyAttributes(existingEl, spec.attr || new Map());
+    applyInnerText(existingEl, spec.innerText || '');
   }
 }
 

@@ -3,7 +3,7 @@ import { ArrayDiff } from '@gs-tools/rxjs';
 import { InstanceofType } from '@gs-types';
 import { Subject } from '@rxjs';
 import { element } from './element';
-import { repeated, RepeatedOutput } from './repeated';
+import { repeated, RepeatedOutput, RepeatedSpec } from './repeated';
 
 
 test('persona.output.repeated', () => {
@@ -35,10 +35,10 @@ test('persona.output.repeated', () => {
   });
 
   test('output', () => {
-    let diffSubject: Subject<ArrayDiff<Map<string, string>>>;
+    let diffSubject: Subject<ArrayDiff<RepeatedSpec>>;
 
     setup(() => {
-      diffSubject = new Subject<ArrayDiff<Map<string, string>>>();
+      diffSubject = new Subject<ArrayDiff<RepeatedSpec>>();
 
       output.output(shadowRoot, diffSubject).subscribe();
     });
@@ -47,9 +47,9 @@ test('persona.output.repeated', () => {
       diffSubject.next({
         type: 'init',
         value: [
-          new Map([['a', '1'], ['b', '2']]),
-          new Map([['a', 'a'], ['b', 'b']]),
-          new Map([['a', '3'], ['b', '4']]),
+          {attr: new Map([['a', '1'], ['b', '2']]), innerText: 'content1'},
+          {attr: new Map([['a', 'a'], ['b', 'b']]), innerText: 'content2'},
+          {attr: new Map([['a', '3'], ['b', '4']]), innerText: 'content3'},
         ],
       });
 
@@ -57,81 +57,103 @@ test('persona.output.repeated', () => {
       assert(el1.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el1.getAttribute('a')).to.equal('1');
       assert(el1.getAttribute('b')).to.equal('2');
+      assert(el1.innerText).to.equal('content1');
 
       const el2 = el1.nextSibling as HTMLElement;
       assert(el2.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el2.getAttribute('a')).to.equal('a');
       assert(el2.getAttribute('b')).to.equal('b');
+      assert(el2.innerText).to.equal('content2');
 
       const el3 = el2.nextSibling as HTMLElement;
       assert(el3.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el3.getAttribute('a')).to.equal('3');
       assert(el3.getAttribute('b')).to.equal('4');
+      assert(el3.innerText).to.equal('content3');
     });
 
     should(`process 'insert' correctly for index 0`, () => {
       diffSubject.next({
         type: 'init',
         value: [
-          new Map([['a', '1'], ['b', '2']]),
-          new Map([['a', '1'], ['b', '2']]),
-          new Map([['a', '1'], ['b', '2']]),
+          {attr: new Map([['a', '1'], ['b', '2']])},
+          {attr: new Map([['a', '1'], ['b', '2']])},
+          {attr: new Map([['a', '1'], ['b', '2']])},
         ],
       });
 
-      diffSubject.next({index: 0, value: new Map([['a', '0'], ['b', '0']]), type: 'insert'});
+      diffSubject.next(
+          {
+            index: 0,
+            type: 'insert',
+            value: {
+              attr: new Map([['a', '0'], ['b', '0']]),
+              innerText: 'content',
+            },
+          });
 
       const el = slot.nextSibling as HTMLElement;
       assert(el.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el.getAttribute('a')).to.equal('0');
       assert(el.getAttribute('b')).to.equal('0');
+      assert(el.innerText).to.equal('content');
     });
 
     should(`process 'insert' correctly for index 2`, () => {
       diffSubject.next({
         type: 'init',
         value: [
-          new Map([['a', '1'], ['b', '2']]),
-          new Map([['a', '1'], ['b', '2']]),
-          new Map([['a', '1'], ['b', '2']]),
+          {attr: new Map([['a', '1'], ['b', '2']])},
+          {attr: new Map([['a', '1'], ['b', '2']])},
+          {attr: new Map([['a', '1'], ['b', '2']])},
         ],
       });
 
-      diffSubject.next({index: 2, value: new Map([['a', '0'], ['b', '0']]), type: 'insert'});
+      diffSubject.next({
+        index: 2,
+        type: 'insert',
+        value: {attr: new Map([['a', '0'], ['b', '0']]), innerText: 'content'},
+      });
 
       // tslint:disable-next-line: no-non-null-assertion
       const el = slot.nextSibling!.nextSibling!.nextSibling as HTMLElement;
       assert(el.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el.getAttribute('a')).to.equal('0');
       assert(el.getAttribute('b')).to.equal('0');
+      assert(el.innerText).to.equal('content');
     });
 
     should(`process 'insert' correctly for large index`, () => {
       diffSubject.next({
         type: 'init',
         value: [
-          new Map([['a', '1'], ['b', '2']]),
-          new Map([['a', '1'], ['b', '2']]),
-          new Map([['a', '1'], ['b', '2']]),
+          {attr: new Map([['a', '1'], ['b', '2']])},
+          {attr: new Map([['a', '1'], ['b', '2']])},
+          {attr: new Map([['a', '1'], ['b', '2']])},
         ],
       });
 
-      diffSubject.next({index: 4, value: new Map([['a', '0'], ['b', '0']]), type: 'insert'});
+      diffSubject.next({
+        index: 4,
+        type: 'insert',
+        value: {attr: new Map([['a', '0'], ['b', '0']]), innerText: 'content'},
+      });
 
       // tslint:disable-next-line: no-non-null-assertion
       const el = slot.nextSibling!.nextSibling!.nextSibling!.nextSibling as HTMLElement;
       assert(el.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el.getAttribute('a')).to.equal('0');
       assert(el.getAttribute('b')).to.equal('0');
+      assert(el.innerText).to.equal('content');
     });
 
     should(`process 'delete' correctly`, () => {
       diffSubject.next({
         type: 'init',
         value: [
-          new Map([['a', '1'], ['b', '2']]),
-          new Map([['a', '3'], ['b', '4']]),
-          new Map([['a', '5'], ['b', '6']]),
+          {attr: new Map([['a', '1'], ['b', '2']])},
+          {attr: new Map([['a', '3'], ['b', '4']])},
+          {attr: new Map([['a', '5'], ['b', '6']])},
         ],
       });
 
@@ -157,13 +179,14 @@ test('persona.output.repeated', () => {
       diffSubject.next({
         index: 0,
         type: 'set',
-        value: new Map([['a', 'a'], ['b', 'b']]),
+        value: {attr: new Map([['a', 'a'], ['b', 'b']]), innerText: 'content'},
       });
 
       const el1 = slot.nextSibling as HTMLElement;
       assert(el1.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el1.getAttribute('a')).to.equal('a');
       assert(el1.getAttribute('b')).to.equal('b');
+      assert(el1.innerText).to.equal('content');
 
       assert(el1.nextSibling).to.beNull();
     });
@@ -175,13 +198,14 @@ test('persona.output.repeated', () => {
       diffSubject.next({
         index: 0,
         type: 'set',
-        value: new Map([['a', 'a'], ['b', 'b']]),
+        value: {attr: new Map([['a', 'a'], ['b', 'b']]), innerText: 'content'},
       });
 
       const el1 = slot.nextSibling as HTMLElement;
       assert(el1.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el1.getAttribute('a')).to.equal('a');
       assert(el1.getAttribute('b')).to.equal('b');
+      assert(el1.innerText).to.equal('content');
 
       assert(el1.nextSibling).to.beNull();
     });
@@ -193,13 +217,14 @@ test('persona.output.repeated', () => {
       diffSubject.next({
         index: 0,
         type: 'set',
-        value: new Map([['a', 'a'], ['b', 'b']]),
+        value: {attr: new Map([['a', 'a'], ['b', 'b']]), innerText: 'content'},
       });
 
       assert(slot.nextSibling).to.equal(existingElement);
       assert(existingElement.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(existingElement.getAttribute('a')).to.equal('a');
       assert(existingElement.getAttribute('b')).to.equal('b');
+      assert(existingElement.innerText).to.equal('content');
 
       assert(existingElement.nextSibling).to.beNull();
     });
