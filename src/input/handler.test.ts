@@ -1,12 +1,12 @@
 import { assert, should, test } from '@gs-testing';
 import { InstanceofType } from '@gs-types';
-import { of as observableOf } from '@rxjs';
+import { of as observableOf, ReplaySubject } from '@rxjs';
 import { map } from '@rxjs/operators';
 import { element } from '../main/element';
 import { caller, CallerOutput } from '../output/caller';
 import { handler, HandlerInput } from './handler';
 
-test('input.handler', () => {
+test('@persona/input/handler', () => {
   const FUNCTION_NAME = 'testFn';
   const ELEMENT_ID = 'test';
   let input: HandlerInput<[number]>;
@@ -32,13 +32,14 @@ test('input.handler', () => {
   });
 
   test('getValue', () => {
-    should(`creates a function that emits values`, async () => {
+    should(`creates a function that emits values`, () => {
       const value = 123;
 
-      const subject = input.getValue(shadowRoot).pipe(map(([v]) => v));
+      const subject = new ReplaySubject(1);
+      input.getValue(shadowRoot).pipe(map(([v]) => v)).subscribe(subject);
 
       output.output(shadowRoot, observableOf([value] as [number])).subscribe();
-      await assert(subject).to.emitWith(value);
+      assert(subject).to.emitWith(value);
     });
   });
 });

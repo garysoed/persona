@@ -21,6 +21,7 @@ import { StyleOutput } from '../output/style';
 import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { Input } from '../types/input';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
+import { FakeTime } from './fake-time';
 import { FakeMediaQuery, mockMatchMedia } from './mock-match-media';
 
 interface Key {
@@ -31,15 +32,14 @@ interface Key {
   shift?: boolean;
 }
 
-const REFRESH_PERIOD_MS = 10;
-
 /**
  * Used to test UI implemented using Persona.
  */
 export class PersonaTester {
   constructor(
       readonly vine: Vine,
-      private readonly customElementRegistry_: FakeCustomElementRegistry,
+      readonly time: FakeTime,
+      private readonly customElementRegistry: FakeCustomElementRegistry,
   ) { }
 
   callFunction<A extends any[]>(
@@ -55,7 +55,7 @@ export class PersonaTester {
   }
 
   createElement(tag: string, parent: HTMLElement|null): HTMLElement {
-    return this.customElementRegistry_.create(tag, parent);
+    return this.customElementRegistry.create(tag, parent);
   }
 
   dispatchEvent<E extends Event>(
@@ -82,7 +82,6 @@ export class PersonaTester {
   ): Observable<T> {
     return getElement(element, shadowRoot => output.resolver(shadowRoot))
         .pipe(
-            switchMap(targetEl => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(targetEl))),
             map(targetEl => {
               const strValue = targetEl.getAttribute(output.attrName);
               const value = output.parser.convertBackward(strValue || '');
@@ -105,10 +104,9 @@ export class PersonaTester {
   getClassList(
       element: HTMLElement,
       output: Input<Element>,
-  ): Observable<ImmutableSet<string>> {
+  ): Observable<Set<string>> {
     return getElement(element, shadowRoot => output.getValue(shadowRoot))
         .pipe(
-            switchMap(targetEl => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(targetEl))),
             map(el => {
               const classList = el.classList;
               const classes = new Set<string>();
@@ -120,7 +118,7 @@ export class PersonaTester {
                 classes.add(classItem);
               }
 
-              return createImmutableSet(classes);
+              return new Set(classes);
             }),
         );
   }
@@ -138,8 +136,7 @@ export class PersonaTester {
   ): Observable<boolean> {
     return getElement(element, shadowRoot => ioutput.resolver(shadowRoot))
         .pipe(
-            switchMap(el => timer(0, REFRESH_PERIOD_MS)
-                .pipe(map(() => el.classList.contains(ioutput.className)))),
+            map(el => el.classList.contains(ioutput.className)),
         );
   }
 
@@ -153,16 +150,12 @@ export class PersonaTester {
                 createImmutableList(parentEl.childNodes),
                 output.slotName,
             )),
-            switchMap(slotEl => {
+            map(slotEl => {
               if (!slotEl) {
-                return throwError(new Error(`Slot ${output.slotName} cannot be found`));
+                throw new Error(`Slot ${output.slotName} cannot be found`);
               }
 
-              return timer(0, REFRESH_PERIOD_MS)
-                  .pipe(
-                      mapTo(slotEl),
-                      startWith(slotEl),
-                  );
+              return slotEl;
             }),
             map(slotEl => {
               const nodes = [];
@@ -183,7 +176,6 @@ export class PersonaTester {
   ): Observable<CSSStyleDeclaration[S]> {
     return getElement(element, shadowRoot => output.resolver(shadowRoot))
         .pipe(
-            switchMap(element => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(element))),
             map(targetEl => targetEl.style[output.styleKey]),
         );
   }
@@ -193,9 +185,7 @@ export class PersonaTester {
       input: Input<Element>,
   ): Observable<string> {
     return getElement(element, shadowRoot => input.getValue(shadowRoot))
-        .pipe(
-            switchMap(targetEl => timer(0, REFRESH_PERIOD_MS).pipe(mapTo(targetEl))),
-            map(el => el.textContent || ''));
+        .pipe(map(el => el.textContent || ''));
   }
 
   hasAttribute(
@@ -323,7 +313,10 @@ export class PersonaTesterFactory {
         customElementRegistry,
     );
 
-    const tester = new PersonaTester(vine, customElementRegistry);
+    const fakeTime = new FakeTime();
+    fakeTime.install(window);
+
+    const tester = new PersonaTester(vine, fakeTime, customElementRegistry);
     fake(spy(document, 'createElement'))
         .always().call(tag => {
           if (customElementRegistry.get(tag)) {
