@@ -1,11 +1,16 @@
 import { Vine } from '@grapevine';
-import { fake, spy } from '@gs-testing';
+import { fake, runEnvironment, spy } from '@gs-testing';
+import { Errors } from '@gs-tools/error';
 import { Builder as PersonaBuilder } from '../core/builder';
+import { MediaQueryInput } from '../input/media-query';
 import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { ElementTester } from './element-tester';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
 import { FakeTime } from './fake-time';
-import { mockMatchMedia } from './mock-match-media';
+import { FakeMediaQuery, mockMatchMedia } from './mock-match-media';
+import { PersonaTesterEnvironment } from './persona-tester-environment';
+
+runEnvironment(new PersonaTesterEnvironment());
 
 /**
  * Used to test UI implemented using Persona.
@@ -18,7 +23,18 @@ export class PersonaTester {
   ) { }
 
   createElement<T extends HTMLElement>(tag: string, parent: HTMLElement|null): ElementTester<T> {
-    return new ElementTester(this.customElementRegistry.create(tag, parent) as T, this.vine);
+    const element = this.customElementRegistry.create(tag, parent) as T;
+
+    return new ElementTester(element, this.vine);
+  }
+
+  setMedia(input: MediaQueryInput, value: boolean): void {
+    const mediaQuery = window.matchMedia(input.query);
+    if (!(mediaQuery instanceof FakeMediaQuery)) {
+      throw Errors.assert('mediaQuery').shouldBeAnInstanceOf(FakeMediaQuery).butWas(mediaQuery);
+    }
+
+    (mediaQuery as FakeMediaQuery).matches = value;
   }
 }
 

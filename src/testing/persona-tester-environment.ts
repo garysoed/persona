@@ -1,16 +1,16 @@
 import { Environment } from '@gs-testing';
 import { installFakeMutationObserver } from './fake-mutation-observer';
 
-export class PersonaTesterEnvironment implements Environment {
+export class PersonaTesterEnvironment extends Environment {
   private uninstallFakeMutationObserver: (() => void)|null = null;
 
-  afterEach(): void {
+  protected innerAfterEach(): void {
     if (this.uninstallFakeMutationObserver) {
       this.uninstallFakeMutationObserver();
     }
   }
 
-  beforeEach(): void {
+  protected innerBeforeEach(): void {
     this.uninstallFakeMutationObserver = installFakeMutationObserver();
     window.localStorage.clear();
   }
