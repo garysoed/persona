@@ -1,10 +1,10 @@
 import { Vine } from '@grapevine';
 import { fake, spy } from '@gs-testing';
-import { $filter, $head, $pipe, createImmutableList, createImmutableSet, ImmutableList, ImmutableSet } from '@gs-tools/collect';
+import { $filter, $head, $pipe, createImmutableList, ImmutableList } from '@gs-tools/collect';
 import { Errors } from '@gs-tools/error';
 import { stringify, Verbosity } from '@moirai';
-import { Observable, throwError, timer } from '@rxjs';
-import { map, mapTo, startWith, switchMap, take, tap } from '@rxjs/operators';
+import { Observable } from '@rxjs';
+import { map, take, tap } from '@rxjs/operators';
 import { Builder as PersonaBuilder } from '../core/builder';
 import { AttributeInput } from '../input/attribute';
 import { HandlerInput } from '../input/handler';
@@ -16,6 +16,7 @@ import { RepeatedOutput } from '../main/repeated';
 import { SingleOutput } from '../main/single';
 import { AttributeOutput } from '../output/attribute';
 import { ClassToggleOutput } from '../output/class-toggle';
+import { DispatcherOutput } from '../output/dispatcher';
 import { SetAttributeOutput } from '../output/set-attribute';
 import { StyleOutput } from '../output/style';
 import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
@@ -60,10 +61,13 @@ export class PersonaTester {
 
   dispatchEvent<E extends Event>(
       element: HTMLElement,
-      spec: OnDomInput<E>,
+      spec: OnDomInput<E>|DispatcherOutput<E>,
       event: E,
   ): Observable<unknown>;
-  dispatchEvent(element: HTMLElement, spec: OnDomInput<Event>): Observable<unknown>;
+  dispatchEvent(
+      element: HTMLElement,
+      spec: OnDomInput<Event>|DispatcherOutput<Event>,
+  ): Observable<unknown>;
   dispatchEvent(
       element: HTMLElement,
       spec: OnDomInput<Event>,

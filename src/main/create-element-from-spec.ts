@@ -13,6 +13,15 @@ export function createElementFromSpec(
 }
 
 export function applyAttributes(element: HTMLElement, attributes: AttributesSpec): void {
+  const existingAttributes: Attr[] = [];
+  for (let i = 0; i < element.attributes.length; i++) {
+    existingAttributes.push(element.attributes.item(i)!);
+  }
+
+  for (const existingAttribute of existingAttributes) {
+    element.removeAttribute(existingAttribute.name);
+  }
+
   for (const [key, value] of attributes) {
     element.setAttribute(key, value);
   }
