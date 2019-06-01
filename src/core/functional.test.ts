@@ -6,6 +6,7 @@ import { map, tap } from '@rxjs/operators';
 import { attribute as attributeIn } from '../input/attribute';
 import { element } from '../main/element';
 import { attribute as attributeOut } from '../output/attribute';
+import { ElementTester } from '../testing/element-tester';
 import { PersonaTester, PersonaTesterFactory } from '../testing/persona-tester';
 import { CustomElementCtrl } from '../types/custom-element-ctrl';
 import { InitFn } from '../types/init-fn';
@@ -84,7 +85,7 @@ const testerFactory = new PersonaTesterFactory(_p);
 test('@persona/core/functional', () => {
   let mockHandler: Spy<undefined, []>;
   let tester: PersonaTester;
-  let el: HTMLElement;
+  let el: ElementTester;
 
   beforeEach(() => {
     mockHandler = createSpy('handler');
@@ -95,12 +96,12 @@ test('@persona/core/functional', () => {
     el = tester.createElement('test-el', document.body);
   });
 
-  should(`set up the component correctly`, async () => {
-    await assert(tester.getAttribute(el, $.host._.attr1)).to.emitWith('123-abc');
-    await assert(tester.getAttribute(el, $.host._.attr2)).to.emitWith('123-');
-    await assert(tester.getAttribute(el, $.host._.attr3)).to.emitWith('123-abc');
+  should(`set up the component correctly`, () => {
+    assert(el.getAttribute($.host._.attr1)).to.emitWith('123-abc');
+    assert(el.getAttribute($.host._.attr2)).to.emitWith('123-');
+    assert(el.getAttribute($.host._.attr3)).to.emitWith('123-abc');
     // tslint:disable-next-line:no-non-null-assertion
-    assert(el.shadowRoot!.mode).to.equal('open');
+    assert(el.element.shadowRoot!.mode).to.equal('open');
     assert(mockHandler).to.haveBeenCalledWith();
   });
 });
