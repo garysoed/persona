@@ -1,7 +1,7 @@
 import { assert, match, setup, should, test } from '@gs-testing';
 import { createFakeWindow } from '../testing/fake-window';
-import { LocationService, Route } from './location-service';
-interface TestRoutes {
+import { LocationService, LocationSpec, Route } from './location-service';
+interface TestRoutes extends LocationSpec {
   'default': {};
   'notexist': {};
   'pathA': {a: string};
@@ -29,10 +29,10 @@ test('@persona/location/location-service', () => {
   });
 
   test('getLocation', () => {
-    should(`emit the first matching path`, async () => {
+    should(`emit the first matching path`, () => {
       fakeWindow.history.pushState({}, '', '/a/abc');
 
-      await assert(service.getLocation()).to.emitWith(
+      assert(service.getLocation()).to.emitWith(
           match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
             payload: match.anyObjectThat().haveProperties({a: 'abc'}),
             type: 'pathA',
@@ -40,10 +40,10 @@ test('@persona/location/location-service', () => {
       );
     });
 
-    should(`match optional parameters`, async () => {
+    should(`match optional parameters`, () => {
       fakeWindow.history.pushState({}, '', '/b/abc');
 
-      await assert(service.getLocation()).to.emitWith(
+      assert(service.getLocation()).to.emitWith(
           match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
             payload: match.anyObjectThat().haveProperties({b: 'abc'}),
             type: 'pathB',
@@ -51,10 +51,10 @@ test('@persona/location/location-service', () => {
       );
     });
 
-    should(`match optional parameters when omitted`, async () => {
+    should(`match optional parameters when omitted`, () => {
       fakeWindow.history.pushState({}, '', '/b/');
 
-      await assert(service.getLocation()).to.emitWith(
+      assert(service.getLocation()).to.emitWith(
           match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
             payload: match.anyObjectThat().haveProperties({b: ''}),
             type: 'pathB',
@@ -62,10 +62,10 @@ test('@persona/location/location-service', () => {
       );
     });
 
-    should(`emit the default path if none of the specs match`, async () => {
+    should(`emit the default path if none of the specs match`, () => {
       fakeWindow.history.pushState({}, '', '/un/match');
 
-      await assert(service.getLocation()).to.emitWith(
+      assert(service.getLocation()).to.emitWith(
           match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
             payload: match.anyObjectThat().haveProperties({}),
             type: 'default',
@@ -77,10 +77,10 @@ test('@persona/location/location-service', () => {
   });
 
   test('getLocationOfType', () => {
-    should(`emit the location if it has the correct type`, async () => {
+    should(`emit the location if it has the correct type`, () => {
       fakeWindow.history.pushState({}, '', '/a/abc');
 
-      await assert(service.getLocationOfType('pathA')).to.emitWith(
+      assert(service.getLocationOfType('pathA')).to.emitWith(
           match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
             payload: match.anyObjectThat().haveProperties({a: 'abc'}),
             type: 'pathA',
@@ -88,10 +88,10 @@ test('@persona/location/location-service', () => {
       );
     });
 
-    should(`emit null if location is of the wrong type`, async () => {
+    should(`emit null if location is of the wrong type`, () => {
       fakeWindow.history.pushState({}, '', '/b/abc');
 
-      await assert(service.getLocationOfType('pathA')).to.emitWith(null);
+      assert(service.getLocationOfType('pathA')).to.emitWith(null);
     });
   });
 

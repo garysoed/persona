@@ -49,7 +49,7 @@ export function api<U extends UnconvertedSpec>(spec: U): ConvertedSpec<U> {
       continue;
     }
 
-    convertedSpecs[key] = convert(unconvertedSpec[key]);
+    convertedSpecs[key as keyof ConvertedSpec<U>] = convert(unconvertedSpec[key]) as any;
   }
 
   return convertedSpecs as ConvertedSpec<U>;

@@ -10,6 +10,7 @@ import { FakeTime } from './fake-time';
 import { FakeMediaQuery, mockMatchMedia } from './mock-match-media';
 import { PersonaTesterEnvironment } from './persona-tester-environment';
 
+// TODO: This needs to be moved to build.
 runEnvironment(new PersonaTesterEnvironment());
 
 /**

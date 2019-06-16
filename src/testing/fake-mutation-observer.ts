@@ -19,8 +19,7 @@ export function installFakeMutationObserver(): () => void {
   const origSetAttribute = HTMLElement.prototype.setAttribute;
   fake(spy(HTMLElement.prototype, 'setAttribute'))
       .always()
-      // tslint:disable-next-line: typedef
-      .call(function(this: HTMLElement, tag, value) {
+      .call(function(this: HTMLElement, tag: string, value: string): void {
         origSetAttribute.call(this, tag, value);
         this.dispatchEvent(new CustomEvent('mk-fake-mutation'));
       });
@@ -28,10 +27,19 @@ export function installFakeMutationObserver(): () => void {
   const origRemoveAttribute = HTMLElement.prototype.removeAttribute;
   fake(spy(HTMLElement.prototype, 'removeAttribute'))
       .always()
-      // tslint:disable-next-line: typedef
-      .call(function(this: HTMLElement, tag) {
+      .call(function(this: HTMLElement, tag: string): void {
         origRemoveAttribute.call(this, tag);
         this.dispatchEvent(new CustomEvent('mk-fake-mutation'));
+      });
+
+  const origAppendChild = Node.prototype.appendChild;
+  fake(spy(Node.prototype, 'appendChild'))
+      .always()
+      .call(function(this: Node, node: Node): Node {
+        const newNode = origAppendChild.call(this, node);
+        this.dispatchEvent(new CustomEvent('mk-fake-mutation'));
+
+        return newNode;
       });
 
   return () => {

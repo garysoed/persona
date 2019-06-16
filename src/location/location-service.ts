@@ -19,7 +19,11 @@ export interface Routes {
 
 type RoutesOf<M> = {[K in keyof M]: Route<M, K>}[keyof M];
 
-export class LocationService<M> {
+export interface LocationSpec {
+  [key: string]: {};
+}
+
+export class LocationService<M extends LocationSpec> {
   private readonly onPushState: Subject<{}> = new Subject();
 
   constructor(
@@ -70,7 +74,7 @@ export class LocationService<M> {
         continue;
       }
 
-      path = path.replace(new RegExp(`:${key}\\??`), payload[key].toString());
+      path = path.replace(new RegExp(`:${key}\\??`), `${payload[key]}`);
     }
 
     this.windowObj.history.pushState({}, 'TODO', path);
