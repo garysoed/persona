@@ -1,6 +1,9 @@
-import { assert, match, setup, should, test } from '@gs-testing';
+import { assert, createSpy, match, setup, should, test } from '@gs-testing';
+import { of as observableOf, ReplaySubject } from '@rxjs';
+import { catchError } from '@rxjs/operators';
 import { createFakeWindow } from '../testing/fake-window';
 import { LocationService, LocationSpec, Route } from './location-service';
+
 interface TestRoutes extends LocationSpec {
   'default': {};
   'notexist': {};
@@ -24,7 +27,7 @@ test('@persona/location/location-service', () => {
           {path: '/default', type: 'default'},
         ],
         {payload: {}, type: 'default'},
-        fakeWindow,
+        observableOf(fakeWindow),
     );
   });
 
@@ -99,13 +102,15 @@ test('@persona/location/location-service', () => {
     should(`push the history correctly`, () => {
       const a = '123';
 
-      service.goToPath('pathA', {a});
+      service.goToPath('pathA', {a}).subscribe();
 
       assert(fakeWindow.location.pathname).to.equal(`/a/${a}`);
     });
 
-    should(`throw error if the type cannot be found`, () => {
-      assert(() => service.goToPath('notexist', {})).to.throwErrorWithMessage(/not found/);
+    should(`use the default path if the type cannot be found`, () => {
+      service.goToPath('notexist', {a: '123'}).subscribe();
+
+      assert(fakeWindow.location.pathname).to.equal(`/default`);
     });
   });
 });

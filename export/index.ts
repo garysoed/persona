@@ -36,5 +36,8 @@ export { textContent } from '../src/output/text-content';
 export { CustomElementCtrl } from '../src/types/custom-element-ctrl';
 export { InitFn } from '../src/types/init-fn';
 
+// Util
+export { mutationObservable } from '../src/util/mutation-observable';
+
 // Location
-export { LocationService, Route, RouteSpec } from '../src/location/location-service';
+export { LocationService, LocationSpec, Route, RouteSpec } from '../src/location/location-service';

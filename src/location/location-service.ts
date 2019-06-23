@@ -1,6 +1,6 @@
 import { cache } from '@gs-tools/data';
-import { fromEvent, merge, Observable, Subject } from '@rxjs';
-import { map, startWith } from '@rxjs/operators';
+import { fromEvent, merge, Observable, of as observableOf, Subject } from '@rxjs';
+import { map, mapTo, startWith, switchMap, tap } from '@rxjs/operators';
 
 export interface RouteSpec<T> {
   path: string;
@@ -24,35 +24,38 @@ export interface LocationSpec {
 }
 
 export class LocationService<M extends LocationSpec> {
-  private readonly onPushState: Subject<{}> = new Subject();
+  private readonly onPushState$: Subject<{}> = new Subject();
 
   constructor(
       private readonly specs: Array<RouteSpec<keyof M>>,
       private readonly defaultPath: RoutesOf<M>,
-      private readonly windowObj: Window,
+      private readonly window$: Observable<Window>,
   ) { }
 
   getLocation(): Observable<RoutesOf<M>> {
-    return merge(
-            fromEvent<PopStateEvent>(this.windowObj, 'popstate'),
-            this.onPushState,
-        )
-        .pipe(
-            map(() => this.windowObj.location.pathname),
-            startWith(this.windowObj.location.pathname),
-            map(location => {
-              for (const spec of this.specs) {
-                const result = parseLocation<M>(location, spec);
-                if (result.success) {
-                  return {payload: result.value, type: spec.type};
+    return this.window$.pipe(
+        switchMap(windowObj => {
+          return merge(
+              fromEvent<PopStateEvent>(windowObj, 'popstate'),
+              this.onPushState$,
+          )
+          .pipe(
+              map(() => windowObj.location.pathname),
+              startWith(windowObj.location.pathname),
+              switchMap(location => {
+                for (const spec of this.specs) {
+                  const result = parseLocation<M>(location, spec);
+                  if (result.success) {
+                    return observableOf({payload: result.value, type: spec.type});
+                  }
                 }
-              }
 
-              this.goToPath(this.defaultPath.type, this.defaultPath.payload);
-
-              return this.defaultPath;
-            }),
-        );
+                return this.goToPath(this.defaultPath.type, this.defaultPath.payload)
+                    .pipe(mapTo(this.defaultPath));
+              }),
+          );
+        }),
+    );
   }
 
   getLocationOfType<K extends keyof M>(type: K): Observable<Route<M, K>|null> {
@@ -62,23 +65,31 @@ export class LocationService<M extends LocationSpec> {
         }));
   }
 
-  goToPath<T extends keyof M>(type: T, payload: M[T]): void {
-    const spec = this.getPathSpecMap().get(type);
-    if (!spec) {
-      throw new Error(`Spec for ${type} not found`);
-    }
+  goToPath<T extends keyof M>(type: T, payload: M[T]): Observable<unknown> {
+    return this.window$
+        .pipe(
+            tap(windowObj => {
+              const pathSpecMap = this.getPathSpecMap();
+              const spec = pathSpecMap.get(type) || pathSpecMap.get(this.defaultPath.type);
+              if (!spec) {
+                throw new Error(`Spec for ${type} not found`);
+              }
 
-    let path = spec;
-    for (const key in payload) {
-      if (!payload.hasOwnProperty(key)) {
-        continue;
-      }
+              let path = spec;
+              const normalizedPayload = spec ? payload : this.defaultPath.payload;
+              for (const key in normalizedPayload) {
+                if (!normalizedPayload.hasOwnProperty(key)) {
+                  continue;
+                }
 
-      path = path.replace(new RegExp(`:${key}\\??`), `${payload[key]}`);
-    }
+                path = path.replace(new RegExp(`:${key}\\??`), `${normalizedPayload[key]}`);
+              }
 
-    this.windowObj.history.pushState({}, 'TODO', path);
-    this.onPushState.next({});
+              windowObj.history.pushState({}, 'TODO', path);
+              this.onPushState$.next({});
+            }),
+        );
+
   }
 
   @cache()
