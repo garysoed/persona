@@ -1,8 +1,10 @@
 import { filterNonNull } from '@gs-tools/rxjs';
 import { Observable } from '@rxjs';
 import { distinctUntilChanged, map, pairwise, startWith, tap, withLatestFrom } from '@rxjs/operators';
+
 import { Output } from '../types/output';
 import { Resolver, UnresolvedElementProperty } from '../types/unresolved-element-property';
+
 import { applyAttributes, applyInnerText, AttributesSpec, createElementFromSpec } from './create-element-from-spec';
 import { createSlotObs } from './create-slot-obs';
 
