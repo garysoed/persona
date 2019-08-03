@@ -1,5 +1,6 @@
 import { Vine } from '@grapevine';
 import { of as observableOf } from '@rxjs';
+
 import { BaseElementTester } from './base-element-tester';
 
 export class ElementTester<T extends HTMLElement = HTMLElement> extends BaseElementTester<T> {

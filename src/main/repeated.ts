@@ -2,8 +2,10 @@ import { ArrayDiff, filterNonNull } from '@gs-tools/rxjs';
 import { assertUnreachable } from '@gs-tools/typescript';
 import { Observable } from '@rxjs';
 import { tap, withLatestFrom } from '@rxjs/operators';
+
 import { Output } from '../types/output';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+
 import { applyAttributes, applyInnerText, AttributesSpec, createElementFromSpec } from './create-element-from-spec';
 import { createSlotObs } from './create-slot-obs';
 

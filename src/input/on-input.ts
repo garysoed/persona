@@ -1,5 +1,6 @@
 import { fromEvent, Observable } from '@rxjs';
 import { map, switchMap } from '@rxjs/operators';
+
 import { Input } from '../types/input';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 

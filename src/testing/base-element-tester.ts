@@ -182,6 +182,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
         );
   }
 
+  // TODO: The inputs should take unresolved values too.
   setAttribute<T>(
       input: AttributeInput<T>,
       value: T,

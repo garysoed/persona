@@ -1,9 +1,11 @@
 import { Vine } from '@grapevine';
 import { fake, runEnvironment, spy } from '@gs-testing';
 import { Errors } from '@gs-tools/error';
+
 import { Builder as PersonaBuilder } from '../core/builder';
 import { MediaQueryInput } from '../input/media-query';
 import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
+
 import { ElementTester } from './element-tester';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
 import { FakeTime } from './fake-time';

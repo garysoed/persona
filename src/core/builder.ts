@@ -5,10 +5,12 @@ import { ClassAnnotation, ClassAnnotator } from '@gs-tools/data';
 import { Errors } from '@gs-tools/error';
 import { AnyType, IterableOfType } from '@gs-types';
 import { Observable } from '@rxjs';
+
 import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec';
 import { Input } from '../types/input';
 import { Output } from '../types/output';
+
 import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementImpl } from './custom-element-impl';
 import { RenderBuilder } from './render-builder';
