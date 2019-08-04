@@ -10,7 +10,7 @@ import { single, SingleOutput } from './single';
 test('@persona/main/single', () => {
   const ELEMENT_ID = 'elementId';
   const SLOT_NAME = 'slotName';
-  let output: SingleOutput<SimpleElementRenderSpec>;
+  let output: SingleOutput;
   let shadowRoot: ShadowRoot;
   let parentEl: HTMLElement;
   let slot: Node;

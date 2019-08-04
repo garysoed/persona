@@ -3,34 +3,27 @@ import { assertUnreachable } from '@gs-tools/typescript';
 import { Observable } from '@rxjs';
 import { tap, withLatestFrom } from '@rxjs/operators';
 
+import { RenderSpec } from '../render/render-spec';
 import { Output } from '../types/output';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
-import { applyAttributes, applyInnerText, AttributesSpec, createElementFromSpec } from './create-element-from-spec';
 import { createSlotObs } from './create-slot-obs';
 
-type Payload = Map<string, string>;
 
-export interface RepeatedSpec {
-  attr?: AttributesSpec;
-  innerText?: string;
-}
-
-export class RepeatedOutput implements Output<ArrayDiff<RepeatedSpec>> {
+export class RepeatedOutput implements Output<ArrayDiff<RenderSpec>> {
   constructor(
       readonly slotName: string,
-      readonly tagName: string,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
   ) { }
 
-  output(root: ShadowRoot, valueObs: Observable<ArrayDiff<RepeatedSpec>>): Observable<unknown> {
-    const parentElObs = this.resolver(root);
+  output(root: ShadowRoot, value$: Observable<ArrayDiff<RenderSpec>>): Observable<unknown> {
+    const parentEl$ = this.resolver(root);
 
-    return valueObs
+    return value$
         .pipe(
             withLatestFrom(
-                parentElObs,
-                createSlotObs(parentElObs, this.slotName).pipe(filterNonNull()),
+                parentEl$,
+                createSlotObs(parentEl$, this.slotName).pipe(filterNonNull()),
             ),
             tap(([diff, parentEl, slotNode]) => {
               switch (diff.type) {
@@ -69,7 +62,7 @@ export class RepeatedOutput implements Output<ArrayDiff<RepeatedSpec>> {
   private insertEl(
       parentNode: Element,
       slotNode: Node,
-      spec: RepeatedSpec,
+      spec: RenderSpec,
       index: number,
   ): void {
     let curr = slotNode.nextSibling;
@@ -77,48 +70,46 @@ export class RepeatedOutput implements Output<ArrayDiff<RepeatedSpec>> {
       curr = curr.nextSibling;
     }
 
-    const newEl = createElementFromSpec(this.tagName, spec.attr || new Map(), spec.innerText || '');
+    const newEl = spec.createElement();
+    spec.updateElement(newEl);
     parentNode.insertBefore(newEl, curr);
   }
 
   private setEl(
       parentNode: Element,
       slotNode: Node,
-      spec: RepeatedSpec,
+      spec: RenderSpec,
       index: number,
   ): void {
     const existingEl = getEl(slotNode, index);
 
     if (!(existingEl instanceof HTMLElement) ||
-        existingEl.tagName.toLowerCase() !== this.tagName) {
+        !spec.canReuseElement(existingEl)) {
       this.deleteEl(parentNode, slotNode, index);
       this.insertEl(parentNode, slotNode, spec, index);
 
       return;
     }
 
-    applyAttributes(existingEl, spec.attr || new Map());
-    applyInnerText(existingEl, spec.innerText || '');
+    spec.updateElement(existingEl);
   }
 }
 
-class UnresolvedRepeatedOutput<T extends Payload>
+class UnresolvedRepeatedOutput
     implements UnresolvedElementProperty<Element, RepeatedOutput> {
   constructor(
       private readonly slotName: string,
-      private readonly tagName: string,
   ) { }
 
   resolve(resolver: (root: ShadowRoot) => Observable<Element>): RepeatedOutput {
-    return new RepeatedOutput(this.slotName, this.tagName, resolver);
+    return new RepeatedOutput(this.slotName, resolver);
   }
 }
 
-export function repeated<T extends Payload>(
+export function repeated(
     slotName: string,
-    tagName: string,
-): UnresolvedRepeatedOutput<T> {
-  return new UnresolvedRepeatedOutput<T>(slotName, tagName);
+): UnresolvedRepeatedOutput {
+  return new UnresolvedRepeatedOutput(slotName);
 }
 
 function getEl(slotNode: Node, index: number): Node|null {

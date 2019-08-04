@@ -9,7 +9,7 @@ import { Resolver, UnresolvedElementProperty } from '../types/unresolved-element
 import { createSlotObs } from './create-slot-obs';
 
 
-export class SingleOutput<S extends RenderSpec> implements Output<S|null> {
+export class SingleOutput implements Output<RenderSpec|null> {
   constructor(
       readonly slotName: string,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
@@ -64,15 +64,15 @@ export class SingleOutput<S extends RenderSpec> implements Output<S|null> {
   }
 }
 
-class UnresolvedSingleOutput<S extends RenderSpec> implements
-    UnresolvedElementProperty<Element, SingleOutput<S>> {
+class UnresolvedSingleOutput implements
+    UnresolvedElementProperty<Element, SingleOutput> {
   constructor(readonly slotName: string) { }
 
-  resolve(resolver: Resolver<Element>): SingleOutput<S> {
+  resolve(resolver: Resolver<Element>): SingleOutput {
     return new SingleOutput(this.slotName, resolver);
   }
 }
 
-export function single<S extends RenderSpec>(slotName: string): UnresolvedSingleOutput<S> {
+export function single(slotName: string): UnresolvedSingleOutput {
   return new UnresolvedSingleOutput(slotName);
 }

@@ -2,8 +2,12 @@ import { assert, setup, should, test } from '@gs-testing';
 import { ArrayDiff } from '@gs-tools/rxjs';
 import { InstanceofType } from '@gs-types';
 import { Subject } from '@rxjs';
+import { SimpleElementRenderSpec } from 'src/render/simple-element-render-spec';
+
+import { RenderSpec } from '../render/render-spec';
+
 import { element } from './element';
-import { repeated, RepeatedOutput, RepeatedSpec } from './repeated';
+import { repeated, RepeatedOutput } from './repeated';
 
 
 test('persona.output.repeated', () => {
@@ -17,7 +21,7 @@ test('persona.output.repeated', () => {
 
   setup(() => {
     const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
-      list: repeated(SLOT_NAME, TAG_NAME),
+      list: repeated(SLOT_NAME),
     });
 
     const root = document.createElement('div');
@@ -35,10 +39,10 @@ test('persona.output.repeated', () => {
   });
 
   test('output', () => {
-    let diffSubject: Subject<ArrayDiff<RepeatedSpec>>;
+    let diffSubject: Subject<ArrayDiff<RenderSpec>>;
 
     setup(() => {
-      diffSubject = new Subject<ArrayDiff<RepeatedSpec>>();
+      diffSubject = new Subject<ArrayDiff<RenderSpec>>();
 
       output.output(shadowRoot, diffSubject).subscribe();
     });
@@ -47,9 +51,9 @@ test('persona.output.repeated', () => {
       diffSubject.next({
         type: 'init',
         value: [
-          {attr: new Map([['a', '1'], ['b', '2']]), innerText: 'content1'},
-          {attr: new Map([['a', 'a'], ['b', 'b']]), innerText: 'content2'},
-          {attr: new Map([['a', '3'], ['b', '4']]), innerText: 'content3'},
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']]), 'content1'),
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', 'a'], ['b', 'b']]), 'content2'),
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '3'], ['b', '4']]), 'content3'),
         ],
       });
 
@@ -76,9 +80,9 @@ test('persona.output.repeated', () => {
       diffSubject.next({
         type: 'init',
         value: [
-          {attr: new Map([['a', '1'], ['b', '2']])},
-          {attr: new Map([['a', '1'], ['b', '2']])},
-          {attr: new Map([['a', '1'], ['b', '2']])},
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
         ],
       });
 
@@ -86,10 +90,11 @@ test('persona.output.repeated', () => {
           {
             index: 0,
             type: 'insert',
-            value: {
-              attr: new Map([['a', '0'], ['b', '0']]),
-              innerText: 'content',
-            },
+            value: new SimpleElementRenderSpec(
+                TAG_NAME,
+                new Map([['a', '0'], ['b', '0']]),
+                'content',
+            ),
           });
 
       const el = slot.nextSibling as HTMLElement;
@@ -103,16 +108,16 @@ test('persona.output.repeated', () => {
       diffSubject.next({
         type: 'init',
         value: [
-          {attr: new Map([['a', '1'], ['b', '2']])},
-          {attr: new Map([['a', '1'], ['b', '2']])},
-          {attr: new Map([['a', '1'], ['b', '2']])},
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
         ],
       });
 
       diffSubject.next({
         index: 2,
         type: 'insert',
-        value: {attr: new Map([['a', '0'], ['b', '0']]), innerText: 'content'},
+        value: new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '0'], ['b', '0']]), 'content'),
       });
 
       // tslint:disable-next-line: no-non-null-assertion
@@ -127,16 +132,16 @@ test('persona.output.repeated', () => {
       diffSubject.next({
         type: 'init',
         value: [
-          {attr: new Map([['a', '1'], ['b', '2']])},
-          {attr: new Map([['a', '1'], ['b', '2']])},
-          {attr: new Map([['a', '1'], ['b', '2']])},
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
         ],
       });
 
       diffSubject.next({
         index: 4,
         type: 'insert',
-        value: {attr: new Map([['a', '0'], ['b', '0']]), innerText: 'content'},
+        value: new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '0'], ['b', '0']]), 'content'),
       });
 
       // tslint:disable-next-line: no-non-null-assertion
@@ -151,9 +156,9 @@ test('persona.output.repeated', () => {
       diffSubject.next({
         type: 'init',
         value: [
-          {attr: new Map([['a', '1'], ['b', '2']])},
-          {attr: new Map([['a', '3'], ['b', '4']])},
-          {attr: new Map([['a', '5'], ['b', '6']])},
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '3'], ['b', '4']])),
+          new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '5'], ['b', '6']])),
         ],
       });
 
@@ -179,7 +184,7 @@ test('persona.output.repeated', () => {
       diffSubject.next({
         index: 0,
         type: 'set',
-        value: {attr: new Map([['a', 'a'], ['b', 'b']]), innerText: 'content'},
+        value: new SimpleElementRenderSpec(TAG_NAME, new Map([['a', 'a'], ['b', 'b']]), 'content'),
       });
 
       const el1 = slot.nextSibling as HTMLElement;
@@ -198,7 +203,7 @@ test('persona.output.repeated', () => {
       diffSubject.next({
         index: 0,
         type: 'set',
-        value: {attr: new Map([['a', 'a'], ['b', 'b']]), innerText: 'content'},
+        value: new SimpleElementRenderSpec(TAG_NAME, new Map([['a', 'a'], ['b', 'b']]), 'content'),
       });
 
       const el1 = slot.nextSibling as HTMLElement;
@@ -217,7 +222,7 @@ test('persona.output.repeated', () => {
       diffSubject.next({
         index: 0,
         type: 'set',
-        value: {attr: new Map([['a', 'a'], ['b', 'b']]), innerText: 'content'},
+        value: new SimpleElementRenderSpec(TAG_NAME, new Map([['a', 'a'], ['b', 'b']]), 'content'),
       });
 
       assert(slot.nextSibling).to.equal(existingElement);

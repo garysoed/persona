@@ -124,7 +124,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   }
 
   getNodesAfter(
-      output: RepeatedOutput|SingleOutput<RenderSpec>,
+      output: RepeatedOutput|SingleOutput,
   ): Observable<Node[]> {
     return this.elementObs
         .pipe(
