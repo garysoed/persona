@@ -1,9 +1,9 @@
 import { Errors } from '@gs-tools/error';
 import { Converter } from '@nabu';
 import { Observable } from '@rxjs';
-import { Resolver } from 'src/types/resolver';
 
 import { Input } from '../types/input';
+import { Resolver } from '../types/resolver';
 import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { attributeObservable } from '../util/attribute-observable';
