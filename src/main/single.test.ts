@@ -1,13 +1,16 @@
 import { assert, setup, should, test } from '@gs-testing';
 import { InstanceofType } from '@gs-types';
 import { Subject } from '@rxjs';
+
+import { SimpleElementRenderSpec } from '../render/simple-element-render-spec';
+
 import { element } from './element';
-import { RenderData, single, SingleOutput } from './single';
+import { single, SingleOutput } from './single';
 
 test('@persona/main/single', () => {
   const ELEMENT_ID = 'elementId';
   const SLOT_NAME = 'slotName';
-  let output: SingleOutput;
+  let output: SingleOutput<SimpleElementRenderSpec>;
   let shadowRoot: ShadowRoot;
   let parentEl: HTMLElement;
   let slot: Node;
@@ -32,20 +35,20 @@ test('@persona/main/single', () => {
   });
 
   test('output', () => {
-    let renderSubject: Subject<RenderData|null>;
+    let renderSubject: Subject<SimpleElementRenderSpec|null>;
 
     setup(() => {
-      renderSubject = new Subject<RenderData|null>();
+      renderSubject = new Subject<SimpleElementRenderSpec|null>();
 
       output.output(shadowRoot, renderSubject).subscribe();
     });
 
     should(`process correctly for adding a node`, () => {
-      renderSubject.next({
-        attr: new Map([['a', '1'], ['b', '2']]),
-        innerText: 'content',
-        tag: 'tag-name',
-      });
+      renderSubject.next(new SimpleElementRenderSpec(
+        'tag-name',
+        new Map([['a', '1'], ['b', '2']]),
+        'content',
+      ));
 
       const el = slot.nextSibling as HTMLElement;
       assert(el.tagName.toLowerCase()).to.equal('tag-name');
@@ -55,16 +58,16 @@ test('@persona/main/single', () => {
     });
 
     should(`process correctly for replacing a node`, () => {
-      renderSubject.next({
-        attr: new Map([['a', '1'], ['b', '2']]),
-        innerText: 'content1',
-        tag: 'tag-name',
-      });
-      renderSubject.next({
-        attr: new Map([['c', '3'], ['d', '4']]),
-        innerText: 'content2',
-        tag: 'tag-name-2',
-      });
+      renderSubject.next(new SimpleElementRenderSpec(
+        'tag-name',
+        new Map([['a', '1'], ['b', '2']]),
+        'content1',
+      ));
+      renderSubject.next(new SimpleElementRenderSpec(
+        'tag-name-2',
+        new Map([['c', '3'], ['d', '4']]),
+        'content2',
+      ));
 
       const el = slot.nextSibling as HTMLElement;
       assert(el.tagName.toLowerCase()).to.equal('tag-name-2');
@@ -76,25 +79,29 @@ test('@persona/main/single', () => {
     });
 
     should(`process correctly for deleting a node`, () => {
-      renderSubject.next({tag: 'tag-name', attr: new Map([['a', '1'], ['b', '2']])});
+      renderSubject.next(new SimpleElementRenderSpec(
+        'tag-name',
+        new Map([['a', '1'], ['b', '2']]),
+        'content',
+      ));
       renderSubject.next(null);
 
       assert(slot.nextSibling).to.beNull();
     });
 
-    should(`not delete the node if the tag name does not change`, () => {
-      renderSubject.next({
-        attr: new Map([['a', '1'], ['b', '2']]),
-        innerText: 'content1',
-        tag: 'tag-name',
-      });
+    should(`not delete the node if can be reused`, () => {
+      renderSubject.next(new SimpleElementRenderSpec(
+        'tag-name',
+        new Map([['a', '1'], ['b', '2']]),
+        'content1',
+      ));
       const el = slot.nextSibling as HTMLElement;
 
-      renderSubject.next({
-        attr: new Map([['c', '3'], ['d', '4']]),
-        innerText: 'content2',
-        tag: 'tag-name',
-      });
+      renderSubject.next(new SimpleElementRenderSpec(
+        'tag-name',
+        new Map([['c', '3'], ['d', '4']]),
+        'content2',
+      ));
 
       const el2 = slot.nextSibling as HTMLElement;
       assert(el2).to.equal(el);

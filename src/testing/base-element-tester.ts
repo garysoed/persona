@@ -16,6 +16,7 @@ import { ClassToggleOutput } from '../output/class-toggle';
 import { DispatcherOutput } from '../output/dispatcher';
 import { SetAttributeOutput } from '../output/set-attribute';
 import { StyleOutput } from '../output/style';
+import { RenderSpec } from '../render/render-spec';
 import { Input } from '../types/input';
 
 interface Key {
@@ -123,7 +124,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   }
 
   getNodesAfter(
-      output: RepeatedOutput|SingleOutput,
+      output: RepeatedOutput|SingleOutput<RenderSpec>,
   ): Observable<Node[]> {
     return this.elementObs
         .pipe(

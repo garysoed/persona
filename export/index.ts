@@ -18,7 +18,7 @@ export { onKeydown } from '../src/input/on-keydown';
 export { api } from '../src/main/api';
 export { element } from '../src/main/element';
 export { repeated, RepeatedSpec } from '../src/main/repeated';
-export { single, RenderData as SingleRenderSpec } from '../src/main/single';
+export { single } from '../src/main/single';
 
 // Outputs
 export { attribute as attributeOut } from '../src/output/attribute';
@@ -41,3 +41,7 @@ export { mutationObservable } from '../src/util/mutation-observable';
 
 // Location
 export { LocationService, LocationSpec, Route, RouteSpec } from '../src/location/location-service';
+
+// Render spec
+export { RenderSpec } from '../src/render/render-spec';
+export { SimpleElementRenderSpec } from '../src/render/simple-element-render-spec';

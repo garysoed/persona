@@ -1,127 +1,78 @@
 import { filterNonNull } from '@gs-tools/rxjs';
 import { Observable } from '@rxjs';
-import { distinctUntilChanged, map, pairwise, startWith, tap, withLatestFrom } from '@rxjs/operators';
+import { distinctUntilChanged, pairwise, startWith, tap, withLatestFrom } from '@rxjs/operators';
 
+import { RenderSpec } from '../render/render-spec';
 import { Output } from '../types/output';
 import { Resolver, UnresolvedElementProperty } from '../types/unresolved-element-property';
 
-import { applyAttributes, applyInnerText, AttributesSpec, createElementFromSpec } from './create-element-from-spec';
 import { createSlotObs } from './create-slot-obs';
 
-export interface RenderData {
-  attr?: AttributesSpec;
-  innerText?: string;
-  tag: string;
-}
 
-interface AddSpec {
-  attr: AttributesSpec;
-  innerText: string;
-  tag: string;
-  type: 'add';
-}
-
-interface ContentSpec {
-  attr: AttributesSpec;
-  innerText: string;
-  type: 'content';
-}
-
-interface DeleteSpec {
-  type: 'delete';
-}
-
-interface ReplaceSpec {
-  attr: AttributesSpec;
-  innerText: string;
-  tag: string;
-  type: 'replace';
-}
-
-type ChangeSpec = AddSpec|ContentSpec|DeleteSpec|ReplaceSpec;
-
-export class SingleOutput implements Output<RenderData|null> {
+export class SingleOutput<S extends RenderSpec> implements Output<S|null> {
   constructor(
       readonly slotName: string,
       readonly resolver: (root: ShadowRoot) => Observable<Element>,
   ) { }
 
-  output(root: ShadowRoot, valueObs: Observable<RenderData|null>): Observable<unknown> {
-    const parentObs = this.resolver(root);
+  output(root: ShadowRoot, value$: Observable<RenderSpec|null>): Observable<unknown> {
+    const parent$ = this.resolver(root);
 
-    return valueObs
+    return value$
         .pipe(
             startWith(null),
             distinctUntilChanged(),
             pairwise(),
-            map<[RenderData|null, RenderData|null], ChangeSpec>(([previous, current]) => {
-              if (!current) {
-                return {type: 'delete'};
-              }
+            withLatestFrom(
+                parent$,
+                createSlotObs(parent$, this.slotName).pipe(filterNonNull()),
+            ),
+            tap(([[previous, current], parentEl, slotEl]) => {
+              const prevEl = slotEl.nextSibling;
 
-              const normalizedCurrent = {
-                attr: current.attr || new Map<string, string>(),
-                innerText: current.innerText || '',
-                tag: current.tag,
-              };
+              // Delete if removed.
+              if (!current) {
+                if (prevEl) {
+                  parentEl.removeChild(prevEl);
+                }
+                return;
+              }
 
               if (!previous) {
-                return {...normalizedCurrent, type: 'add'};
+                const newEl = current.createElement();
+                current.updateElement(newEl);
+                parentEl.insertBefore(newEl, prevEl);
+                return;
               }
 
-              if (current.tag === previous.tag) {
-                return {...normalizedCurrent, type: 'content'};
+              // Try to reuse the element.
+              if (prevEl instanceof HTMLElement && current.canReuseElement(prevEl)) {
+                current.updateElement(prevEl);
+                return;
               }
 
-              return {...normalizedCurrent, type: 'replace'};
-            }),
-            withLatestFrom(
-                parentObs,
-                createSlotObs(parentObs, this.slotName).pipe(filterNonNull()),
-            ),
-            tap(([diff, parentEl, slotEl]) => {
-              switch (diff.type) {
-                case 'add':
-                  parentEl.insertBefore(
-                      createElementFromSpec(diff.tag, diff.attr, diff.innerText),
-                      slotEl.nextSibling,
-                  );
-                  break;
-                case 'content':
-                  if (slotEl.nextSibling instanceof HTMLElement) {
-                    applyAttributes(slotEl.nextSibling, diff.attr);
-                    applyInnerText(slotEl.nextSibling, diff.innerText);
-                  }
-                  break;
-                case 'delete':
-                  if (slotEl.nextSibling) {
-                    parentEl.removeChild(slotEl.nextSibling);
-                  }
-                  break;
-                case 'replace':
-                  if (slotEl.nextSibling) {
-                    parentEl.removeChild(slotEl.nextSibling);
-                  }
-
-                  parentEl.insertBefore(
-                      createElementFromSpec(diff.tag, diff.attr, diff.innerText),
-                      slotEl.nextSibling,
-                  );
-                  break;
+              // Otherwise, remove the element, and create a new one.
+              if (prevEl) {
+                parentEl.removeChild(prevEl);
               }
+
+              const newEl = current.createElement();
+              current.updateElement(newEl);
+              parentEl.insertBefore(newEl, slotEl.nextSibling);
             }),
         );
   }
 }
 
-class UnresolvedSingleOutput implements UnresolvedElementProperty<Element, SingleOutput> {
+class UnresolvedSingleOutput<S extends RenderSpec> implements
+    UnresolvedElementProperty<Element, SingleOutput<S>> {
   constructor(readonly slotName: string) { }
 
-  resolve(resolver: Resolver<Element>): SingleOutput {
+  resolve(resolver: Resolver<Element>): SingleOutput<S> {
     return new SingleOutput(this.slotName, resolver);
   }
 }
 
-export function single(slotName: string): UnresolvedSingleOutput {
+export function single<S extends RenderSpec>(slotName: string): UnresolvedSingleOutput<S> {
   return new UnresolvedSingleOutput(slotName);
 }
