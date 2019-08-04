@@ -1,16 +1,19 @@
 import { fromEvent, Observable } from '@rxjs';
 import { switchMap } from '@rxjs/operators';
+
 import { Input } from '../types/input';
+import { Resolver } from '../types/resolver';
+import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 export class OnDomInput<E extends Event> implements Input<E> {
   constructor(
       readonly eventName: string,
       private readonly options: AddEventListenerOptions,
-      readonly resolver: (root: ShadowRoot) => Observable<Element>,
+      readonly resolver: Resolver<Element>,
   ) { }
 
-  getValue(root: ShadowRoot): Observable<E> {
+  getValue(root: ShadowRootLike): Observable<E> {
     return this.resolver(root)
         .pipe(switchMap(el => fromEvent<E>(el, this.eventName, this.options)));
   }
@@ -23,7 +26,7 @@ export class UnresolvedOnDomInput<E extends Event>
       private readonly options: AddEventListenerOptions,
   ) { }
 
-  resolve(resolver: (root: ShadowRoot) => Observable<Element>): OnDomInput<E> {
+  resolve(resolver: Resolver<Element>): OnDomInput<E> {
     return new OnDomInput(this.eventName, this.options, resolver);
   }
 }

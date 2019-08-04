@@ -1,16 +1,19 @@
 import { Observable } from '@rxjs';
 import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from '@rxjs/operators';
+
 import { Input } from '../types/input';
+import { Resolver } from '../types/resolver';
+import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { mutationObservable } from '../util/mutation-observable';
 
 export class HasClassInput implements Input<boolean> {
   constructor(
       readonly className: string,
-      readonly resolver: (root: ShadowRoot) => Observable<Element>,
+      readonly resolver: Resolver<Element>,
   ) { }
 
-  getValue(root: ShadowRoot): Observable<boolean> {
+  getValue(root: ShadowRootLike): Observable<boolean> {
     return this.resolver(root)
         .pipe(
             switchMap(el =>
@@ -35,7 +38,7 @@ export class HasClassInput implements Input<boolean> {
 export class UnresolvedHasClassInput implements UnresolvedElementProperty<Element, HasClassInput> {
   constructor(readonly className: string) { }
 
-  resolve(resolver: (root: ShadowRoot) => Observable<Element>): HasClassInput {
+  resolve(resolver: Resolver<Element>): HasClassInput {
     return new HasClassInput(this.className, resolver);
   }
 }

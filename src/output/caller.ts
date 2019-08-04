@@ -2,6 +2,8 @@ import { combineLatest, concat, interval, Observable } from '@rxjs';
 import { filter, map, shareReplay, startWith, switchMap, take, tap, withLatestFrom } from '@rxjs/operators';
 
 import { Output } from '../types/output';
+import { Resolver } from '../types/resolver';
+import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 type ElFunction<T extends any[]> = (arg: T) => void;
@@ -10,11 +12,11 @@ const FUNCTION_CHECK_MS = 10;
 
 export class CallerOutput<T extends any[]> implements Output<T> {
   constructor(
-      readonly resolver: (root: ShadowRoot) => Observable<Element>,
+      readonly resolver: Resolver<Element>,
       readonly functionName: string,
   ) { }
 
-  output(root: ShadowRoot, valueObs: Observable<T>): Observable<unknown> {
+  output(root: ShadowRootLike, valueObs: Observable<T>): Observable<unknown> {
     const fnObs = createFnObs<T>(this.resolver(root), this.functionName);
 
     return concat(
@@ -32,7 +34,7 @@ export class UnresolvedCallerOutput<T extends any[]> implements
     UnresolvedElementProperty<Element, CallerOutput<T>> {
   constructor(readonly functionName: string) { }
 
-  resolve(resolver: (root: ShadowRoot) => Observable<Element>): CallerOutput<T> {
+  resolve(resolver: Resolver<Element>): CallerOutput<T> {
     return new CallerOutput(resolver, this.functionName);
   }
 }

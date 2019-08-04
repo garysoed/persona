@@ -1,6 +1,9 @@
 import { Observable, Subject } from '@rxjs';
 import { switchMap } from '@rxjs/operators';
+
 import { Input } from '../types/input';
+import { Resolver } from '../types/resolver';
+import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 const __subject = Symbol('subject');
@@ -8,10 +11,10 @@ const __subject = Symbol('subject');
 export class HandlerInput<T extends any[]> implements Input<T> {
   constructor(
       readonly functionName: string,
-      readonly resolver: (root: ShadowRoot) => Observable<Element>,
+      readonly resolver: Resolver<Element>,
   ) { }
 
-  getValue(root: ShadowRoot): Observable<T> {
+  getValue(root: ShadowRootLike): Observable<T> {
     return this.resolver(root)
         .pipe(
             switchMap(el => {
@@ -39,7 +42,7 @@ export class UnresolvedHandlerInput<T extends any[]> implements
       readonly functionName: string,
   ) { }
 
-  resolve(resolver: (root: ShadowRoot) => Observable<Element>): HandlerInput<T> {
+  resolve(resolver: Resolver<Element>): HandlerInput<T> {
     return new HandlerInput(this.functionName, resolver);
   }
 }

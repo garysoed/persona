@@ -2,6 +2,8 @@ import { Observable } from '@rxjs';
 import { map } from '@rxjs/operators';
 
 import { Output } from '../types/output';
+import { Resolver } from '../types/resolver';
+import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 import { CallerOutput } from './caller';
@@ -12,12 +14,12 @@ export class DispatcherOutput<E extends Event> implements Output<E> {
   private readonly caller: CallerOutput<[E]>;
 
   constructor(
-      readonly resolver: (root: ShadowRoot) => Observable<Element>,
+      readonly resolver: Resolver<Element>,
   ) {
     this.caller = new CallerOutput(resolver, 'dispatchEvent');
   }
 
-  output(root: ShadowRoot, valueObs: Observable<E>): Observable<unknown> {
+  output(root: ShadowRootLike, valueObs: Observable<E>): Observable<unknown> {
     return this.caller.output(root, valueObs.pipe(map(event => [event] as [E])));
   }
 }
@@ -26,7 +28,7 @@ export class UnresolvedDispatcherOutput<E extends Event> implements
     UnresolvedElementProperty<Element, DispatcherOutput<E>> {
   constructor(readonly eventName: string) { }
 
-  resolve(resolver: (root: ShadowRoot) => Observable<Element>): DispatcherOutput<E> {
+  resolve(resolver: Resolver<Element>): DispatcherOutput<E> {
     return new DispatcherOutput(resolver);
   }
 }

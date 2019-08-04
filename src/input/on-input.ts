@@ -2,15 +2,17 @@ import { fromEvent, Observable } from '@rxjs';
 import { map, switchMap } from '@rxjs/operators';
 
 import { Input } from '../types/input';
+import { Resolver } from '../types/resolver';
+import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 export class OnInputInput implements Input<string> {
   constructor(
       private readonly options: AddEventListenerOptions,
-      readonly resolver: (root: ShadowRoot) => Observable<HTMLInputElement>,
+      readonly resolver: Resolver<HTMLInputElement>,
   ) { }
 
-  getValue(root: ShadowRoot): Observable<string> {
+  getValue(root: ShadowRootLike): Observable<string> {
     return this.resolver(root)
         .pipe(
             switchMap(el => {
@@ -26,7 +28,7 @@ export class OnInputInput implements Input<string> {
 class UnresolvedOnInputInput implements UnresolvedElementProperty<HTMLInputElement, OnInputInput> {
   constructor(private readonly options: AddEventListenerOptions) { }
 
-  resolve(resolver: (root: ShadowRoot) => Observable<HTMLInputElement>): OnInputInput {
+  resolve(resolver: Resolver<HTMLInputElement>): OnInputInput {
     return new OnInputInput(this.options, resolver);
   }
 }

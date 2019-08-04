@@ -2,7 +2,9 @@ import { Errors } from '@gs-tools/error';
 import { InstanceofType, Type } from '@gs-types';
 import { Observable } from '@rxjs';
 import { distinctUntilChanged } from '@rxjs/operators';
+
 import { Input } from '../types/input';
+import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { elementObservable } from '../util/element-observable';
 
@@ -25,8 +27,8 @@ export class ElementInput<E extends Element, P extends Properties<E>> implements
     this._ = this.resolve(properties);
   }
 
-  getValue(root: ShadowRoot): Observable<E> {
-    return elementObservable<E, ShadowRoot>(root, root => {
+  getValue(root: ShadowRootLike): Observable<E> {
+    return elementObservable(root, root => {
       const el = this.elementId ? root.getElementById(this.elementId) : root.host;
       if (!this.type.check(el)) {
         throw Errors.assert(`Element of [${this.elementId}]`).shouldBeA(this.type).butWas(el);

@@ -2,14 +2,16 @@ import { combineLatest, Observable } from '@rxjs';
 import { tap } from '@rxjs/operators';
 
 import { Output } from '../types/output';
+import { Resolver } from '../types/resolver';
+import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 export class TextContentOutput implements Output<string> {
   constructor(
-      private readonly resolver: (root: ShadowRoot) => Observable<Element>,
+      private readonly resolver: Resolver<Element>,
   ) { }
 
-  output(root: ShadowRoot, valueObs: Observable<string>): Observable<unknown> {
+  output(root: ShadowRootLike, valueObs: Observable<string>): Observable<unknown> {
     return combineLatest(this.resolver(root), valueObs)
         .pipe(tap(([el, value]) => el.textContent = value));
   }
@@ -17,7 +19,7 @@ export class TextContentOutput implements Output<string> {
 
 class UnresolvedTextContentOutput implements
     UnresolvedElementProperty<Element, TextContentOutput> {
-  resolve(resolver: (root: ShadowRoot) => Observable<Element>): TextContentOutput {
+  resolve(resolver: Resolver<Element>): TextContentOutput {
     return new TextContentOutput(resolver);
   }
 }

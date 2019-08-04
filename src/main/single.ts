@@ -4,7 +4,9 @@ import { distinctUntilChanged, pairwise, startWith, tap, withLatestFrom } from '
 
 import { RenderSpec } from '../render/render-spec';
 import { Output } from '../types/output';
-import { Resolver, UnresolvedElementProperty } from '../types/unresolved-element-property';
+import { Resolver } from '../types/resolver';
+import { ShadowRootLike } from '../types/shadow-root-like';
+import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 import { createSlotObs } from './create-slot-obs';
 
@@ -12,10 +14,10 @@ import { createSlotObs } from './create-slot-obs';
 export class SingleOutput implements Output<RenderSpec|null> {
   constructor(
       readonly slotName: string,
-      readonly resolver: (root: ShadowRoot) => Observable<Element>,
+      readonly resolver: Resolver<Element>,
   ) { }
 
-  output(root: ShadowRoot, value$: Observable<RenderSpec|null>): Observable<unknown> {
+  output(root: ShadowRootLike, value$: Observable<RenderSpec|null>): Observable<unknown> {
     const parent$ = this.resolver(root);
 
     return value$

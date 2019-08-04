@@ -3,6 +3,8 @@ import { Observable } from '@rxjs';
 import { tap, withLatestFrom } from '@rxjs/operators';
 
 import { Output } from '../types/output';
+import { Resolver } from '../types/resolver';
+import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 export class AttributeOutput<T> implements Output<T> {
@@ -10,10 +12,10 @@ export class AttributeOutput<T> implements Output<T> {
       readonly attrName: string,
       readonly parser: Converter<T, string>,
       readonly defaultValue: T|undefined,
-      readonly resolver: (root: ShadowRoot) => Observable<Element>,
+      readonly resolver: Resolver<HTMLElement>,
   ) { }
 
-  output(root: ShadowRoot, valueObs: Observable<T>): Observable<unknown> {
+  output(root: ShadowRootLike, valueObs: Observable<T>): Observable<unknown> {
     return valueObs
         .pipe(
             withLatestFrom(this.resolver(root)),
@@ -32,14 +34,14 @@ export class AttributeOutput<T> implements Output<T> {
 }
 
 export class UnresolvedAttributeOutput<T> implements
-    UnresolvedElementProperty<Element, AttributeOutput<T>> {
+    UnresolvedElementProperty<HTMLElement, AttributeOutput<T>> {
   constructor(
       readonly attrName: string,
       readonly parser: Converter<T, string>,
       readonly deleteValue: T|undefined,
   ) { }
 
-  resolve(resolver: (root: ShadowRoot) => Observable<Element>): AttributeOutput<T> {
+  resolve(resolver: Resolver<HTMLElement>): AttributeOutput<T> {
     return new AttributeOutput(this.attrName, this.parser, this.deleteValue, resolver);
   }
 }

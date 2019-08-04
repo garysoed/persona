@@ -1,8 +1,10 @@
 import { Errors } from '@gs-tools/error';
 import { Converter } from '@nabu';
 import { Observable } from '@rxjs';
+import { Resolver } from 'src/types/resolver';
 
 import { Input } from '../types/input';
+import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { attributeObservable } from '../util/attribute-observable';
 
@@ -11,10 +13,10 @@ export class AttributeInput<T> implements Input<T> {
       readonly attrName: string,
       readonly parser: Converter<T, string>,
       readonly defaultValue: T|undefined,
-      readonly resolver: (root: ShadowRoot) => Observable<Element>,
+      readonly resolver: Resolver<Element>,
   ) { }
 
-  getValue(root: ShadowRoot): Observable<T> {
+  getValue(root: ShadowRootLike): Observable<T> {
     return attributeObservable(
         this.attrName,
         unparsed => this.parseValue(unparsed),
@@ -44,7 +46,7 @@ export class UnresolvedAttributeInput<T> implements
       readonly defaultValue: T|undefined,
   ) { }
 
-  resolve(resolver: (root: ShadowRoot) => Observable<Element>): AttributeInput<T> {
+  resolve(resolver: Resolver<Element>): AttributeInput<T> {
     return new AttributeInput(
         this.attrName,
         this.parser,

@@ -2,15 +2,17 @@ import { combineLatest, Observable } from '@rxjs';
 import { tap } from '@rxjs/operators';
 
 import { Output } from '../types/output';
+import { Resolver } from '../types/resolver';
+import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 export class StyleOutput<S extends keyof CSSStyleDeclaration> implements Output<string> {
   constructor(
-      readonly resolver: (root: ShadowRoot) => Observable<HTMLElement>,
+      readonly resolver: Resolver<HTMLElement>,
       readonly styleKey: S,
   ) { }
 
-  output(root: ShadowRoot, valueObs: Observable<string>): Observable<unknown> {
+  output(root: ShadowRootLike, valueObs: Observable<string>): Observable<unknown> {
     return combineLatest(
             this.resolver(root),
             valueObs,
@@ -29,7 +31,7 @@ class UnresolvedStyleOutput<S extends keyof CSSStyleDeclaration> implements
       private readonly styleKey: S,
   ) { }
 
-  resolve(resolver: (root: ShadowRoot) => Observable<HTMLElement>): StyleOutput<S> {
+  resolve(resolver: Resolver<HTMLElement>): StyleOutput<S> {
     return new StyleOutput(resolver, this.styleKey);
   }
 }

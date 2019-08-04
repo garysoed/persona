@@ -4,14 +4,16 @@ import { combineLatest, Observable } from '@rxjs';
 import { pairwise, startWith, tap } from '@rxjs/operators';
 
 import { Output } from '../types/output';
+import { Resolver } from '../types/resolver';
+import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 export class ClasslistOutput implements Output<Iterable<string>> {
   constructor(
-      private readonly resolver: (root: ShadowRoot) => Observable<Element>,
+      private readonly resolver: Resolver<Element>,
   ) { }
 
-  output(root: ShadowRoot, valueObs: Observable<Iterable<string>>): Observable<unknown> {
+  output(root: ShadowRootLike, valueObs: Observable<Iterable<string>>): Observable<unknown> {
     return combineLatest(
             this.resolver(root),
             valueObs.pipe(startWith(createImmutableSet<string>()), pairwise()),
@@ -34,7 +36,7 @@ export class ClasslistOutput implements Output<Iterable<string>> {
 
 class UnresolvedClasslistOutput implements
     UnresolvedElementProperty<Element, ClasslistOutput> {
-  resolve(resolver: (root: ShadowRoot) => Observable<Element>): ClasslistOutput {
+  resolve(resolver: Resolver<Element>): ClasslistOutput {
     return new ClasslistOutput(resolver);
   }
 }

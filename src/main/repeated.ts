@@ -5,18 +5,19 @@ import { tap, withLatestFrom } from '@rxjs/operators';
 
 import { RenderSpec } from '../render/render-spec';
 import { Output } from '../types/output';
+import { Resolver } from '../types/resolver';
+import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 import { createSlotObs } from './create-slot-obs';
 
-
 export class RepeatedOutput implements Output<ArrayDiff<RenderSpec>> {
   constructor(
       readonly slotName: string,
-      readonly resolver: (root: ShadowRoot) => Observable<Element>,
+      readonly resolver: Resolver<Element>,
   ) { }
 
-  output(root: ShadowRoot, value$: Observable<ArrayDiff<RenderSpec>>): Observable<unknown> {
+  output(root: ShadowRootLike, value$: Observable<ArrayDiff<RenderSpec>>): Observable<unknown> {
     const parentEl$ = this.resolver(root);
 
     return value$
@@ -101,7 +102,7 @@ class UnresolvedRepeatedOutput
       private readonly slotName: string,
   ) { }
 
-  resolve(resolver: (root: ShadowRoot) => Observable<Element>): RepeatedOutput {
+  resolve(resolver: Resolver<Element>): RepeatedOutput {
     return new RepeatedOutput(this.slotName, resolver);
   }
 }
