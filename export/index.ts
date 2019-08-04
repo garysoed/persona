@@ -43,5 +43,6 @@ export { mutationObservable } from '../src/util/mutation-observable';
 export { LocationService, LocationSpec, Route, RouteSpec } from '../src/location/location-service';
 
 // Render spec
+export { InnerHtmlRenderSpec } from '../src/render/inner-html-render-spec';
 export { RenderSpec } from '../src/render/render-spec';
 export { SimpleElementRenderSpec } from '../src/render/simple-element-render-spec';

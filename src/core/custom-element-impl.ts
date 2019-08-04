@@ -1,5 +1,6 @@
 import { injectVine, Vine } from '@grapevine';
 import { cache } from '@gs-tools/data';
+
 import { CustomElementCtrl } from '../types/custom-element-ctrl';
 
 export const SHADOW_ROOT = Symbol('shadowRoot');

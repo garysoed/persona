@@ -3,6 +3,7 @@ import { assert, createSpy, should, Spy, test } from '@gs-testing';
 import { identity } from '@nabu';
 import { BehaviorSubject, Observable, of as observableOf } from '@rxjs';
 import { map, tap } from '@rxjs/operators';
+
 import { attribute as attributeIn } from '../input/attribute';
 import { element } from '../main/element';
 import { attribute as attributeOut } from '../output/attribute';
@@ -10,6 +11,7 @@ import { ElementTester } from '../testing/element-tester';
 import { PersonaTester, PersonaTesterFactory } from '../testing/persona-tester';
 import { CustomElementCtrl } from '../types/custom-element-ctrl';
 import { InitFn } from '../types/init-fn';
+
 import { Builder as PersonaBuilder } from './builder';
 
 const _v = new VineBuilder();

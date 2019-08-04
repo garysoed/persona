@@ -1,4 +1,5 @@
 import { BaseDisposable } from '@gs-tools/dispose';
+
 import { InitFn } from './init-fn';
 
 export type CustomElementCtrlCtor = new (root: ShadowRoot) => CustomElementCtrl;
