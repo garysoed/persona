@@ -5,9 +5,31 @@ class FakeMutationObserver extends MutationObserver {
     super(callback);
   }
 
-  observe(target: Node): void {
+  observe(target: Node, options: MutationObserverInit): void {
     target.addEventListener('mk-fake-mutation', event => {
-      this.callback([(event as CustomEvent).detail.record], this);
+      if (!options.subtree && event.target !== target) {
+        return;
+      }
+
+      const record: MutationRecord = (event as CustomEvent).detail.record;
+      if (record.attributeName) {
+        // This is an attribute change event.
+        if (!options.attributes) {
+          return;
+        }
+
+        if (options.attributeFilter &&
+            !(new Set(options.attributeFilter)).has(record.attributeName)) {
+          return;
+        }
+      }
+
+      if (record.addedNodes || record.removedNodes) {
+        if (!options.childList) {
+          return;
+        }
+      }
+      this.callback([record], this);
     });
   }
 }
@@ -41,7 +63,7 @@ export function installFakeMutationObserver(): () => void {
           attributeName,
           oldValue,
         };
-        this.dispatchEvent(new CustomEvent('mk-fake-mutation', {detail: {record}}));
+        this.dispatchEvent(new CustomEvent('mk-fake-mutation', {bubbles: true, detail: {record}}));
       });
 
   const origRemoveAttribute = HTMLElement.prototype.removeAttribute;
@@ -54,7 +76,7 @@ export function installFakeMutationObserver(): () => void {
           attributeName,
           oldValue,
         };
-        this.dispatchEvent(new CustomEvent('mk-fake-mutation', {detail: {record}}));
+        this.dispatchEvent(new CustomEvent('mk-fake-mutation', {bubbles: true, detail: {record}}));
       });
 
   const origAppendChild = Node.prototype.appendChild;
@@ -66,7 +88,7 @@ export function installFakeMutationObserver(): () => void {
           addedNodes: createFakeNodeList([node]),
           removedNodes: createFakeNodeList([]),
         };
-        this.dispatchEvent(new CustomEvent('mk-fake-mutation', {detail: {record}}));
+        this.dispatchEvent(new CustomEvent('mk-fake-mutation', {bubbles: true, detail: {record}}));
 
         return newNode;
       });
@@ -81,7 +103,7 @@ export function installFakeMutationObserver(): () => void {
           addedNodes: createFakeNodeList([]),
           removedNodes: createFakeNodeList([node]),
         };
-        this.dispatchEvent(new CustomEvent('mk-fake-mutation', {detail: {record}}));
+        this.dispatchEvent(new CustomEvent('mk-fake-mutation', {bubbles: true, detail: {record}}));
 
         return newNode;
       });

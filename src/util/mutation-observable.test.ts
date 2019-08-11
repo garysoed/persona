@@ -1,9 +1,10 @@
 import { assert, match, should, test } from '@gs-testing';
 import { ReplaySubject } from '@rxjs';
 import { take } from '@rxjs/operators';
+
 import { mutationObservable } from './mutation-observable';
 
-test('util.mutationObservable', () => {
+test('@persona/util/mutation-observable', () => {
   should(`emit the records correctly`, async () => {
     const rootEl = document.createElement('div').attachShadow({mode: 'open'});
     document.appendChild(rootEl);

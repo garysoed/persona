@@ -3,4 +3,5 @@ export { Input } from '../src/types/input';
 export { Output } from '../src/types/output';
 
 // Outputs
+export { AttributeInput } from '../src/input/attribute';
 export { AttributeOutput } from '../src/output/attribute';
