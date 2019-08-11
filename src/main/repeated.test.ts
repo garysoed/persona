@@ -10,7 +10,7 @@ import { element } from './element';
 import { repeated, RepeatedOutput } from './repeated';
 
 
-test('persona.output.repeated', () => {
+test('@persona/output/repeated', () => {
   const ELEMENT_ID = 'elementId';
   const SLOT_NAME = 'slotName';
   const TAG_NAME = 'tag-name';

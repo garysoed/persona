@@ -1,8 +1,9 @@
 import { assert, createSpySubject, should, test } from '@gs-testing';
 import { InstanceofType } from '@gs-types';
+
 import { element } from './element';
 
-test('persona/main/element', () => {
+test('@persona/main/element', () => {
   test('getValue', () => {
     should(`emit the element correctly`, () => {
       const ID = 'id';

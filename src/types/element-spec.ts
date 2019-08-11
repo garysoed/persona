@@ -1,4 +1,5 @@
 import { Vine } from '@grapevine';
+
 import { CustomElementCtrlCtor } from './custom-element-ctrl';
 
 export interface BaseCustomElementSpec {

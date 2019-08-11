@@ -1,5 +1,6 @@
 import { assert, retryUntil, should, test } from '@gs-testing';
 import { BehaviorSubject } from '@rxjs';
+
 import { elementObservable } from './element-observable';
 
 test('@persona/util/elementObservable', () => {
