@@ -1,6 +1,6 @@
 import { Vine, VineBuilder } from '@grapevine';
 import { DelayedObservable } from '@grapevine/internal';
-import { $, $asArray, $asSet, $filter, $filterNotEqual, $flat, $map } from '@gs-tools/collect';
+import { $, $asArray, $asSet, $filter, $filterDefined, $flat, $map } from '@gs-tools/collect';
 import { ClassAnnotation, ClassAnnotator } from '@gs-tools/data';
 import { Errors } from '@gs-tools/error';
 import { iterableOfType, unknownType } from '@gs-types';
@@ -169,7 +169,7 @@ function getAllCtrls(
         $map(([, value]) => value),
         $flat<FullComponentData>(),
         $map(data => data.dependencies),
-        $filterNotEqual(undefined),
+        $filterDefined(),
         $flat<CustomElementCtrlCtor>(),
         $asSet(),
     );
@@ -244,7 +244,7 @@ function runConfigures(
       $map(([, value]) => value),
       $flat<FullComponentData>(),
       $map(({configure}) => configure),
-      $filterNotEqual(undefined),
+      $filterDefined(),
   );
 
   for (const configure of configures) {
