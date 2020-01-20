@@ -6,13 +6,14 @@ import { Resolver } from '../types/resolver';
 import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
-export class StyleOutput<S extends keyof CSSStyleDeclaration> implements Output<string> {
+export class StyleOutput<S extends keyof CSSStyleDeclaration>
+    implements Output<CSSStyleDeclaration[S]> {
   constructor(
       readonly resolver: Resolver<HTMLElement>,
       readonly styleKey: S,
   ) { }
 
-  output(root: ShadowRootLike, valueObs: Observable<string>): Observable<unknown> {
+  output(root: ShadowRootLike, valueObs: Observable<CSSStyleDeclaration[S]>): Observable<unknown> {
     return combineLatest(
             this.resolver(root),
             valueObs,

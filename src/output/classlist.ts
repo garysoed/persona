@@ -1,4 +1,3 @@
-import { createImmutableSet } from '@gs-tools/collect';
 import { diff } from '@gs-tools/util';
 import { combineLatest, Observable } from '@rxjs';
 import { pairwise, startWith, tap } from '@rxjs/operators';
@@ -8,15 +7,15 @@ import { Resolver } from '../types/resolver';
 import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
-export class ClasslistOutput implements Output<Iterable<string>> {
+export class ClasslistOutput implements Output<ReadonlySet<string>> {
   constructor(
       private readonly resolver: Resolver<Element>,
   ) { }
 
-  output(root: ShadowRootLike, valueObs: Observable<Iterable<string>>): Observable<unknown> {
+  output(root: ShadowRootLike, valueObs: Observable<ReadonlySet<string>>): Observable<unknown> {
     return combineLatest(
             this.resolver(root),
-            valueObs.pipe(startWith(createImmutableSet<string>()), pairwise()),
+            valueObs.pipe(startWith(new Set<string>()), pairwise()),
         )
         .pipe(
             tap(([el, [prevClasses, currClasses]]) => {

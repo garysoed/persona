@@ -1,6 +1,7 @@
-import { $filter, $head, $pipe, createImmutableList, ImmutableList } from '@gs-tools/collect';
+import { $, $filter, $head, iterableFrom } from '@gs-tools/collect';
 import { Observable } from '@rxjs';
 import { map, startWith, switchMap } from '@rxjs/operators';
+
 import { mutationObservable } from '../util/mutation-observable';
 
 export function createSlotObs(
@@ -16,15 +17,15 @@ return parentElObs
                   startWith(parentEl.childNodes),
               );
         }),
-        map(childNodes => findCommentNode(createImmutableList(childNodes), slotName)),
+        map(childNodes => findCommentNode([...iterableFrom(childNodes)], slotName)),
     );
 }
 
 function findCommentNode(
-    childNodes: ImmutableList<Node>,
+    childNodes: readonly Node[],
     commentContent: string,
 ): Node|null {
-  return $pipe(
+  return $(
       childNodes,
       $filter(node => {
         return node.nodeName === '#comment' &&

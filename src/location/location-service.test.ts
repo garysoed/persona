@@ -1,8 +1,10 @@
-import { assert, createSpy, match, setup, should, test } from '@gs-testing';
-import { of as observableOf, ReplaySubject } from '@rxjs';
-import { catchError } from '@rxjs/operators';
+import { assert, objectThat, setup, should, test } from '@gs-testing';
+import { of as observableOf } from '@rxjs';
+
 import { createFakeWindow } from '../testing/fake-window';
+
 import { LocationService, LocationSpec, Route } from './location-service';
+
 
 interface TestRoutes extends LocationSpec {
   'default': {};
@@ -36,8 +38,8 @@ test('@persona/location/location-service', () => {
       fakeWindow.history.pushState({}, '', '/a/abc');
 
       assert(service.getLocation()).to.emitWith(
-          match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
-            payload: match.anyObjectThat().haveProperties({a: 'abc'}),
+          objectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
+            payload: objectThat().haveProperties({a: 'abc'}),
             type: 'pathA',
           }),
       );
@@ -47,8 +49,8 @@ test('@persona/location/location-service', () => {
       fakeWindow.history.pushState({}, '', '/b/abc');
 
       assert(service.getLocation()).to.emitWith(
-          match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
-            payload: match.anyObjectThat().haveProperties({b: 'abc'}),
+          objectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
+            payload: objectThat().haveProperties({b: 'abc'}),
             type: 'pathB',
           }),
       );
@@ -58,8 +60,8 @@ test('@persona/location/location-service', () => {
       fakeWindow.history.pushState({}, '', '/b/');
 
       assert(service.getLocation()).to.emitWith(
-          match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
-            payload: match.anyObjectThat().haveProperties({b: ''}),
+          objectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
+            payload: objectThat().haveProperties({b: ''}),
             type: 'pathB',
           }),
       );
@@ -69,8 +71,8 @@ test('@persona/location/location-service', () => {
       fakeWindow.history.pushState({}, '', '/un/match');
 
       assert(service.getLocation()).to.emitWith(
-          match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
-            payload: match.anyObjectThat().haveProperties({}),
+          objectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
+            payload: objectThat().haveProperties({}),
             type: 'default',
           }),
       );
@@ -84,8 +86,8 @@ test('@persona/location/location-service', () => {
       fakeWindow.history.pushState({}, '', '/a/abc');
 
       assert(service.getLocationOfType('pathA')).to.emitWith(
-          match.anyObjectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
-            payload: match.anyObjectThat().haveProperties({a: 'abc'}),
+          objectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
+            payload: objectThat().haveProperties({a: 'abc'}),
             type: 'pathA',
           }),
       );

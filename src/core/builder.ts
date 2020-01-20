@@ -1,9 +1,9 @@
 import { Vine, VineBuilder } from '@grapevine';
 import { DelayedObservable } from '@grapevine/internal';
-import { $declareFinite, $filter, $filterNotEqual, $flat, $getKey, $head, $map, $pick, $pipe, asImmutableList, asImmutableSet, createImmutableSet, ImmutableList, ImmutableSet } from '@gs-tools/collect';
+import { $, $asArray, $asSet, $filter, $filterNotEqual, $flat, $map } from '@gs-tools/collect';
 import { ClassAnnotation, ClassAnnotator } from '@gs-tools/data';
 import { Errors } from '@gs-tools/error';
-import { AnyType, IterableOfType } from '@gs-types';
+import { iterableOfType, unknownType } from '@gs-types';
 import { Observable } from '@rxjs';
 
 import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
@@ -14,6 +14,7 @@ import { Output } from '../types/output';
 import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementImpl } from './custom-element-impl';
 import { RenderBuilder } from './render-builder';
+
 
 interface FullComponentData extends CustomElementSpec {
   componentClass: CustomElementCtrlCtor;
@@ -160,18 +161,17 @@ function createCustomElementClass_(
 function getAllCtrls(
     rootCtrls: CustomElementCtrlCtor[],
     customElementAnnotation: ClassAnnotation<FullComponentData>,
-): ImmutableSet<CustomElementCtrlCtor> {
+): ReadonlySet<CustomElementCtrlCtor> {
   const ctrls = new Set(rootCtrls);
   for (const checkedCtrl of ctrls) {
-    const additionalCtors = $pipe(
+    const additionalCtors = $(
         customElementAnnotation.getAttachedValues(checkedCtrl),
-        $pick(1),
+        $map(([, value]) => value),
         $flat<FullComponentData>(),
         $map(data => data.dependencies),
         $filterNotEqual(undefined),
         $flat<CustomElementCtrlCtor>(),
-        $declareFinite(),
-        asImmutableSet(),
+        $asSet(),
     );
 
     for (const additionalCtor of additionalCtors) {
@@ -181,7 +181,7 @@ function getAllCtrls(
     }
   }
 
-  return createImmutableSet(ctrls);
+  return ctrls;
 }
 
 function getSpecFromClassAnnotation<T extends CustomElementSpec|BaseCustomElementSpec>(
@@ -189,19 +189,19 @@ function getSpecFromClassAnnotation<T extends CustomElementSpec|BaseCustomElemen
     ctrl: typeof CustomElementCtrl,
 ): T {
   return getSpec_(
-      $pipe(
+      $(
           annotation.data.getAttachedValues(ctrl),
-          $map(([, dataList]) => $pipe(dataList, $head())),
           // Only take the first item
+          $map(([, dataList]) => dataList[0]),
           $filter((data): data is T => !!data),
-          asImmutableList(),
+          $asArray(),
       ),
       ctrl,
   );
 }
 
 export function getSpec_<T extends CustomElementSpec|BaseCustomElementSpec>(
-    annotations: ImmutableList<T>,
+    annotations: readonly T[],
     ctrl: typeof CustomElementCtrl,
 ): T {
   let combinedSpec: T|null = null;
@@ -216,8 +216,8 @@ export function getSpec_<T extends CustomElementSpec|BaseCustomElementSpec>(
       const existingValue = combinedSpec[key];
       // tslint:disable-next-line: strict-type-predicates
       const normalizedExistingValue = existingValue === undefined ? [] : existingValue;
-      if (!IterableOfType(AnyType()).check(value) ||
-          !IterableOfType(AnyType()).check(normalizedExistingValue)) {
+      if (!iterableOfType(unknownType).check(value) ||
+          !iterableOfType(unknownType).check(normalizedExistingValue)) {
         // Ignore the new value, since it belongs to the ancestor class.
         continue;
       }
@@ -235,21 +235,19 @@ export function getSpec_<T extends CustomElementSpec|BaseCustomElementSpec>(
 
 function runConfigures(
     customElementAnnotation: ClassAnnotation<FullComponentData>,
-    ctrls: ImmutableSet<Function>,
+    ctrls: ReadonlySet<Function>,
     vine: Vine,
 ): void {
-  const configureList = $pipe(
+  const configures = $(
       customElementAnnotation.getAllValues(),
-      $getKey(...ctrls),
-      $pick(1),
+      $filter(([key]) => ctrls.has(key)),
+      $map(([, value]) => value),
       $flat<FullComponentData>(),
       $map(({configure}) => configure),
       $filterNotEqual(undefined),
-      $declareFinite(),
-      asImmutableList(),
   );
 
-  for (const configure of configureList) {
+  for (const configure of configures) {
     configure(vine);
   }
 }

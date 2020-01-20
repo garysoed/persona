@@ -1,5 +1,5 @@
 import { Vine } from '@grapevine';
-import { $filter, $head, $pipe, createImmutableList, ImmutableList } from '@gs-tools/collect';
+import { $, $filter, $head, iterableFrom } from '@gs-tools/collect';
 import { stringify, Verbosity } from '@moirai';
 import { Observable } from '@rxjs';
 import { map, switchMap, take, tap } from '@rxjs/operators';
@@ -16,8 +16,8 @@ import { ClassToggleOutput } from '../output/class-toggle';
 import { DispatcherOutput } from '../output/dispatcher';
 import { SetAttributeOutput } from '../output/set-attribute';
 import { StyleOutput } from '../output/style';
-import { RenderSpec } from '../render/render-spec';
 import { Input } from '../types/input';
+
 
 interface Key {
   alt?: boolean;
@@ -130,7 +130,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
         .pipe(
             getElement(output.resolver),
             map(parentEl => findCommentNode(
-                createImmutableList(parentEl.childNodes),
+                [...iterableFrom(parentEl.childNodes)],
                 output.slotName,
             )),
             map(slotEl => {
@@ -270,14 +270,14 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
 }
 
 function findCommentNode<R>(
-    childNodes: ImmutableList<Node>,
+    childNodes: readonly Node[],
     commentContent: string|null,
 ): Node|null {
   if (!commentContent) {
     return null;
   }
 
-  return $pipe(
+  return $(
       childNodes,
       $filter(node => {
         return node.nodeName === '#comment' &&

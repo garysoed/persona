@@ -1,8 +1,9 @@
-import { assert, match, should, test } from '@gs-testing';
+import { anyThat, assert, should, test } from '@gs-testing';
 import { ReplaySubject } from '@rxjs';
 import { take } from '@rxjs/operators';
 
 import { mutationObservable } from './mutation-observable';
+
 
 test('@persona/util/mutation-observable', () => {
   should(`emit the records correctly`, async () => {
@@ -23,7 +24,7 @@ test('@persona/util/mutation-observable', () => {
     // Wait for an emission.
     await recordsSubject.pipe(take(1)).toPromise();
 
-    assert(recordsSubject).to.emitWith(match.anyThat<MutationRecord[]>().beAnInstanceOf(Array));
+    assert(recordsSubject).to.emitWith(anyThat<MutationRecord[]>().beAnInstanceOf(Array));
 
     // TODO: uncomment.
     // recordsSubject
