@@ -1,5 +1,5 @@
 import { Errors } from '@gs-tools/error';
-import { InstanceofType, Type } from '@gs-types';
+import { elementWithTagType, instanceofType, Type } from '@gs-types';
 import { Observable } from '@rxjs';
 import { distinctUntilChanged } from '@rxjs/operators';
 
@@ -7,6 +7,9 @@ import { Input } from '../types/input';
 import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { elementObservable } from '../util/element-observable';
+
+import { api, ConvertedSpec, UnconvertedSpec } from './api';
+
 
 interface Properties<E extends Element> {
   readonly [key: string]: UnresolvedElementProperty<E, any>;
@@ -52,6 +55,11 @@ export class ElementInput<E extends Element, P extends Properties<E>> implements
   }
 }
 
+export interface ComponentSpec<P extends UnconvertedSpec> {
+  readonly api: P;
+  readonly tag: string;
+}
+
 export function element<P extends Properties<Element>>(
     properties: P,
 ): ElementInput<Element, P>;
@@ -60,18 +68,34 @@ export function element<E extends Element, P extends Properties<E>>(
     type: Type<E>,
     properties: P,
 ): ElementInput<E, P>;
-export function element<P extends Properties<Element>>(
-    idOrProperties: string|P,
-    type?: Type<Element>,
-    properties?: P,
-): ElementInput<Element, P> {
+export function element<P extends UnconvertedSpec, PX extends Properties<Element>>(
+    id: string,
+    spec: ComponentSpec<P>,
+    properties: PX,
+): ElementInput<HTMLElement, ConvertedSpec<P>&PX>;
+export function element(
+    idOrProperties: string|Properties<Element>,
+    typeOrSpec?: Type<Element>|ComponentSpec<UnconvertedSpec>,
+    properties?: Properties<Element>,
+): ElementInput<Element, Properties<Element>> {
   if (typeof idOrProperties === 'string') {
-    if (properties && type) {
-      return new ElementInput(idOrProperties, properties, type);
+    if (properties && typeOrSpec) {
+      if (typeOrSpec instanceof Type) {
+        return new ElementInput(idOrProperties, properties, typeOrSpec);
+      } else {
+        return new ElementInput(
+            idOrProperties,
+            {
+              ...api(typeOrSpec.api),
+              ...properties,
+            },
+            elementWithTagType(typeOrSpec.tag),
+        );
+      }
     } else {
       throw new Error('invalid input');
     }
   } else {
-    return new ElementInput(null, idOrProperties, InstanceofType(Element));
+    return new ElementInput(null, idOrProperties, instanceofType(Element));
   }
 }

@@ -8,7 +8,6 @@ import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 
 import { ElementTester } from './element-tester';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
-import { FakeTime } from './fake-time';
 import { FakeMediaQuery, mockMatchMedia } from './mock-match-media';
 import { PersonaTesterEnvironment } from './persona-tester-environment';
 
@@ -21,7 +20,6 @@ runEnvironment(new PersonaTesterEnvironment());
 export class PersonaTester {
   constructor(
       readonly vine: Vine,
-      readonly time: FakeTime,
       private readonly customElementRegistry: FakeCustomElementRegistry,
   ) { }
 
@@ -63,10 +61,7 @@ export class PersonaTesterFactory {
         customElementRegistry,
     );
 
-    const fakeTime = new FakeTime();
-    fakeTime.install(window);
-
-    const tester = new PersonaTester(vine, fakeTime, customElementRegistry);
+    const tester = new PersonaTester(vine, customElementRegistry);
     fake(spy(document, 'createElement'))
         .always().call(tag => {
           if (customElementRegistry.get(tag)) {

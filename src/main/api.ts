@@ -1,4 +1,5 @@
 import { assertUnreachable } from '@gs-tools/typescript';
+
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHandlerInput } from '../input/handler';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';
@@ -22,11 +23,11 @@ type ConvertibleProperty =
     UnresolvedSetAttributeOutput|
     UnresolvedClassToggleOutput;
 
-interface UnconvertedSpec {
+export interface UnconvertedSpec {
   readonly [key: string]: ConvertibleProperty;
 }
 
-type ConvertedSpec<S> = S extends UnconvertedSpec ? {[K in keyof S]: ConvertedSpec<S[K]>} :
+export type ConvertedSpec<S> = S extends UnconvertedSpec ? {[K in keyof S]: ConvertedSpec<S[K]>} :
     S extends UnresolvedAttributeInput<infer T> ? UnresolvedAttributeOutput<T> :
     S extends UnresolvedHandlerInput<infer T> ? UnresolvedCallerOutput<T> :
     S extends UnresolvedOnDomInput<infer T> ? UnresolvedDispatcherOutput<T> :

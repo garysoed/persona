@@ -1,4 +1,4 @@
-import { anyThat, assert, should, test } from '@gs-testing';
+import { assert, should, test } from '@gs-testing';
 import { ReplaySubject } from '@rxjs';
 import { filter, map } from '@rxjs/operators';
 

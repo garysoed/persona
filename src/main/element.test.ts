@@ -16,8 +16,8 @@ test('@persona/main/element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      const spyElementSubject = createSpySubject(input.getValue(shadowRoot));
-      assert(spyElementSubject.getValue()).to.equal(el);
+      const spyElement$ = createSpySubject(input.getValue(shadowRoot));
+      assert(spyElement$.getValue()).to.equal(el);
     });
 
     should(`handle emitting the host element`, () => {
@@ -26,8 +26,24 @@ test('@persona/main/element', () => {
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});
 
-      const spyElementSubject = createSpySubject(input.getValue(shadowRoot));
-      assert(spyElementSubject.getValue()).to.equal(root);
+      const spyElement$ = createSpySubject(input.getValue(shadowRoot));
+      assert(spyElement$.getValue()).to.equal(root);
+    });
+
+    should(`handle component specs`, () => {
+      const ID = 'id';
+      const tag = 'tag';
+      const input = element(ID, {tag, api: {}}, {});
+
+      const root = document.createElement('div');
+      const shadowRoot = root.attachShadow({mode: 'open'});
+
+      const el = document.createElement(tag);
+      el.id = ID;
+      shadowRoot.appendChild(el);
+
+      const spyElement$ = createSpySubject(input.getValue(shadowRoot));
+      assert(spyElement$.getValue()).to.equal(el);
     });
 
     should(`throw error if the element is of the wrong type`, () => {
@@ -41,8 +57,8 @@ test('@persona/main/element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      const spyElementSubject = createSpySubject(input.getValue(shadowRoot));
-      assert(spyElementSubject.thrownError.message as string).to.match(/Element of/);
+      const spyElement$ = createSpySubject(input.getValue(shadowRoot));
+      assert(spyElement$.thrownError.message as string).to.match(/Element of/);
     });
   });
 });
