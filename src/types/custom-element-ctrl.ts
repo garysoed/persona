@@ -12,5 +12,5 @@ export abstract class CustomElementCtrl extends BaseDisposable {
     super();
   }
 
-  abstract getInitFunctions(): InitFn[];
+  abstract getInitFunctions(): readonly InitFn[];
 }

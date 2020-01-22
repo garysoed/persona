@@ -28,7 +28,7 @@ interface RegistrationSpec {
 
 export class Builder {
   private readonly baseCustomElementAnnotator = new ClassAnnotator(
-      (target: Function, spec: BaseCustomElementSpec) => ({
+      (_target: Function, spec: BaseCustomElementSpec) => ({
         data: {
           ...spec,
         },

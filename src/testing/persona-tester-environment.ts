@@ -1,4 +1,5 @@
 import { Environment } from '@gs-testing';
+
 import { installFakeMutationObserver } from './fake-mutation-observer';
 
 export class PersonaTesterEnvironment extends Environment {

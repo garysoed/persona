@@ -3,7 +3,7 @@ import { RenderSpec } from './render-spec';
 export class SimpleElementRenderSpec implements RenderSpec {
   constructor(
       private readonly tagName: string,
-      private readonly attrs: Map<string, string> = new Map(),
+      private readonly attrs: ReadonlyMap<string, string> = new Map(),
       private readonly innerText: string = '',
   ) { }
 
