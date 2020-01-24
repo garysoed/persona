@@ -37,7 +37,9 @@ export { CustomElementCtrl } from '../src/types/custom-element-ctrl';
 export { InitFn } from '../src/types/init-fn';
 
 // Util
+export { mapOutput } from '../src/util/map-output';
 export { mutationObservable } from '../src/util/mutation-observable';
+export { splitOutput } from '../src/util/split-output';
 
 // Location
 export { LocationService, LocationSpec, Route, RouteSpec } from '../src/location/location-service';
