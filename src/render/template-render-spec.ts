@@ -1,5 +1,5 @@
-import { combineLatest, Observable, of as observableOf } from '@rxjs';
-import { take } from '@rxjs/operators';
+import { combineLatest, Observable, of as observableOf } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 import { Output } from '../types/output';
 import { ShadowRootLike } from '../types/shadow-root-like';

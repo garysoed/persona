@@ -4,5 +4,5 @@ export { Output } from '../src/types/output';
 export { ShadowRootLike } from '../src/types/shadow-root-like';
 
 // Outputs
-export { AttributeInput } from '../src/input/attribute';
+export { AttributeInput, UnresolvedAttributeInput } from '../src/input/attribute';
 export { AttributeOutput } from '../src/output/attribute';

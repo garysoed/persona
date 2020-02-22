@@ -1,7 +1,7 @@
-import { assert, should, test } from '@gs-testing';
-import { InstanceofType } from '@gs-types';
-import { of as observableOf, ReplaySubject } from '@rxjs';
-import { map } from '@rxjs/operators';
+import { assert, should, test } from 'gs-testing';
+import { InstanceofType } from 'gs-types';
+import { of as observableOf, ReplaySubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { element } from '../main/element';
 import { caller, CallerOutput } from '../output/caller';
 import { handler, HandlerInput } from './handler';

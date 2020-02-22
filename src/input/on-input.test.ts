@@ -1,5 +1,5 @@
-import { assert, createSpySubject, MockScheduler, should, test } from '@gs-testing';
-import { InstanceofType } from '@gs-types';
+import { assert, createSpySubject, MockScheduler, should, test } from 'gs-testing';
+import { InstanceofType } from 'gs-types';
 import { element } from '../main/element';
 import { onInput, OnInputInput } from './on-input';
 

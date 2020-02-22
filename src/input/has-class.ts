@@ -1,5 +1,5 @@
-import { Observable } from '@rxjs';
-import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from '@rxjs/operators';
+import { Observable } from 'rxjs';
+import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 
 import { Input } from '../types/input';
 import { Resolver } from '../types/resolver';

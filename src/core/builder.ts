@@ -1,10 +1,10 @@
-import { Vine, VineBuilder } from '@grapevine';
-import { DelayedObservable } from '@grapevine/internal';
-import { $, $asArray, $asSet, $filter, $filterDefined, $flat, $map } from '@gs-tools/collect';
-import { ClassAnnotation, ClassAnnotator } from '@gs-tools/data';
-import { Errors } from '@gs-tools/error';
-import { iterableOfType, unknownType } from '@gs-types';
-import { Observable } from '@rxjs';
+import { Vine, VineBuilder } from 'grapevine';
+import { DelayedObservable } from 'grapevine/export/internal';
+import { $, $asArray, $asSet, $filter, $filterDefined, $flat, $map } from 'gs-tools/export/collect';
+import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
+import { Errors } from 'gs-tools/export/error';
+import { iterableOfType, unknownType } from 'gs-types';
+import { Observable } from 'rxjs';
 
 import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec';

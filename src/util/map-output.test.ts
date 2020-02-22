@@ -1,6 +1,6 @@
-import { assert, should, test } from '@gs-testing';
-import { identity } from '@nabu';
-import { of as observableOf } from '@rxjs';
+import { assert, should, test } from 'gs-testing';
+import { identity } from 'nabu';
+import { of as observableOf } from 'rxjs';
 
 import { element } from '../main/element';
 import { attribute } from '../output/attribute';

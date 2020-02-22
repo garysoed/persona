@@ -1,7 +1,7 @@
-import { assert, setup, should, test } from '@gs-testing';
-import { ArrayDiff } from '@gs-tools/rxjs';
-import { InstanceofType } from '@gs-types';
-import { Subject } from '@rxjs';
+import { assert, setup, should, test } from 'gs-testing';
+import { ArrayDiff } from 'gs-tools/export/rxjs';
+import { InstanceofType } from 'gs-types';
+import { Subject } from 'rxjs';
 import { SimpleElementRenderSpec } from 'src/render/simple-element-render-spec';
 
 import { RenderSpec } from '../render/render-spec';

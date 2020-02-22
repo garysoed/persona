@@ -1,6 +1,6 @@
-import { assert, setup, should, test } from '@gs-testing';
-import { InstanceofType } from '@gs-types';
-import { Subject } from '@rxjs';
+import { assert, setup, should, test } from 'gs-testing';
+import { InstanceofType } from 'gs-types';
+import { Subject } from 'rxjs';
 
 import { SimpleElementRenderSpec } from '../render/simple-element-render-spec';
 

@@ -1,7 +1,7 @@
-import { assert, should, test } from '@gs-testing';
-import { integerConverter } from '@gs-tools/serializer';
-import { InstanceofType } from '@gs-types';
-import { compose, human } from '@nabu';
+import { assert, should, test } from 'gs-testing';
+import { integerConverter } from 'gs-tools/export/serializer';
+import { InstanceofType } from 'gs-types';
+import { compose, human } from 'nabu';
 import { element } from '../main/element';
 import { attribute, AttributeInput } from './attribute';
 

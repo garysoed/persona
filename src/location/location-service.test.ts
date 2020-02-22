@@ -1,5 +1,5 @@
-import { assert, objectThat, setup, should, test } from '@gs-testing';
-import { of as observableOf } from '@rxjs';
+import { assert, objectThat, setup, should, test } from 'gs-testing';
+import { of as observableOf } from 'rxjs';
 
 import { createFakeWindow } from '../testing/fake-window';
 

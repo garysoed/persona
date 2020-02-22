@@ -1,6 +1,6 @@
-import { $, $filter, $head, iterableFrom } from '@gs-tools/collect';
-import { Observable } from '@rxjs';
-import { map, startWith, switchMap } from '@rxjs/operators';
+import { $, $filter, $head, iterableFrom } from 'gs-tools/export/collect';
+import { Observable } from 'rxjs';
+import { map, startWith, switchMap } from 'rxjs/operators';
 
 import { mutationObservable } from '../util/mutation-observable';
 

@@ -1,6 +1,6 @@
-import { cache } from '@gs-tools/data';
-import { fromEvent, merge, Observable, of as observableOf, Subject } from '@rxjs';
-import { map, mapTo, startWith, switchMap, tap } from '@rxjs/operators';
+import { cache } from 'gs-tools/export/data';
+import { fromEvent, merge, Observable, of as observableOf, Subject } from 'rxjs';
+import { map, mapTo, startWith, switchMap, tap } from 'rxjs/operators';
 
 export interface RouteSpec<T> {
   path: string;

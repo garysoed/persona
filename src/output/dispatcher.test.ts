@@ -1,6 +1,6 @@
-import { assert, createSpySubject, should, test } from '@gs-testing';
-import { InstanceofType } from '@gs-types';
-import { fromEvent, Subject } from '@rxjs';
+import { assert, createSpySubject, should, test } from 'gs-testing';
+import { InstanceofType } from 'gs-types';
+import { fromEvent, Subject } from 'rxjs';
 import { element } from '../main/element';
 import { dispatcher, DispatcherOutput } from './dispatcher';
 

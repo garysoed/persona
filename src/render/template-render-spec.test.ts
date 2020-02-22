@@ -1,6 +1,6 @@
-import { assert, should, test } from '@gs-testing';
-import { InstanceofType } from '@gs-types';
-import { identity } from '@nabu';
+import { assert, should, test } from 'gs-testing';
+import { InstanceofType } from 'gs-types';
+import { identity } from 'nabu';
 
 import { element } from '../main/element';
 import { attribute } from '../output/attribute';

@@ -1,4 +1,4 @@
-import { assert, createSpyWindow, fake, setup, should, SpyObj, test } from '@gs-testing';
+import { assert, createSpyWindow, fake, setup, should, SpyObj, test } from 'gs-testing';
 import { FakeMediaQuery } from '../testing/mock-match-media';
 import { mediaQuery, MediaQueryInput } from './media-query';
 

@@ -1,5 +1,5 @@
-import { Observable } from '@rxjs';
-import { map } from '@rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';

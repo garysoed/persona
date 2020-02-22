@@ -1,7 +1,7 @@
-import { Errors } from '@gs-tools/error';
-import { elementWithTagType, instanceofType, Type } from '@gs-types';
-import { Observable } from '@rxjs';
-import { distinctUntilChanged } from '@rxjs/operators';
+import { Errors } from 'gs-tools/export/error';
+import { elementWithTagType, instanceofType, Type } from 'gs-types';
+import { Observable } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 import { Input } from '../types/input';
 import { ShadowRootLike } from '../types/shadow-root-like';

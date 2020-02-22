@@ -1,6 +1,6 @@
-import { BooleanType } from '@gs-types';
-import { Observable } from '@rxjs';
-import { filter, tap } from '@rxjs/operators';
+import { BooleanType } from 'gs-types';
+import { Observable } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
 
 import { Resolver } from '../types/resolver';
 import { ShadowRootLike } from '../types/shadow-root-like';

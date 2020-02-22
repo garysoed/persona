@@ -1,4 +1,4 @@
-import { merge, Observable } from '@rxjs';
+import { merge, Observable } from 'rxjs';
 
 import { Output } from '../types/output';
 import { ShadowRootLike } from '../types/shadow-root-like';

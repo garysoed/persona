@@ -1,6 +1,6 @@
-import { Vine } from '@grapevine';
-import { fake, runEnvironment, spy } from '@gs-testing';
-import { Errors } from '@gs-tools/error';
+import { Vine } from 'grapevine';
+import { fake, runEnvironment, spy } from 'gs-testing';
+import { Errors } from 'gs-tools/export/error';
 
 import { Builder as PersonaBuilder } from '../core/builder';
 import { MediaQueryInput } from '../input/media-query';

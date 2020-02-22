@@ -2,7 +2,7 @@
   "name": "persona",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "export/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -26,7 +26,7 @@
     "karma-sourcemap-loader": "^0.3.7",
     "source-map-loader": "^0.2.4",
     "ts-loader": "^4.4.1",
-    "typescript": "^3.5.2",
+    "typescript": "^3.7.2",
     "uglifyjs-webpack-plugin": "^1.2.5",
     "webpack": "^4.9.2",
     "webpack-notifier": "^1.7.0"
@@ -35,6 +35,7 @@
     "rxjs": "^6.3.3"
   },
   "dependencies": {
-    "rxjs": "^6.3.3"
+    "rxjs": "^6.5.4",
+    "tslib": "^1.11.0"
   }
 }

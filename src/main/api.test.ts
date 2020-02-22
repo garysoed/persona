@@ -1,9 +1,9 @@
-import { assert, createSpySubject, should, test } from '@gs-testing';
-import { integerConverter } from '@gs-tools/serializer';
-import { InstanceofType } from '@gs-types';
-import { compose, human } from '@nabu';
-import { fromEvent, of as observableOf, ReplaySubject , Subject } from '@rxjs';
-import { map } from '@rxjs/operators';
+import { assert, createSpySubject, should, test } from 'gs-testing';
+import { integerConverter } from 'gs-tools/export/serializer';
+import { InstanceofType } from 'gs-types';
+import { compose, human } from 'nabu';
+import { fromEvent, of as observableOf, ReplaySubject , Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { attribute as attributeIn } from '../input/attribute';
 import { handler } from '../input/handler';
 import { hasAttribute } from '../input/has-attribute';

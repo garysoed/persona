@@ -1,5 +1,5 @@
-import { fromEvent, Observable } from '@rxjs';
-import { switchMap } from '@rxjs/operators';
+import { fromEvent, Observable } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 import { Input } from '../types/input';
 import { Resolver } from '../types/resolver';

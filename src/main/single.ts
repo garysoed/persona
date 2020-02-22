@@ -1,6 +1,6 @@
-import { filterNonNull } from '@gs-tools/rxjs';
-import { Observable } from '@rxjs';
-import { distinctUntilChanged, pairwise, startWith, tap, withLatestFrom } from '@rxjs/operators';
+import { filterNonNull } from 'gs-tools/export/rxjs';
+import { Observable } from 'rxjs';
+import { distinctUntilChanged, pairwise, startWith, tap, withLatestFrom } from 'rxjs/operators';
 
 import { RenderSpec } from '../render/render-spec';
 import { Output } from '../types/output';

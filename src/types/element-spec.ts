@@ -1,4 +1,4 @@
-import { Vine } from '@grapevine';
+import { Vine } from 'grapevine';
 
 import { CustomElementCtrlCtor } from './custom-element-ctrl';
 

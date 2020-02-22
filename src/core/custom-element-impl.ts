@@ -1,5 +1,5 @@
-import { injectVine, Vine } from '@grapevine';
-import { cache } from '@gs-tools/data';
+import { injectVine, Vine } from 'grapevine';
+import { cache } from 'gs-tools/export/data';
 
 import { CustomElementCtrl } from '../types/custom-element-ctrl';
 

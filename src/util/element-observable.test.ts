@@ -1,5 +1,5 @@
-import { assert, should, test } from '@gs-testing';
-import { ReplaySubject } from '@rxjs';
+import { assert, should, test } from 'gs-testing';
+import { ReplaySubject } from 'rxjs';
 
 import { elementObservable } from './element-observable';
 

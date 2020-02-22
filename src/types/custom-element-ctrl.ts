@@ -1,4 +1,4 @@
-import { BaseDisposable } from '@gs-tools/dispose';
+import { BaseDisposable } from 'gs-tools/export/dispose';
 
 import { InitFn } from './init-fn';
 

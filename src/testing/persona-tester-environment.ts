@@ -1,4 +1,4 @@
-import { Environment } from '@gs-testing';
+import { Environment } from 'gs-testing';
 
 import { installFakeMutationObserver } from './fake-mutation-observer';
 

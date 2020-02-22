@@ -1,5 +1,5 @@
-import { combineLatest, Observable } from '@rxjs';
-import { tap } from '@rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';

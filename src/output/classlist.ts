@@ -1,6 +1,6 @@
-import { diff } from '@gs-tools/util';
-import { combineLatest, Observable } from '@rxjs';
-import { pairwise, startWith, tap } from '@rxjs/operators';
+import { diff } from 'gs-tools/export/util';
+import { combineLatest, Observable } from 'rxjs';
+import { pairwise, startWith, tap } from 'rxjs/operators';
 
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';

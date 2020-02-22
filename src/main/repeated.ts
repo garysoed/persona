@@ -1,7 +1,7 @@
-import { ArrayDiff, filterNonNull } from '@gs-tools/rxjs';
-import { assertUnreachable } from '@gs-tools/typescript';
-import { Observable } from '@rxjs';
-import { tap, withLatestFrom } from '@rxjs/operators';
+import { ArrayDiff, filterNonNull } from 'gs-tools/export/rxjs';
+import { assertUnreachable } from 'gs-tools/export/typescript';
+import { Observable } from 'rxjs';
+import { tap, withLatestFrom } from 'rxjs/operators';
 
 import { RenderSpec } from '../render/render-spec';
 import { Output } from '../types/output';

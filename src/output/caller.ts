@@ -1,5 +1,5 @@
-import { combineLatest, concat, interval, Observable } from '@rxjs';
-import { filter, map, shareReplay, startWith, switchMap, take, tap, withLatestFrom } from '@rxjs/operators';
+import { combineLatest, concat, interval, Observable } from 'rxjs';
+import { filter, map, shareReplay, startWith, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';

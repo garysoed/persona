@@ -1,6 +1,6 @@
-import { assert, should, test } from '@gs-testing';
-import { InstanceofType } from '@gs-types';
-import { Subject } from '@rxjs';
+import { assert, should, test } from 'gs-testing';
+import { InstanceofType } from 'gs-types';
+import { Subject } from 'rxjs';
 
 import { element } from '../main/element';
 

@@ -1,8 +1,8 @@
-import { Vine } from '@grapevine';
-import { $, $filter, $head, iterableFrom } from '@gs-tools/collect';
-import { stringify, Verbosity } from '@moirai';
-import { Observable } from '@rxjs';
-import { map, switchMap, take, tap } from '@rxjs/operators';
+import { Vine } from 'grapevine';
+import { $, $filter, $head, iterableFrom } from 'gs-tools/export/collect';
+import { stringify, Verbosity } from 'moirai';
+import { Observable } from 'rxjs';
+import { map, switchMap, take, tap } from 'rxjs/operators';
 
 import { AttributeInput } from '../input/attribute';
 import { HandlerInput } from '../input/handler';

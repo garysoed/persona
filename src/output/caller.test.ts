@@ -1,6 +1,6 @@
-import { assert, createSpySubject, should, test } from '@gs-testing';
-import { InstanceofType } from '@gs-types';
-import { of as observableOf } from '@rxjs';
+import { assert, createSpySubject, should, test } from 'gs-testing';
+import { InstanceofType } from 'gs-types';
+import { of as observableOf } from 'rxjs';
 import { element } from '../main/element';
 import { caller, CallerOutput } from './caller';
 

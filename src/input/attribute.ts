@@ -1,6 +1,7 @@
-import { Errors } from '@gs-tools/error';
-import { Converter } from '@nabu';
-import { Observable } from '@rxjs';
+import { Converter } from 'nabu';
+
+import { Errors } from 'gs-tools/export/error';
+import { Observable } from 'rxjs';
 
 import { Input } from '../types/input';
 import { Resolver } from '../types/resolver';
@@ -45,6 +46,15 @@ export class UnresolvedAttributeInput<T> implements
       readonly parser: Converter<T, string>,
       readonly defaultValue: T|undefined,
   ) { }
+
+  createAttributePair(value: T): readonly [string, string] {
+    const result = this.parser.convertForward(value);
+    if (!result.success) {
+      throw new Error(`Invalid value: ${value}`);
+    }
+
+    return [this.attrName, result.result];
+  }
 
   resolve(resolver: Resolver<Element>): AttributeInput<T> {
     return new AttributeInput(

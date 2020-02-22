@@ -1,5 +1,5 @@
-import { Vine } from '@grapevine';
-import { of as observableOf } from '@rxjs';
+import { Vine } from 'grapevine';
+import { of as observableOf } from 'rxjs';
 
 import { BaseElementTester } from './base-element-tester';
 
