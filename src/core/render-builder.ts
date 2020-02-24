@@ -1,29 +1,39 @@
-import { Source, Stream, Vine } from 'grapevine';
+import { Source, Stream, stream, Vine } from 'grapevine';
+import { Provider } from 'grapevine/export/internal';
+import { debug } from 'gs-tools/export/rxjs';
 import { combineLatest, Observable, of as observableOf } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
-import { InitFn } from '../types/init-fn';
 import { Output } from '../types/output';
 
-export class RenderBuilder<T> {
-  constructor(private readonly outputs: Array<Output<T>>) {}
+export class RenderBuilder<T, C> {
+  constructor(
+      private readonly context: C,
+      private readonly outputs: Array<Output<T>>,
+      private readonly shadowRoot: ShadowRoot,
+      private readonly vine: Vine,
+      private readonly onDestroy$: Observable<unknown>,
+  ) {}
 
-  withObservable(obs: Observable<T>): InitFn {
-    return this.run(() => obs);
+  withFunction(renderFn: Provider<T, C>): void {
+    return this.withVine(stream(renderFn, this.context));
   }
 
-  withValue(value: T): InitFn {
-    return this.run(() => observableOf(value));
+  withObservable(obs: Observable<T>): void {
+    return this.run(obs);
   }
 
-  withVine(sourceOrStream: Stream<T, any>|Source<T, any>): InitFn {
-    return this.run(vine => sourceOrStream.get(vine));
+  withValue(value: T): void {
+    return this.run(observableOf(value));
   }
 
-  private run(handler: (vine: Vine, root: ShadowRoot) => Observable<T>): InitFn {
-    return (vine: Vine, root: ShadowRoot) => {
-      const runObs = this.outputs.map(output => output.output(root, handler(vine, root)));
+  withVine(sourceOrStream: Stream<T, any>|Source<T, any>): void {
+    return this.run(sourceOrStream.get(this.vine));
+  }
 
-      return combineLatest(runObs);
-    };
+  private run(value$: Observable<T>): void {
+    const runObs = this.outputs.map(output => output.output(this.shadowRoot, value$));
+
+    combineLatest(runObs).pipe(takeUntil(this.onDestroy$)).subscribe();
   }
 }

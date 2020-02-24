@@ -1,4 +1,4 @@
-import { combineLatest, Observable, of as observableOf } from 'rxjs';
+import { combineLatest, NEVER, Observable, of as observableOf } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 
 import { mutationObservable } from './mutation-observable';
@@ -33,7 +33,14 @@ export function attributeObservable<T>(
             );
           }),
           distinctUntilChanged(),
-          map(unparsedValue => parse(unparsedValue)),
+          switchMap(unparsedValue => {
+            try {
+              const value = parse(unparsedValue);
+              return observableOf(value);
+            } catch (e) {
+              return NEVER;
+            }
+          }),
           shareReplay(1),
       );
 }

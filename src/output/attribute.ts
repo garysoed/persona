@@ -1,5 +1,4 @@
 import { Converter } from 'nabu';
-
 import { Observable } from 'rxjs';
 import { tap, withLatestFrom } from 'rxjs/operators';
 
@@ -7,6 +6,7 @@ import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
 import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+
 
 export class AttributeOutput<T> implements Output<T> {
   constructor(

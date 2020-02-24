@@ -1,7 +1,8 @@
-import { injectVine, Vine } from 'grapevine';
+import { Vine } from 'grapevine';
 import { cache } from 'gs-tools/export/data';
 
-import { CustomElementCtrl } from '../types/custom-element-ctrl';
+import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
+
 
 export const SHADOW_ROOT = Symbol('shadowRoot');
 export const __ctrl = Symbol('ctrl');
@@ -13,7 +14,7 @@ export type ElementWithCtrl = HTMLElement & {[__ctrl]?: CustomElementCtrl|null};
  */
 export class CustomElementImpl {
   constructor(
-      private readonly componentClass: new (shadowRoot: ShadowRoot) => CustomElementCtrl,
+      private readonly componentClass: CustomElementCtrlCtor,
       private readonly element: ElementWithCtrl,
       private readonly templateStr: string,
       private readonly vine: Vine,
@@ -24,16 +25,16 @@ export class CustomElementImpl {
     const shadowRoot = this.getShadowRoot();
 
     const ctor = this.componentClass;
-    const componentInstance = new ctor(shadowRoot);
+    const componentInstance = new ctor(shadowRoot, this.vine);
     this.element[__ctrl] = componentInstance;
 
-    for (const fn of componentInstance.getInitFunctions()) {
-      componentInstance.addSubscription(
-          fn.call(componentInstance, this.vine, shadowRoot).subscribe(),
-      );
-    }
+    // for (const fn of componentInstance.getInitFunctions()) {
+    //   componentInstance.addSubscription(
+    //       fn.call(componentInstance, this.vine, shadowRoot).subscribe(),
+    //   );
+    // }
 
-    injectVine(this.vine, componentInstance);
+    // injectVine(this.vine, componentInstance);
   }
 
   disconnectedCallback(): void {

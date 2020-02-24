@@ -1,19 +1,14 @@
 import { Vine, VineBuilder } from 'grapevine';
-import { DelayedObservable } from 'grapevine/export/internal';
 import { $, $asArray, $asSet, $filter, $filterDefined, $flat, $map } from 'gs-tools/export/collect';
 import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
 import { iterableOfType, unknownType } from 'gs-types';
-import { Observable } from 'rxjs';
 
 import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec';
-import { Input } from '../types/input';
-import { Output } from '../types/output';
 
 import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementImpl } from './custom-element-impl';
-import { RenderBuilder } from './render-builder';
 
 
 interface FullComponentData extends CustomElementSpec {
@@ -85,21 +80,6 @@ export class Builder {
 
   customElement(spec: CustomElementSpec): ClassDecorator {
     return this.customElementAnnotator.decorator(spec);
-  }
-
-  input<T>(input: Input<T>, context: CustomElementCtrl): DelayedObservable<T> {
-    return this.vineBuilder
-        .stream<T, CustomElementCtrl>(
-            function(this: CustomElementCtrl): Observable<T> {
-              return input.getValue(this.shadowRoot);
-            },
-            context,
-        )
-        .asObservable();
-  }
-
-  render<T>(...outputs: Array<Output<T>>): RenderBuilder<T> {
-    return new RenderBuilder(outputs);
   }
 
   private register(

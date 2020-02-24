@@ -1,8 +1,9 @@
-import { VineBuilder } from 'grapevine';
+import { source, stream, Vine, VineBuilder } from 'grapevine';
 import { assert, createSpy, should, Spy, test } from 'gs-testing';
+import { debug } from 'gs-tools/export/rxjs';
 import { identity } from 'nabu';
 import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, takeUntil, tap } from 'rxjs/operators';
 
 import { attribute as attributeIn } from '../input/attribute';
 import { element } from '../main/element';
@@ -10,9 +11,9 @@ import { attribute as attributeOut } from '../output/attribute';
 import { ElementTester } from '../testing/element-tester';
 import { PersonaTester, PersonaTesterFactory } from '../testing/persona-tester';
 import { CustomElementCtrl } from '../types/custom-element-ctrl';
-import { InitFn } from '../types/init-fn';
 
 import { Builder as PersonaBuilder } from './builder';
+
 
 const _v = new VineBuilder();
 const _p = new PersonaBuilder(_v);
@@ -25,7 +26,7 @@ const $ = {
   }),
 };
 
-const $HANDLER = _v.source(
+const $HANDLER = source(
     () => new BehaviorSubject(() => undefined),
     globalThis,
 );
@@ -34,12 +35,10 @@ const $HANDLER = _v.source(
   shadowMode: 'open',
 })
 class ParentTestClass extends CustomElementCtrl {
-  getInitFunctions(): InitFn[] {
-    return [
-      _p
-          .render($.host._.attr1)
-          .withVine(_v.stream(this.overriddenRender, this)),
-    ];
+  constructor(shadowRoot: ShadowRoot, vine: Vine) {
+    super(shadowRoot, vine);
+
+    this.render($.host._.attr1).withVine(stream(this.overriddenRender, this));
   }
 
   overriddenRender(): Observable<string> {
@@ -55,30 +54,29 @@ class ParentTestClass extends CustomElementCtrl {
   template: '',
 })
 class TestClass extends ParentTestClass {
-  private readonly attr4 = _p.input($.host._.attr4, this);
-  private readonly handlerSbj = $HANDLER.asSubject();
-  private readonly providesValueStream = _v.stream(this.providesValue, this).asObservable();
+  private readonly handlerSbj = $HANDLER.get(this.vine);
+  private readonly providesValueStream = stream(this.providesValue, this).get(this.vine);
 
-  getInitFunctions(): InitFn[] {
-    return [
-      ...super.getInitFunctions(),
-      () => this.handlerSbj.pipe(tap(handler => handler())),
-      _p
-          .render($.host._.attr2)
-          .withObservable(this.providesValueStream),
-      _p
-          .render($.host._.attr1, $.host._.attr3)
-          .withVine(_v.stream(this.overriddenRender, this)),
-    ];
+  constructor(shadowRoot: ShadowRoot, vine: Vine) {
+    super(shadowRoot, vine);
+
+    this.handlerSbj
+        .pipe(
+            tap(handler => handler()),
+            takeUntil(this.onDispose$),
+        )
+        .subscribe();
+    this.render($.host._.attr2).withObservable(this.providesValueStream);
+    this.render($.host._.attr1, $.host._.attr3).withVine(stream(this.overriddenRender, this));
   }
 
   overriddenRender(): Observable<string> {
-    return this.providesValueStream.pipe(map(value => `${value}abc`));
+    return stream(this.providesValue, this).get(this.vine).pipe(debug('stream'), map(value => `${value}abc`));
   }
 
   // tslint:disable-next-line: prefer-function-over-method
   providesValue(): Observable<string> {
-    return this.attr4.pipe(map(v => `123-${v}`));
+    return this.declareInput($.host._.attr4).pipe(debug('provides'), map(v => `123-${v}`));
   }
 }
 
