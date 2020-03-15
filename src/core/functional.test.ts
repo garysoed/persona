@@ -1,6 +1,5 @@
 import { source, stream, Vine, VineBuilder } from 'grapevine';
 import { assert, createSpy, should, Spy, test } from 'gs-testing';
-import { debug } from 'gs-tools/export/rxjs';
 import { identity } from 'nabu';
 import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
 import { map, takeUntil, tap } from 'rxjs/operators';
@@ -71,12 +70,12 @@ class TestClass extends ParentTestClass {
   }
 
   overriddenRender(): Observable<string> {
-    return stream(this.providesValue, this).get(this.vine).pipe(debug('stream'), map(value => `${value}abc`));
+    return stream(this.providesValue, this).get(this.vine).pipe(map(value => `${value}abc`));
   }
 
   // tslint:disable-next-line: prefer-function-over-method
   providesValue(): Observable<string> {
-    return this.declareInput($.host._.attr4).pipe(debug('provides'), map(v => `123-${v}`));
+    return this.declareInput($.host._.attr4).pipe(map(v => `123-${v}`));
   }
 }
 

@@ -1,38 +1,37 @@
-import { cache } from 'gs-tools/export/data';
-import { fromEvent, merge, Observable, of as observableOf, Subject } from 'rxjs';
-import { map, mapTo, startWith, switchMap, tap } from 'rxjs/operators';
+import { filterNonNull } from 'gs-tools/export/rxjs';
+import { Result } from 'nabu';
+import { fromEvent, merge, Observable, Subject } from 'rxjs';
+import { map, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
-export interface RouteSpec<T> {
-  path: string;
-  type: T;
+import { Initializable } from '../util/initialize';
+
+import { LocationConverter } from './location-converter';
+
+
+export interface RouteSpec {
+  readonly [key: string]: LocationConverter<unknown>;
 }
 
-export interface Route<M, T extends keyof M> {
-  payload: M[T];
-  type: T;
+type Payloads<R extends RouteSpec> = {
+  [K in keyof R]: R[K] extends LocationConverter<infer T> ? T : never
+};
+
+export interface Route<S extends RouteSpec, K extends keyof S> {
+  readonly payload: Payloads<S>[K];
+  readonly type: K;
 }
 
-export interface Routes {
-  'MAIN': {};
-  'PROJECT': {projectId: string};
-}
-
-type RoutesOf<M> = {[K in keyof M]: Route<M, K>}[keyof M];
-
-export interface LocationSpec {
-  [key: string]: {};
-}
-
-export class LocationService<M extends LocationSpec> {
+export class LocationService<S extends RouteSpec> implements Initializable {
+  private readonly onGoToUrl$: Subject<string> = new Subject();
   private readonly onPushState$: Subject<{}> = new Subject();
 
   constructor(
-      private readonly specs: Array<RouteSpec<keyof M>>,
-      private readonly defaultPath: RoutesOf<M>,
+      private readonly specs: S,
+      private readonly defaultRoute: Route<S, keyof S>,
       private readonly window$: Observable<Window>,
   ) { }
 
-  getLocation(): Observable<RoutesOf<M>> {
+  getLocation(): Observable<Route<S, keyof S>> {
     return this.window$.pipe(
         switchMap(windowObj => {
           return merge(
@@ -42,93 +41,67 @@ export class LocationService<M extends LocationSpec> {
           .pipe(
               map(() => windowObj.location.pathname),
               startWith(windowObj.location.pathname),
-              switchMap(location => {
-                for (const spec of this.specs) {
-                  const result = parseLocation<M>(location, spec);
+              map(location => {
+                for (const specKey of Object.keys(this.specs) as Array<keyof S>) {
+                  const spec = this.specs[specKey];
+                  const result = spec.convertForward(location) as Result<Payloads<S>[keyof S]>;
                   if (result.success) {
-                    return observableOf({payload: result.value, type: spec.type});
+                    return {
+                      payload: result.result,
+                      type: specKey,
+                    };
                   }
                 }
 
-                return this.goToPath(this.defaultPath.type, this.defaultPath.payload)
-                    .pipe(mapTo(this.defaultPath));
+                this.goToPath(this.defaultRoute.type, this.defaultRoute.payload);
+                return this.defaultRoute;
               }),
           );
         }),
     );
   }
 
-  getLocationOfType<K extends keyof M>(type: K): Observable<Route<M, K>|null> {
+  getLocationOfType<K extends keyof S>(type: K): Observable<Route<S, K>> {
     return this.getLocation()
-        .pipe(map((location): Route<M, K>|null => {
-          return location.type === type ? location as Route<M, K> : null;
-        }));
+        .pipe(
+            map((location): Route<S, K>|null => {
+              return location.type === type ? location as Route<S, K> : null;
+            }),
+            filterNonNull(),
+        );
   }
 
-  goToPath<T extends keyof M>(type: T, payload: M[T]): Observable<unknown> {
-    return this.window$
+  goToPath<K extends keyof S>(type: K, payload: Payloads<S>[K]): void {
+    const url = this.getUrl(type, payload)
+        || this.getUrl(this.defaultRoute.type, this.defaultRoute.payload);
+    if (!url) {
+      throw new Error(`Invalid route: ${JSON.stringify({type, payload})}`);
+    }
+
+    this.onGoToUrl$.next(url);
+  }
+
+  initialize(): Observable<unknown> {
+    return this.setupGoToPath();
+  }
+
+  private getUrl<K extends keyof S>(type: K, payload: Payloads<S>[K]): string|null {
+    const result = this.specs[type].convertBackward(payload);
+    if (!result.success) {
+      return null;
+    }
+
+    return result.result;
+  }
+
+  private setupGoToPath(): Observable<unknown> {
+    return this.onGoToUrl$
         .pipe(
-            tap(windowObj => {
-              const pathSpecMap = this.getPathSpecMap();
-              const spec = pathSpecMap.get(type) || pathSpecMap.get(this.defaultPath.type);
-              if (!spec) {
-                throw new Error(`Spec for ${type} not found`);
-              }
-
-              let path = spec;
-              const normalizedPayload = spec ? payload : this.defaultPath.payload;
-              for (const key in normalizedPayload) {
-                if (!normalizedPayload.hasOwnProperty(key)) {
-                  continue;
-                }
-
-                path = path.replace(new RegExp(`:${key}\\??`), `${normalizedPayload[key]}`);
-              }
-
-              windowObj.history.pushState({}, 'TODO', path);
+            withLatestFrom(this.window$),
+            tap(([url, windowObj]) => {
+              windowObj.history.pushState({}, 'TODO', url);
               this.onPushState$.next({});
             }),
         );
-
   }
-
-  @cache()
-  private getPathSpecMap(): Map<keyof M, string> {
-    const map = new Map<keyof M, string>();
-    for (const {type, path} of this.specs) {
-      map.set(type, path);
-    }
-
-    return map;
-  }
-}
-
-interface SuccessResult<T> {
-  success: true;
-  value: T;
-}
-
-interface FailedResult {
-  success: false;
-}
-
-type MatchResult<T> = SuccessResult<T>|FailedResult;
-
-function parseLocation<M>(
-    location: string,
-    spec: RouteSpec<keyof M>): MatchResult<M[keyof M]> {
-  const replacedSpec = spec.path.replace(
-      /:([^\/?]+)(\??)/g,
-      (_, key, optional) => {
-        const match = optional ? '*' : '+';
-
-        return `(?<${key}>[^/]${match})`;
-      });
-  const regex = new RegExp(`^${replacedSpec}$`);
-  const match = location.match(regex);
-  if (!match) {
-    return {success: false};
-  }
-
-  return {success: true, value: (match as any)['groups']};
 }

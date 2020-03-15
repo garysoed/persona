@@ -41,9 +41,13 @@ export { mutationObservable } from '../src/util/mutation-observable';
 export { splitOutput } from '../src/util/split-output';
 
 // Location
-export { LocationService, LocationSpec, Route, RouteSpec } from '../src/location/location-service';
+export { LocationService, Route, RouteSpec } from '../src/location/location-service';
+export { fromPattern } from '../src/location/location-converter';
+export { Initializable, initialize } from '../src/util/initialize';
 
 // Render spec
 export { RenderSpec } from '../src/render/render-spec';
 export { SimpleElementRenderSpec } from '../src/render/simple-element-render-spec';
 export { renderFromTemplate } from '../src/render/template-render-spec';
+
+export { booleanParser, enumParser, integerParser, listParser, mapParser, stringParser } from '../src/util/parsers';

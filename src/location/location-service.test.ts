@@ -1,118 +1,83 @@
-import { assert, objectThat, setup, should, test } from 'gs-testing';
+import { assert, init, objectThat, should, test } from 'gs-testing';
 import { of as observableOf } from 'rxjs';
 
 import { createFakeWindow } from '../testing/fake-window';
+import { integerParser } from '../util/parsers';
 
-import { LocationService, LocationSpec, Route } from './location-service';
+import { fromPattern } from './location-converter';
+import { LocationService, Route } from './location-service';
 
 
-interface TestRoutes extends LocationSpec {
-  'default': {};
-  'notexist': {};
-  'pathA': {a: string};
-  'pathB': {b: string};
-  'pathC': {n: string};
-}
+const SPEC = {
+  default: fromPattern('/', {}),
+  pathA: fromPattern('/a/:a', {a: integerParser()}),
+};
 
 test('@persona/location/location-service', () => {
-  let service: LocationService<TestRoutes>;
-  let fakeWindow: Window;
+  const _ = init(() => {
+    const fakeWindow = createFakeWindow();
 
-  setup(() => {
-    fakeWindow = createFakeWindow();
-
-    service = new LocationService(
-        [
-          {path: '/a/:a', type: 'pathA'},
-          {path: '/b/:b?', type: 'pathB'},
-          {path: '/:n', type: 'pathC'},
-          {path: '/default', type: 'default'},
-        ],
+    const service = new LocationService(
+        SPEC,
         {payload: {}, type: 'default'},
         observableOf(fakeWindow),
     );
+    service.initialize().subscribe();
+    return {service, fakeWindow};
   });
 
   test('getLocation', () => {
     should(`emit the first matching path`, () => {
-      fakeWindow.history.pushState({}, '', '/a/abc');
+      _.fakeWindow.history.pushState({}, '', '/a/123');
 
-      assert(service.getLocation()).to.emitWith(
-          objectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
-            payload: objectThat().haveProperties({a: 'abc'}),
+      assert(_.service.getLocation()).to.emitWith(
+          objectThat<Route<typeof SPEC, 'pathA'>>().haveProperties({
+            payload: objectThat().haveProperties({a: 123}),
             type: 'pathA',
-          }),
-      );
-    });
-
-    should(`match optional parameters`, () => {
-      fakeWindow.history.pushState({}, '', '/b/abc');
-
-      assert(service.getLocation()).to.emitWith(
-          objectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
-            payload: objectThat().haveProperties({b: 'abc'}),
-            type: 'pathB',
-          }),
-      );
-    });
-
-    should(`match optional parameters when omitted`, () => {
-      fakeWindow.history.pushState({}, '', '/b/');
-
-      assert(service.getLocation()).to.emitWith(
-          objectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
-            payload: objectThat().haveProperties({b: ''}),
-            type: 'pathB',
           }),
       );
     });
 
     should(`emit the default path if none of the specs match`, () => {
-      fakeWindow.history.pushState({}, '', '/un/match');
+      _.fakeWindow.history.pushState({}, '', '/un/match');
 
-      assert(service.getLocation()).to.emitWith(
-          objectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
+      assert(_.service.getLocation()).to.emitWith(
+          objectThat<Route<typeof SPEC, 'default'>>().haveProperties({
             payload: objectThat().haveProperties({}),
             type: 'default',
           }),
       );
 
-      assert(fakeWindow.location.pathname).to.equal(`/default`);
+      assert(_.fakeWindow.location.pathname).to.equal(`/`);
     });
   });
 
   test('getLocationOfType', () => {
     should(`emit the location if it has the correct type`, () => {
-      fakeWindow.history.pushState({}, '', '/a/abc');
+      _.fakeWindow.history.pushState({}, '', '/a/123');
 
-      assert(service.getLocationOfType('pathA')).to.emitWith(
-          objectThat<Route<TestRoutes, 'pathA'>>().haveProperties({
-            payload: objectThat().haveProperties({a: 'abc'}),
+      assert(_.service.getLocationOfType('pathA')).to.emitWith(
+          objectThat<Route<typeof SPEC, 'pathA'>>().haveProperties({
+            payload: objectThat().haveProperties({a: 123}),
             type: 'pathA',
           }),
       );
     });
 
-    should(`emit null if location is of the wrong type`, () => {
-      fakeWindow.history.pushState({}, '', '/b/abc');
+    should(`not emit if location is of the wrong type`, () => {
+      _.fakeWindow.history.pushState({}, '', '/b/abc');
 
-      assert(service.getLocationOfType('pathA')).to.emitWith(null);
+      assert(_.service.getLocationOfType('pathA')).toNot.emit();
     });
   });
 
   test('goToPath', () => {
     should(`push the history correctly`, () => {
-      const a = '123';
+      const a = 123;
 
-      service.goToPath('pathA', {a}).subscribe();
+      _.service.goToPath('pathA', {a});
 
-      assert(fakeWindow.location.pathname).to.equal(`/a/${a}`);
-    });
-
-    should(`use the default path if the type cannot be found`, () => {
-      service.goToPath('notexist', {a: '123'}).subscribe();
-
-      assert(fakeWindow.location.pathname).to.equal(`/default`);
+      assert(_.fakeWindow.location.pathname).to.equal(`/a/${a}`);
     });
   });
 });
