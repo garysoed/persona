@@ -1,4 +1,4 @@
-import { source, stream, Vine } from 'grapevine';
+import { source, stream } from 'grapevine';
 import { Factory } from 'grapevine/export/internal';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Observable, Subject } from 'rxjs';
@@ -8,6 +8,7 @@ import { RenderBuilder } from '../core/render-builder';
 
 import { Input } from './input';
 import { Output } from './output';
+
 
 export type CustomElementCtrlCtor = new (context: PersonaContext) => CustomElementCtrl;
 
