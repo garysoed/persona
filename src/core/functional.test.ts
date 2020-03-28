@@ -12,6 +12,7 @@ import { PersonaTester, PersonaTesterFactory } from '../testing/persona-tester';
 import { CustomElementCtrl } from '../types/custom-element-ctrl';
 
 import { Builder as PersonaBuilder } from './builder';
+import { PersonaContext } from './persona-context';
 
 
 const _v = new VineBuilder();
@@ -34,8 +35,8 @@ const $HANDLER = source(
   shadowMode: 'open',
 })
 class ParentTestClass extends CustomElementCtrl {
-  constructor(shadowRoot: ShadowRoot, vine: Vine) {
-    super(shadowRoot, vine);
+  constructor(context: PersonaContext) {
+    super(context);
 
     this.render($.host._.attr1).withVine(stream(this.overriddenRender, this));
   }
@@ -56,8 +57,8 @@ class TestClass extends ParentTestClass {
   private readonly handlerSbj = $HANDLER.get(this.vine);
   private readonly providesValueStream = stream(this.providesValue, this).get(this.vine);
 
-  constructor(shadowRoot: ShadowRoot, vine: Vine) {
-    super(shadowRoot, vine);
+  constructor(context: PersonaContext) {
+    super(context);
 
     this.handlerSbj
         .pipe(

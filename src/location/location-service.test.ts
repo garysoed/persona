@@ -1,4 +1,4 @@
-import { assert, init, objectThat, should, test } from 'gs-testing';
+import { assert, objectThat, should, test } from 'gs-testing';
 import { of as observableOf } from 'rxjs';
 
 import { createFakeWindow } from '../testing/fake-window';
@@ -13,7 +13,7 @@ const SPEC = {
   pathA: fromPattern('/a/:a', {a: integerParser()}),
 };
 
-test('@persona/location/location-service', () => {
+test('@persona/location/location-service', init => {
   const _ = init(() => {
     const fakeWindow = createFakeWindow();
 

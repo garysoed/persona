@@ -25,16 +25,8 @@ export class CustomElementImpl {
     const shadowRoot = this.getShadowRoot();
 
     const ctor = this.componentClass;
-    const componentInstance = new ctor(shadowRoot, this.vine);
+    const componentInstance = new ctor({shadowRoot, vine: this.vine});
     this.element[__ctrl] = componentInstance;
-
-    // for (const fn of componentInstance.getInitFunctions()) {
-    //   componentInstance.addSubscription(
-    //       fn.call(componentInstance, this.vine, shadowRoot).subscribe(),
-    //   );
-    // }
-
-    // injectVine(this.vine, componentInstance);
   }
 
   disconnectedCallback(): void {
