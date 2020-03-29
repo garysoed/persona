@@ -1,4 +1,4 @@
-import { $, $filter, $head, iterableFrom } from 'gs-tools/export/collect';
+import { $, $filter, $head, arrayFrom } from 'gs-tools/export/collect';
 import { Observable } from 'rxjs';
 import { map, startWith, switchMap } from 'rxjs/operators';
 
@@ -17,7 +17,7 @@ return parentElObs
                   startWith(parentEl.childNodes),
               );
         }),
-        map(childNodes => findCommentNode([...iterableFrom(childNodes)], slotName)),
+        map(childNodes => findCommentNode(arrayFrom(childNodes), slotName)),
     );
 }
 

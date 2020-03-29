@@ -1,4 +1,5 @@
-import { assert, setup, should, test } from 'gs-testing';
+import { NoopRenderSpec } from 'export';
+import { assert, should, test } from 'gs-testing';
 import { ArrayDiff } from 'gs-tools/export/rxjs';
 import { InstanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
@@ -7,48 +8,46 @@ import { SimpleElementRenderSpec } from 'src/render/simple-element-render-spec';
 import { RenderSpec } from '../render/render-spec';
 
 import { element } from './element';
-import { repeated, RepeatedOutput } from './repeated';
+import { repeated } from './repeated';
 
 
-test('@persona/output/repeated', () => {
+test('@persona/output/repeated', init => {
   const ELEMENT_ID = 'elementId';
   const SLOT_NAME = 'slotName';
   const TAG_NAME = 'tag-name';
-  let output: RepeatedOutput;
-  let shadowRoot: ShadowRoot;
-  let parentEl: HTMLElement;
-  let slot: Node;
 
-  setup(() => {
+  const _ = init(() => {
     const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
       list: repeated(SLOT_NAME),
     });
 
     const root = document.createElement('div');
-    shadowRoot = root.attachShadow({mode: 'open'});
+    const shadowRoot = root.attachShadow({mode: 'open'});
 
-    slot = document.createComment(SLOT_NAME);
+    const slot = document.createComment(SLOT_NAME);
 
-    parentEl = document.createElement('div');
+    const parentEl = document.createElement('div');
     parentEl.id = ELEMENT_ID;
     parentEl.appendChild(slot);
 
     shadowRoot.appendChild(parentEl);
 
-    output = $._.list;
+    const output = $._.list;
+
+    return {output, shadowRoot, parentEl, slot};
   });
 
-  test('output', () => {
-    let diffSubject: Subject<ArrayDiff<RenderSpec>>;
+  test('output', _, init => {
+    const _ = init(_ => {
+      const diffSubject = new Subject<ArrayDiff<RenderSpec>>();
 
-    setup(() => {
-      diffSubject = new Subject<ArrayDiff<RenderSpec>>();
+      _.output.output(_.shadowRoot, diffSubject).subscribe();
 
-      output.output(shadowRoot, diffSubject).subscribe();
+      return {..._, diffSubject};
     });
 
     should(`process 'init' correctly`, () => {
-      diffSubject.next({
+      _.diffSubject.next({
         type: 'init',
         value: [
           new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']]), 'content1'),
@@ -57,7 +56,7 @@ test('@persona/output/repeated', () => {
         ],
       });
 
-      const el1 = slot.nextSibling as HTMLElement;
+      const el1 = _.slot.nextSibling as HTMLElement;
       assert(el1.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el1.getAttribute('a')).to.equal('1');
       assert(el1.getAttribute('b')).to.equal('2');
@@ -77,7 +76,7 @@ test('@persona/output/repeated', () => {
     });
 
     should(`process 'insert' correctly for index 0`, () => {
-      diffSubject.next({
+      _.diffSubject.next({
         type: 'init',
         value: [
           new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
@@ -86,7 +85,7 @@ test('@persona/output/repeated', () => {
         ],
       });
 
-      diffSubject.next(
+      _.diffSubject.next(
           {
             index: 0,
             type: 'insert',
@@ -97,7 +96,7 @@ test('@persona/output/repeated', () => {
             ),
           });
 
-      const el = slot.nextSibling as HTMLElement;
+      const el = _.slot.nextSibling as HTMLElement;
       assert(el.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el.getAttribute('a')).to.equal('0');
       assert(el.getAttribute('b')).to.equal('0');
@@ -105,7 +104,7 @@ test('@persona/output/repeated', () => {
     });
 
     should(`process 'insert' correctly for index 2`, () => {
-      diffSubject.next({
+      _.diffSubject.next({
         type: 'init',
         value: [
           new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
@@ -114,14 +113,14 @@ test('@persona/output/repeated', () => {
         ],
       });
 
-      diffSubject.next({
+      _.diffSubject.next({
         index: 2,
         type: 'insert',
         value: new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '0'], ['b', '0']]), 'content'),
       });
 
       // tslint:disable-next-line: no-non-null-assertion
-      const el = slot.nextSibling!.nextSibling!.nextSibling as HTMLElement;
+      const el = _.slot.nextSibling!.nextSibling!.nextSibling as HTMLElement;
       assert(el.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el.getAttribute('a')).to.equal('0');
       assert(el.getAttribute('b')).to.equal('0');
@@ -129,7 +128,7 @@ test('@persona/output/repeated', () => {
     });
 
     should(`process 'insert' correctly for large index`, () => {
-      diffSubject.next({
+      _.diffSubject.next({
         type: 'init',
         value: [
           new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
@@ -138,14 +137,14 @@ test('@persona/output/repeated', () => {
         ],
       });
 
-      diffSubject.next({
+      _.diffSubject.next({
         index: 4,
         type: 'insert',
         value: new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '0'], ['b', '0']]), 'content'),
       });
 
       // tslint:disable-next-line: no-non-null-assertion
-      const el = slot.nextSibling!.nextSibling!.nextSibling!.nextSibling as HTMLElement;
+      const el = _.slot.nextSibling!.nextSibling!.nextSibling!.nextSibling as HTMLElement;
       assert(el.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el.getAttribute('a')).to.equal('0');
       assert(el.getAttribute('b')).to.equal('0');
@@ -153,7 +152,7 @@ test('@persona/output/repeated', () => {
     });
 
     should(`process 'delete' correctly`, () => {
-      diffSubject.next({
+      _.diffSubject.next({
         type: 'init',
         value: [
           new SimpleElementRenderSpec(TAG_NAME, new Map([['a', '1'], ['b', '2']])),
@@ -162,9 +161,9 @@ test('@persona/output/repeated', () => {
         ],
       });
 
-      diffSubject.next({index: 1, type: 'delete'});
+      _.diffSubject.next({index: 1, type: 'delete', value: new NoopRenderSpec()});
 
-      const el1 = slot.nextSibling as HTMLElement;
+      const el1 = _.slot.nextSibling as HTMLElement;
       assert(el1.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el1.getAttribute('a')).to.equal('1');
       assert(el1.getAttribute('b')).to.equal('2');
@@ -179,15 +178,15 @@ test('@persona/output/repeated', () => {
 
     should(`replace the element correctly for 'set' if existing element has the wrong tag`, () => {
       const existingElement = document.createElement('div');
-      parentEl.appendChild(existingElement);
+      _.parentEl.appendChild(existingElement);
 
-      diffSubject.next({
+      _.diffSubject.next({
         index: 0,
         type: 'set',
         value: new SimpleElementRenderSpec(TAG_NAME, new Map([['a', 'a'], ['b', 'b']]), 'content'),
       });
 
-      const el1 = slot.nextSibling as HTMLElement;
+      const el1 = _.slot.nextSibling as HTMLElement;
       assert(el1.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el1.getAttribute('a')).to.equal('a');
       assert(el1.getAttribute('b')).to.equal('b');
@@ -198,15 +197,15 @@ test('@persona/output/repeated', () => {
 
     should(`replace the element correctly for 'set' if existing element is not HTMLElement`, () => {
       const existingElement = document.createTextNode('text');
-      parentEl.appendChild(existingElement);
+      _.parentEl.appendChild(existingElement);
 
-      diffSubject.next({
+      _.diffSubject.next({
         index: 0,
         type: 'set',
         value: new SimpleElementRenderSpec(TAG_NAME, new Map([['a', 'a'], ['b', 'b']]), 'content'),
       });
 
-      const el1 = slot.nextSibling as HTMLElement;
+      const el1 = _.slot.nextSibling as HTMLElement;
       assert(el1.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(el1.getAttribute('a')).to.equal('a');
       assert(el1.getAttribute('b')).to.equal('b');
@@ -217,15 +216,15 @@ test('@persona/output/repeated', () => {
 
     should(`reuse existing element for 'set'`, () => {
       const existingElement = document.createElement(TAG_NAME);
-      parentEl.appendChild(existingElement);
+      _.parentEl.appendChild(existingElement);
 
-      diffSubject.next({
+      _.diffSubject.next({
         index: 0,
         type: 'set',
         value: new SimpleElementRenderSpec(TAG_NAME, new Map([['a', 'a'], ['b', 'b']]), 'content'),
       });
 
-      assert(slot.nextSibling).to.equal(existingElement);
+      assert(_.slot.nextSibling).to.equal(existingElement);
       assert(existingElement.tagName.toLowerCase()).to.equal(TAG_NAME);
       assert(existingElement.getAttribute('a')).to.equal('a');
       assert(existingElement.getAttribute('b')).to.equal('b');

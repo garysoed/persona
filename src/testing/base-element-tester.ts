@@ -1,5 +1,5 @@
 import { Vine } from 'grapevine';
-import { $, $filter, $head, iterableFrom } from 'gs-tools/export/collect';
+import { $, $filter, $head, arrayFrom } from 'gs-tools/export/collect';
 import { stringify, Verbosity } from 'moirai';
 import { Observable } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
@@ -20,11 +20,11 @@ import { Input } from '../types/input';
 
 
 interface Key {
-  alt?: boolean;
-  ctrl?: boolean;
-  key: string;
-  meta?: boolean;
-  shift?: boolean;
+  readonly alt?: boolean;
+  readonly ctrl?: boolean;
+  readonly key: string;
+  readonly meta?: boolean;
+  readonly shift?: boolean;
 }
 
 export class BaseElementTester<T extends HTMLElement = HTMLElement> {
@@ -130,7 +130,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
         .pipe(
             getElement(output.resolver),
             map(parentEl => findCommentNode(
-                [...iterableFrom(parentEl.childNodes)],
+                arrayFrom(parentEl.childNodes),
                 output.slotName,
             )),
             map(slotEl => {

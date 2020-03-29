@@ -47,6 +47,7 @@ export { fromPattern } from '../src/location/location-converter';
 export { Initializable, initialize } from '../src/util/initialize';
 
 // Render spec
+export { NoopRenderSpec } from '../src/render/noop-render-spec';
 export { RenderSpec } from '../src/render/render-spec';
 export { SimpleElementRenderSpec } from '../src/render/simple-element-render-spec';
 export { renderFromTemplate } from '../src/render/template-render-spec';
