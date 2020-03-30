@@ -1,6 +1,5 @@
-import { Converter } from 'nabu';
-
 import { Errors } from 'gs-tools/export/error';
+import { Converter, firstSuccess } from 'nabu';
 import { Observable } from 'rxjs';
 
 import { Input } from '../types/input';
@@ -8,6 +7,7 @@ import { Resolver } from '../types/resolver';
 import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { attributeObservable } from '../util/attribute-observable';
+
 
 export class AttributeInput<T> implements Input<T> {
   constructor(
@@ -69,7 +69,27 @@ export class UnresolvedAttributeInput<T> implements
 export function attribute<T>(
     attrName: string,
     parser: Converter<T, string>,
+    defaultValue: T,
+): UnresolvedAttributeInput<T>;
+export function attribute<T>(
+    attrName: string,
+    parser: Converter<T, string>,
+): UnresolvedAttributeInput<T|undefined>;
+export function attribute<T>(
+    attrName: string,
+    parser: Converter<T, string>,
     defaultValue?: T,
-): UnresolvedAttributeInput<T> {
-  return new UnresolvedAttributeInput(attrName, parser, defaultValue);
+): UnresolvedAttributeInput<T>|UnresolvedAttributeInput<T|undefined> {
+  const normalizedParser = firstSuccess(
+      parser,
+      {
+        convertBackward: () => {
+          return {success: true, result: defaultValue};
+        },
+        convertForward: () => {
+          throw new Error('Unsupported');
+        },
+      },
+  );
+  return new UnresolvedAttributeInput(attrName, normalizedParser, defaultValue);
 }
