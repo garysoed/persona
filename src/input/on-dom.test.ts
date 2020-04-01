@@ -1,5 +1,5 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { element } from '../main/element';
 import { onDom, OnDomInput } from './on-dom';
 
@@ -11,7 +11,7 @@ test('input.onDom', () => {
   let el: HTMLDivElement;
 
   beforeEach(() => {
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       onDom: onDom<CustomEvent>(EVENT_NAME),
     });
 

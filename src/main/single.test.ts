@@ -1,5 +1,5 @@
 import { assert, setup, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 
 import { SimpleElementRenderSpec } from '../render/simple-element-render-spec';
@@ -16,7 +16,7 @@ test('@persona/main/single', () => {
   let slot: Node;
 
   setup(() => {
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       single: single(SLOT_NAME),
     });
 

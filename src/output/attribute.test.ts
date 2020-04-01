@@ -1,6 +1,6 @@
 import { assert, setup, should, test } from 'gs-testing';
 import { integerConverter } from 'gs-tools/export/serializer';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { human } from 'nabu';
 import { compose } from 'nabu';
 import { Subject } from 'rxjs';
@@ -15,7 +15,7 @@ test('output.attribute', () => {
   let el: HTMLDivElement;
 
   setup(() => {
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       attr: attribute(
           ATTR_NAME,
           compose(integerConverter(), human()),

@@ -1,5 +1,5 @@
 import { assert, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 import { element } from '../main/element';
 import { innerHtml, InnerHtmlOutput } from './inner-html';
@@ -11,7 +11,7 @@ test('output.innerHtml', () => {
   let el: HTMLDivElement;
 
   beforeEach(() => {
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       innerHtml: innerHtml(),
     });
 

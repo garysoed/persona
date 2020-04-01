@@ -1,4 +1,4 @@
-import { BooleanType } from 'gs-types';
+import { booleanType } from 'gs-types';
 import { Observable } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
 
@@ -40,22 +40,22 @@ export class OnKeydownInput extends OnDomInput<KeyboardEvent> {
                 return false;
               }
 
-              if (BooleanType.check(this.matchOptions.alt) &&
+              if (booleanType.check(this.matchOptions.alt) &&
                   this.matchOptions.alt !== event.altKey) {
                 return false;
               }
 
-              if (BooleanType.check(this.matchOptions.ctrl) &&
+              if (booleanType.check(this.matchOptions.ctrl) &&
                   this.matchOptions.ctrl !== event.ctrlKey) {
                 return false;
               }
 
-              if (BooleanType.check(this.matchOptions.meta) &&
+              if (booleanType.check(this.matchOptions.meta) &&
                   this.matchOptions.meta !== event.metaKey) {
                 return false;
               }
 
-              if (BooleanType.check(this.matchOptions.shift) &&
+              if (booleanType.check(this.matchOptions.shift) &&
                   this.matchOptions.shift !== event.shiftKey) {
                 return false;
               }

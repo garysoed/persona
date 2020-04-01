@@ -1,5 +1,5 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { element } from '../main/element';
 import { MatchOptions, onKeydown, OnKeydownInput } from './on-keydown';
 
@@ -10,7 +10,7 @@ test('input.onKeydown', () => {
   let el: HTMLInputElement;
 
   function createInput(options: MatchOptions): OnKeydownInput {
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLInputElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLInputElement), {
       onKeydown: onKeydown(KEY, options),
     });
 

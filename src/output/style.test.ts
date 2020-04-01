@@ -1,5 +1,5 @@
 import { assert, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 import { element } from '../main/element';
 import { style, StyleOutput } from './style';
@@ -11,7 +11,7 @@ test('output.style', () => {
   let el: HTMLDivElement;
 
   beforeEach(() => {
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       style: style('height'),
     });
 

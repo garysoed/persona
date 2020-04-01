@@ -1,5 +1,5 @@
 import { assert, setup, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { element } from '../main/element';
 import { hasClass, HasClassInput } from './has-class';
 
@@ -12,7 +12,7 @@ test('persona.input.hasClass', () => {
   let el: HTMLDivElement;
 
   setup(() => {
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       hasClass: hasClass(CLASSNAME),
     });
 

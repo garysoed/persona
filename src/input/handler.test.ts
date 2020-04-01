@@ -1,5 +1,5 @@
 import { assert, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { of as observableOf, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { element } from '../main/element';
@@ -15,7 +15,7 @@ test('@persona/input/handler', () => {
   let el: HTMLDivElement;
 
   beforeEach(() => {
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       caller: caller<[number]>(FUNCTION_NAME),
       handler: handler<[number]>(FUNCTION_NAME),
     });

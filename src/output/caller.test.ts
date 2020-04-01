@@ -1,5 +1,5 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { of as observableOf } from 'rxjs';
 import { element } from '../main/element';
 import { caller, CallerOutput } from './caller';
@@ -12,7 +12,7 @@ test('input.caller', () => {
   let el: HTMLDivElement;
 
   beforeEach(() => {
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       caller: caller<[number]>(FUNCTION_NAME),
     });
 

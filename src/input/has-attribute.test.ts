@@ -1,5 +1,5 @@
 import { assert, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { element } from '../main/element';
 import { hasAttribute, HasAttributeInput } from './has-attribute';
 
@@ -11,7 +11,7 @@ test('persona.input.hasAttribute', () => {
   let el: HTMLDivElement;
 
   beforeEach(() => {
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       hasAttr: hasAttribute(ATTR_NAME),
     });
 

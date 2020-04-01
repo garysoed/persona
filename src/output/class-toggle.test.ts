@@ -1,5 +1,5 @@
 import { assert, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 import { element } from '../main/element';
 import { classToggle, ClassToggleOutput } from './class-toggle';
@@ -12,7 +12,7 @@ test('persona.output.classToggle', () => {
   let el: HTMLDivElement;
 
   beforeEach(() => {
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       classname: classToggle(CLASSNAME),
     });
 

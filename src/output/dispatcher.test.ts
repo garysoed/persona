@@ -1,5 +1,5 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { fromEvent, Subject } from 'rxjs';
 import { element } from '../main/element';
 import { dispatcher, DispatcherOutput } from './dispatcher';
@@ -12,7 +12,7 @@ test('output.dispatcher', () => {
   let el: HTMLDivElement;
 
   beforeEach(() => {
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       dispatch: dispatcher('eventName'),
     });
 

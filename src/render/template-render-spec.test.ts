@@ -1,5 +1,5 @@
 import { assert, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { identity } from 'nabu';
 
 import { element } from '../main/element';
@@ -40,7 +40,7 @@ test('@persona/render/template-render-spec', () => {
       templateEl.innerHTML = '<div><div id="root"></div></div>';
 
       const $ = {
-        root: element('root', InstanceofType(HTMLDivElement), {
+        root: element('root', instanceofType(HTMLDivElement), {
           attr: attribute('attr', identity()),
         }),
       };

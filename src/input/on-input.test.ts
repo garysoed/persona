@@ -1,5 +1,5 @@
 import { assert, createSpySubject, MockScheduler, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { element } from '../main/element';
 import { onInput, OnInputInput } from './on-input';
 
@@ -12,7 +12,7 @@ test('input.onInput', () => {
 
   beforeEach(() => {
     mockScheduler = new MockScheduler();
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLInputElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLInputElement), {
       onInput: onInput(),
     });
 

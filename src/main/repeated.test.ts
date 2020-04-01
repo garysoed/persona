@@ -1,7 +1,7 @@
 import { NoopRenderSpec } from 'export';
 import { assert, should, test } from 'gs-testing';
 import { ArrayDiff } from 'gs-tools/export/rxjs';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 import { SimpleElementRenderSpec } from 'src/render/simple-element-render-spec';
 
@@ -17,7 +17,7 @@ test('@persona/output/repeated', init => {
   const TAG_NAME = 'tag-name';
 
   const _ = init(() => {
-    const $ = element(ELEMENT_ID, InstanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       list: repeated(SLOT_NAME),
     });
 

@@ -1,5 +1,5 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 
 import { element } from './element';
 
@@ -7,7 +7,7 @@ test('@persona/main/element', () => {
   test('getValue', () => {
     should(`emit the element correctly`, () => {
       const ID = 'id';
-      const input = element(ID, InstanceofType(HTMLDivElement), {});
+      const input = element(ID, instanceofType(HTMLDivElement), {});
 
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});
@@ -48,7 +48,7 @@ test('@persona/main/element', () => {
 
     should(`throw error if the element is of the wrong type`, () => {
       const ID = 'id';
-      const input = element(ID, InstanceofType(HTMLDivElement), {});
+      const input = element(ID, instanceofType(HTMLDivElement), {});
 
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});

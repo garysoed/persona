@@ -1,6 +1,6 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
 import { integerConverter } from 'gs-tools/export/serializer';
-import { InstanceofType } from 'gs-types';
+import { instanceofType } from 'gs-types';
 import { compose, human } from 'nabu';
 import { fromEvent, of as observableOf, ReplaySubject , Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -45,7 +45,7 @@ test('@persona/main/api', () => {
   });
 
   should(`handle attribute input correctly`, () => {
-    const output = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.attrIn;
+    const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.attrIn;
     const valueSubject = new Subject<number>();
 
     output.output(shadowRoot, valueSubject).subscribe();
@@ -57,7 +57,7 @@ test('@persona/main/api', () => {
   });
 
   should(`handle handlers correctly`, () => {
-    const output = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.handler;
+    const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.handler;
 
     const spySubject = createSpySubject();
     (el as any)['handler'] = (v: number) => spySubject.next(v);
@@ -69,7 +69,7 @@ test('@persona/main/api', () => {
   });
 
   should(`handle on dom correctly`, () => {
-    const output = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.onDom;
+    const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.onDom;
 
     const calledSubject = createSpySubject();
     fromEvent(el, 'ondom').subscribe(calledSubject);
@@ -83,7 +83,7 @@ test('@persona/main/api', () => {
   });
 
   should(`handle hasAttribute correctly`, () => {
-    const output = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.hasAttr;
+    const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.hasAttr;
     const valueSubject = new Subject<boolean>();
 
     output.output(shadowRoot, valueSubject).subscribe();
@@ -95,7 +95,7 @@ test('@persona/main/api', () => {
   });
 
   should(`handle hasClass correctly`, () => {
-    const output = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.hasClass;
+    const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.hasClass;
 
     const valueSubject = new Subject<boolean>();
 
@@ -108,7 +108,7 @@ test('@persona/main/api', () => {
   });
 
   should(`handle attribute output correctly`, () => {
-    const input = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.attrOut;
+    const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.attrOut;
 
     el.setAttribute('attr-out', '456');
     assert(input.getValue(shadowRoot)).to.emitWith(456);
@@ -121,8 +121,8 @@ test('@persona/main/api', () => {
   });
 
   should(`handle callers correctly`, () => {
-    const input = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.caller;
-    const output = element(ELEMENT_ID, InstanceofType(HTMLDivElement), $)._.caller;
+    const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.caller;
+    const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), $)._.caller;
 
     const value = 123;
 
@@ -134,7 +134,7 @@ test('@persona/main/api', () => {
   });
 
   should(`handle dispatchers correctly`, () => {
-    const input = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.dispatcher;
+    const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.dispatcher;
 
     const event = new CustomEvent('dispatch');
     const valueSpySubject = createSpySubject();
@@ -145,7 +145,7 @@ test('@persona/main/api', () => {
   });
 
   should(`handle setAttribute correctly`, () => {
-    const input = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.setAttr;
+    const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.setAttr;
 
     el.setAttribute('set-attr', '');
     assert(input.getValue(shadowRoot)).to.emitWith(true);
@@ -155,7 +155,7 @@ test('@persona/main/api', () => {
   });
 
   should(`handle classToggle correctly`, () => {
-    const input = element(ELEMENT_ID, InstanceofType(HTMLDivElement), api($))._.classToggle;
+    const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.classToggle;
 
     el.classList.add('classToggle');
 
