@@ -15,15 +15,13 @@ export type CustomElementCtrlCtor = new (context: PersonaContext) => CustomEleme
 /**
  * Base class of all custom elements.
  */
-export abstract class CustomElementCtrl extends BaseDisposable {
+export abstract class CustomElementCtrl {
   protected readonly shadowRoot = this.context.shadowRoot;
   protected readonly vine = this.context.vine;
 
   constructor(
       private readonly context: PersonaContext,
-  ) {
-    super();
-  }
+  ) { }
 
   protected declareInput<T>(input: Input<T>): Observable<T> {
     return stream<T, CustomElementCtrl>(
@@ -39,12 +37,7 @@ export abstract class CustomElementCtrl extends BaseDisposable {
     return source(factory, this).get(this.context.vine);
   }
 
-  protected render<T>(outputs: Output<T>, value$: Observable<T>): void {
-    value$
-        .pipe(
-            outputs.output(this.shadowRoot),
-            takeUntil(this.onDispose$),
-        )
-        .subscribe();
+  protected render<T>(outputs: Output<T>, value$: Observable<T>): Observable<unknown> {
+    return value$.pipe(outputs.output(this.shadowRoot));
   }
 }

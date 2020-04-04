@@ -17,7 +17,7 @@ test('@persona/main/element', () => {
       shadowRoot.appendChild(el);
 
       const spyElement$ = createSpySubject(input.getValue(shadowRoot));
-      assert(spyElement$.getValue()).to.equal(el);
+      assert(spyElement$).to.emitWith(el);
     });
 
     should(`handle emitting the host element`, () => {
@@ -27,7 +27,7 @@ test('@persona/main/element', () => {
       const shadowRoot = root.attachShadow({mode: 'open'});
 
       const spyElement$ = createSpySubject(input.getValue(shadowRoot));
-      assert(spyElement$.getValue()).to.equal(root);
+      assert(spyElement$).to.emitWith(root);
     });
 
     should(`handle component specs`, () => {
@@ -43,7 +43,7 @@ test('@persona/main/element', () => {
       shadowRoot.appendChild(el);
 
       const spyElement$ = createSpySubject(input.getValue(shadowRoot));
-      assert(spyElement$.getValue()).to.equal(el);
+      assert(spyElement$).to.emitWith(el);
     });
 
     should(`throw error if the element is of the wrong type`, () => {
@@ -58,7 +58,7 @@ test('@persona/main/element', () => {
       shadowRoot.appendChild(el);
 
       const spyElement$ = createSpySubject(input.getValue(shadowRoot));
-      assert(spyElement$.thrownError.message as string).to.match(/Element of/);
+      assert(spyElement$).to.emitErrorWithMessage(/Element of/);
     });
   });
 });

@@ -1,6 +1,8 @@
 import { assert, createSpySubject, MockScheduler, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
+
 import { element } from '../main/element';
+
 import { onInput, OnInputInput } from './on-input';
 
 test('input.onInput', () => {
@@ -37,11 +39,10 @@ test('input.onInput', () => {
 
       el.value = initValue;
       el.dispatchEvent(inputEvent);
-      spySubject.reset();
 
       el.value = value1;
       el.dispatchEvent(inputEvent);
-      assert(spySubject.getValue()).to.equal(value1);
+      assert(spySubject).to.emitWith(value1);
     });
   });
 });

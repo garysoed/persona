@@ -1,27 +1,29 @@
-import { assert, createSpyWindow, fake, setup, should, SpyObj, test } from 'gs-testing';
-import { FakeMediaQuery } from '../testing/mock-match-media';
-import { mediaQuery, MediaQueryInput } from './media-query';
+import { assert, createSpyWindow, fake, should, test } from 'gs-testing';
 
-test('persona.input.mediaQuery', () => {
+import { FakeMediaQuery } from '../testing/mock-match-media';
+
+import { mediaQuery } from './media-query';
+
+
+test('persona.input.mediaQuery', init => {
   const QUERY = 'query';
 
-  let input: MediaQueryInput;
-  let mockWindow: SpyObj<Window>;
+  const _ = init(() => {
+    const mockWindow = createSpyWindow();
+    const input = mediaQuery(QUERY, mockWindow);
 
-  setup(() => {
-    mockWindow = createSpyWindow();
-    input = mediaQuery(QUERY, mockWindow);
+    return {input, mockWindow};
   });
 
   test('getValue', () => {
-    should(`emit the correct value on changes`, async () => {
+    should(`emit the correct value on changes`, () => {
       const fakeQuery = new FakeMediaQuery(QUERY);
-      fake(mockWindow.matchMedia).when(QUERY).return(fakeQuery as any);
+      fake(_.mockWindow.matchMedia).when(QUERY).return(fakeQuery as any);
 
-      await assert(input.getValue()).to.emitWith(false);
+      assert(_.input.getValue()).to.emitWith(false);
 
       fakeQuery.matches = true;
-      await assert(input.getValue()).to.emitWith(true);
+      assert(_.input.getValue()).to.emitWith(true);
     });
   });
 });

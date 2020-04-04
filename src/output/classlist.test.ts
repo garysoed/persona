@@ -1,4 +1,4 @@
-import { assert, should, test } from 'gs-testing';
+import { assert, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 
@@ -32,7 +32,7 @@ test('output.classlist', () => {
     should(`update the classes correctly`, () => {
       const value$ = new Subject<ReadonlySet<string>>();
 
-      value$.pipe(output.output(shadowRoot)).subscribe();
+      run(value$.pipe(output.output(shadowRoot)));
       value$.next(new Set(['a', 'b', 'c']));
       assert(el.getAttribute('class')).to.equal(`a b c`);
     });

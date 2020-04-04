@@ -1,48 +1,50 @@
-import { assert, should, test } from 'gs-testing';
+import { assert, createSpySubject, run, should, teardown, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { of as observableOf, ReplaySubject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 
 import { element } from '../main/element';
-import { caller, CallerOutput } from '../output/caller';
+import { caller } from '../output/caller';
 
-import { handler, HandlerInput } from './handler';
+import { handler } from './handler';
 
-test('@persona/input/handler', () => {
+
+test('@persona/input/handler', init => {
   const FUNCTION_NAME = 'testFn';
   const ELEMENT_ID = 'test';
-  let input: HandlerInput<[number]>;
-  let output: CallerOutput<[number]>;
-  let shadowRoot: ShadowRoot;
-  let el: HTMLDivElement;
 
-  beforeEach(() => {
+  const _ = init(() => {
+    const onTestDone$ = new ReplaySubject(1);
     const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       caller: caller<[number]>(FUNCTION_NAME),
       handler: handler<[number]>(FUNCTION_NAME),
     });
 
     const root = document.createElement('div');
-    shadowRoot = root.attachShadow({mode: 'open'});
+    const shadowRoot = root.attachShadow({mode: 'open'});
 
-    el = document.createElement('div');
+    const el = document.createElement('div');
     el.id = ELEMENT_ID;
     shadowRoot.appendChild(el);
 
-    input = $._.handler;
-    output = $._.caller;
+    const input = $._.handler;
+    const output = $._.caller;
+
+    return {input, onTestDone$, output, shadowRoot, el};
+  });
+
+  teardown(() => {
+    _.onTestDone$.next();
+    _.onTestDone$.complete();
   });
 
   test('getValue', () => {
     should(`creates a function that emits values`, () => {
       const value = 123;
 
-      const subject = new ReplaySubject(1);
-      input.getValue(shadowRoot).pipe(map(([v]) => v)).subscribe(subject);
+      const subject = createSpySubject(_.input.getValue(_.shadowRoot).pipe(map(([v]) => v)));
 
-      observableOf([value] as [number])
-          .pipe(output.output(shadowRoot))
-          .subscribe();
+      run(observableOf([value] as [number]).pipe(_.output.output(_.shadowRoot)));
       assert(subject).to.emitWith(value);
     });
   });

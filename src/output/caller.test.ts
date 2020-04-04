@@ -1,10 +1,11 @@
-import { assert, createSpySubject, should, test } from 'gs-testing';
+import { assert, createSpy, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { of as observableOf } from 'rxjs';
 
 import { element } from '../main/element';
 
 import { caller, CallerOutput } from './caller';
+
 
 test('input.caller', () => {
   const FUNCTION_NAME = 'testFn';
@@ -30,13 +31,13 @@ test('input.caller', () => {
 
   test('output', () => {
     should(`call the function specified`, async () => {
-      const spySubject = createSpySubject();
-      (el as any)[FUNCTION_NAME] = (v: number) => spySubject.next(v);
+      const spy = createSpy<void, [number]>('handler');
+      (el as any)[FUNCTION_NAME] = spy;
 
       const value = 123;
-      observableOf([value] as [number]).pipe(output.output(shadowRoot)).subscribe();
+      run(observableOf([value] as [number]).pipe(output.output(shadowRoot)));
 
-      assert(spySubject).to.emitWith(value);
+      assert(spy).to.haveBeenCalledWith(value);
     });
   });
 });

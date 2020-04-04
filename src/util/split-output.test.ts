@@ -1,4 +1,4 @@
-import { assert, should, test } from 'gs-testing';
+import { assert, run, should, test } from 'gs-testing';
 import { identity } from 'nabu';
 import { of as observableOf } from 'rxjs';
 
@@ -19,9 +19,7 @@ test('@persona/util/split-output', () => {
     const root = document.createElement('div');
     const shadow = root.attachShadow({mode: 'open'});
 
-    observableOf('abc')
-        .pipe(splitOutput([$._.attr1, $._.attr2]).output(shadow))
-        .subscribe();
+    run(observableOf('abc').pipe(splitOutput([$._.attr1, $._.attr2]).output(shadow)));
     assert(root.getAttribute(ATTR_NAME_1)).to.equal('abc');
     assert(root.getAttribute(ATTR_NAME_2)).to.equal('abc');
   });

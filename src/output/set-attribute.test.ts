@@ -1,4 +1,4 @@
-import { assert, should, test } from 'gs-testing';
+import { assert, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 
@@ -32,7 +32,7 @@ test('output.setAttribute', () => {
     should(`update the attribute correctly`, () => {
       const value$ = new Subject<boolean>();
 
-      value$.pipe(output.output(shadowRoot)).subscribe();
+      run(value$.pipe(output.output(shadowRoot)));
       value$.next(true);
       assert(el.hasAttribute(ATTR_NAME)).to.beTrue();
 

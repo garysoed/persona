@@ -1,4 +1,4 @@
-import { assert, should, test } from 'gs-testing';
+import { assert, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 
@@ -36,7 +36,7 @@ test('@persona/main/single', init => {
     const _ = init(_ => {
       const render$ = new Subject<SimpleElementRenderSpec|null>();
 
-      render$.pipe(_.output.output(_.shadowRoot)).subscribe();
+      run(render$.pipe(_.output.output(_.shadowRoot)));
 
       return {..._, render$};
     });

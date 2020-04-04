@@ -1,9 +1,7 @@
-import { filterNonNull } from 'gs-tools/export/rxjs';
+import { filterNonNull, setup } from 'gs-tools/export/rxjs';
 import { Result } from 'nabu';
 import { fromEvent, merge, Observable, Subject } from 'rxjs';
 import { map, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
-
-import { Initializable } from '../util/initialize';
 
 import { LocationConverter } from './location-converter';
 
@@ -21,7 +19,7 @@ export interface Route<S extends RouteSpec, K extends keyof S> {
   readonly type: K;
 }
 
-export class LocationService<S extends RouteSpec> implements Initializable {
+export class LocationService<S extends RouteSpec> {
   private readonly onGoToUrl$: Subject<string> = new Subject();
   private readonly onPushState$: Subject<{}> = new Subject();
 
@@ -81,20 +79,8 @@ export class LocationService<S extends RouteSpec> implements Initializable {
     this.onGoToUrl$.next(url);
   }
 
-  initialize(): Observable<unknown> {
-    return this.setupGoToPath();
-  }
-
-  private getUrl<K extends keyof S>(type: K, payload: Payloads<S>[K]): string|null {
-    const result = this.specs[type].convertBackward(payload);
-    if (!result.success) {
-      return null;
-    }
-
-    return result.result;
-  }
-
-  private setupGoToPath(): Observable<unknown> {
+  @setup()
+  get setupGoToPath(): Observable<unknown> {
     return this.onGoToUrl$
         .pipe(
             withLatestFrom(this.window$),
@@ -103,5 +89,15 @@ export class LocationService<S extends RouteSpec> implements Initializable {
               this.onPushState$.next({});
             }),
         );
+  }
+
+
+  private getUrl<K extends keyof S>(type: K, payload: Payloads<S>[K]): string|null {
+    const result = this.specs[type].convertBackward(payload);
+    if (!result.success) {
+      return null;
+    }
+
+    return result.result;
   }
 }

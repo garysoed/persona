@@ -44,7 +44,6 @@ export { splitOutput } from '../src/util/split-output';
 // Location
 export { LocationService, Route, RouteSpec } from '../src/location/location-service';
 export { fromPattern } from '../src/location/location-converter';
-export { Initializable, initialize } from '../src/util/initialize';
 
 // Render spec
 export { NoopRenderSpec } from '../src/render/noop-render-spec';

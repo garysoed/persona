@@ -1,4 +1,4 @@
-import { assert, should, test } from 'gs-testing';
+import { assert, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 
@@ -31,7 +31,7 @@ test('output.style', () => {
     should(`set the style correctly`, () => {
       const value$ = new Subject<string>();
 
-      value$.pipe(output.output(shadowRoot)).subscribe();
+      run(value$.pipe(output.output(shadowRoot)));
       const height = '123px';
       value$.next(height);
       assert(el.style.height).to.equal(height);

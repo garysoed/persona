@@ -1,4 +1,4 @@
-import { assert, should, test } from 'gs-testing';
+import { assert, run, should, test } from 'gs-testing';
 import { identity } from 'nabu';
 import { of as observableOf } from 'rxjs';
 
@@ -15,9 +15,7 @@ test('@persona/util/map-output', () => {
     const root = document.createElement('div');
     const shadow = root.attachShadow({mode: 'open'});
 
-    observableOf(123)
-        .pipe(mapOutput($._.attr, (n: number) => `${n + 2}`).output(shadow))
-        .subscribe();
+    run(observableOf(123).pipe(mapOutput($._.attr, (n: number) => `${n + 2}`).output(shadow)));
     assert(root.getAttribute(ATTR_NAME)).to.equal('125');
   });
 });

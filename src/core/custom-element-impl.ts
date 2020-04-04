@@ -1,13 +1,16 @@
 import { Vine } from 'grapevine';
 import { cache } from 'gs-tools/export/data';
+import { runSetup } from 'gs-tools/export/rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 
 
 export const SHADOW_ROOT = Symbol('shadowRoot');
-export const __ctrl = Symbol('ctrl');
+export const __onDisconnect = Symbol('onDisconnect');
 
-export type ElementWithCtrl = HTMLElement & {[__ctrl]?: CustomElementCtrl|null};
+export type ElementWithOnDisconnect = HTMLElement & {[__onDisconnect]?: Subject<void>|null};
 
 /**
  * Main logic class of custom elements.
@@ -15,25 +18,29 @@ export type ElementWithCtrl = HTMLElement & {[__ctrl]?: CustomElementCtrl|null};
 export class CustomElementImpl {
   constructor(
       private readonly componentClass: CustomElementCtrlCtor,
-      private readonly element: ElementWithCtrl,
+      private readonly element: ElementWithOnDisconnect,
       private readonly templateStr: string,
       private readonly vine: Vine,
       private readonly shadowMode: 'open' | 'closed' = 'closed',
-  ) { }
+  ) {
 
-  async connectedCallback(): Promise<void> {
+  }
+
+  connectedCallback(): void {
     const shadowRoot = this.getShadowRoot();
 
     const ctor = this.componentClass;
+    const onDisconnect$ = new ReplaySubject<void>(1);
     const componentInstance = new ctor({shadowRoot, vine: this.vine});
-    this.element[__ctrl] = componentInstance;
+    runSetup(componentInstance).pipe(takeUntil(onDisconnect$)).subscribe();
+    this.element[__onDisconnect] = onDisconnect$;
   }
 
   disconnectedCallback(): void {
-    const ctrl = this.element[__ctrl];
-    if (ctrl) {
-      ctrl.dispose();
-      this.element[__ctrl] = null;
+    const onDisconnect$ = this.element[__onDisconnect];
+    if (onDisconnect$) {
+      onDisconnect$.next();
+      this.element[__onDisconnect] = null;
     }
   }
 

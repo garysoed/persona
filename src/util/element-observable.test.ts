@@ -1,5 +1,4 @@
-import { assert, should, test } from 'gs-testing';
-import { ReplaySubject } from 'rxjs';
+import { assert, createSpySubject, should, test } from 'gs-testing';
 
 import { elementObservable } from './element-observable';
 
@@ -9,9 +8,9 @@ test('@persona/util/elementObservable', () => {
     const rootEl = document.createElement('div').attachShadow({mode: 'open'});
     const addedEl = document.createElement('div');
 
-    const element$ = new ReplaySubject<HTMLElement|null>(3);
-    // tslint:disable-next-line:no-non-null-assertion
-    elementObservable(rootEl, rootEl => rootEl.querySelector('div')!).subscribe(element$);
+    const element$ = createSpySubject<null|HTMLDivElement>(
+        elementObservable(rootEl, rootEl => rootEl.querySelector('div')!),
+    );
 
     rootEl.appendChild(addedEl);
     assert(element$).to.emitSequence([null, addedEl]);

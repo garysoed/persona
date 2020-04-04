@@ -1,9 +1,9 @@
-import { assert, createSpySubject, should, test } from 'gs-testing';
+import { assert, createSpy, createSpySubject, run, should, teardown, test } from 'gs-testing';
 import { integerConverter } from 'gs-tools/export/serializer';
 import { instanceofType } from 'gs-types';
 import { compose, human } from 'nabu';
 import { fromEvent, of as observableOf, ReplaySubject , Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 
 import { attribute as attributeIn } from '../input/attribute';
 import { handler } from '../input/handler';
@@ -19,7 +19,7 @@ import { setAttribute } from '../output/set-attribute';
 import { api } from './api';
 import { element } from './element';
 
-test('@persona/main/api', () => {
+test('@persona/main/api', init => {
   const ELEMENT_ID = 'test';
   const $ = {
     attrIn: attributeIn('attr-in', compose(integerConverter(), human()), 234),
@@ -34,50 +34,48 @@ test('@persona/main/api', () => {
     setAttr: setAttribute('set-attr'),
   };
 
-  let shadowRoot: ShadowRoot;
-  let el: HTMLDivElement;
-
-  beforeEach(() => {
+  const _ = init(() => {
     const root = document.createElement('div');
-    shadowRoot = root.attachShadow({mode: 'open'});
+    const shadowRoot = root.attachShadow({mode: 'open'});
 
-    el = document.createElement('div');
+    const el = document.createElement('div');
     el.id = ELEMENT_ID;
     shadowRoot.appendChild(el);
+
+    return {shadowRoot, el};
   });
 
   should(`handle attribute input correctly`, () => {
     const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.attrIn;
     const value$ = new Subject<number>();
 
-    value$.pipe(output.output(shadowRoot)).subscribe();
+    run(value$.pipe(output.output(_.shadowRoot)));
     value$.next(123);
-    assert(el.getAttribute('attr-in')).to.equal(`123`);
+    assert(_.el.getAttribute('attr-in')).to.equal(`123`);
 
     value$.next(234);
-    assert(el.hasAttribute('attr-in')).to.beFalse();
+    assert(_.el.hasAttribute('attr-in')).to.beFalse();
   });
 
   should(`handle handlers correctly`, () => {
     const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.handler;
 
-    const spySubject = createSpySubject();
-    (el as any)['handler'] = (v: number) => spySubject.next(v);
+    const spySubject = createSpy<void, [number]>('handler');
+    (_.el as any)['handler'] = spySubject;
 
     const value = 123;
-    observableOf([value]).pipe(output.output(shadowRoot)).subscribe();
+    run(observableOf([value]).pipe(output.output(_.shadowRoot)));
 
-    assert(spySubject).to.emitWith(value);
+    assert(spySubject).to.haveBeenCalledWith(value);
   });
 
   should(`handle on dom correctly`, () => {
     const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.onDom;
 
-    const calledSubject = createSpySubject();
-    fromEvent(el, 'ondom').subscribe(calledSubject);
+    const calledSubject = createSpySubject(fromEvent(_.el, 'ondom'));
 
     const event$ = new Subject<Event>();
-    event$.pipe(output.output(shadowRoot)).subscribe();
+    run(event$.pipe(output.output(_.shadowRoot)));
     const event = new CustomEvent('ondom');
     event$.next(event);
 
@@ -88,12 +86,12 @@ test('@persona/main/api', () => {
     const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.hasAttr;
     const value$ = new Subject<boolean>();
 
-    value$.pipe(output.output(shadowRoot)).subscribe();
+    run(value$.pipe(output.output(_.shadowRoot)));
     value$.next(true);
-    assert(el.hasAttribute('has-attr')).to.beTrue();
+    assert(_.el.hasAttribute('has-attr')).to.beTrue();
 
     value$.next(false);
-    assert(el.hasAttribute('has-attr')).to.beFalse();
+    assert(_.el.hasAttribute('has-attr')).to.beFalse();
   });
 
   should(`handle hasClass correctly`, () => {
@@ -101,25 +99,25 @@ test('@persona/main/api', () => {
 
     const value$ = new Subject<boolean>();
 
-    value$.pipe(output.output(shadowRoot)).subscribe();
+    run(value$.pipe(output.output(_.shadowRoot)));
     value$.next(true);
-    assert(el.classList.contains('hasClass')).to.beTrue();
+    assert(_.el.classList.contains('hasClass')).to.beTrue();
 
     value$.next(false);
-    assert(el.classList.contains('hasClass')).to.beFalse();
+    assert(_.el.classList.contains('hasClass')).to.beFalse();
   });
 
   should(`handle attribute output correctly`, () => {
     const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.attrOut;
 
-    el.setAttribute('attr-out', '456');
-    assert(input.getValue(shadowRoot)).to.emitWith(456);
+    _.el.setAttribute('attr-out', '456');
+    assert(input.getValue(_.shadowRoot)).to.emitWith(456);
 
-    el.setAttribute('attr-out', '789');
-    assert(input.getValue(shadowRoot)).to.emitWith(789);
+    _.el.setAttribute('attr-out', '789');
+    assert(input.getValue(_.shadowRoot)).to.emitWith(789);
 
-    el.removeAttribute('attr-out');
-    assert(input.getValue(shadowRoot)).to.emitWith(345);
+    _.el.removeAttribute('attr-out');
+    assert(input.getValue(_.shadowRoot)).to.emitWith(345);
   });
 
   should(`handle callers correctly`, () => {
@@ -128,10 +126,9 @@ test('@persona/main/api', () => {
 
     const value = 123;
 
-    const subject = new ReplaySubject(1);
-    input.getValue(shadowRoot).pipe(map(([v]) => v)).subscribe(subject);
+    const subject = createSpySubject(input.getValue(_.shadowRoot).pipe(map(([v]) => v)));
 
-    observableOf([value]).pipe(output.output(shadowRoot)).subscribe();
+    run(observableOf([value]).pipe(output.output(_.shadowRoot)));
     assert(subject).to.emitWith(value);
   });
 
@@ -139,9 +136,8 @@ test('@persona/main/api', () => {
     const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.dispatcher;
 
     const event = new CustomEvent('dispatch');
-    const valueSpySubject = createSpySubject();
-    input.getValue(shadowRoot).subscribe(valueSpySubject);
-    el.dispatchEvent(event);
+    const valueSpySubject = createSpySubject(input.getValue(_.shadowRoot));
+    _.el.dispatchEvent(event);
 
     assert(valueSpySubject).to.emitWith(event);
   });
@@ -149,18 +145,18 @@ test('@persona/main/api', () => {
   should(`handle setAttribute correctly`, () => {
     const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.setAttr;
 
-    el.setAttribute('set-attr', '');
-    assert(input.getValue(shadowRoot)).to.emitWith(true);
+    _.el.setAttribute('set-attr', '');
+    assert(input.getValue(_.shadowRoot)).to.emitWith(true);
 
-    el.removeAttribute('set-attr');
-    assert(input.getValue(shadowRoot)).to.emitWith(false);
+    _.el.removeAttribute('set-attr');
+    assert(input.getValue(_.shadowRoot)).to.emitWith(false);
   });
 
   should(`handle classToggle correctly`, () => {
     const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.classToggle;
 
-    el.classList.add('classToggle');
+    _.el.classList.add('classToggle');
 
-    assert(input.getValue(shadowRoot)).to.emitWith(true);
+    assert(input.getValue(_.shadowRoot)).to.emitWith(true);
   });
 });
