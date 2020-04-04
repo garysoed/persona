@@ -4,6 +4,7 @@ import { instanceofType } from 'gs-types';
 import { compose, human } from 'nabu';
 import { fromEvent, of as observableOf, ReplaySubject , Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+
 import { attribute as attributeIn } from '../input/attribute';
 import { handler } from '../input/handler';
 import { hasAttribute } from '../input/has-attribute';
@@ -14,6 +15,7 @@ import { caller } from '../output/caller';
 import { classToggle } from '../output/class-toggle';
 import { dispatcher } from '../output/dispatcher';
 import { setAttribute } from '../output/set-attribute';
+
 import { api } from './api';
 import { element } from './element';
 
@@ -46,13 +48,13 @@ test('@persona/main/api', () => {
 
   should(`handle attribute input correctly`, () => {
     const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.attrIn;
-    const valueSubject = new Subject<number>();
+    const value$ = new Subject<number>();
 
-    output.output(shadowRoot, valueSubject).subscribe();
-    valueSubject.next(123);
+    value$.pipe(output.output(shadowRoot)).subscribe();
+    value$.next(123);
     assert(el.getAttribute('attr-in')).to.equal(`123`);
 
-    valueSubject.next(234);
+    value$.next(234);
     assert(el.hasAttribute('attr-in')).to.beFalse();
   });
 
@@ -63,7 +65,7 @@ test('@persona/main/api', () => {
     (el as any)['handler'] = (v: number) => spySubject.next(v);
 
     const value = 123;
-    output.output(shadowRoot, observableOf([value] as [number])).subscribe();
+    observableOf([value]).pipe(output.output(shadowRoot)).subscribe();
 
     assert(spySubject).to.emitWith(value);
   });
@@ -74,36 +76,36 @@ test('@persona/main/api', () => {
     const calledSubject = createSpySubject();
     fromEvent(el, 'ondom').subscribe(calledSubject);
 
-    const eventSubject = new Subject<Event>();
-    output.output(shadowRoot, eventSubject).subscribe();
+    const event$ = new Subject<Event>();
+    event$.pipe(output.output(shadowRoot)).subscribe();
     const event = new CustomEvent('ondom');
-    eventSubject.next(event);
+    event$.next(event);
 
     assert(calledSubject).to.emitWith(event);
   });
 
   should(`handle hasAttribute correctly`, () => {
     const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.hasAttr;
-    const valueSubject = new Subject<boolean>();
+    const value$ = new Subject<boolean>();
 
-    output.output(shadowRoot, valueSubject).subscribe();
-    valueSubject.next(true);
+    value$.pipe(output.output(shadowRoot)).subscribe();
+    value$.next(true);
     assert(el.hasAttribute('has-attr')).to.beTrue();
 
-    valueSubject.next(false);
+    value$.next(false);
     assert(el.hasAttribute('has-attr')).to.beFalse();
   });
 
   should(`handle hasClass correctly`, () => {
     const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.hasClass;
 
-    const valueSubject = new Subject<boolean>();
+    const value$ = new Subject<boolean>();
 
-    output.output(shadowRoot, valueSubject).subscribe();
-    valueSubject.next(true);
+    value$.pipe(output.output(shadowRoot)).subscribe();
+    value$.next(true);
     assert(el.classList.contains('hasClass')).to.beTrue();
 
-    valueSubject.next(false);
+    value$.next(false);
     assert(el.classList.contains('hasClass')).to.beFalse();
   });
 
@@ -129,7 +131,7 @@ test('@persona/main/api', () => {
     const subject = new ReplaySubject(1);
     input.getValue(shadowRoot).pipe(map(([v]) => v)).subscribe(subject);
 
-    output.output(shadowRoot, observableOf([value] as [number])).subscribe();
+    observableOf([value]).pipe(output.output(shadowRoot)).subscribe();
     assert(subject).to.emitWith(value);
   });
 

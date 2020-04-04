@@ -1,4 +1,4 @@
-import { combineLatest, concat, interval, Observable } from 'rxjs';
+import { combineLatest, concat, interval, Observable, OperatorFunction, pipe } from 'rxjs';
 import { filter, map, shareReplay, startWith, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
 import { Output } from '../types/output';
@@ -16,17 +16,19 @@ export class CallerOutput<T extends any[]> implements Output<T> {
       readonly functionName: string,
   ) { }
 
-  output(root: ShadowRootLike, valueObs: Observable<T>): Observable<unknown> {
-    const fnObs = createFnObs<T>(this.resolver(root), this.functionName);
+  output(root: ShadowRootLike): OperatorFunction<T, unknown> {
+    const fn$ = createFnObs<T>(this.resolver(root), this.functionName);
 
-    return concat(
-        // Wait for the fn to exist.
-        combineLatest(valueObs, fnObs).pipe(take(1)),
-        valueObs.pipe(withLatestFrom(fnObs)),
-    )
-    .pipe(
-        tap(([value, fn]) => fn(value)),
-    );
+    return value$ => {
+      return concat(
+          // Wait for the fn to exist.
+          combineLatest([value$, fn$]).pipe(take(1)),
+          value$.pipe(withLatestFrom(fn$)),
+      )
+      .pipe(
+          tap(([value, fn]) => fn(value)),
+      );
+    };
   }
 }
 

@@ -1,5 +1,5 @@
 import { Converter } from 'nabu';
-import { Observable } from 'rxjs';
+import { OperatorFunction, pipe } from 'rxjs';
 import { tap, withLatestFrom } from 'rxjs/operators';
 
 import { Output } from '../types/output';
@@ -16,21 +16,20 @@ export class AttributeOutput<T> implements Output<T> {
       readonly resolver: Resolver<HTMLElement>,
   ) { }
 
-  output(root: ShadowRootLike, valueObs: Observable<T>): Observable<unknown> {
-    return valueObs
-        .pipe(
-            withLatestFrom(this.resolver(root)),
-            tap(([value, el]) => {
-              const result = this.parser.convertForward(value);
-              if (result.success) {
-                el.setAttribute(this.attrName, result.result);
-              }
+  output(root: ShadowRootLike): OperatorFunction<T, unknown> {
+    return pipe(
+        withLatestFrom(this.resolver(root)),
+        tap(([value, el]) => {
+          const result = this.parser.convertForward(value);
+          if (result.success) {
+            el.setAttribute(this.attrName, result.result);
+          }
 
-              if (value === this.defaultValue) {
-                el.removeAttribute(this.attrName);
-              }
-            }),
-        );
+          if (value === this.defaultValue) {
+            el.removeAttribute(this.attrName);
+          }
+        }),
+    );
   }
 }
 

@@ -1,11 +1,13 @@
 import { assert, setup, should, test } from 'gs-testing';
 import { integerConverter } from 'gs-tools/export/serializer';
 import { instanceofType } from 'gs-types';
-import { human } from 'nabu';
-import { compose } from 'nabu';
+import { compose, human } from 'nabu';
 import { Subject } from 'rxjs';
+
 import { element } from '../main/element';
+
 import { attribute, AttributeOutput } from './attribute';
+
 
 test('output.attribute', () => {
   const ELEMENT_ID = 'test';
@@ -35,13 +37,13 @@ test('output.attribute', () => {
 
   test('output', () => {
     should(`update the attribute correctly`, () => {
-      const valueSubject = new Subject<number>();
+      const value$ = new Subject<number>();
 
-      output.output(shadowRoot, valueSubject).subscribe();
-      valueSubject.next(123);
+      value$.pipe(output.output(shadowRoot)).subscribe();
+      value$.next(123);
       assert(el.getAttribute(ATTR_NAME)).to.equal(`123`);
 
-      valueSubject.next(234);
+      value$.next(234);
       assert(el.hasAttribute(ATTR_NAME)).to.beFalse();
     });
   });

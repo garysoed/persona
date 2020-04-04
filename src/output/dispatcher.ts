@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { OperatorFunction, pipe } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Output } from '../types/output';
@@ -19,8 +19,11 @@ export class DispatcherOutput<E extends Event> implements Output<E> {
     this.caller = new CallerOutput(resolver, 'dispatchEvent');
   }
 
-  output(root: ShadowRootLike, valueObs: Observable<E>): Observable<unknown> {
-    return this.caller.output(root, valueObs.pipe(map(event => [event] as [E])));
+  output(root: ShadowRootLike): OperatorFunction<E, unknown> {
+    return pipe(
+        map(event => [event] as [E]),
+        this.caller.output(root),
+    );
   }
 }
 

@@ -30,10 +30,10 @@ test('output.classlist', () => {
 
   test('output', () => {
     should(`update the classes correctly`, () => {
-      const valueSubject = new Subject<ReadonlySet<string>>();
+      const value$ = new Subject<ReadonlySet<string>>();
 
-      output.output(shadowRoot, valueSubject).subscribe();
-      valueSubject.next(new Set(['a', 'b', 'c']));
+      value$.pipe(output.output(shadowRoot)).subscribe();
+      value$.next(new Set(['a', 'b', 'c']));
       assert(el.getAttribute('class')).to.equal(`a b c`);
     });
   });

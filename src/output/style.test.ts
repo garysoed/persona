@@ -1,7 +1,9 @@
 import { assert, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
+
 import { element } from '../main/element';
+
 import { style, StyleOutput } from './style';
 
 test('output.style', () => {
@@ -27,11 +29,11 @@ test('output.style', () => {
 
   test('output', () => {
     should(`set the style correctly`, () => {
-      const valueSubject = new Subject<string>();
+      const value$ = new Subject<string>();
 
-      output.output(shadowRoot, valueSubject).subscribe();
+      value$.pipe(output.output(shadowRoot)).subscribe();
       const height = '123px';
-      valueSubject.next(height);
+      value$.next(height);
       assert(el.style.height).to.equal(height);
     });
   });

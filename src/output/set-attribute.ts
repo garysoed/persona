@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { OperatorFunction, pipe } from 'rxjs';
 import { tap, withLatestFrom } from 'rxjs/operators';
 
 import { Output } from '../types/output';
@@ -12,18 +12,17 @@ export class SetAttributeOutput implements Output<boolean> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  output(root: ShadowRootLike, valueObs: Observable<boolean>): Observable<unknown> {
-    return valueObs
-        .pipe(
-            withLatestFrom(this.resolver(root)),
-            tap(([value, el]) => {
-              if (value) {
-                el.setAttribute(this.attrName, '');
-              } else {
-                el.removeAttribute(this.attrName);
-              }
-            }),
-        );
+  output(root: ShadowRootLike): OperatorFunction<boolean, unknown> {
+    return pipe(
+        withLatestFrom(this.resolver(root)),
+        tap(([value, el]) => {
+          if (value) {
+            el.setAttribute(this.attrName, '');
+          } else {
+            el.removeAttribute(this.attrName);
+          }
+        }),
+    );
   }
 }
 

@@ -1,7 +1,9 @@
 import { assert, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
+
 import { element } from '../main/element';
+
 import { innerHtml, InnerHtmlOutput } from './inner-html';
 
 test('output.innerHtml', () => {
@@ -27,11 +29,11 @@ test('output.innerHtml', () => {
 
   test('output', () => {
     should(`set the inner HTML correctly`, () => {
-      const valueSubject = new Subject<string>();
+      const value$ = new Subject<string>();
 
-      output.output(shadowRoot, valueSubject).subscribe();
+      value$.pipe(output.output(shadowRoot)).subscribe();
       const innerHtml = 'innerHtml';
-      valueSubject.next(innerHtml);
+      value$.next(innerHtml);
       assert(el.innerHTML).to.equal(innerHtml);
     });
   });

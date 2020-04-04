@@ -1,5 +1,5 @@
 import { diff } from 'gs-tools/export/util';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, OperatorFunction } from 'rxjs';
 import { pairwise, startWith, tap } from 'rxjs/operators';
 
 import { Output } from '../types/output';
@@ -12,11 +12,11 @@ export class ClasslistOutput implements Output<ReadonlySet<string>> {
       private readonly resolver: Resolver<Element>,
   ) { }
 
-  output(root: ShadowRootLike, valueObs: Observable<ReadonlySet<string>>): Observable<unknown> {
-    return combineLatest(
-            this.resolver(root),
-            valueObs.pipe(startWith(new Set<string>()), pairwise()),
-        )
+  output(root: ShadowRootLike): OperatorFunction<ReadonlySet<string>, unknown> {
+    return value$ => combineLatest([
+          this.resolver(root),
+          value$.pipe(startWith(new Set<string>()), pairwise()),
+        ])
         .pipe(
             tap(([el, [prevClasses, currClasses]]) => {
               const {added, deleted} = diff(prevClasses, currClasses);

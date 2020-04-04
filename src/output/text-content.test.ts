@@ -1,7 +1,9 @@
 import { assert, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
+
 import { element } from '../main/element';
+
 import { textContent, TextContentOutput } from './text-content';
 
 test('output.textContent', () => {
@@ -27,11 +29,11 @@ test('output.textContent', () => {
 
   test('output', () => {
     should(`set the text content correctly`, () => {
-      const valueSubject = new Subject<string>();
+      const value$ = new Subject<string>();
 
-      output.output(shadowRoot, valueSubject).subscribe();
+      value$.pipe(output.output(shadowRoot)).subscribe();
       const text = 'text';
-      valueSubject.next(text);
+      value$.next(text);
       assert(el.textContent).to.equal(text);
     });
   });

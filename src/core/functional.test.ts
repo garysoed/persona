@@ -38,7 +38,7 @@ class ParentTestClass extends CustomElementCtrl {
   constructor(context: PersonaContext) {
     super(context);
 
-    this.render($.host._.attr1).withVine(stream(this.overriddenRender, this));
+    this.render($.host._.attr1, this.overriddenRender());
   }
 
   overriddenRender(): Observable<string> {
@@ -66,8 +66,9 @@ class TestClass extends ParentTestClass {
             takeUntil(this.onDispose$),
         )
         .subscribe();
-    this.render($.host._.attr2).withObservable(this.providesValueStream);
-    this.render($.host._.attr1, $.host._.attr3).withVine(stream(this.overriddenRender, this));
+    this.render($.host._.attr2, this.providesValueStream);
+    this.render($.host._.attr1, this.overriddenRender());
+    this.render($.host._.attr3, this.overriddenRender());
   }
 
   overriddenRender(): Observable<string> {

@@ -62,7 +62,8 @@ class TemplateRenderSpecBuilder {
   constructor(private readonly templateEl: HTMLTemplateElement) { }
 
   addOutput<T>(output: Output<T>, value: T): this {
-    const fn: ApplyValueFn = (root: ShadowRootLike) => output.output(root, observableOf(value));
+    const fn: ApplyValueFn = (root: ShadowRootLike) => observableOf(value)
+        .pipe(output.output(root));
     this.applyValueFns.push(fn);
 
     return this;

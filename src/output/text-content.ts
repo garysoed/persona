@@ -1,4 +1,4 @@
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, OperatorFunction } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { Output } from '../types/output';
@@ -11,9 +11,13 @@ export class TextContentOutput implements Output<string> {
       private readonly resolver: Resolver<Element>,
   ) { }
 
-  output(root: ShadowRootLike, valueObs: Observable<string>): Observable<unknown> {
-    return combineLatest(this.resolver(root), valueObs)
-        .pipe(tap(([el, value]) => el.textContent = value));
+  output(root: ShadowRootLike): OperatorFunction<string, unknown> {
+    return value$ => combineLatest([this.resolver(root), value$])
+        .pipe(
+            tap(([el, value]) => {
+              el.textContent = value;
+            }),
+        );
   }
 }
 

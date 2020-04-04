@@ -41,7 +41,7 @@ test('@persona/output/repeated', init => {
     const _ = init(_ => {
       const diffSubject = new Subject<ArrayDiff<RenderSpec>>();
 
-      _.output.output(_.shadowRoot, diffSubject).subscribe();
+      diffSubject.pipe(_.output.output(_.shadowRoot)).subscribe();
 
       return {..._, diffSubject};
     });

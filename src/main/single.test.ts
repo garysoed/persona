@@ -1,56 +1,54 @@
-import { assert, setup, should, test } from 'gs-testing';
+import { assert, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 
 import { SimpleElementRenderSpec } from '../render/simple-element-render-spec';
 
 import { element } from './element';
-import { single, SingleOutput } from './single';
+import { single } from './single';
 
-test('@persona/main/single', () => {
+
+test('@persona/main/single', init => {
   const ELEMENT_ID = 'elementId';
   const SLOT_NAME = 'slotName';
-  let output: SingleOutput;
-  let shadowRoot: ShadowRoot;
-  let parentEl: HTMLElement;
-  let slot: Node;
 
-  setup(() => {
+  const _ = init(() => {
     const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       single: single(SLOT_NAME),
     });
 
     const root = document.createElement('div');
-    shadowRoot = root.attachShadow({mode: 'open'});
+    const shadowRoot = root.attachShadow({mode: 'open'});
 
-    slot = document.createComment(SLOT_NAME);
+    const slot = document.createComment(SLOT_NAME);
 
-    parentEl = document.createElement('div');
+    const parentEl = document.createElement('div');
     parentEl.id = ELEMENT_ID;
     parentEl.appendChild(slot);
 
     shadowRoot.appendChild(parentEl);
 
-    output = $._.single;
+    const output = $._.single;
+    return {shadowRoot, slot, parentEl, output};
   });
 
-  test('output', () => {
-    let renderSubject: Subject<SimpleElementRenderSpec|null>;
+  test('output', _, init => {
+    const _ = init(_ => {
+      const render$ = new Subject<SimpleElementRenderSpec|null>();
 
-    setup(() => {
-      renderSubject = new Subject<SimpleElementRenderSpec|null>();
+      render$.pipe(_.output.output(_.shadowRoot)).subscribe();
 
-      output.output(shadowRoot, renderSubject).subscribe();
+      return {..._, render$};
     });
 
     should(`process correctly for adding a node`, () => {
-      renderSubject.next(new SimpleElementRenderSpec(
+      _.render$.next(new SimpleElementRenderSpec(
         'tag-name',
         new Map([['a', '1'], ['b', '2']]),
         'content',
       ));
 
-      const el = slot.nextSibling as HTMLElement;
+      const el = _.slot.nextSibling as HTMLElement;
       assert(el.tagName.toLowerCase()).to.equal('tag-name');
       assert(el.getAttribute('a')).to.equal('1');
       assert(el.getAttribute('b')).to.equal('2');
@@ -58,18 +56,18 @@ test('@persona/main/single', () => {
     });
 
     should(`process correctly for replacing a node`, () => {
-      renderSubject.next(new SimpleElementRenderSpec(
+      _.render$.next(new SimpleElementRenderSpec(
         'tag-name',
         new Map([['a', '1'], ['b', '2']]),
         'content1',
       ));
-      renderSubject.next(new SimpleElementRenderSpec(
+      _.render$.next(new SimpleElementRenderSpec(
         'tag-name-2',
         new Map([['c', '3'], ['d', '4']]),
         'content2',
       ));
 
-      const el = slot.nextSibling as HTMLElement;
+      const el = _.slot.nextSibling as HTMLElement;
       assert(el.tagName.toLowerCase()).to.equal('tag-name-2');
       assert(el.getAttribute('c')).to.equal('3');
       assert(el.getAttribute('d')).to.equal('4');
@@ -79,31 +77,31 @@ test('@persona/main/single', () => {
     });
 
     should(`process correctly for deleting a node`, () => {
-      renderSubject.next(new SimpleElementRenderSpec(
+      _.render$.next(new SimpleElementRenderSpec(
         'tag-name',
         new Map([['a', '1'], ['b', '2']]),
         'content',
       ));
-      renderSubject.next(null);
+      _.render$.next(null);
 
-      assert(slot.nextSibling).to.beNull();
+      assert(_.slot.nextSibling).to.beNull();
     });
 
     should(`not delete the node if can be reused`, () => {
-      renderSubject.next(new SimpleElementRenderSpec(
+      _.render$.next(new SimpleElementRenderSpec(
         'tag-name',
         new Map([['a', '1'], ['b', '2']]),
         'content1',
       ));
-      const el = slot.nextSibling as HTMLElement;
+      const el = _.slot.nextSibling as HTMLElement;
 
-      renderSubject.next(new SimpleElementRenderSpec(
+      _.render$.next(new SimpleElementRenderSpec(
         'tag-name',
         new Map([['c', '3'], ['d', '4']]),
         'content2',
       ));
 
-      const el2 = slot.nextSibling as HTMLElement;
+      const el2 = _.slot.nextSibling as HTMLElement;
       assert(el2).to.equal(el);
       assert(el2.tagName.toLowerCase()).to.equal('tag-name');
       assert(el2.getAttribute('c')).to.equal('3');

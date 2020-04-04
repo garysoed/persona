@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { OperatorFunction, pipe } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { Output } from '../types/output';
@@ -12,8 +12,11 @@ export function mapOutput<A, B>(
     mapFn: (value: B) => A,
 ): Output<B> {
   return {
-    output(root: ShadowRootLike, value$: Observable<B>): Observable<unknown> {
-      return output.output(root, value$.pipe(map(mapFn)));
+    output(root: ShadowRootLike): OperatorFunction<B, unknown> {
+      return pipe(
+          map(mapFn),
+          output.output(root),
+      );
     },
   };
 }

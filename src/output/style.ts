@@ -1,4 +1,4 @@
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, OperatorFunction } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { Output } from '../types/output';
@@ -13,16 +13,16 @@ export class StyleOutput<S extends keyof CSSStyleDeclaration>
       readonly styleKey: S,
   ) { }
 
-  output(root: ShadowRootLike, valueObs: Observable<CSSStyleDeclaration[S]>): Observable<unknown> {
-    return combineLatest(
-            this.resolver(root),
-            valueObs,
-        )
-        .pipe(
-            tap(([el, value]) => {
-              el.style[this.styleKey] = value;
-            }),
-        );
+  output(root: ShadowRootLike): OperatorFunction<CSSStyleDeclaration[S], unknown> {
+    return value$ => combineLatest([
+        this.resolver(root),
+        value$,
+    ])
+    .pipe(
+        tap(([el, value]) => {
+          el.style[this.styleKey] = value;
+        }),
+    );
   }
 }
 

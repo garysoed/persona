@@ -1,6 +1,6 @@
 import { ArrayDiff, filterNonNull } from 'gs-tools/export/rxjs';
 import { assertUnreachable } from 'gs-tools/export/typescript';
-import { Observable } from 'rxjs';
+import { OperatorFunction, pipe } from 'rxjs';
 import { tap, withLatestFrom } from 'rxjs/operators';
 
 import { RenderSpec } from '../render/render-spec';
@@ -17,36 +17,35 @@ export class RepeatedOutput implements Output<ArrayDiff<RenderSpec>> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  output(root: ShadowRootLike, value$: Observable<ArrayDiff<RenderSpec>>): Observable<unknown> {
+  output(root: ShadowRootLike): OperatorFunction<ArrayDiff<RenderSpec>, unknown> {
     const parentEl$ = this.resolver(root);
 
-    return value$
-        .pipe(
-            withLatestFrom(
-                parentEl$,
-                createSlotObs(parentEl$, this.slotName).pipe(filterNonNull()),
-            ),
-            tap(([diff, parentEl, slotNode]) => {
-              switch (diff.type) {
-                case 'init':
-                  for (let i = 0; i < diff.value.length; i++) {
-                    this.insertEl(parentEl, slotNode, diff.value[i], i);
-                  }
-                  break;
-                case 'insert':
-                  this.insertEl(parentEl, slotNode, diff.value, diff.index);
-                  break;
-                case 'delete':
-                  this.deleteEl(parentEl, slotNode, diff.index);
-                  break;
-                case 'set':
-                  this.setEl(parentEl, slotNode, diff.value, diff.index);
-                  break;
-                default:
-                  assertUnreachable(diff);
+    return pipe(
+        withLatestFrom(
+            parentEl$,
+            createSlotObs(parentEl$, this.slotName).pipe(filterNonNull()),
+        ),
+        tap(([diff, parentEl, slotNode]) => {
+          switch (diff.type) {
+            case 'init':
+              for (let i = 0; i < diff.value.length; i++) {
+                this.insertEl(parentEl, slotNode, diff.value[i], i);
               }
-            }),
-        );
+              break;
+            case 'insert':
+              this.insertEl(parentEl, slotNode, diff.value, diff.index);
+              break;
+            case 'delete':
+              this.deleteEl(parentEl, slotNode, diff.index);
+              break;
+            case 'set':
+              this.setEl(parentEl, slotNode, diff.value, diff.index);
+              break;
+            default:
+              assertUnreachable(diff);
+          }
+        }),
+    );
   }
 
   // tslint:disable-next-line: prefer-function-over-method

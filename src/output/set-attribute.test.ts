@@ -1,7 +1,9 @@
 import { assert, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
+
 import { element } from '../main/element';
+
 import { setAttribute, SetAttributeOutput } from './set-attribute';
 
 test('output.setAttribute', () => {
@@ -28,13 +30,13 @@ test('output.setAttribute', () => {
 
   test('output', () => {
     should(`update the attribute correctly`, () => {
-      const valueSubject = new Subject<boolean>();
+      const value$ = new Subject<boolean>();
 
-      output.output(shadowRoot, valueSubject).subscribe();
-      valueSubject.next(true);
+      value$.pipe(output.output(shadowRoot)).subscribe();
+      value$.next(true);
       assert(el.hasAttribute(ATTR_NAME)).to.beTrue();
 
-      valueSubject.next(false);
+      value$.next(false);
       assert(el.hasAttribute(ATTR_NAME)).to.beFalse();
     });
   });

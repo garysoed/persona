@@ -2,9 +2,9 @@ import { source, stream } from 'grapevine';
 import { Factory } from 'grapevine/export/internal';
 import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Observable, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
-import { RenderBuilder } from '../core/render-builder';
 
 import { Input } from './input';
 import { Output } from './output';
@@ -39,7 +39,12 @@ export abstract class CustomElementCtrl extends BaseDisposable {
     return source(factory, this).get(this.context.vine);
   }
 
-  protected render<T>(...outputs: Array<Output<T>>): RenderBuilder<T, this> {
-    return new RenderBuilder(this, outputs, this.onDispose$, this.context);
+  protected render<T>(outputs: Output<T>, value$: Observable<T>): void {
+    value$
+        .pipe(
+            outputs.output(this.shadowRoot),
+            takeUntil(this.onDispose$),
+        )
+        .subscribe();
   }
 }

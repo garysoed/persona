@@ -1,10 +1,11 @@
-import { EMPTY, Observable } from 'rxjs';
+import { OperatorFunction, pipe } from 'rxjs';
 
 import { Output } from '../types/output';
 
+
 class Noop implements Output<any> {
-  output(): Observable<unknown> {
-    return EMPTY;
+  output(): OperatorFunction<any, unknown> {
+    return pipe();
   }
 }
 

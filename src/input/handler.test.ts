@@ -2,8 +2,10 @@ import { assert, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { of as observableOf, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
+
 import { element } from '../main/element';
 import { caller, CallerOutput } from '../output/caller';
+
 import { handler, HandlerInput } from './handler';
 
 test('@persona/input/handler', () => {
@@ -38,7 +40,9 @@ test('@persona/input/handler', () => {
       const subject = new ReplaySubject(1);
       input.getValue(shadowRoot).pipe(map(([v]) => v)).subscribe(subject);
 
-      output.output(shadowRoot, observableOf([value] as [number])).subscribe();
+      observableOf([value] as [number])
+          .pipe(output.output(shadowRoot))
+          .subscribe();
       assert(subject).to.emitWith(value);
     });
   });

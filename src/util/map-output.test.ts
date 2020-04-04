@@ -15,7 +15,9 @@ test('@persona/util/map-output', () => {
     const root = document.createElement('div');
     const shadow = root.attachShadow({mode: 'open'});
 
-    mapOutput($._.attr, (n: number) => `${n + 2}`).output(shadow, observableOf(123)).subscribe();
+    observableOf(123)
+        .pipe(mapOutput($._.attr, (n: number) => `${n + 2}`).output(shadow))
+        .subscribe();
     assert(root.getAttribute(ATTR_NAME)).to.equal('125');
   });
 });

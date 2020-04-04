@@ -1,7 +1,9 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { of as observableOf } from 'rxjs';
+
 import { element } from '../main/element';
+
 import { caller, CallerOutput } from './caller';
 
 test('input.caller', () => {
@@ -32,9 +34,9 @@ test('input.caller', () => {
       (el as any)[FUNCTION_NAME] = (v: number) => spySubject.next(v);
 
       const value = 123;
-      output.output(shadowRoot, observableOf([value] as [number])).subscribe();
+      observableOf([value] as [number]).pipe(output.output(shadowRoot)).subscribe();
 
-      await assert(spySubject).to.emitWith(value);
+      assert(spySubject).to.emitWith(value);
     });
   });
 });

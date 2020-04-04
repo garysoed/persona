@@ -19,7 +19,9 @@ test('@persona/util/split-output', () => {
     const root = document.createElement('div');
     const shadow = root.attachShadow({mode: 'open'});
 
-    splitOutput([$._.attr1, $._.attr2]).output(shadow, observableOf('abc')).subscribe();
+    observableOf('abc')
+        .pipe(splitOutput([$._.attr1, $._.attr2]).output(shadow))
+        .subscribe();
     assert(root.getAttribute(ATTR_NAME_1)).to.equal('abc');
     assert(root.getAttribute(ATTR_NAME_2)).to.equal('abc');
   });

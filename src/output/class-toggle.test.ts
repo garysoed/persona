@@ -1,7 +1,9 @@
 import { assert, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
+
 import { element } from '../main/element';
+
 import { classToggle, ClassToggleOutput } from './class-toggle';
 
 test('persona.output.classToggle', () => {
@@ -28,13 +30,13 @@ test('persona.output.classToggle', () => {
 
   test('output', () => {
     should(`update the attribute correctly`, () => {
-      const valueSubject = new Subject<boolean>();
+      const value$ = new Subject<boolean>();
 
-      output.output(shadowRoot, valueSubject).subscribe();
-      valueSubject.next(true);
+      value$.pipe(output.output(shadowRoot)).subscribe();
+      value$.next(true);
       assert(el.classList.contains(CLASSNAME)).to.beTrue();
 
-      valueSubject.next(false);
+      value$.next(false);
       assert(el.classList.contains(CLASSNAME)).to.beFalse();
     });
   });

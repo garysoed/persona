@@ -1,7 +1,9 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { fromEvent, Subject } from 'rxjs';
+
 import { element } from '../main/element';
+
 import { dispatcher, DispatcherOutput } from './dispatcher';
 
 test('output.dispatcher', () => {
@@ -31,12 +33,12 @@ test('output.dispatcher', () => {
       const calledSubject = createSpySubject();
       fromEvent(el, 'eventName').subscribe(calledSubject);
 
-      const eventSubject = new Subject<Event>();
-      output.output(shadowRoot, eventSubject).subscribe();
+      const event$ = new Subject<Event>();
+      event$.pipe(output.output(shadowRoot)).subscribe();
       const event = new CustomEvent(EVENT_NAME);
-      eventSubject.next(event);
+      event$.next(event);
 
-      await assert(calledSubject).to.emitWith(event);
+      assert(calledSubject).to.emitWith(event);
     });
   });
 });
