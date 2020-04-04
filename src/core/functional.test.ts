@@ -59,9 +59,9 @@ class TestClass extends ParentTestClass {
 
   constructor(context: PersonaContext) {
     super(context);
-    this.addSetup(this.render($.host._.attr1, this.overriddenRender()));
-    this.addSetup(this.render($.host._.attr2, this.providesValueStream));
-    this.addSetup(this.render($.host._.attr3, this.overriddenRender()));
+    this.render($.host._.attr1, this.overriddenRender());
+    this.render($.host._.attr2, this.providesValueStream);
+    this.render($.host._.attr3, this.overriddenRender());
     this.addSetup(this.setupHandler());
   }
 
