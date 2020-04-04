@@ -1,6 +1,7 @@
 import { source, stream } from 'grapevine';
 import { Factory } from 'grapevine/export/internal';
 import { BaseDisposable } from 'gs-tools/export/dispose';
+import { Runnable } from 'gs-tools/export/rxjs';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -15,13 +16,15 @@ export type CustomElementCtrlCtor = new (context: PersonaContext) => CustomEleme
 /**
  * Base class of all custom elements.
  */
-export abstract class CustomElementCtrl {
+export abstract class CustomElementCtrl extends Runnable {
   protected readonly shadowRoot = this.context.shadowRoot;
   protected readonly vine = this.context.vine;
 
   constructor(
       private readonly context: PersonaContext,
-  ) { }
+  ) {
+    super();
+  }
 
   protected declareInput<T>(input: Input<T>): Observable<T> {
     return stream<T, CustomElementCtrl>(

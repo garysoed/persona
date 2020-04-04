@@ -1,5 +1,4 @@
 import { assert, objectThat, run, should, test } from 'gs-testing';
-import { runSetup } from 'gs-tools/export/rxjs';
 import { of as observableOf } from 'rxjs';
 
 import { createFakeWindow } from '../testing/fake-window';
@@ -23,7 +22,7 @@ test('@persona/location/location-service', init => {
         {payload: {}, type: 'default'},
         observableOf(fakeWindow),
     );
-    run(runSetup(service));
+    run(service.run());
     return {service, fakeWindow};
   });
 

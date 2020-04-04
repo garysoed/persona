@@ -1,10 +1,9 @@
 import { Vine } from 'grapevine';
 import { cache } from 'gs-tools/export/data';
-import { runSetup } from 'gs-tools/export/rxjs';
 import { ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
+import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 
 
 export const SHADOW_ROOT = Symbol('shadowRoot');
@@ -32,7 +31,7 @@ export class CustomElementImpl {
     const ctor = this.componentClass;
     const onDisconnect$ = new ReplaySubject<void>(1);
     const componentInstance = new ctor({shadowRoot, vine: this.vine});
-    runSetup(componentInstance).pipe(takeUntil(onDisconnect$)).subscribe();
+    componentInstance.run().pipe(takeUntil(onDisconnect$)).subscribe();
     this.element[__onDisconnect] = onDisconnect$;
   }
 

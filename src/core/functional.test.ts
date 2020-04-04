@@ -1,15 +1,13 @@
-import { source, stream, Vine, VineBuilder } from 'grapevine';
-import { assert, createSpy, should, Spy, test } from 'gs-testing';
-import { setup } from 'gs-tools/export/rxjs';
+import { source, stream, VineBuilder } from 'grapevine';
+import { assert, createSpy, should, test } from 'gs-testing';
 import { identity } from 'nabu';
 import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
-import { map, takeUntil, tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 import { attribute as attributeIn } from '../input/attribute';
 import { element } from '../main/element';
 import { attribute as attributeOut } from '../output/attribute';
-import { ElementTester } from '../testing/element-tester';
-import { PersonaTester, PersonaTesterFactory } from '../testing/persona-tester';
+import { PersonaTesterFactory } from '../testing/persona-tester';
 import { CustomElementCtrl } from '../types/custom-element-ctrl';
 
 import { Builder as PersonaBuilder } from './builder';
@@ -58,12 +56,13 @@ class TestClass extends ParentTestClass {
   private readonly handlerSbj = $HANDLER.get(this.vine);
   private readonly providesValueStream = stream(this.providesValue, this).get(this.vine);
 
-  @setup() readonly renderAttr1 = this.render($.host._.attr1, this.overriddenRender());
-  @setup() readonly renderAttr2 = this.render($.host._.attr2, this.providesValueStream);
-  @setup() readonly renderAttr3 = this.render($.host._.attr3, this.overriddenRender());
 
   constructor(context: PersonaContext) {
     super(context);
+    this.addSetup(this.render($.host._.attr1, this.overriddenRender()));
+    this.addSetup(this.render($.host._.attr2, this.providesValueStream));
+    this.addSetup(this.render($.host._.attr3, this.overriddenRender()));
+    this.addSetup(this.setupHandler());
   }
 
   protected overriddenRender(): Observable<string> {
@@ -74,8 +73,7 @@ class TestClass extends ParentTestClass {
     return this.declareInput($.host._.attr4).pipe(map(v => `123-${v}`));
   }
 
-  @setup()
-  get setupHandler(): Observable<unknown> {
+  private setupHandler(): Observable<unknown> {
     return this.handlerSbj.pipe(tap(handler => handler()));
   }
 }

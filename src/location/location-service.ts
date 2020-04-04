@@ -1,4 +1,4 @@
-import { filterNonNull, setup } from 'gs-tools/export/rxjs';
+import { filterNonNull, Runnable } from 'gs-tools/export/rxjs';
 import { Result } from 'nabu';
 import { fromEvent, merge, Observable, Subject } from 'rxjs';
 import { map, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
@@ -19,7 +19,7 @@ export interface Route<S extends RouteSpec, K extends keyof S> {
   readonly type: K;
 }
 
-export class LocationService<S extends RouteSpec> {
+export class LocationService<S extends RouteSpec> extends Runnable {
   private readonly onGoToUrl$: Subject<string> = new Subject();
   private readonly onPushState$: Subject<{}> = new Subject();
 
@@ -27,7 +27,10 @@ export class LocationService<S extends RouteSpec> {
       private readonly specs: S,
       private readonly defaultRoute: Route<S, keyof S>,
       private readonly window$: Observable<Window>,
-  ) { }
+  ) {
+    super();
+    this.addSetup(this.setupGoToPath());
+  }
 
   getLocation(): Observable<Route<S, keyof S>> {
     return this.window$.pipe(
@@ -79,18 +82,6 @@ export class LocationService<S extends RouteSpec> {
     this.onGoToUrl$.next(url);
   }
 
-  @setup()
-  get setupGoToPath(): Observable<unknown> {
-    return this.onGoToUrl$
-        .pipe(
-            withLatestFrom(this.window$),
-            tap(([url, windowObj]) => {
-              windowObj.history.pushState({}, 'TODO', url);
-              this.onPushState$.next({});
-            }),
-        );
-  }
-
 
   private getUrl<K extends keyof S>(type: K, payload: Payloads<S>[K]): string|null {
     const result = this.specs[type].convertBackward(payload);
@@ -99,5 +90,16 @@ export class LocationService<S extends RouteSpec> {
     }
 
     return result.result;
+  }
+
+  private setupGoToPath(): Observable<unknown> {
+    return this.onGoToUrl$
+        .pipe(
+            withLatestFrom(this.window$),
+            tap(([url, windowObj]) => {
+              windowObj.history.pushState({}, 'TODO', url);
+              this.onPushState$.next({});
+            }),
+        );
   }
 }
