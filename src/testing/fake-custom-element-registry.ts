@@ -1,4 +1,5 @@
 import { __customElementImplFactory, CustomElementClass } from '../core/custom-element-class';
+import { __onDisconnect, ElementWithOnDisconnect } from '../core/custom-element-impl';
 
 type Listener = () => void;
 
@@ -52,7 +53,12 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     });
   }
 
-  private upgradeElement_(el: HTMLElement): void {
+  private upgradeElement_(el: ElementWithOnDisconnect): void {
+    if (el[__onDisconnect]) {
+      // Already upgraded, so ignore it.
+      return;
+    }
+
     const tag = el.tagName.toLowerCase();
     const ctor = this.get(tag);
     if (!ctor) {

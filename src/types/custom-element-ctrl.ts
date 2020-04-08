@@ -1,9 +1,7 @@
 import { source, stream } from 'grapevine';
 import { Factory } from 'grapevine/export/internal';
-import { BaseDisposable } from 'gs-tools/export/dispose';
 import { Runnable } from 'gs-tools/export/rxjs';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 
