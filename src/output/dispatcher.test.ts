@@ -4,36 +4,36 @@ import { fromEvent, Subject } from 'rxjs';
 
 import { element } from '../main/element';
 
-import { dispatcher, DispatcherOutput } from './dispatcher';
+import { dispatcher } from './dispatcher';
 
-test('output.dispatcher', () => {
+
+test('output.dispatcher', init => {
   const EVENT_NAME = 'eventName';
   const ELEMENT_ID = 'test';
-  let output: DispatcherOutput<Event>;
-  let shadowRoot: ShadowRoot;
-  let el: HTMLDivElement;
 
-  beforeEach(() => {
+  const _ = init(() => {
     const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       dispatch: dispatcher('eventName'),
     });
 
     const root = document.createElement('div');
-    shadowRoot = root.attachShadow({mode: 'open'});
+    const shadowRoot = root.attachShadow({mode: 'open'});
 
-    el = document.createElement('div');
+    const el = document.createElement('div');
     el.id = ELEMENT_ID;
     shadowRoot.appendChild(el);
 
-    output = $._.dispatch;
+    const output = $._.dispatch;
+
+    return {output, shadowRoot, el};
   });
 
   test('output', () => {
     should(`create observable that emits the dispatcher`, async () => {
-      const calledSubject = createSpySubject(fromEvent(el, 'eventName'));
+      const calledSubject = createSpySubject(fromEvent(_.el, 'eventName'));
 
       const event$ = new Subject<Event>();
-      run(event$.pipe(output.output(shadowRoot)));
+      run(event$.pipe(_.output.output(_.shadowRoot)));
       const event = new CustomEvent(EVENT_NAME);
       event$.next(event);
 

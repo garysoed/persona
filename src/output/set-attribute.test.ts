@@ -4,40 +4,39 @@ import { Subject } from 'rxjs';
 
 import { element } from '../main/element';
 
-import { setAttribute, SetAttributeOutput } from './set-attribute';
+import { setAttribute } from './set-attribute';
 
-test('output.setAttribute', () => {
+
+test('output.setAttribute', init => {
   const ELEMENT_ID = 'test';
   const ATTR_NAME = 'attr-name';
-  let output: SetAttributeOutput;
-  let shadowRoot: ShadowRoot;
-  let el: HTMLDivElement;
 
-  beforeEach(() => {
+  const _ = init(() => {
     const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       attr: setAttribute(ATTR_NAME),
     });
 
     const root = document.createElement('div');
-    shadowRoot = root.attachShadow({mode: 'open'});
+    const shadowRoot = root.attachShadow({mode: 'open'});
 
-    el = document.createElement('div');
+    const el = document.createElement('div');
     el.id = ELEMENT_ID;
     shadowRoot.appendChild(el);
 
-    output = $._.attr;
+    const output = $._.attr;
+    return {output, shadowRoot, el};
   });
 
   test('output', () => {
     should(`update the attribute correctly`, () => {
       const value$ = new Subject<boolean>();
 
-      run(value$.pipe(output.output(shadowRoot)));
+      run(value$.pipe(_.output.output(_.shadowRoot)));
       value$.next(true);
-      assert(el.hasAttribute(ATTR_NAME)).to.beTrue();
+      assert(_.el.hasAttribute(ATTR_NAME)).to.beTrue();
 
       value$.next(false);
-      assert(el.hasAttribute(ATTR_NAME)).to.beFalse();
+      assert(_.el.hasAttribute(ATTR_NAME)).to.beFalse();
     });
   });
 });

@@ -6,38 +6,37 @@ import { element } from '../main/element';
 
 import { classToggle, ClassToggleOutput } from './class-toggle';
 
-test('persona.output.classToggle', () => {
+test('persona.output.classToggle', init => {
   const ELEMENT_ID = 'test';
   const CLASSNAME = 'classname';
-  let output: ClassToggleOutput;
-  let shadowRoot: ShadowRoot;
-  let el: HTMLDivElement;
 
-  beforeEach(() => {
+  const _ = init(() => {
     const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       classname: classToggle(CLASSNAME),
     });
 
     const root = document.createElement('div');
-    shadowRoot = root.attachShadow({mode: 'open'});
+    const shadowRoot = root.attachShadow({mode: 'open'});
 
-    el = document.createElement('div');
+    const el = document.createElement('div');
     el.id = ELEMENT_ID;
     shadowRoot.appendChild(el);
 
-    output = $._.classname;
+    const output = $._.classname;
+
+    return {output, el, shadowRoot};
   });
 
   test('output', () => {
     should(`update the attribute correctly`, () => {
       const value$ = new Subject<boolean>();
 
-      run(value$.pipe(output.output(shadowRoot)));
+      run(value$.pipe(_.output.output(_.shadowRoot)));
       value$.next(true);
-      assert(el.classList.contains(CLASSNAME)).to.beTrue();
+      assert(_.el.classList.contains(CLASSNAME)).to.beTrue();
 
       value$.next(false);
-      assert(el.classList.contains(CLASSNAME)).to.beFalse();
+      assert(_.el.classList.contains(CLASSNAME)).to.beFalse();
     });
   });
 });

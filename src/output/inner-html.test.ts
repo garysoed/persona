@@ -4,37 +4,36 @@ import { Subject } from 'rxjs';
 
 import { element } from '../main/element';
 
-import { innerHtml, InnerHtmlOutput } from './inner-html';
+import { innerHtml } from './inner-html';
 
-test('output.innerHtml', () => {
+
+test('output.innerHtml', init => {
   const ELEMENT_ID = 'test';
-  let output: InnerHtmlOutput;
-  let shadowRoot: ShadowRoot;
-  let el: HTMLDivElement;
 
-  beforeEach(() => {
+  const _ = init(() => {
     const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       innerHtml: innerHtml(),
     });
 
     const root = document.createElement('div');
-    shadowRoot = root.attachShadow({mode: 'open'});
+    const shadowRoot = root.attachShadow({mode: 'open'});
 
-    el = document.createElement('div');
+    const el = document.createElement('div');
     el.id = ELEMENT_ID;
     shadowRoot.appendChild(el);
 
-    output = $._.innerHtml;
+    const output = $._.innerHtml;
+    return {output, shadowRoot, el};
   });
 
   test('output', () => {
     should(`set the inner HTML correctly`, () => {
       const value$ = new Subject<string>();
 
-      run(value$.pipe(output.output(shadowRoot)));
+      run(value$.pipe(_.output.output(_.shadowRoot)));
       const innerHtml = 'innerHtml';
       value$.next(innerHtml);
-      assert(el.innerHTML).to.equal(innerHtml);
+      assert(_.el.innerHTML).to.equal(innerHtml);
     });
   });
 });

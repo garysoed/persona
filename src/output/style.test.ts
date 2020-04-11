@@ -4,37 +4,37 @@ import { Subject } from 'rxjs';
 
 import { element } from '../main/element';
 
-import { style, StyleOutput } from './style';
+import { style } from './style';
 
-test('output.style', () => {
+
+test('output.style', init => {
   const ELEMENT_ID = 'test';
-  let output: StyleOutput<'height'>;
-  let shadowRoot: ShadowRoot;
-  let el: HTMLDivElement;
 
-  beforeEach(() => {
+  const _ = init(() => {
     const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       style: style('height'),
     });
 
     const root = document.createElement('div');
-    shadowRoot = root.attachShadow({mode: 'open'});
+    const shadowRoot = root.attachShadow({mode: 'open'});
 
-    el = document.createElement('div');
+    const el = document.createElement('div');
     el.id = ELEMENT_ID;
     shadowRoot.appendChild(el);
 
-    output = $._.style;
+    const output = $._.style;
+
+    return {output, shadowRoot, el};
   });
 
   test('output', () => {
     should(`set the style correctly`, () => {
       const value$ = new Subject<string>();
 
-      run(value$.pipe(output.output(shadowRoot)));
+      run(value$.pipe(_.output.output(_.shadowRoot)));
       const height = '123px';
       value$.next(height);
-      assert(el.style.height).to.equal(height);
+      assert(_.el.style.height).to.equal(height);
     });
   });
 });

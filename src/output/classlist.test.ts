@@ -4,37 +4,36 @@ import { Subject } from 'rxjs';
 
 import { element } from '../main/element';
 
-import { classlist, ClasslistOutput } from './classlist';
+import { classlist } from './classlist';
 
 
-test('output.classlist', () => {
+test('output.classlist', init => {
   const ELEMENT_ID = 'test';
-  let output: ClasslistOutput;
-  let shadowRoot: ShadowRoot;
-  let el: HTMLDivElement;
 
-  beforeEach(() => {
+  const _ = init(() => {
     const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       classlist: classlist(),
     });
 
     const root = document.createElement('div');
-    shadowRoot = root.attachShadow({mode: 'open'});
+    const shadowRoot = root.attachShadow({mode: 'open'});
 
-    el = document.createElement('div');
+    const el = document.createElement('div');
     el.id = ELEMENT_ID;
     shadowRoot.appendChild(el);
 
-    output = $._.classlist;
+    const output = $._.classlist;
+
+    return {output, shadowRoot, el};
   });
 
   test('output', () => {
     should(`update the classes correctly`, () => {
       const value$ = new Subject<ReadonlySet<string>>();
 
-      run(value$.pipe(output.output(shadowRoot)));
+      run(value$.pipe(_.output.output(_.shadowRoot)));
       value$.next(new Set(['a', 'b', 'c']));
-      assert(el.getAttribute('class')).to.equal(`a b c`);
+      assert(_.el.getAttribute('class')).to.equal(`a b c`);
     });
   });
 });
