@@ -5,6 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 
 import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 
+import { TemplateService } from './template-service';
 
 export const SHADOW_ROOT = Symbol('shadowRoot');
 export const __onDisconnect = Symbol('onDisconnect');
@@ -18,7 +19,8 @@ export class CustomElementImpl {
   constructor(
       private readonly componentClass: CustomElementCtrlCtor,
       private readonly element: ElementWithOnDisconnect,
-      private readonly templateStr: string,
+      private readonly tag: string,
+      private readonly templateService: TemplateService,
       private readonly vine: Vine,
       private readonly shadowMode: 'open' | 'closed' = 'closed',
   ) {
@@ -46,7 +48,7 @@ export class CustomElementImpl {
   @cache()
   private getShadowRoot(): ShadowRoot {
     const shadowRoot = this.element.attachShadow({mode: this.shadowMode});
-    shadowRoot.innerHTML = this.templateStr;
+    shadowRoot.appendChild(this.templateService.getTemplate(this.tag).content.cloneNode(true));
 
     return shadowRoot;
   }

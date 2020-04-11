@@ -1,5 +1,5 @@
 import { Vine, VineBuilder } from 'grapevine';
-import { $, $asArray, $asSet, $filter, $filterDefined, $flat, $map } from 'gs-tools/export/collect';
+import { $, $asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pipe } from 'gs-tools/export/collect';
 import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
 import { iterableOfType, unknownType } from 'gs-types';
@@ -9,16 +9,17 @@ import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec'
 
 import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementImpl } from './custom-element-impl';
+import { TemplateService } from './template-service';
 
 
 interface FullComponentData extends CustomElementSpec {
-  componentClass: CustomElementCtrlCtor;
+  readonly componentClass: CustomElementCtrlCtor;
 }
 
 interface RegistrationSpec {
-  componentClass: CustomElementCtrlCtor;
-  tag: string;
-  template: string;
+  readonly componentClass: CustomElementCtrlCtor;
+  readonly tag: string;
+  readonly template: string;
 }
 
 export class Builder {
@@ -50,27 +51,37 @@ export class Builder {
   build(
       appName: string,
       rootCtrls: CustomElementCtrlCtor[],
+      rootDoc: Document,
       customElementRegistry: CustomElementRegistry,
   ): {vine: Vine} {
     const customElementAnnotation = this.customElementAnnotator.data;
     const ctrls = getAllCtrls(rootCtrls, customElementAnnotation);
     const registeredComponentSpecs = this.register(new Set(ctrls));
 
+    const templatesMap = $pipe(
+        registeredComponentSpecs,
+        $map(([, {tag, template}]) => {
+          return [tag, template] as [string, string];
+        }),
+        $asMap(),
+    );
+    const templateService = new TemplateService(templatesMap, rootDoc);
+
     const vine = this.vineBuilder.build(`${appName}-vine`);
 
     runConfigures(customElementAnnotation, ctrls, vine);
 
     [...registeredComponentSpecs.values()]
-        .map(async spec => {
-          const template = spec.template;
-          const elementClass = createCustomElementClass_(
-              spec.componentClass,
-              template,
+        .map(async ({componentClass, tag}) => {
+          const elementClass = createCustomElementClass(
+              componentClass,
+              tag,
+              templateService,
               vine,
           );
 
           return new Promise(resolve => {
-            customElementRegistry.define(spec.tag, elementClass);
+            customElementRegistry.define(tag, elementClass);
             resolve();
           });
         });
@@ -104,16 +115,18 @@ export class Builder {
   }
 }
 
-function createCustomElementClass_(
+function createCustomElementClass(
     componentClass: CustomElementCtrlCtor,
-    templateStr: string,
+    tag: string,
+    templateService: TemplateService,
     vine: Vine,
 ): CustomElementClass {
   const customElementImplFactory = (element: HTMLElement, shadowMode: 'open'|'closed') => {
     return new CustomElementImpl(
         componentClass,
         element,
-        templateStr,
+        tag,
+        templateService,
         vine,
         shadowMode);
   };

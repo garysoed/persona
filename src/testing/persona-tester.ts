@@ -49,7 +49,7 @@ export class PersonaTesterFactory {
       private readonly personaBuilder: PersonaBuilder,
   ) { }
 
-  build(rootCtors: CustomElementCtrlCtor[]): PersonaTester {
+  build(rootCtors: CustomElementCtrlCtor[], rootDoc: Document): PersonaTester {
     // tslint:disable-next-line: deprecation
     const origCreateElement = document.createElement;
     const createElement = (tag: string) => origCreateElement.call(document, tag);
@@ -58,6 +58,7 @@ export class PersonaTesterFactory {
     const {vine} = this.personaBuilder.build(
         'test',
         rootCtors,
+        rootDoc,
         customElementRegistry,
     );
 

@@ -83,7 +83,7 @@ const testerFactory = new PersonaTesterFactory(_p);
 test('@persona/core/functional', init => {
   const _ = init(() => {
     const mockHandler = createSpy<undefined, []>('handler');
-    const tester = testerFactory.build([TestClass]);
+    const tester = testerFactory.build([TestClass], document);
     const s = $HANDLER.get(tester.vine);
     s.next(mockHandler);
 
