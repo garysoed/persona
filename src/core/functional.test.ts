@@ -87,7 +87,7 @@ test('@persona/core/functional', init => {
     const s = $HANDLER.get(tester.vine);
     s.next(mockHandler);
 
-    const el = tester.createElement('test-el', document.body);
+    const el = tester.createElement('test-el');
     return {el, tester, mockHandler};
   });
 

@@ -23,8 +23,8 @@ export class PersonaTester {
       private readonly customElementRegistry: FakeCustomElementRegistry,
   ) { }
 
-  createElement<T extends HTMLElement>(tag: string, parent: HTMLElement|null): ElementTester<T> {
-    const element = this.customElementRegistry.create(tag, parent) as T;
+  createElement<T extends HTMLElement>(tag: string): ElementTester<T> {
+    const element = this.customElementRegistry.create(tag, null) as T;
 
     return new ElementTester(element, this.vine);
   }
@@ -66,7 +66,7 @@ export class PersonaTesterFactory {
     fake(spy(document, 'createElement'))
         .always().call(tag => {
           if (customElementRegistry.get(tag)) {
-            const elTester = tester.createElement(tag, null);
+            const elTester = tester.createElement(tag);
 
             return elTester.element;
           } else {
