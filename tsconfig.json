@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "alwaysStrict": true,
+    "assumeChangesOnlyAffectDirectDependencies": true,
     "baseUrl": ".",
     "experimentalDecorators": true,
     "lib": [
@@ -8,7 +9,7 @@
       "es2015"
     ],
     "module": "commonjs",
-    "moduleResolution": "node",
+    // "moduleResolution": "node",
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
