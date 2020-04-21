@@ -33,9 +33,9 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
       readonly vine: Vine,
   ) { }
 
-  callFunction<A extends any[]>(
-      input: HandlerInput<A>,
-      args: A,
+  callFunction(
+      input: HandlerInput,
+      args: readonly unknown[],
   ): Observable<unknown> {
     return this.elementObs
         .pipe(

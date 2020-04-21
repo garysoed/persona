@@ -1,4 +1,4 @@
-import { combineLatest, concat, interval, Observable, OperatorFunction, pipe } from 'rxjs';
+import { combineLatest, concat, interval, Observable, OperatorFunction } from 'rxjs';
 import { filter, map, shareReplay, startWith, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
 import { Output } from '../types/output';
@@ -6,11 +6,12 @@ import { Resolver } from '../types/resolver';
 import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
-type ElFunction<T extends any[]> = (arg: T) => void;
+
+type ElFunction<T extends readonly any[]> = (arg: T) => void;
 
 const FUNCTION_CHECK_MS = 10;
 
-export class CallerOutput<T extends any[]> implements Output<T> {
+export class CallerOutput<T extends readonly any[]> implements Output<T> {
   constructor(
       readonly resolver: Resolver<Element>,
       readonly functionName: string,
@@ -32,7 +33,7 @@ export class CallerOutput<T extends any[]> implements Output<T> {
   }
 }
 
-export class UnresolvedCallerOutput<T extends any[]> implements
+export class UnresolvedCallerOutput<T extends readonly any[]> implements
     UnresolvedElementProperty<Element, CallerOutput<T>> {
   constructor(readonly functionName: string) { }
 
@@ -41,11 +42,11 @@ export class UnresolvedCallerOutput<T extends any[]> implements
   }
 }
 
-export function caller<T extends any[]>(functionName: string): UnresolvedCallerOutput<T> {
+export function caller<T extends readonly any[]>(functionName: string): UnresolvedCallerOutput<T> {
   return new UnresolvedCallerOutput(functionName);
 }
 
-function createFnObs<T extends any[]>(
+function createFnObs<T extends readonly any[]>(
     elementObs: Observable<Element>,
     functionName: string,
 ): Observable<ElFunction<T>> {
@@ -58,7 +59,7 @@ function createFnObs<T extends any[]>(
                     startWith({}),
                     map(() => (el as any)[functionName]),
                     filter((fn): fn is Function => fn instanceof Function),
-                    map(fn => ((args: any[]) => fn.call(el, ...args))),
+                    map(fn => ((args: readonly any[]) => fn.call(el, ...args))),
                     take(1),
                 );
           }),

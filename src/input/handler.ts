@@ -8,24 +8,24 @@ import { UnresolvedElementProperty } from '../types/unresolved-element-property'
 
 const __subject = Symbol('subject');
 
-export class HandlerInput<T extends any[]> implements Input<T> {
+export class HandlerInput implements Input<readonly unknown[]> {
   constructor(
       readonly functionName: string,
       readonly resolver: Resolver<Element>,
   ) { }
 
-  getValue(root: ShadowRootLike): Observable<T> {
+  getValue(root: ShadowRootLike): Observable<readonly unknown[]> {
     return this.resolver(root)
         .pipe(
             switchMap(el => {
-              const existingSubject = getSubject<T>(el, this.functionName);
+              const existingSubject = getSubject(el, this.functionName);
               if (existingSubject) {
                 return existingSubject;
               }
 
-              const subject = new Subject<T>();
+              const subject = new Subject<readonly unknown[]>();
               const fn = Object.assign(
-                  (...payload: T) => subject.next(payload),
+                  (...payload: readonly unknown[]) => subject.next(payload),
                   {[__subject]: subject},
               );
               (el as any)[this.functionName] = fn;
@@ -36,22 +36,22 @@ export class HandlerInput<T extends any[]> implements Input<T> {
   }
 }
 
-export class UnresolvedHandlerInput<T extends any[]> implements
-    UnresolvedElementProperty<Element, HandlerInput<T>> {
+export class UnresolvedHandlerInput implements
+    UnresolvedElementProperty<Element, HandlerInput> {
   constructor(
       readonly functionName: string,
   ) { }
 
-  resolve(resolver: Resolver<Element>): HandlerInput<T> {
+  resolve(resolver: Resolver<Element>): HandlerInput {
     return new HandlerInput(this.functionName, resolver);
   }
 }
 
-export function handler<T extends any[]>(functionName: string): UnresolvedHandlerInput<T> {
+export function handler(functionName: string): UnresolvedHandlerInput {
   return new UnresolvedHandlerInput(functionName);
 }
 
-function getSubject<T>(el: any, functionName: string): Subject<T>|null {
+function getSubject(el: any, functionName: string): Subject<readonly unknown[]>|null {
   const existingFn = el[functionName];
   if (!(existingFn instanceof Function)) {
     return null;

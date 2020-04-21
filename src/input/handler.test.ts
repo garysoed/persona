@@ -17,7 +17,7 @@ test('@persona/input/handler', init => {
     const onTestDone$ = new ReplaySubject(1);
     const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
       caller: caller<[number]>(FUNCTION_NAME),
-      handler: handler<[number]>(FUNCTION_NAME),
+      handler: handler(FUNCTION_NAME),
     });
 
     const root = document.createElement('div');

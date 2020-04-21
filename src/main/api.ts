@@ -13,7 +13,7 @@ import { UnresolvedSetAttributeOutput } from '../output/set-attribute';
 
 type ConvertibleProperty =
     UnresolvedAttributeInput<any>|
-    UnresolvedHandlerInput<any>|
+    UnresolvedHandlerInput|
     UnresolvedOnDomInput<any>|
     UnresolvedHasAttributeInput|
     UnresolvedHasClassInput|
@@ -29,12 +29,12 @@ export interface UnconvertedSpec {
 
 export type ConvertedSpec<S> = S extends UnconvertedSpec ? {[K in keyof S]: ConvertedSpec<S[K]>} :
     S extends UnresolvedAttributeInput<infer T> ? UnresolvedAttributeOutput<T> :
-    S extends UnresolvedHandlerInput<infer T> ? UnresolvedCallerOutput<T> :
+    S extends UnresolvedHandlerInput ? UnresolvedCallerOutput<unknown[]> :
     S extends UnresolvedOnDomInput<infer T> ? UnresolvedDispatcherOutput<T> :
     S extends UnresolvedHasAttributeInput ? UnresolvedSetAttributeOutput :
     S extends UnresolvedHasClassInput ? UnresolvedClassToggleOutput :
     S extends UnresolvedAttributeOutput<infer T> ? UnresolvedAttributeInput<T> :
-    S extends UnresolvedCallerOutput<infer T> ? UnresolvedHandlerInput<T> :
+    S extends UnresolvedCallerOutput<readonly any[]> ? UnresolvedHandlerInput :
     S extends UnresolvedDispatcherOutput<infer T> ? UnresolvedOnDomInput<T> :
     S extends UnresolvedSetAttributeOutput ? UnresolvedHasAttributeInput :
     S extends UnresolvedClassToggleOutput ? UnresolvedHasClassInput : never;
