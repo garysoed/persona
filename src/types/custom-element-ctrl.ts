@@ -34,10 +34,6 @@ export abstract class CustomElementCtrl extends Runnable {
     .get(this.context.vine);
   }
 
-  protected declareSubject<T>(factory: Factory<T, this>): Subject<T> {
-    return source(factory, this).get(this.context.vine);
-  }
-
   protected render<T>(outputs: Output<T>, value$: Observable<T>): void {
     this.addSetup(value$.pipe(outputs.output(this.shadowRoot)));
   }

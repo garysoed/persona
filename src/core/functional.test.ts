@@ -1,7 +1,7 @@
 import { source, stream, VineBuilder } from 'grapevine';
 import { assert, createSpy, should, test } from 'gs-testing';
 import { identity } from 'nabu';
-import { BehaviorSubject, Observable, of as observableOf } from 'rxjs';
+import { Observable, of as observableOf } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import { attribute as attributeIn } from '../input/attribute';
@@ -25,10 +25,7 @@ const $ = {
   }),
 };
 
-const $HANDLER = source(
-    () => new BehaviorSubject(() => undefined),
-    globalThis,
-);
+const $HANDLER = source(() => () => undefined);
 
 @_p.baseCustomElement({
   shadowMode: 'open',
@@ -55,7 +52,6 @@ class ParentTestClass extends CustomElementCtrl {
 class TestClass extends ParentTestClass {
   private readonly handlerSbj = $HANDLER.get(this.vine);
   private readonly providesValueStream = stream(this.providesValue, this).get(this.vine);
-
 
   constructor(context: PersonaContext) {
     super(context);
@@ -84,8 +80,7 @@ test('@persona/core/functional', init => {
   const _ = init(() => {
     const mockHandler = createSpy<undefined, []>('handler');
     const tester = testerFactory.build([TestClass], document);
-    const s = $HANDLER.get(tester.vine);
-    s.next(mockHandler);
+    $HANDLER.set(tester.vine, () => mockHandler);
 
     const el = tester.createElement('test-el');
     return {el, tester, mockHandler};
