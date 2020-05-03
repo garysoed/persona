@@ -1,4 +1,4 @@
-import { assert, should, test } from 'gs-testing';
+import { assert, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { identity } from 'nabu';
 
@@ -52,7 +52,7 @@ test('@persona/render/template-render-spec', () => {
       const el = spec.createElement();
       const rootEl = el.querySelector('#root')!;
 
-      spec.updateElement(el);
+      run(spec.registerElement(el));
       assert(rootEl.getAttribute($.root._.attr.attrName)).to.equal('abc');
     });
   });

@@ -1,7 +1,9 @@
+import { Observable } from 'rxjs';
+
 export interface RenderSpec {
   canReuseElement(element: HTMLElement): boolean;
 
   createElement(): HTMLElement;
 
-  updateElement(element: HTMLElement): void;
+  registerElement(element: HTMLElement): Observable<unknown>;
 }

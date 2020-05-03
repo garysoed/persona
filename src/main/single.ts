@@ -1,6 +1,6 @@
 import { filterNonNull } from 'gs-tools/export/rxjs';
-import { OperatorFunction, pipe } from 'rxjs';
-import { distinctUntilChanged, pairwise, startWith, tap, withLatestFrom } from 'rxjs/operators';
+import { NEVER, OperatorFunction, pipe } from 'rxjs';
+import { distinctUntilChanged, pairwise, startWith, switchMap, withLatestFrom } from 'rxjs/operators';
 
 import { RenderSpec } from '../render/render-spec';
 import { Output } from '../types/output';
@@ -28,7 +28,7 @@ export class SingleOutput implements Output<RenderSpec|null> {
             parent$,
             createSlotObs(parent$, this.slotName).pipe(filterNonNull()),
         ),
-        tap(([[previous, current], parentEl, slotEl]) => {
+        switchMap(([[previous, current], parentEl, slotEl]) => {
           const prevEl = slotEl.nextSibling;
 
           // Delete if removed.
@@ -36,20 +36,18 @@ export class SingleOutput implements Output<RenderSpec|null> {
             if (prevEl) {
               parentEl.removeChild(prevEl);
             }
-            return;
+            return NEVER;
           }
 
           if (!previous) {
             const newEl = current.createElement();
-            current.updateElement(newEl);
             parentEl.insertBefore(newEl, prevEl);
-            return;
+            return current.registerElement(newEl);
           }
 
           // Try to reuse the element.
           if (prevEl instanceof HTMLElement && current.canReuseElement(prevEl)) {
-            current.updateElement(prevEl);
-            return;
+            return current.registerElement(prevEl);
           }
 
           // Otherwise, remove the element, and create a new one.
@@ -58,8 +56,8 @@ export class SingleOutput implements Output<RenderSpec|null> {
           }
 
           const newEl = current.createElement();
-          current.updateElement(newEl);
           parentEl.insertBefore(newEl, slotEl.nextSibling);
+          return current.registerElement(newEl);
         }),
     );
   }

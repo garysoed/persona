@@ -1,3 +1,5 @@
+import { NEVER, Observable } from 'rxjs';
+
 import { RenderSpec } from './render-spec';
 
 export class NoopRenderSpec implements RenderSpec {
@@ -9,7 +11,7 @@ export class NoopRenderSpec implements RenderSpec {
     throw new Error('Noop');
   }
 
-  updateElement(element: HTMLElement): void {
-    // noop.
+  registerElement(element: HTMLElement): Observable<unknown> {
+    return NEVER;
   }
 }

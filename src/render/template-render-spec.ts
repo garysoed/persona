@@ -1,10 +1,10 @@
-import { combineLatest, Observable, of as observableOf } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { merge, Observable, of as observableOf } from 'rxjs';
 
 import { Output } from '../types/output';
 import { ShadowRootLike } from '../types/shadow-root-like';
 
 import { RenderSpec } from './render-spec';
+
 
 type ApplyValueFn = (root: ShadowRootLike) => Observable<unknown>;
 
@@ -33,7 +33,7 @@ class TemplateRenderSpec implements RenderSpec {
     return child;
   }
 
-  updateElement(element: HTMLElement): void {
+  registerElement(element: HTMLElement): Observable<unknown> {
     const upgradedEl: HTMLElement & ShadowRootLike = Object.defineProperties(
         element,
         {
@@ -51,8 +51,7 @@ class TemplateRenderSpec implements RenderSpec {
     );
 
     const appliedFns$List = [...this.applyValueFns].map(fn => fn(upgradedEl));
-    // TODO: Come up with a better interface.
-    combineLatest(appliedFns$List).pipe(take(1)).subscribe();
+    return merge(...appliedFns$List);
   }
 }
 

@@ -1,10 +1,17 @@
+import { arrayFrom } from 'gs-tools/export/collect';
+import { diffMap } from 'gs-tools/export/rxjs';
+import { assertUnreachable } from 'gs-tools/export/typescript';
+import { merge, Observable, of as observableOf } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
 import { RenderSpec } from './render-spec';
+
 
 export class SimpleElementRenderSpec implements RenderSpec {
   constructor(
       private readonly tagName: string,
-      private readonly attrs: ReadonlyMap<string, string> = new Map(),
-      private readonly innerText: string = '',
+      private readonly attrs$: Observable<ReadonlyMap<string, string>> = observableOf(new Map()),
+      private readonly innerText$: Observable<string> = observableOf(''),
   ) { }
 
   canReuseElement(element: HTMLElement): boolean {
@@ -15,20 +22,39 @@ export class SimpleElementRenderSpec implements RenderSpec {
     return document.createElement(this.tagName);
   }
 
-  updateElement(element: HTMLElement): void {
-    const existingAttributes: Attr[] = [];
-    for (let i = 0; i < element.attributes.length; i++) {
-      existingAttributes.push(element.attributes.item(i)!);
-    }
+  registerElement(element: HTMLElement): Observable<unknown> {
+    const updateAttribute$ = this.attrs$.pipe(
+        diffMap(),
+        tap(diff => {
+          switch (diff.type) {
+            case 'delete':
+              element.removeAttribute(diff.key);
+              break;
+            case 'set':
+              element.setAttribute(diff.key, diff.value);
+              break;
+            case 'init':
+              // Goes through every attribute, and delete them.
+              for (const attr of arrayFrom(element.attributes)) {
+                element.removeAttribute(attr.name);
+              }
 
-    for (const existingAttribute of existingAttributes) {
-      element.removeAttribute(existingAttribute.name);
-    }
+              for (const [key, value] of diff.value) {
+                element.setAttribute(key, value);
+              }
+              break;
+            default:
+              assertUnreachable(diff);
+          }
+        }),
+    );
 
-    for (const [key, value] of this.attrs) {
-      element.setAttribute(key, value);
-    }
+    const updateInnerText$ = this.innerText$.pipe(
+        tap(innerText => {
+          element.textContent = innerText;
+        }),
+    );
 
-    element.innerText = this.innerText;
+    return merge(updateAttribute$, updateInnerText$);
   }
 }

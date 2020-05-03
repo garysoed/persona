@@ -1,7 +1,7 @@
-import { ArrayDiff, filterNonNull } from 'gs-tools/export/rxjs';
+import { ArrayDiff, filterNonNull, scanArray } from 'gs-tools/export/rxjs';
 import { assertUnreachable } from 'gs-tools/export/typescript';
-import { OperatorFunction, pipe } from 'rxjs';
-import { tap, withLatestFrom } from 'rxjs/operators';
+import { merge, NEVER, Observable, OperatorFunction, pipe } from 'rxjs';
+import { map, switchMap, withLatestFrom } from 'rxjs/operators';
 
 import { RenderSpec } from '../render/render-spec';
 import { Output } from '../types/output';
@@ -25,38 +25,55 @@ export class RepeatedOutput implements Output<ArrayDiff<RenderSpec>> {
             parentEl$,
             createSlotObs(parentEl$, this.slotName).pipe(filterNonNull()),
         ),
-        tap(([diff, parentEl, slotNode]) => {
+        map(([diff, parentEl, slotNode]) => {
           switch (diff.type) {
             case 'init':
+              const update$: Array<Observable<unknown>> = [];
               for (let i = 0; i < diff.value.length; i++) {
-                this.insertEl(parentEl, slotNode, diff.value[i], i);
+                update$.push(this.insertEl(parentEl, slotNode, diff.value[i], i));
               }
-              break;
+
+              return {
+                type: 'init' as 'init',
+                value: update$,
+              };
             case 'insert':
-              this.insertEl(parentEl, slotNode, diff.value, diff.index);
-              break;
+              return {
+                type: 'insert' as 'insert',
+                index: diff.index,
+                value: this.insertEl(parentEl, slotNode, diff.value, diff.index),
+              };
             case 'delete':
-              this.deleteEl(parentEl, slotNode, diff.index);
-              break;
+              return {
+                type: 'delete' as 'delete',
+                index: diff.index,
+                value: this.deleteEl(parentEl, slotNode, diff.index),
+              };
             case 'set':
-              this.setEl(parentEl, slotNode, diff.value, diff.index);
-              break;
+              return {
+                type: 'set' as 'set',
+                index: diff.index,
+                value: this.setEl(parentEl, slotNode, diff.value, diff.index),
+              };
             default:
               assertUnreachable(diff);
           }
         }),
+        scanArray<Observable<unknown>>(),
+        switchMap(obs$ => merge(...obs$)),
     );
   }
 
-  // tslint:disable-next-line: prefer-function-over-method
-  private deleteEl(parentNode: Node, slotNode: Node, index: number): void {
+  private deleteEl(parentNode: Node, slotNode: Node, index: number): Observable<unknown> {
     const curr = getEl(slotNode, index);
 
     if (!curr) {
-      return;
+      return NEVER;
     }
 
     parentNode.removeChild(curr);
+
+    return NEVER;
   }
 
   private insertEl(
@@ -64,15 +81,15 @@ export class RepeatedOutput implements Output<ArrayDiff<RenderSpec>> {
       slotNode: Node,
       spec: RenderSpec,
       index: number,
-  ): void {
+  ): Observable<unknown> {
     let curr = slotNode.nextSibling;
     for (let i = 0; i < index && curr !== null; i++) {
       curr = curr.nextSibling;
     }
 
     const newEl = spec.createElement();
-    spec.updateElement(newEl);
     parentNode.insertBefore(newEl, curr);
+    return spec.registerElement(newEl);
   }
 
   private setEl(
@@ -80,18 +97,16 @@ export class RepeatedOutput implements Output<ArrayDiff<RenderSpec>> {
       slotNode: Node,
       spec: RenderSpec,
       index: number,
-  ): void {
+  ): Observable<unknown> {
     const existingEl = getEl(slotNode, index);
 
     if (!(existingEl instanceof HTMLElement) ||
         !spec.canReuseElement(existingEl)) {
       this.deleteEl(parentNode, slotNode, index);
-      this.insertEl(parentNode, slotNode, spec, index);
-
-      return;
+      return this.insertEl(parentNode, slotNode, spec, index);
     }
 
-    spec.updateElement(existingEl);
+    return spec.registerElement(existingEl);
   }
 }
 
