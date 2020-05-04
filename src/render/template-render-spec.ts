@@ -18,7 +18,7 @@ class TemplateRenderSpec implements RenderSpec {
     return false;
   }
 
-  createElement(): Observable<HTMLElement> {
+  createElement(): Observable<Element> {
     const fragment = document.importNode(this.templateEl.content, true);
 
     if (fragment.childElementCount !== 1) {
@@ -26,15 +26,15 @@ class TemplateRenderSpec implements RenderSpec {
     }
 
     const child = fragment.children.item(0);
-    if (!(child instanceof HTMLElement)) {
+    if (!(child instanceof Element)) {
       throw new Error('New element is not an HTML element');
     }
 
     return observableOf(child);
   }
 
-  registerElement(element: HTMLElement): Observable<unknown> {
-    const upgradedEl: HTMLElement & ShadowRootLike = Object.defineProperties(
+  registerElement(element: Element): Observable<unknown> {
+    const upgradedEl: Element & ShadowRootLike = Object.defineProperties(
         element,
         {
           getElementById: {

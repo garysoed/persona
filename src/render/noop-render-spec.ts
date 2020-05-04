@@ -7,11 +7,11 @@ export class NoopRenderSpec implements RenderSpec {
     return true;
   }
 
-  createElement(): Observable<HTMLElement> {
+  createElement(): Observable<Element> {
     return NEVER;
   }
 
-  registerElement(element: HTMLElement): Observable<unknown> {
+  registerElement(element: Element): Observable<unknown> {
     return NEVER;
   }
 }

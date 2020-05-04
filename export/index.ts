@@ -27,7 +27,6 @@ export { caller } from '../src/output/caller';
 export { classlist } from '../src/output/classlist';
 export { classToggle } from '../src/output/class-toggle';
 export { dispatcher, DispatchFn } from '../src/output/dispatcher';
-export { innerHtml } from '../src/output/inner-html';
 export { noop } from '../src/output/noop';
 export { setAttribute } from '../src/output/set-attribute';
 export { style } from '../src/output/style';
@@ -46,6 +45,7 @@ export { LocationService, Route, RouteSpec } from '../src/location/location-serv
 export { fromPattern } from '../src/location/location-converter';
 
 // Render spec
+export { InnerHtmlRenderSpec } from '../src/render/inner-html-render-spec';
 export { NoopRenderSpec } from '../src/render/noop-render-spec';
 export { RenderSpec } from '../src/render/render-spec';
 export { SimpleElementRenderSpec } from '../src/render/simple-element-render-spec';
