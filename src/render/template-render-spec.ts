@@ -18,7 +18,7 @@ class TemplateRenderSpec implements RenderSpec {
     return false;
   }
 
-  createElement(): HTMLElement {
+  createElement(): Observable<HTMLElement> {
     const fragment = document.importNode(this.templateEl.content, true);
 
     if (fragment.childElementCount !== 1) {
@@ -30,7 +30,7 @@ class TemplateRenderSpec implements RenderSpec {
       throw new Error('New element is not an HTML element');
     }
 
-    return child;
+    return observableOf(child);
   }
 
   registerElement(element: HTMLElement): Observable<unknown> {

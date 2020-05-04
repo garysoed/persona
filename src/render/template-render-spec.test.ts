@@ -1,6 +1,7 @@
 import { assert, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { identity } from 'nabu';
+import { map, switchMap } from 'rxjs/operators';
 
 import { element } from '../main/element';
 import { attribute } from '../output/attribute';
@@ -14,8 +15,8 @@ test('@persona/render/template-render-spec', () => {
       templateEl.innerHTML = '<div></div>';
 
       const spec = renderFromTemplate(templateEl).build();
-      const el = spec.createElement();
-      assert(el.tagName.toLowerCase()).to.equal('div');
+      const el$ = spec.createElement();
+      assert(el$.pipe(map(el => el.tagName.toLowerCase()))).to.emitWith('div');
     });
 
     should(`throw if the template has multiple root elements`, () => {
@@ -49,11 +50,14 @@ test('@persona/render/template-render-spec', () => {
           .addOutput($.root._.attr, 'abc')
           .build();
 
-      const el = spec.createElement();
-      const rootEl = el.querySelector('#root')!;
+      const el$ = spec.createElement();
 
-      run(spec.registerElement(el));
-      assert(rootEl.getAttribute($.root._.attr.attrName)).to.equal('abc');
+      run(el$.pipe(switchMap(el => spec.registerElement(el))));
+
+      const attr$ = el$.pipe(
+          map(el => el.querySelector('#root')!.getAttribute($.root._.attr.attrName)),
+      );
+      assert(attr$).to.emitWith('abc');
     });
   });
 });

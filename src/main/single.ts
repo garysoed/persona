@@ -1,6 +1,6 @@
 import { filterNonNull } from 'gs-tools/export/rxjs';
 import { NEVER, OperatorFunction, pipe } from 'rxjs';
-import { distinctUntilChanged, pairwise, startWith, switchMap, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, pairwise, shareReplay, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { RenderSpec } from '../render/render-spec';
 import { Output } from '../types/output';
@@ -40,9 +40,11 @@ export class SingleOutput implements Output<RenderSpec|null> {
           }
 
           if (!previous) {
-            const newEl = current.createElement();
-            parentEl.insertBefore(newEl, prevEl);
-            return current.registerElement(newEl);
+            return current.createElement().pipe(
+                tap(newEl => parentEl.insertBefore(newEl, prevEl)),
+                shareReplay({bufferSize: 1, refCount: true}),
+                switchMap(newEl => current.registerElement(newEl)),
+            );
           }
 
           // Try to reuse the element.
@@ -55,9 +57,11 @@ export class SingleOutput implements Output<RenderSpec|null> {
             parentEl.removeChild(prevEl);
           }
 
-          const newEl = current.createElement();
-          parentEl.insertBefore(newEl, slotEl.nextSibling);
-          return current.registerElement(newEl);
+          return current.createElement().pipe(
+              tap(newEl => parentEl.insertBefore(newEl, slotEl.nextSibling)),
+              shareReplay({bufferSize: 1, refCount: true}),
+              switchMap(newEl => current.registerElement(newEl)),
+          );
         }),
     );
   }

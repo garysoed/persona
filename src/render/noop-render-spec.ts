@@ -7,8 +7,8 @@ export class NoopRenderSpec implements RenderSpec {
     return true;
   }
 
-  createElement(): HTMLElement {
-    throw new Error('Noop');
+  createElement(): Observable<HTMLElement> {
+    return NEVER;
   }
 
   registerElement(element: HTMLElement): Observable<unknown> {

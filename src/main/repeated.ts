@@ -1,7 +1,7 @@
 import { ArrayDiff, filterNonNull, scanArray } from 'gs-tools/export/rxjs';
 import { assertUnreachable } from 'gs-tools/export/typescript';
 import { merge, NEVER, Observable, OperatorFunction, pipe } from 'rxjs';
-import { map, switchMap, withLatestFrom } from 'rxjs/operators';
+import { map, switchMap, withLatestFrom, shareReplay, tap } from 'rxjs/operators';
 
 import { RenderSpec } from '../render/render-spec';
 import { Output } from '../types/output';
@@ -82,14 +82,17 @@ export class RepeatedOutput implements Output<ArrayDiff<RenderSpec>> {
       spec: RenderSpec,
       index: number,
   ): Observable<unknown> {
-    let curr = slotNode.nextSibling;
-    for (let i = 0; i < index && curr !== null; i++) {
-      curr = curr.nextSibling;
-    }
-
-    const newEl = spec.createElement();
-    parentNode.insertBefore(newEl, curr);
-    return spec.registerElement(newEl);
+    return spec.createElement().pipe(
+        tap(newEl => {
+          let curr = slotNode.nextSibling;
+          for (let i = 0; i < index && curr !== null; i++) {
+            curr = curr.nextSibling;
+          }
+          parentNode.insertBefore(newEl, curr);
+        }),
+        shareReplay({bufferSize: 1, refCount: true}),
+        switchMap(newEl => spec.registerElement(newEl)),
+    );
   }
 
   private setEl(

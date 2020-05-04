@@ -18,8 +18,8 @@ export class SimpleElementRenderSpec implements RenderSpec {
     return element.tagName.toLowerCase() === this.tagName;
   }
 
-  createElement(): HTMLElement {
-    return document.createElement(this.tagName);
+  createElement(): Observable<HTMLElement> {
+    return observableOf(document.createElement(this.tagName));
   }
 
   registerElement(element: HTMLElement): Observable<unknown> {
