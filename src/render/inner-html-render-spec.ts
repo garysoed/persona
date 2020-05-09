@@ -1,11 +1,12 @@
-import {filterByType} from 'gs-tools/export/rxjs';
+import { Vine } from 'grapevine';
+import { filterByType } from 'gs-tools/export/rxjs';
+import { instanceofType } from 'gs-types';
 import { NEVER, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 
 import { $innerHtmlParseService, ParseType } from './inner-html-parse-service';
 import { RenderSpec } from './render-spec';
-import { Vine } from 'grapevine';
-import { instanceofType } from 'gs-types';
+
 
 export class InnerHtmlRenderSpec implements RenderSpec {
   constructor(
@@ -22,6 +23,7 @@ export class InnerHtmlRenderSpec implements RenderSpec {
     return $innerHtmlParseService.get(this.vine).pipe(
         switchMap(service => service.parse(this.raw, this.supportedType)),
         filterByType(instanceofType(Element)),
+        map(el => el.cloneNode(true) as Element),
     );
   }
 

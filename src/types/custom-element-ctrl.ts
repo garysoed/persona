@@ -1,7 +1,6 @@
-import { source, stream } from 'grapevine';
-import { Factory } from 'grapevine/export/internal';
+import { stream } from 'grapevine';
 import { Runnable } from 'gs-tools/export/rxjs';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import { PersonaContext } from '../core/persona-context';
 

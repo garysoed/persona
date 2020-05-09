@@ -46,6 +46,9 @@ export { fromPattern } from '../src/location/location-converter';
 
 // Render spec
 export { InnerHtmlRenderSpec } from '../src/render/inner-html-render-spec';
+export { $innerHtmlParseService, ParseType } from '../src/render/inner-html-parse-service';
+export { InnerHtmlParseService } from '../src/render/inner-html-parse-service';
+
 export { NoopRenderSpec } from '../src/render/noop-render-spec';
 export { RenderSpec } from '../src/render/render-spec';
 export { SimpleElementRenderSpec } from '../src/render/simple-element-render-spec';

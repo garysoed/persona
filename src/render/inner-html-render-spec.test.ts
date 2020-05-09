@@ -1,6 +1,7 @@
 import { Vine } from 'grapevine';
 import { assert, createSpyInstance, fake, run, should, test } from 'gs-testing';
 import { of as observableOf } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { $innerHtmlParseService, InnerHtmlParseService } from './inner-html-parse-service';
 import { InnerHtmlRenderSpec } from './inner-html-render-spec';
@@ -22,7 +23,10 @@ test('@persona/render/inner-html-render-spec', init => {
       const el = document.createElement('div');
       fake(_.mockInnerHtmlParseService.parse).always().return(observableOf(el));
 
-      assert(_.spec.createElement()).to.emitWith(el);
+      assert(_.spec.createElement().pipe(map(el => el.tagName))).to.emitWith('DIV');
+
+      // Should emit the copy, not the exact instance.
+      assert(_.spec.createElement()).toNot.emitWith(el);
     });
 
     should(`not emit the parse result if not an element`, () => {
