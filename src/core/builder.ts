@@ -131,15 +131,18 @@ function createCustomElementClass(
         shadowMode);
   };
   const htmlClass = class extends HTMLElement {
-    private readonly decorator: CustomElementDecorator =
-        decoratorFactory(this, 'closed');
+    private readonly decorator: CustomElementDecorator = decoratorFactory(this, 'closed');
 
     constructor() {
       super();
     }
 
-    async connectedCallback(): Promise<void> {
-      return this.decorator.connectedCallback();
+    attributeChangedCallback(attrName: string, oldValue: string, newValue: string): void {
+      this.decorator.attributeChangedCallback(attrName, oldValue, newValue);
+    }
+
+    connectedCallback(): void {
+      this.decorator.connectedCallback();
     }
 
     disconnectedCallback(): void {

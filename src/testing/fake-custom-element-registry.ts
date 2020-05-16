@@ -1,5 +1,5 @@
 import { __customElementImplFactory, CustomElementClass } from '../core/custom-element-class';
-import { __onDisconnect, ElementWithOnDisconnect } from '../core/custom-element-decorator';
+import { __context, DecoratedElement } from '../core/custom-element-decorator';
 
 type Listener = () => void;
 
@@ -53,8 +53,8 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     });
   }
 
-  private upgradeElement_(el: ElementWithOnDisconnect): void {
-    if (el[__onDisconnect]) {
+  private upgradeElement_(el: DecoratedElement): void {
+    if (el[__context]) {
       // Already upgraded, so ignore it.
       return;
     }
