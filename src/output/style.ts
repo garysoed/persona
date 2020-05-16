@@ -1,10 +1,11 @@
 import { combineLatest, OperatorFunction } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
+import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
-import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+
 
 export class StyleOutput<S extends keyof CSSStyleDeclaration>
     implements Output<CSSStyleDeclaration[S]> {
@@ -13,9 +14,9 @@ export class StyleOutput<S extends keyof CSSStyleDeclaration>
       readonly styleKey: S,
   ) { }
 
-  output(root: ShadowRootLike): OperatorFunction<CSSStyleDeclaration[S], unknown> {
+  output(context: PersonaContext): OperatorFunction<CSSStyleDeclaration[S], unknown> {
     return value$ => combineLatest([
-        this.resolver(root),
+        this.resolver(context),
         value$,
     ])
     .pipe(

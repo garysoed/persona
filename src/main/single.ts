@@ -2,10 +2,10 @@ import { filterNonNull } from 'gs-tools/export/rxjs';
 import { NEVER, OperatorFunction, pipe } from 'rxjs';
 import { distinctUntilChanged, pairwise, shareReplay, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
+import { PersonaContext } from '../core/persona-context';
 import { RenderSpec } from '../render/render-spec';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
-import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 import { createSlotObs } from './create-slot-obs';
@@ -17,8 +17,8 @@ export class SingleOutput implements Output<RenderSpec|null> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  output(root: ShadowRootLike): OperatorFunction<RenderSpec|null, unknown> {
-    const parent$ = this.resolver(root);
+  output(context: PersonaContext): OperatorFunction<RenderSpec|null, unknown> {
+    const parent$ = this.resolver(context);
 
     return pipe(
         startWith(null),

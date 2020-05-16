@@ -1,5 +1,6 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
+import { createFakeContext } from 'src/testing/create-fake-context';
 
 import { element } from '../main/element';
 
@@ -24,13 +25,13 @@ test('input.onDom', init => {
 
     const input = $._.onDom;
 
-    return {input, shadowRoot, el};
+    return {input, context: createFakeContext({shadowRoot}), el};
   });
 
   test('getValue', () => {
     should(`create observable that emits the event`, () => {
       const event = new CustomEvent(EVENT_NAME);
-      const valueSpySubject = createSpySubject(_.input.getValue(_.shadowRoot));
+      const valueSpySubject = createSpySubject(_.input.getValue(_.context));
       _.el.dispatchEvent(event);
 
       assert(valueSpySubject).to.emitWith(event);

@@ -1,12 +1,12 @@
 import { NoopRenderSpec } from 'export';
-import { assert, run, should, teardown, test } from 'gs-testing';
+import { assert, run, should, test } from 'gs-testing';
 import { ArrayDiff } from 'gs-tools/export/rxjs';
 import { instanceofType } from 'gs-types';
-import { BehaviorSubject, of as observableOf, ReplaySubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, of as observableOf, Subject } from 'rxjs';
 
 import { RenderSpec } from '../render/render-spec';
 import { SimpleElementRenderSpec } from '../render/simple-element-render-spec';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { element } from './element';
 import { repeated } from './repeated';
@@ -35,14 +35,14 @@ test('@persona/output/repeated', init => {
 
     const output = $._.list;
 
-    return {output, shadowRoot, parentEl, slot};
+    return {output, context: createFakeContext({shadowRoot}), parentEl, slot};
   });
 
   test('output', _, init => {
     const _ = init(_ => {
       const diffSubject = new Subject<ArrayDiff<RenderSpec>>();
 
-      run(diffSubject.pipe(_.output.output(_.shadowRoot)));
+      run(diffSubject.pipe(_.output.output(_.context)));
 
       return {..._, diffSubject};
     });

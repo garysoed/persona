@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs';
 
-import { ShadowRootLike } from './shadow-root-like';
+import { PersonaContext } from '../core/persona-context';
 
-export type Resolver<E extends Element> = (root: ShadowRootLike) => Observable<E>;
+
+export type Resolver<E extends Element> = (context: PersonaContext) => Observable<E>;

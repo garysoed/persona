@@ -3,6 +3,7 @@ import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 
 import { element } from '../main/element';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { style } from './style';
 
@@ -24,14 +25,14 @@ test('output.style', init => {
 
     const output = $._.style;
 
-    return {output, shadowRoot, el};
+    return {output, context: createFakeContext({shadowRoot}), el};
   });
 
   test('output', () => {
     should(`set the style correctly`, () => {
       const value$ = new Subject<string>();
 
-      run(value$.pipe(_.output.output(_.shadowRoot)));
+      run(value$.pipe(_.output.output(_.context)));
       const height = '123px';
       value$.next(height);
       assert(_.el.style.height).to.equal(height);

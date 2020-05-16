@@ -4,6 +4,7 @@ import { of as observableOf } from 'rxjs';
 
 import { element } from '../main/element';
 import { attribute } from '../output/attribute';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { splitOutput } from './split-output';
 
@@ -17,9 +18,10 @@ test('@persona/util/split-output', () => {
     });
 
     const root = document.createElement('div');
-    const shadow = root.attachShadow({mode: 'open'});
+    const shadowRoot = root.attachShadow({mode: 'open'});
 
-    run(observableOf('abc').pipe(splitOutput([$._.attr1, $._.attr2]).output(shadow)));
+    run(observableOf('abc').pipe(splitOutput([$._.attr1, $._.attr2])
+        .output(createFakeContext({shadowRoot}))));
     assert(root.getAttribute(ATTR_NAME_1)).to.equal('abc');
     assert(root.getAttribute(ATTR_NAME_2)).to.equal('abc');
   });

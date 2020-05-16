@@ -1,6 +1,8 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 
+import { createFakeContext } from '../testing/create-fake-context';
+
 import { element } from './element';
 
 test('@persona/main/element', () => {
@@ -16,7 +18,7 @@ test('@persona/main/element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      const spyElement$ = createSpySubject(input.getValue(shadowRoot));
+      const spyElement$ = createSpySubject(input.getValue(createFakeContext({shadowRoot})));
       assert(spyElement$).to.emitWith(el);
     });
 
@@ -26,7 +28,7 @@ test('@persona/main/element', () => {
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});
 
-      const spyElement$ = createSpySubject(input.getValue(shadowRoot));
+      const spyElement$ = createSpySubject(input.getValue(createFakeContext({shadowRoot})));
       assert(spyElement$).to.emitWith(root);
     });
 
@@ -42,7 +44,7 @@ test('@persona/main/element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      const spyElement$ = createSpySubject(input.getValue(shadowRoot));
+      const spyElement$ = createSpySubject(input.getValue(createFakeContext({shadowRoot})));
       assert(spyElement$).to.emitWith(el);
     });
 
@@ -57,7 +59,7 @@ test('@persona/main/element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      const spyElement$ = createSpySubject(input.getValue(shadowRoot));
+      const spyElement$ = createSpySubject(input.getValue(createFakeContext({shadowRoot})));
       assert(spyElement$).to.emitErrorWithMessage(/Element of/);
     });
   });

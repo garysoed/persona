@@ -2,11 +2,12 @@ import { booleanType } from 'gs-types';
 import { Observable } from 'rxjs';
 import { filter, tap } from 'rxjs/operators';
 
+import { PersonaContext } from '../core/persona-context';
 import { Resolver } from '../types/resolver';
-import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 import { OnDomInput } from './on-dom';
+
 
 /**
  * Options for matching keydown event. Each entry has 3 values:
@@ -32,8 +33,8 @@ export class OnKeydownInput extends OnDomInput<KeyboardEvent> {
     super('keydown', options, resolver);
   }
 
-  getValue(root: ShadowRootLike): Observable<KeyboardEvent> {
-    return super.getValue(root)
+  getValue(context: PersonaContext): Observable<KeyboardEvent> {
+    return super.getValue(context)
         .pipe(
             filter(event => {
               if (event.key !== this.key) {

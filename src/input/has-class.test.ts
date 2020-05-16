@@ -2,8 +2,10 @@ import { assert, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 
 import { element } from '../main/element';
+import { createFakeContext } from '../testing/create-fake-context';
 
-import { hasClass, HasClassInput } from './has-class';
+import { hasClass } from './has-class';
+
 
 test('persona.input.hasClass', init => {
   const ELEMENT_ID = 'test';
@@ -22,18 +24,18 @@ test('persona.input.hasClass', init => {
     shadowRoot.appendChild(el);
 
     const input = $._.hasClass;
-    return {input, shadowRoot, el};
+    return {input, context: createFakeContext({shadowRoot}), el};
   });
 
   test('getValue', () => {
     should(`emit true if the class exists`, () => {
       _.el.classList.add(CLASSNAME);
 
-      assert(_.input.getValue(_.shadowRoot)).to.emitWith(true);
+      assert(_.input.getValue(_.context)).to.emitWith(true);
     });
 
     should(`emit false if the class doesn't exist`, () => {
-      assert(_.input.getValue(_.shadowRoot)).to.emitWith(false);
+      assert(_.input.getValue(_.context)).to.emitWith(false);
     });
   });
 });

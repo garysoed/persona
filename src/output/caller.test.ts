@@ -3,8 +3,9 @@ import { instanceofType } from 'gs-types';
 import { of as observableOf } from 'rxjs';
 
 import { element } from '../main/element';
+import { createFakeContext } from '../testing/create-fake-context';
 
-import { caller, CallerOutput } from './caller';
+import { caller } from './caller';
 
 
 test('input.caller', init => {
@@ -24,7 +25,7 @@ test('input.caller', init => {
     shadowRoot.appendChild(el);
 
     const output = $._.caller;
-    return {output, shadowRoot, el};
+    return {output, context: createFakeContext({shadowRoot}), el};
   });
 
   test('output', () => {
@@ -33,7 +34,7 @@ test('input.caller', init => {
       (_.el as any)[FUNCTION_NAME] = spy;
 
       const value = 123;
-      run(observableOf([value] as [number]).pipe(_.output.output(_.shadowRoot)));
+      run(observableOf([value] as [number]).pipe(_.output.output(_.context)));
 
       assert(spy).to.haveBeenCalledWith(value);
     });

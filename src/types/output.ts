@@ -1,7 +1,8 @@
-import { Observable, OperatorFunction } from 'rxjs';
+import { OperatorFunction } from 'rxjs';
 
-import { ShadowRootLike } from './shadow-root-like';
+import { PersonaContext } from '../core/persona-context';
+
 
 export interface Output<T> {
-  output(root: ShadowRootLike): OperatorFunction<T, unknown>;
+  output(context: PersonaContext): OperatorFunction<T, unknown>;
 }

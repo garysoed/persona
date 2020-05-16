@@ -3,6 +3,7 @@ import { instanceofType } from 'gs-types';
 import { BehaviorSubject, of as observableOf, Subject } from 'rxjs';
 
 import { SimpleElementRenderSpec } from '../render/simple-element-render-spec';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { element } from './element';
 import { single } from './single';
@@ -29,14 +30,14 @@ test('@persona/main/single', init => {
     shadowRoot.appendChild(parentEl);
 
     const output = $._.single;
-    return {shadowRoot, slot, parentEl, output};
+    return {context: createFakeContext({shadowRoot}), slot, parentEl, output};
   });
 
   test('output', _, init => {
     const _ = init(_ => {
       const render$ = new Subject<SimpleElementRenderSpec|null>();
 
-      run(render$.pipe(_.output.output(_.shadowRoot)));
+      run(render$.pipe(_.output.output(_.context)));
 
       return {..._, render$};
     });

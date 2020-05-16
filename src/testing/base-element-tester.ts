@@ -4,6 +4,8 @@ import { stringify, Verbosity } from 'moirai';
 import { Observable } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 
+import { __context, DecoratedElement } from '../core/custom-element-decorator';
+import { PersonaContext } from '../core/persona-context';
 import { AttributeInput } from '../input/attribute';
 import { HandlerInput } from '../input/handler';
 import { HasAttributeInput } from '../input/has-attribute';
@@ -39,9 +41,9 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   ): Observable<unknown> {
     return this.elementObs
         .pipe(
-            getElement(input.resolver),
-            take(1),
+            getElement(context => input.resolver(context)),
             tap(el => (el as any)[input.functionName](...args)),
+            take(1),
         );
   }
 
@@ -58,16 +60,16 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   ): Observable<unknown> {
     return this.elementObs
         .pipe(
-            getElement(spec.resolver),
-            take(1),
+            getElement(context => spec.resolver(context)),
             tap(targetEl => targetEl.dispatchEvent(event)),
+            take(1),
         );
   }
 
   getAttribute<T>(output: AttributeOutput<T>|AttributeInput<T>): Observable<T> {
     return this.elementObs
         .pipe(
-            getElement(output.resolver),
+            getElement(context => output.resolver(context)),
             map(targetEl => {
               const strValue = targetEl.getAttribute(output.attrName);
               const value = output.parser.convertBackward(strValue || '');
@@ -110,7 +112,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   getElement<E extends Element>(
       input: Input<E>,
   ): Observable<E> {
-    return this.elementObs.pipe(getElement(shadowRoot => input.getValue(shadowRoot)));
+    return this.elementObs.pipe(getElement(context => input.getValue(context)));
   }
 
   getHasClass(
@@ -118,7 +120,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   ): Observable<boolean> {
     return this.elementObs
         .pipe(
-            getElement(ioutput.resolver),
+            getElement(context => ioutput.resolver(context)),
             map(el => el.classList.contains(ioutput.className)),
         );
   }
@@ -128,7 +130,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   ): Observable<Node[]> {
     return this.elementObs
         .pipe(
-            getElement(output.resolver),
+            getElement(context => output.resolver(context)),
             map(parentEl => findCommentNode(
                 arrayFrom(parentEl.childNodes),
                 output.slotName,
@@ -158,7 +160,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   ): Observable<CSSStyleDeclaration[S]> {
     return this.elementObs
         .pipe(
-            getElement(output.resolver),
+            getElement(context => output.resolver(context)),
             map(targetEl => targetEl.style[output.styleKey]),
         );
   }
@@ -168,7 +170,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   ): Observable<string> {
     return this.elementObs
         .pipe(
-            getElement(shadowRoot => input.getValue(shadowRoot)),
+            getElement(context => input.getValue(context)),
             map(el => el.textContent || ''),
         );
   }
@@ -178,7 +180,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   ): Observable<boolean> {
     return this.elementObs
         .pipe(
-            getElement(spec.resolver),
+            getElement(context => spec.resolver(context)),
             map(el => el.hasAttribute(spec.attrName)),
         );
   }
@@ -195,11 +197,11 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
 
     return this.elementObs
         .pipe(
-            getElement(input.resolver),
-            take(1),
+            getElement(context => input.resolver(context)),
             tap(targetEl => {
               targetEl.setAttribute(input.attrName, result.result);
             }),
+            take(1),
         );
   }
 
@@ -209,7 +211,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   ): Observable<unknown> {
     return this.elementObs
         .pipe(
-            getElement(output.resolver),
+            getElement(context => output.resolver(context)),
             take(1),
             tap(targetEl => {
               if (value) {
@@ -227,7 +229,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   ): Observable<unknown> {
     return this.elementObs
         .pipe(
-            getElement(shadowRoot => input.getValue(shadowRoot)),
+            getElement(context => input.getValue(context)),
             take(1),
             tap(targetEl => {
               targetEl.value = value;
@@ -242,7 +244,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   ): Observable<unknown> {
     return this.elementObs
         .pipe(
-            getElement(shadowRoot => input.getValue(shadowRoot)),
+            getElement(context => input.getValue(context)),
             tap(targetEl => {
               for (const {key, alt, ctrl, meta, shift} of keys) {
                 const keydownEvent = new KeyboardEvent('keydown', {
@@ -289,13 +291,20 @@ function findCommentNode<R>(
 }
 
 function getElement<E extends Element>(
-  resolver: (root: ShadowRoot) => Observable<E>,
+    resolver: (context: PersonaContext) => Observable<E>,
 ): (source: Observable<HTMLElement>) => Observable<E> {
   return switchMap(element => {
-    const shadowRoot = getShadowRoot(element);
-
-    return resolver(shadowRoot);
+    return resolver(getContext(element));
   });
+}
+
+function getContext(element: DecoratedElement): PersonaContext {
+  const context = element[__context];
+  if (!context) {
+    throw new Error(`Context for element ${element} not found`);
+  }
+
+  return context;
 }
 
 function getShadowRoot(element: HTMLElement): ShadowRoot {

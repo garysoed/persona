@@ -3,6 +3,7 @@ import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 
 import { element } from '../main/element';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { setAttribute } from './set-attribute';
 
@@ -24,14 +25,14 @@ test('output.setAttribute', init => {
     shadowRoot.appendChild(el);
 
     const output = $._.attr;
-    return {output, shadowRoot, el};
+    return {output, context: createFakeContext({shadowRoot}), el};
   });
 
   test('output', () => {
     should(`update the attribute correctly`, () => {
       const value$ = new Subject<boolean>();
 
-      run(value$.pipe(_.output.output(_.shadowRoot)));
+      run(value$.pipe(_.output.output(_.context)));
       value$.next(true);
       assert(_.el.hasAttribute(ATTR_NAME)).to.beTrue();
 

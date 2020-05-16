@@ -3,8 +3,10 @@ import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 
 import { element } from '../main/element';
+import { createFakeContext } from '../testing/create-fake-context';
 
-import { classToggle, ClassToggleOutput } from './class-toggle';
+import { classToggle } from './class-toggle';
+
 
 test('persona.output.classToggle', init => {
   const ELEMENT_ID = 'test';
@@ -24,14 +26,14 @@ test('persona.output.classToggle', init => {
 
     const output = $._.classname;
 
-    return {output, el, shadowRoot};
+    return {output, el, context: createFakeContext({shadowRoot})};
   });
 
   test('output', () => {
     should(`update the attribute correctly`, () => {
       const value$ = new Subject<boolean>();
 
-      run(value$.pipe(_.output.output(_.shadowRoot)));
+      run(value$.pipe(_.output.output(_.context)));
       value$.next(true);
       assert(_.el.classList.contains(CLASSNAME)).to.beTrue();
 

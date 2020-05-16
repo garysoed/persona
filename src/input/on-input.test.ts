@@ -2,6 +2,7 @@ import { assert, createSpySubject, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 
 import { element } from '../main/element';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { onInput } from './on-input';
 
@@ -23,7 +24,7 @@ test('input.onInput', init => {
 
     const input = $._.onInput;
 
-    return {input, shadowRoot, el};
+    return {input, context: createFakeContext({shadowRoot}), el};
   });
 
   test('getValue', () => {
@@ -33,7 +34,7 @@ test('input.onInput', init => {
       const initValue = 'initValue';
       const value1 = 'value1';
 
-      const spySubject = createSpySubject(_.input.getValue(_.shadowRoot));
+      const spySubject = createSpySubject(_.input.getValue(_.context));
 
       _.el.value = initValue;
       _.el.dispatchEvent(inputEvent);

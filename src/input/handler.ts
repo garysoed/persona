@@ -1,10 +1,11 @@
 import { Observable, Subject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
+import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
 import { Resolver } from '../types/resolver';
-import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+
 
 const __subject = Symbol('subject');
 
@@ -14,8 +15,8 @@ export class HandlerInput implements Input<readonly unknown[]> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  getValue(root: ShadowRootLike): Observable<readonly unknown[]> {
-    return this.resolver(root)
+  getValue(context: PersonaContext): Observable<readonly unknown[]> {
+    return this.resolver(context)
         .pipe(
             switchMap(el => {
               const existingSubject = getSubject(el, this.functionName);

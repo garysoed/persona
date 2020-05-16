@@ -1,10 +1,11 @@
 import { fromEvent, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 
+import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
 import { Resolver } from '../types/resolver';
-import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+
 
 export class OnInputInput implements Input<string> {
   constructor(
@@ -12,8 +13,8 @@ export class OnInputInput implements Input<string> {
       readonly resolver: Resolver<HTMLInputElement>,
   ) { }
 
-  getValue(root: ShadowRootLike): Observable<string> {
-    return this.resolver(root)
+  getValue(context: PersonaContext): Observable<string> {
+    return this.resolver(context)
         .pipe(
             switchMap(el => {
               return fromEvent(el, 'input', this.options)

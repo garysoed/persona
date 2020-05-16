@@ -2,9 +2,9 @@ import { Errors } from 'gs-tools/export/error';
 import { Converter, firstSuccess } from 'nabu';
 import { Observable } from 'rxjs';
 
+import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
 import { Resolver } from '../types/resolver';
-import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { attributeObservable } from '../util/attribute-observable';
 
@@ -17,11 +17,11 @@ export class AttributeInput<T> implements Input<T> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  getValue(root: ShadowRootLike): Observable<T> {
+  getValue(context: PersonaContext): Observable<T> {
     return attributeObservable(
         this.attrName,
         unparsed => this.parseValue(unparsed),
-        this.resolver(root),
+        this.resolver(context),
     );
   }
 

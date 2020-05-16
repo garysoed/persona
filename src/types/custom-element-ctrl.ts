@@ -26,7 +26,7 @@ export abstract class CustomElementCtrl extends Runnable {
   protected declareInput<T>(input: Input<T>): Observable<T> {
     return stream<T, CustomElementCtrl>(
         (): Observable<T> => {
-          return input.getValue(this.context.shadowRoot);
+          return input.getValue(this.context);
         },
         this,
     )
@@ -34,6 +34,6 @@ export abstract class CustomElementCtrl extends Runnable {
   }
 
   protected render<T>(outputs: Output<T>, value$: Observable<T>): void {
-    this.addSetup(value$.pipe(outputs.output(this.shadowRoot)));
+    this.addSetup(value$.pipe(outputs.output(this.context)));
   }
 }

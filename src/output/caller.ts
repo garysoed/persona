@@ -1,9 +1,9 @@
 import { combineLatest, concat, interval, Observable, OperatorFunction } from 'rxjs';
 import { filter, map, shareReplay, startWith, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
+import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
-import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 
@@ -17,8 +17,8 @@ export class CallerOutput<T extends readonly any[]> implements Output<T> {
       readonly functionName: string,
   ) { }
 
-  output(root: ShadowRootLike): OperatorFunction<T, unknown> {
-    const fn$ = createFnObs<T>(this.resolver(root), this.functionName);
+  output(context: PersonaContext): OperatorFunction<T, unknown> {
+    const fn$ = createFnObs<T>(this.resolver(context), this.functionName);
 
     return value$ => {
       return concat(

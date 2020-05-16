@@ -1,11 +1,12 @@
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 
+import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
 import { Resolver } from '../types/resolver';
-import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { mutationObservable } from '../util/mutation-observable';
+
 
 export class HasClassInput implements Input<boolean> {
   constructor(
@@ -13,8 +14,8 @@ export class HasClassInput implements Input<boolean> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  getValue(root: ShadowRootLike): Observable<boolean> {
-    return this.resolver(root)
+  getValue(context: PersonaContext): Observable<boolean> {
+    return this.resolver(context)
         .pipe(
             switchMap(el =>
                 mutationObservable(

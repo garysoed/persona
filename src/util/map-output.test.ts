@@ -4,6 +4,7 @@ import { of as observableOf } from 'rxjs';
 
 import { element } from '../main/element';
 import { attribute } from '../output/attribute';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { mapOutput } from './map-output';
 
@@ -13,9 +14,12 @@ test('@persona/util/map-output', () => {
     const $ = element({attr: attribute(ATTR_NAME, identity())});
 
     const root = document.createElement('div');
-    const shadow = root.attachShadow({mode: 'open'});
+    const shadowRoot = root.attachShadow({mode: 'open'});
 
-    run(observableOf(123).pipe(mapOutput($._.attr, (n: number) => `${n + 2}`).output(shadow)));
+    run(observableOf(123)
+        .pipe(
+            mapOutput($._.attr, (n: number) => `${n + 2}`).output(createFakeContext({shadowRoot})),
+        ));
     assert(root.getAttribute(ATTR_NAME)).to.equal('125');
   });
 });

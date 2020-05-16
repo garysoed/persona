@@ -1,7 +1,8 @@
 import { Observable } from 'rxjs';
 
-import { ShadowRootLike } from './shadow-root-like';
+import { PersonaContext } from '../core/persona-context';
+
 
 export interface Input<T> {
-  getValue(root: ShadowRootLike): Observable<T>;
+  getValue(context: PersonaContext): Observable<T>;
 }

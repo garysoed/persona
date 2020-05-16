@@ -2,6 +2,7 @@ import { assert, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 
 import { element } from '../main/element';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { hasAttribute } from './has-attribute';
 
@@ -24,17 +25,17 @@ test('persona.input.hasAttribute', init => {
 
     const input = $._.hasAttr;
 
-    return {input, shadowRoot, el};
+    return {input, context: createFakeContext({shadowRoot}), el};
   });
 
   test('getValue', () => {
     should(`create observable that emits true iff the attribute exists`, () => {
       _.el.setAttribute(ATTR_NAME, '');
-      assert(_.input.getValue(_.shadowRoot)).to.emitWith(true);
+      assert(_.input.getValue(_.context)).to.emitWith(true);
 
       _.el.removeAttribute(ATTR_NAME);
 
-      assert(_.input.getValue(_.shadowRoot)).to.emitWith(false);
+      assert(_.input.getValue(_.context)).to.emitWith(false);
     });
   });
 });

@@ -1,12 +1,13 @@
 import { OperatorFunction, pipe } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
-import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 import { CallerOutput } from './caller';
+
 
 export type DispatchFn<E extends Event> = (event: E) => void;
 
@@ -19,10 +20,10 @@ export class DispatcherOutput<E extends Event> implements Output<E> {
     this.caller = new CallerOutput(resolver, 'dispatchEvent');
   }
 
-  output(root: ShadowRootLike): OperatorFunction<E, unknown> {
+  output(context: PersonaContext): OperatorFunction<E, unknown> {
     return pipe(
         map(event => [event] as [E]),
-        this.caller.output(root),
+        this.caller.output(context),
     );
   }
 }

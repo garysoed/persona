@@ -1,15 +1,16 @@
 import { ArrayDiff, filterNonNull, scanArray } from 'gs-tools/export/rxjs';
 import { assertUnreachable } from 'gs-tools/export/typescript';
 import { merge, NEVER, Observable, OperatorFunction, pipe } from 'rxjs';
-import { map, switchMap, withLatestFrom, shareReplay, tap } from 'rxjs/operators';
+import { map, shareReplay, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
+import { PersonaContext } from '../core/persona-context';
 import { RenderSpec } from '../render/render-spec';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
-import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 import { createSlotObs } from './create-slot-obs';
+
 
 export class RepeatedOutput implements Output<ArrayDiff<RenderSpec>> {
   constructor(
@@ -17,8 +18,8 @@ export class RepeatedOutput implements Output<ArrayDiff<RenderSpec>> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  output(root: ShadowRootLike): OperatorFunction<ArrayDiff<RenderSpec>, unknown> {
-    const parentEl$ = this.resolver(root);
+  output(context: PersonaContext): OperatorFunction<ArrayDiff<RenderSpec>, unknown> {
+    const parentEl$ = this.resolver(context);
 
     return pipe(
         withLatestFrom(

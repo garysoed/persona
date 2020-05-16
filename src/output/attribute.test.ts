@@ -5,6 +5,7 @@ import { compose, human } from 'nabu';
 import { Subject } from 'rxjs';
 
 import { element } from '../main/element';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { attribute } from './attribute';
 
@@ -30,14 +31,14 @@ test('output.attribute', init => {
     shadowRoot.appendChild(el);
 
     const output = $._.attr;
-    return {output, shadowRoot, el};
+    return {output, context: createFakeContext({shadowRoot}), el};
   });
 
   test('output', () => {
     should(`update the attribute correctly`, () => {
       const value$ = new Subject<number>();
 
-      run(value$.pipe(_.output.output(_.shadowRoot)));
+      run(value$.pipe(_.output.output(_.context)));
       value$.next(123);
       assert(_.el.getAttribute(ATTR_NAME)).to.equal(`123`);
 

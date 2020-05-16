@@ -1,10 +1,11 @@
 import { OperatorFunction, pipe } from 'rxjs';
 import { tap, withLatestFrom } from 'rxjs/operators';
 
+import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
-import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+
 
 export class ClassToggleOutput implements Output<boolean> {
   constructor(
@@ -12,9 +13,9 @@ export class ClassToggleOutput implements Output<boolean> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  output(root: ShadowRootLike): OperatorFunction<boolean, unknown> {
+  output(context: PersonaContext): OperatorFunction<boolean, unknown> {
     return pipe(
-        withLatestFrom(this.resolver(root)),
+        withLatestFrom(this.resolver(context)),
         tap(([value, el]) => {
           el.classList.toggle(this.className, value);
         }),

@@ -2,19 +2,20 @@ import { diff } from 'gs-tools/export/util';
 import { combineLatest, OperatorFunction } from 'rxjs';
 import { pairwise, startWith, tap } from 'rxjs/operators';
 
+import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
-import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+
 
 export class ClasslistOutput implements Output<ReadonlySet<string>> {
   constructor(
       private readonly resolver: Resolver<Element>,
   ) { }
 
-  output(root: ShadowRootLike): OperatorFunction<ReadonlySet<string>, unknown> {
+  output(context: PersonaContext): OperatorFunction<ReadonlySet<string>, unknown> {
     return value$ => combineLatest([
-          this.resolver(root),
+          this.resolver(context),
           value$.pipe(startWith(new Set<string>()), pairwise()),
         ])
         .pipe(

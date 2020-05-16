@@ -2,6 +2,7 @@ import { assert, should, test } from 'gs-testing';
 import { integerConverter } from 'gs-tools/export/serializer';
 import { instanceofType } from 'gs-types';
 import { compose, human } from 'nabu';
+import { createFakeContext } from 'src/testing/create-fake-context';
 
 import { element } from '../main/element';
 
@@ -32,21 +33,21 @@ test('input.attribute', () => {
 
       const input = $._.attr;
 
-      return {el, input, shadowRoot};
+      return {el, input, context: createFakeContext({shadowRoot})};
     });
 
     should(`create observable that emits attribute values`, () => {
       _.el.setAttribute(ATTR_NAME, '456');
-      assert(_.input.getValue(_.shadowRoot)).to.emitWith(456);
+      assert(_.input.getValue(_.context)).to.emitWith(456);
 
       _.el.setAttribute(ATTR_NAME, '789');
-      assert(_.input.getValue(_.shadowRoot)).to.emitWith(789);
+      assert(_.input.getValue(_.context)).to.emitWith(789);
     });
 
     should(
         `create observable that returns the default value if the element's attribute is missing`,
         async () => {
-          assert(_.input.getValue(_.shadowRoot)).to.emitWith(DEFAULT_VALUE);
+          assert(_.input.getValue(_.context)).to.emitWith(DEFAULT_VALUE);
         });
   });
 
@@ -68,21 +69,21 @@ test('input.attribute', () => {
 
       const input = $._.attr;
 
-      return {el, input, shadowRoot};
+      return {el, input, context: createFakeContext({shadowRoot})};
     });
 
     should(`create observable that emits attribute values`, () => {
       _.el.setAttribute(ATTR_NAME, '456');
-      assert(_.input.getValue(_.shadowRoot)).to.emitWith(456);
+      assert(_.input.getValue(_.context)).to.emitWith(456);
 
       _.el.setAttribute(ATTR_NAME, '789');
-      assert(_.input.getValue(_.shadowRoot)).to.emitWith(789);
+      assert(_.input.getValue(_.context)).to.emitWith(789);
     });
 
     should(
         `create observable that returns undefined if the element's attribute is missing`,
         async () => {
-          assert(_.input.getValue(_.shadowRoot)).to.emitWith(undefined);
+          assert(_.input.getValue(_.context)).to.emitWith(undefined);
         });
   });
 });

@@ -52,6 +52,6 @@ export { InnerHtmlParseService } from '../src/render/inner-html-parse-service';
 export { NoopRenderSpec } from '../src/render/noop-render-spec';
 export { RenderSpec } from '../src/render/render-spec';
 export { SimpleElementRenderSpec } from '../src/render/simple-element-render-spec';
-export { renderFromTemplate } from '../src/render/template-render-spec';
+// export { renderFromTemplate } from '../src/render/template-render-spec';
 
 export { booleanParser, enumParser, integerParser, listParser, mapParser, stringParser } from '../src/util/parsers';

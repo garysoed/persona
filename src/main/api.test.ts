@@ -1,9 +1,9 @@
-import { assert, createSpy, createSpySubject, run, should, teardown, test } from 'gs-testing';
+import { assert, createSpy, createSpySubject, run, should, test } from 'gs-testing';
 import { integerConverter } from 'gs-tools/export/serializer';
 import { instanceofType } from 'gs-types';
 import { compose, human } from 'nabu';
-import { fromEvent, of as observableOf, ReplaySubject , Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { fromEvent, of as observableOf, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { attribute as attributeIn } from '../input/attribute';
 import { handler } from '../input/handler';
@@ -15,9 +15,11 @@ import { caller } from '../output/caller';
 import { classToggle } from '../output/class-toggle';
 import { dispatcher } from '../output/dispatcher';
 import { setAttribute } from '../output/set-attribute';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { api } from './api';
 import { element } from './element';
+
 
 test('@persona/main/api', init => {
   const ELEMENT_ID = 'test';
@@ -42,14 +44,14 @@ test('@persona/main/api', init => {
     el.id = ELEMENT_ID;
     shadowRoot.appendChild(el);
 
-    return {shadowRoot, el};
+    return {context: createFakeContext({shadowRoot}), el};
   });
 
   should(`handle attribute input correctly`, () => {
     const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.attrIn;
     const value$ = new Subject<number>();
 
-    run(value$.pipe(output.output(_.shadowRoot)));
+    run(value$.pipe(output.output(_.context)));
     value$.next(123);
     assert(_.el.getAttribute('attr-in')).to.equal(`123`);
 
@@ -64,7 +66,7 @@ test('@persona/main/api', init => {
     (_.el as any)['handler'] = spySubject;
 
     const value = 123;
-    run(observableOf([value]).pipe(output.output(_.shadowRoot)));
+    run(observableOf([value]).pipe(output.output(_.context)));
 
     assert(spySubject).to.haveBeenCalledWith(value);
   });
@@ -75,7 +77,7 @@ test('@persona/main/api', init => {
     const calledSubject = createSpySubject(fromEvent(_.el, 'ondom'));
 
     const event$ = new Subject<Event>();
-    run(event$.pipe(output.output(_.shadowRoot)));
+    run(event$.pipe(output.output(_.context)));
     const event = new CustomEvent('ondom');
     event$.next(event);
 
@@ -86,7 +88,7 @@ test('@persona/main/api', init => {
     const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.hasAttr;
     const value$ = new Subject<boolean>();
 
-    run(value$.pipe(output.output(_.shadowRoot)));
+    run(value$.pipe(output.output(_.context)));
     value$.next(true);
     assert(_.el.hasAttribute('has-attr')).to.beTrue();
 
@@ -99,7 +101,7 @@ test('@persona/main/api', init => {
 
     const value$ = new Subject<boolean>();
 
-    run(value$.pipe(output.output(_.shadowRoot)));
+    run(value$.pipe(output.output(_.context)));
     value$.next(true);
     assert(_.el.classList.contains('hasClass')).to.beTrue();
 
@@ -111,13 +113,13 @@ test('@persona/main/api', init => {
     const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.attrOut;
 
     _.el.setAttribute('attr-out', '456');
-    assert(input.getValue(_.shadowRoot)).to.emitWith(456);
+    assert(input.getValue(_.context)).to.emitWith(456);
 
     _.el.setAttribute('attr-out', '789');
-    assert(input.getValue(_.shadowRoot)).to.emitWith(789);
+    assert(input.getValue(_.context)).to.emitWith(789);
 
     _.el.removeAttribute('attr-out');
-    assert(input.getValue(_.shadowRoot)).to.emitWith(345);
+    assert(input.getValue(_.context)).to.emitWith(345);
   });
 
   should(`handle callers correctly`, () => {
@@ -126,9 +128,9 @@ test('@persona/main/api', init => {
 
     const value = 123;
 
-    const subject = createSpySubject(input.getValue(_.shadowRoot).pipe(map(([v]) => v)));
+    const subject = createSpySubject(input.getValue(_.context).pipe(map(([v]) => v)));
 
-    run(observableOf([value]).pipe(output.output(_.shadowRoot)));
+    run(observableOf([value]).pipe(output.output(_.context)));
     assert(subject).to.emitWith(value);
   });
 
@@ -136,7 +138,7 @@ test('@persona/main/api', init => {
     const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.dispatcher;
 
     const event = new CustomEvent('dispatch');
-    const valueSpySubject = createSpySubject(input.getValue(_.shadowRoot));
+    const valueSpySubject = createSpySubject(input.getValue(_.context));
     _.el.dispatchEvent(event);
 
     assert(valueSpySubject).to.emitWith(event);
@@ -146,10 +148,10 @@ test('@persona/main/api', init => {
     const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.setAttr;
 
     _.el.setAttribute('set-attr', '');
-    assert(input.getValue(_.shadowRoot)).to.emitWith(true);
+    assert(input.getValue(_.context)).to.emitWith(true);
 
     _.el.removeAttribute('set-attr');
-    assert(input.getValue(_.shadowRoot)).to.emitWith(false);
+    assert(input.getValue(_.context)).to.emitWith(false);
   });
 
   should(`handle classToggle correctly`, () => {
@@ -157,6 +159,6 @@ test('@persona/main/api', init => {
 
     _.el.classList.add('classToggle');
 
-    assert(input.getValue(_.shadowRoot)).to.emitWith(true);
+    assert(input.getValue(_.context)).to.emitWith(true);
   });
 });

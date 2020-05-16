@@ -3,6 +3,7 @@ import { instanceofType } from 'gs-types';
 import { fromEvent, Subject } from 'rxjs';
 
 import { element } from '../main/element';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { dispatcher } from './dispatcher';
 
@@ -25,7 +26,7 @@ test('output.dispatcher', init => {
 
     const output = $._.dispatch;
 
-    return {output, shadowRoot, el};
+    return {output, context: createFakeContext({shadowRoot}), el};
   });
 
   test('output', () => {
@@ -33,7 +34,7 @@ test('output.dispatcher', init => {
       const calledSubject = createSpySubject(fromEvent(_.el, 'eventName'));
 
       const event$ = new Subject<Event>();
-      run(event$.pipe(_.output.output(_.shadowRoot)));
+      run(event$.pipe(_.output.output(_.context)));
       const event = new CustomEvent(EVENT_NAME);
       event$.next(event);
 

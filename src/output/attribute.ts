@@ -2,6 +2,7 @@ import { Converter } from 'nabu';
 import { OperatorFunction, pipe } from 'rxjs';
 import { tap, withLatestFrom } from 'rxjs/operators';
 
+import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
 import { ShadowRootLike } from '../types/shadow-root-like';
@@ -16,9 +17,9 @@ export class AttributeOutput<T> implements Output<T> {
       readonly resolver: Resolver<HTMLElement>,
   ) { }
 
-  output(root: ShadowRootLike): OperatorFunction<T, unknown> {
+  output(context: PersonaContext): OperatorFunction<T, unknown> {
     return pipe(
-        withLatestFrom(this.resolver(root)),
+        withLatestFrom(this.resolver(context)),
         tap(([value, el]) => {
           const result = this.parser.convertForward(value);
           if (result.success) {
