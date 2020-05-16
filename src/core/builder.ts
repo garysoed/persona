@@ -7,8 +7,8 @@ import { iterableOfType, unknownType } from 'gs-types';
 import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec';
 
-import { __customElementImplFactory, CustomElementClass } from './custom-element-class';
-import { CustomElementImpl } from './custom-element-impl';
+import { __customElementImplFactory as __decoratorFactory, CustomElementClass } from './custom-element-class';
+import { CustomElementDecorator } from './custom-element-decorator';
 import { TemplateService } from './template-service';
 
 
@@ -121,8 +121,8 @@ function createCustomElementClass(
     templateService: TemplateService,
     vine: Vine,
 ): CustomElementClass {
-  const customElementImplFactory = (element: HTMLElement, shadowMode: 'open'|'closed') => {
-    return new CustomElementImpl(
+  const decoratorFactory = (element: HTMLElement, shadowMode: 'open'|'closed') => {
+    return new CustomElementDecorator(
         componentClass,
         element,
         tag,
@@ -131,24 +131,24 @@ function createCustomElementClass(
         shadowMode);
   };
   const htmlClass = class extends HTMLElement {
-    private readonly customElementImpl_: CustomElementImpl =
-        customElementImplFactory(this, 'closed');
+    private readonly decorator: CustomElementDecorator =
+        decoratorFactory(this, 'closed');
 
     constructor() {
       super();
     }
 
     async connectedCallback(): Promise<void> {
-      return this.customElementImpl_.connectedCallback();
+      return this.decorator.connectedCallback();
     }
 
     disconnectedCallback(): void {
-      this.customElementImpl_.disconnectedCallback();
+      this.decorator.disconnectedCallback();
     }
   };
 
   // tslint:disable-next-line:prefer-object-spread
-  return Object.assign(htmlClass, {[__customElementImplFactory]: customElementImplFactory});
+  return Object.assign(htmlClass, {[__decoratorFactory]: decoratorFactory});
 }
 
 function getAllCtrls(

@@ -1,5 +1,5 @@
 import { __customElementImplFactory, CustomElementClass } from '../core/custom-element-class';
-import { __onDisconnect, ElementWithOnDisconnect } from '../core/custom-element-impl';
+import { __onDisconnect, ElementWithOnDisconnect } from '../core/custom-element-decorator';
 
 type Listener = () => void;
 

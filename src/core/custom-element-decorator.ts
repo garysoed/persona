@@ -15,7 +15,7 @@ export type ElementWithOnDisconnect = HTMLElement & {[__onDisconnect]?: Subject<
 /**
  * Main logic class of custom elements.
  */
-export class CustomElementImpl {
+export class CustomElementDecorator {
   constructor(
       private readonly componentClass: CustomElementCtrlCtor,
       private readonly element: ElementWithOnDisconnect,

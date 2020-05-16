@@ -1,10 +1,8 @@
 persona
-  v 1.1
-    ✔ Add `@onCreate` - runs function on creation @done(18-12-23 15:59)
-    ☐ New interface: instead of locators, upgrade them to Observables.
-      ☐ New input and outputs
-      ☐ `@input` handles the new inputs.
-    ☐ Documentation.
+  v2.0
+    ☐   host selector
+    ☐   Better custom element interfacing
+    ☐   Disable host selection from element.
+    ☐   Optional element watching.
 
-  Next steps:
-    ☐ Make MutationObserver synchronous for tests.
+

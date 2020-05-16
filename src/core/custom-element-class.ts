@@ -1,9 +1,9 @@
-import { CustomElementImpl } from './custom-element-impl';
+import { CustomElementDecorator } from './custom-element-decorator';
 
 export const __customElementImplFactory = Symbol('customElementImpl');
 
 type CustomElementImplFactory =
-    (element: HTMLElement, shadowMode: 'open'|'closed') => CustomElementImpl;
+    (element: HTMLElement, shadowMode: 'open'|'closed') => CustomElementDecorator;
 
 export type CustomElementClass = typeof HTMLElement &
     {[__customElementImplFactory]: CustomElementImplFactory};
