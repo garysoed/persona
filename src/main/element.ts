@@ -1,6 +1,6 @@
 import { Errors } from 'gs-tools/export/error';
-import { elementWithTagType, instanceofType, Type } from 'gs-types';
-import { Observable } from 'rxjs';
+import { elementWithTagType, Type } from 'gs-types';
+import { Observable, of as observableOf } from 'rxjs';
 import { distinctUntilChanged } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
@@ -31,14 +31,11 @@ export class ElementInput<E extends Element, P extends Properties<E>> implements
   }
 
   getValue({shadowRoot}: PersonaContext): Observable<E> {
-    return elementObservable(shadowRoot, root => {
-      const el = this.elementId ? root.getElementById(this.elementId) : root.host;
-      if (!this.type.check(el)) {
-        throw Errors.assert(`Element of [${this.elementId}]`).shouldBeA(this.type).butWas(el);
-      }
-
-      return el;
-    }).pipe(distinctUntilChanged());
+    const el = shadowRoot.getElementById(this.elementId);
+    if (!this.type.check(el)) {
+      throw Errors.assert(`Element of [${this.elementId}]`).shouldBeA(this.type).butWas(el);
+    }
+    return observableOf(el);
   }
 
   private resolve(properties: P): Resolved<E, P> {
@@ -72,23 +69,19 @@ export function element<P extends UnconvertedSpec, PX extends Properties<Element
 ): ElementInput<HTMLElement, ConvertedSpec<P>&PX>;
 export function element(
     id: string,
-    typeOrSpec?: Type<Element>|ComponentSpec<UnconvertedSpec>,
-    properties?: Properties<Element>,
+    typeOrSpec: Type<Element>|ComponentSpec<UnconvertedSpec>,
+    properties: Properties<Element>,
 ): ElementInput<Element, Properties<Element>> {
-  if (properties && typeOrSpec) {
-    if (typeOrSpec instanceof Type) {
-      return new ElementInput(id, properties, typeOrSpec);
-    } else {
-      return new ElementInput(
-          id,
-          {
-            ...api(typeOrSpec.api),
-            ...properties,
-          },
-          elementWithTagType(typeOrSpec.tag),
-      );
-    }
+  if (typeOrSpec instanceof Type) {
+    return new ElementInput(id, properties, typeOrSpec);
   } else {
-    throw new Error('invalid input');
+    return new ElementInput(
+        id,
+        {
+          ...api(typeOrSpec.api),
+          ...properties,
+        },
+        elementWithTagType(typeOrSpec.tag),
+    );
   }
 }

@@ -5,7 +5,6 @@ import { tap, withLatestFrom } from 'rxjs/operators';
 import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
-import { ShadowRootLike } from '../types/shadow-root-like';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 
