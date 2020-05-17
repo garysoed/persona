@@ -18,7 +18,7 @@ export abstract class CustomElementCtrl extends Runnable {
   protected readonly vine = this.context.vine;
 
   constructor(
-      private readonly context: PersonaContext,
+      protected readonly context: PersonaContext,
   ) {
     super();
   }

@@ -4,6 +4,8 @@ import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
 import { iterableOfType, unknownType } from 'gs-types';
 
+import { UnresolvedAttributeInput } from '../input/attribute';
+import { UnconvertedSpec } from '../main/api';
 import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec';
 
@@ -18,6 +20,7 @@ interface FullComponentData extends CustomElementSpec {
 
 interface RegistrationSpec {
   readonly componentClass: CustomElementCtrlCtor;
+  readonly api: UnconvertedSpec;
   readonly tag: string;
   readonly template: string;
 }
@@ -72,9 +75,19 @@ export class Builder {
     runConfigures(customElementAnnotation, ctrls, vine);
 
     [...registeredComponentSpecs.values()]
-        .map(async ({componentClass, tag}) => {
+        .map(async ({api, componentClass, tag}) => {
+          const observedAttributes = $pipe(
+              Object.keys(api),
+              $map(key => api[key]),
+              $filter((spec): spec is UnresolvedAttributeInput<unknown> => {
+                return spec instanceof UnresolvedAttributeInput;
+              }),
+              $map(({attrName}) => attrName),
+              $asArray(),
+          );
           const elementClass = createCustomElementClass(
               componentClass,
+              observedAttributes,
               tag,
               templateService,
               vine,
@@ -104,6 +117,7 @@ export class Builder {
       registeredComponentSpecs.set(
           componentSpec.tag,
           {
+            api: componentSpec.api || {},
             componentClass: componentSpec.componentClass,
             tag: componentSpec.tag,
             template: componentSpec.template,
@@ -117,6 +131,7 @@ export class Builder {
 
 function createCustomElementClass(
     componentClass: CustomElementCtrlCtor,
+    observedAttributes: readonly string[],
     tag: string,
     templateService: TemplateService,
     vine: Vine,
@@ -147,6 +162,10 @@ function createCustomElementClass(
 
     disconnectedCallback(): void {
       this.decorator.disconnectedCallback();
+    }
+
+    static get observedAttributes(): readonly string[] {
+      return observedAttributes;
     }
   };
 

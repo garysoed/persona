@@ -1,5 +1,9 @@
+import { run } from 'gs-testing';
+import { tap } from 'rxjs/operators';
+
 import { __customElementImplFactory, CustomElementClass } from '../core/custom-element-class';
 import { __context, DecoratedElement } from '../core/custom-element-decorator';
+import { mutationObservable } from '../util/mutation-observable';
 
 type Listener = () => void;
 
@@ -65,11 +69,22 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
       return;
     }
     const customElement = ctor[__customElementImplFactory](el, 'open');
-
-    // tslint:disable-next-line: no-floating-promises
     customElement.connectedCallback();
 
-    // tslint:disable-next-line: no-non-null-assertion
+    run(mutationObservable(el, {attributes: true}).pipe(
+        tap(records => {
+          for (const {attributeName, oldValue} of records) {
+            if (!attributeName) {
+              continue;
+            }
+
+            const newValue = el.getAttribute(attributeName);
+            customElement.attributeChangedCallback(attributeName, oldValue || '', newValue || '');
+          }
+        }),
+    ));
+
+    // Recursively upgrade the element.
     const nodeList = el.shadowRoot!.querySelectorAll('*');
     for (let i = 0; i < nodeList.length; i++) {
       const node = nodeList.item(i);

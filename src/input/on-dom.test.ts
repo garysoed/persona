@@ -1,8 +1,8 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
-import { createFakeContext } from 'src/testing/create-fake-context';
 
 import { element } from '../main/element';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { onDom } from './on-dom';
 

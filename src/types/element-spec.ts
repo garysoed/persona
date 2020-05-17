@@ -1,17 +1,18 @@
 import { Vine } from 'grapevine';
 
+import { UnconvertedSpec } from '../main/api';
+
 import { CustomElementCtrlCtor } from './custom-element-ctrl';
 
+
 export interface BaseCustomElementSpec {
-  dependencies?: CustomElementCtrlCtor[];
-  shadowMode?: 'open'|'closed';
+  readonly dependencies?: CustomElementCtrlCtor[];
+  readonly shadowMode?: 'open'|'closed';
   configure?(vine: Vine): void;
 }
 
-/**
- * Specs that define a custom element.
- */
 export interface CustomElementSpec extends BaseCustomElementSpec {
-  tag: string;
-  template: string;
+  readonly api?: UnconvertedSpec;
+  readonly tag: string;
+  readonly template: string;
 }
