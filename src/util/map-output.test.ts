@@ -2,16 +2,17 @@ import { assert, run, should, test } from 'gs-testing';
 import { identity } from 'nabu';
 import { of as observableOf } from 'rxjs';
 
-import { element } from '../main/element';
+import { host } from '../main/host';
 import { attribute } from '../output/attribute';
 import { createFakeContext } from '../testing/create-fake-context';
 
 import { mapOutput } from './map-output';
 
+
 test('@persona/util/map-output', () => {
   should(`map the output value correctly`, () => {
     const ATTR_NAME = 'attr';
-    const $ = element({attr: attribute(ATTR_NAME, identity())});
+    const $ = host({attr: attribute(ATTR_NAME, identity())});
 
     const root = document.createElement('div');
     const shadowRoot = root.attachShadow({mode: 'open'});

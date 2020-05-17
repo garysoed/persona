@@ -26,8 +26,6 @@ test('@persona/main/host-has-attribute', init => {
 
       _.context.onAttributeChanged$.next({
         attrName: ATTR_NAME,
-        oldValue: ``,
-        newValue: `34`,
       });
       assert(value$).to.emitSequence([false, true]);
     });
@@ -37,8 +35,6 @@ test('@persona/main/host-has-attribute', init => {
 
       _.context.onAttributeChanged$.next({
         attrName: 'other',
-        oldValue: ``,
-        newValue: `34`,
       });
 
       assert(value$).to.emitSequence([false]);

@@ -32,52 +32,36 @@ test('@persona/main/host-attribute', init => {
       const newValue = 34;
 
       const value$ = createSpySubject(_.input.getValue(_.context));
+      _.el.setAttribute(ATTR_NAME, `${newValue}`);
 
       _.context.onAttributeChanged$.next({
         attrName: ATTR_NAME,
-        oldValue: `${INIT_VALUE}`,
-        newValue: `${newValue}`,
       });
       assert(value$).to.emitSequence([INIT_VALUE, newValue]);
     });
 
     should(`emit the default value if parse failed`, () => {
       const value$ = createSpySubject(_.input.getValue(_.context));
+      _.el.setAttribute(ATTR_NAME, `invalid`);
 
       _.context.onAttributeChanged$.next({
         attrName: ATTR_NAME,
-        oldValue: `${INIT_VALUE}`,
-        newValue: `invalid`,
       });
       assert(value$).to.emitSequence([INIT_VALUE, DEFAULT_VALUE]);
     });
 
-    should(`throw error if there is no default value and parse failed`, () => {
-      const input = new HostAttribute(ATTR_NAME, integerParser(), undefined);
-      const el = document.createElement('div');
-      const shadowRoot = el.attachShadow({mode: 'open'});
-      const onAttributeChanged$ = new Subject<AttributeChangedEvent>();
-      const context = {shadowRoot, onAttributeChanged$};
-      const value$ = createSpySubject(input.getValue(createFakeContext(context)));
+    should(`start by emitting the current attribute value`, () => {
+      const value$ = createSpySubject(_.input.getValue(_.context));
 
-      el.setAttribute(ATTR_NAME, `${INIT_VALUE}`);
-
-      onAttributeChanged$.next({
-        attrName: ATTR_NAME,
-        oldValue: `${INIT_VALUE}`,
-        newValue: `invalid`,
-      });
-
-      assert(value$).to.emitErrorWithMessage(/Value of/);
+      assert(value$).to.emitSequence([INIT_VALUE]);
     });
 
     should(`not emit if attribute name doesn't match`, () => {
       const value$ = createSpySubject(_.input.getValue(_.context));
+      _.el.setAttribute(ATTR_NAME, `12`);
 
       _.context.onAttributeChanged$.next({
         attrName: 'other',
-        oldValue: `${INIT_VALUE}`,
-        newValue: `34`,
       });
 
       assert(value$).to.emitSequence([INIT_VALUE]);

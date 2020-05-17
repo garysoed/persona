@@ -4,17 +4,20 @@ import { PersonaContext } from '../core/persona-context';
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHandlerInput } from '../input/handler';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';
+import { UnresolvedOnDomInput } from '../input/on-dom';
+import { UnresolvedOnKeydownInput } from '../input/on-keydown';
 import { Input } from '../types/input';
 import { Output } from '../types/output';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 import { HostAttribute } from './host-attribute';
-import { HostHandler } from './host-handler';
 import { HostHasAttribute } from './host-has-attribute';
 
 
 type CompatibleProperties =
     | UnresolvedElementProperty<Element, Output<any>>
+    | UnresolvedOnDomInput<any>
+    | UnresolvedOnKeydownInput
     | UnresolvedHasAttributeInput
     | UnresolvedAttributeInput<any>
     | UnresolvedHandlerInput;
@@ -54,10 +57,6 @@ class HostInput<P extends PropertySpecs> implements Input<Element> {
   private resolveProperty(property: CompatibleProperties): Input<unknown>|Output<unknown> {
     if (property instanceof UnresolvedAttributeInput) {
       return new HostAttribute(property.attrName, property.parser, property.defaultValue);
-    }
-
-    if (property instanceof UnresolvedHandlerInput) {
-      return new HostHandler(property.functionName);
     }
 
     if (property instanceof UnresolvedHasAttributeInput) {

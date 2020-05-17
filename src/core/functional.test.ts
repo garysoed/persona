@@ -5,7 +5,7 @@ import { Observable, of as observableOf } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import { attribute as attributeIn } from '../input/attribute';
-import { element } from '../main/element';
+import { host } from '../main/host';
 import { attribute as attributeOut } from '../output/attribute';
 import { PersonaTesterFactory } from '../testing/persona-tester';
 import { CustomElementCtrl } from '../types/custom-element-ctrl';
@@ -16,12 +16,19 @@ import { PersonaContext } from './persona-context';
 
 const _v = new VineBuilder();
 const _p = new PersonaBuilder(_v);
+
+const $$ = {
+  tag: 'test-el',
+  api: {
+    attr4: attributeIn('attr4', identity(), ''),
+  },
+};
 const $ = {
-  host: element({
+  host: host({
+    ...$$.api,
     attr1: attributeOut('attr1', identity()),
     attr2: attributeOut('attr2', identity()),
     attr3: attributeOut('attr3', identity()),
-    attr4: attributeIn('attr4', identity()),
   }),
 };
 
@@ -46,7 +53,7 @@ class ParentTestClass extends CustomElementCtrl {
  * @test
  */
 @_p.customElement({
-  tag: 'test-el',
+  ...$$,
   template: '',
 })
 class TestClass extends ParentTestClass {

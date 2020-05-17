@@ -12,7 +12,7 @@ export interface BaseCustomElementSpec {
 }
 
 export interface CustomElementSpec extends BaseCustomElementSpec {
-  readonly api?: UnconvertedSpec;
+  readonly api: UnconvertedSpec;
   readonly tag: string;
   readonly template: string;
 }

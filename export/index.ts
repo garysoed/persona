@@ -3,7 +3,7 @@ export { AriaRole } from '../src/a11y/aria-role';
 
 // Core
 export { Builder as PersonaBuilder } from '../src/core/builder';
-export { PersonaContext } from '../src/core/persona-context';
+export { AttributeChangedEvent, PersonaContext } from '../src/core/persona-context';
 
 // Inputs
 export { attribute as attributeIn } from '../src/input/attribute';

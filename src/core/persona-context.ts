@@ -3,8 +3,6 @@ import { ReplaySubject, Subject } from 'rxjs';
 
 export interface AttributeChangedEvent {
   readonly attrName: string;
-  readonly oldValue: string;
-  readonly newValue: string;
 }
 
 export interface PersonaContext {

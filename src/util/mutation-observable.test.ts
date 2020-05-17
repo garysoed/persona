@@ -1,10 +1,17 @@
-import { assert, createSpySubject, should, test } from 'gs-testing';
+import { assert, createSpySubject, runEnvironment, should, test } from 'gs-testing';
 import { filter, map } from 'rxjs/operators';
+
+import { PersonaTesterEnvironment } from '../testing/persona-tester-environment';
 
 import { mutationObservable } from './mutation-observable';
 
 
-test('@persona/util/mutation-observable', () => {
+test('@persona/util/mutation-observable', init => {
+  init(() => {
+    runEnvironment(new PersonaTesterEnvironment());
+    return {};
+  });
+
   should(`emit the records correctly`, async () => {
     const rootEl = document.createElement('div').attachShadow({mode: 'open'});
     document.appendChild(rootEl);

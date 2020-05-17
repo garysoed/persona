@@ -23,7 +23,7 @@ export class ElementInput<E extends Element, P extends Properties<E>> implements
   readonly _: Resolved<E, P>;
 
   constructor(
-      private readonly elementId: string|null,
+      private readonly elementId: string,
       properties: P,
       private readonly type: Type<E>,
   ) {
@@ -60,9 +60,6 @@ export interface ComponentSpec<P extends UnconvertedSpec> {
   readonly tag: string;
 }
 
-export function element<P extends Properties<Element>>(
-    properties: P,
-): ElementInput<Element, P>;
 export function element<E extends Element, P extends Properties<E>>(
     id: string,
     type: Type<E>,
@@ -74,28 +71,24 @@ export function element<P extends UnconvertedSpec, PX extends Properties<Element
     properties: PX,
 ): ElementInput<HTMLElement, ConvertedSpec<P>&PX>;
 export function element(
-    idOrProperties: string|Properties<Element>,
+    id: string,
     typeOrSpec?: Type<Element>|ComponentSpec<UnconvertedSpec>,
     properties?: Properties<Element>,
 ): ElementInput<Element, Properties<Element>> {
-  if (typeof idOrProperties === 'string') {
-    if (properties && typeOrSpec) {
-      if (typeOrSpec instanceof Type) {
-        return new ElementInput(idOrProperties, properties, typeOrSpec);
-      } else {
-        return new ElementInput(
-            idOrProperties,
-            {
-              ...api(typeOrSpec.api),
-              ...properties,
-            },
-            elementWithTagType(typeOrSpec.tag),
-        );
-      }
+  if (properties && typeOrSpec) {
+    if (typeOrSpec instanceof Type) {
+      return new ElementInput(id, properties, typeOrSpec);
     } else {
-      throw new Error('invalid input');
+      return new ElementInput(
+          id,
+          {
+            ...api(typeOrSpec.api),
+            ...properties,
+          },
+          elementWithTagType(typeOrSpec.tag),
+      );
     }
   } else {
-    return new ElementInput(null, idOrProperties, instanceofType(Element));
+    throw new Error('invalid input');
   }
 }

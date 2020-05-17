@@ -68,7 +68,8 @@ export class OnKeydownInput extends OnDomInput<KeyboardEvent> {
   }
 }
 
-class UnresolvedOnKeydownInput implements UnresolvedElementProperty<Element, OnKeydownInput> {
+export class UnresolvedOnKeydownInput implements
+    UnresolvedElementProperty<Element, OnKeydownInput> {
   constructor(
       private readonly key: string,
       private readonly matchOptions: MatchOptions,

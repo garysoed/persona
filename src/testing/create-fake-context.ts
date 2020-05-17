@@ -9,9 +9,9 @@ type PartialPersonaContext = Partial<PersonaContext> & {
 
 export function createFakeContext(partial: PartialPersonaContext): PersonaContext {
   return {
-    ...partial,
     onAttributeChanged$: new Subject(),
     onDisconnect$: new ReplaySubject<void>(1),
     vine: new Vine('test'),
+    ...partial,
   };
 }

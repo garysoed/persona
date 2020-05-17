@@ -23,6 +23,11 @@ export class AttributeOutput<T> implements Output<T> {
         tap(([value, el]) => {
           const result = this.parser.convertForward(value);
           if (result.success) {
+            const currentValue = el.getAttribute(this.attrName);
+            if (currentValue === result.result) {
+              return;
+            }
+
             el.setAttribute(this.attrName, result.result);
           }
 

@@ -1,6 +1,6 @@
-import { Errors } from 'gs-tools/export/error';
-import { Converter, firstSuccess } from 'nabu';
+import { Converter } from 'nabu';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
@@ -13,14 +13,20 @@ export class AttributeInput<T> implements Input<T> {
   constructor(
       readonly attrName: string,
       readonly parser: Converter<T, string>,
-      readonly defaultValue: T|undefined,
+      readonly defaultValue: T,
       readonly resolver: Resolver<Element>,
   ) { }
 
   getValue(context: PersonaContext): Observable<T> {
+    return this.getAttributeValue(context).pipe(
+        map(unparsed => this.parseValue(unparsed)),
+    );
+  }
+
+  protected getAttributeValue(context: PersonaContext): Observable<string> {
     return attributeObservable(
         this.attrName,
-        unparsed => this.parseValue(unparsed),
+        unparsed => unparsed,
         this.resolver(context),
     );
   }
@@ -28,11 +34,7 @@ export class AttributeInput<T> implements Input<T> {
   private parseValue(unparsed: string): T {
     const parseResult = this.parser.convertBackward(unparsed);
     if (!parseResult.success) {
-      if (this.defaultValue !== undefined) {
-        return this.defaultValue;
-      } else {
-        throw Errors.assert(`Value of ${this.attrName}`).shouldBe('parsable').butWas(unparsed);
-      }
+      return this.defaultValue;
     }
 
     return parseResult.result;
@@ -44,7 +46,7 @@ export class UnresolvedAttributeInput<T> implements
   constructor(
       readonly attrName: string,
       readonly parser: Converter<T, string>,
-      readonly defaultValue: T|undefined,
+      readonly defaultValue: T,
   ) { }
 
   createAttributePair(value: T): readonly [string, string] {
@@ -80,16 +82,5 @@ export function attribute<T>(
     parser: Converter<T, string>,
     defaultValue?: T,
 ): UnresolvedAttributeInput<T>|UnresolvedAttributeInput<T|undefined> {
-  const normalizedParser = firstSuccess(
-      parser,
-      {
-        convertBackward: () => {
-          return {success: true, result: defaultValue};
-        },
-        convertForward: () => {
-          throw new Error('Unsupported');
-        },
-      },
-  );
-  return new UnresolvedAttributeInput(attrName, normalizedParser, defaultValue);
+  return new UnresolvedAttributeInput(attrName, parser, defaultValue);
 }

@@ -22,16 +22,6 @@ test('@persona/main/element', () => {
       assert(spyElement$).to.emitWith(el);
     });
 
-    should(`handle emitting the host element`, () => {
-      const input = element({});
-
-      const root = document.createElement('div');
-      const shadowRoot = root.attachShadow({mode: 'open'});
-
-      const spyElement$ = createSpySubject(input.getValue(createFakeContext({shadowRoot})));
-      assert(spyElement$).to.emitWith(root);
-    });
-
     should(`handle component specs`, () => {
       const ID = 'id';
       const tag = 'tag';

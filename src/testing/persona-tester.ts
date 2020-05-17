@@ -11,9 +11,6 @@ import { FakeCustomElementRegistry } from './fake-custom-element-registry';
 import { FakeMediaQuery, mockMatchMedia } from './mock-match-media';
 import { PersonaTesterEnvironment } from './persona-tester-environment';
 
-// TODO: This needs to be moved to build.
-runEnvironment(new PersonaTesterEnvironment());
-
 /**
  * Used to test UI implemented using Persona.
  */
@@ -75,6 +72,7 @@ export class PersonaTesterFactory {
         });
 
     mockMatchMedia(window);
+    runEnvironment(new PersonaTesterEnvironment());
 
     return tester;
   }

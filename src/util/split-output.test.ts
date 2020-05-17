@@ -2,17 +2,18 @@ import { assert, run, should, test } from 'gs-testing';
 import { identity } from 'nabu';
 import { of as observableOf } from 'rxjs';
 
-import { element } from '../main/element';
+import { host } from '../main/host';
 import { attribute } from '../output/attribute';
 import { createFakeContext } from '../testing/create-fake-context';
 
 import { splitOutput } from './split-output';
 
+
 test('@persona/util/split-output', () => {
   should(`split the output to two different outputs correctly`, () => {
     const ATTR_NAME_1 = 'attr1';
     const ATTR_NAME_2 = 'attr2';
-    const $ = element({
+    const $ = host({
       attr1: attribute(ATTR_NAME_1, identity()),
       attr2: attribute(ATTR_NAME_2, identity()),
     });

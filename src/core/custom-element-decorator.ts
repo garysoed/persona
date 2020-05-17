@@ -33,7 +33,7 @@ export class CustomElementDecorator {
     if (!context) {
       return;
     }
-    context.onAttributeChanged$.next({attrName, oldValue, newValue});
+    context.onAttributeChanged$.next({attrName});
   }
 
   connectedCallback(): void {
