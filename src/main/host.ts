@@ -3,15 +3,19 @@ import { Observable, of as observableOf } from 'rxjs';
 import { PersonaContext } from '../core/persona-context';
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHandlerInput } from '../input/handler';
+import { UnresolvedHasAttributeInput } from '../input/has-attribute';
 import { Input } from '../types/input';
 import { Output } from '../types/output';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 import { HostAttribute } from './host-attribute';
+import { HostHandler } from './host-handler';
+import { HostHasAttribute } from './host-has-attribute';
 
 
 type CompatibleProperties =
     | UnresolvedElementProperty<Element, Output<any>>
+    | UnresolvedHasAttributeInput
     | UnresolvedAttributeInput<any>
     | UnresolvedHandlerInput;
 
@@ -50,6 +54,14 @@ class HostInput<P extends PropertySpecs> implements Input<Element> {
   private resolveProperty(property: CompatibleProperties): Input<unknown>|Output<unknown> {
     if (property instanceof UnresolvedAttributeInput) {
       return new HostAttribute(property.attrName, property.parser, property.defaultValue);
+    }
+
+    if (property instanceof UnresolvedHandlerInput) {
+      return new HostHandler(property.functionName);
+    }
+
+    if (property instanceof UnresolvedHasAttributeInput) {
+      return new HostHasAttribute(property.attrName);
     }
 
     return property.resolve(context => this.getValue(context));

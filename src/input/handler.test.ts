@@ -1,5 +1,5 @@
 import { assert, createSpySubject, run, should, teardown, test } from 'gs-testing';
-import { instanceofType } from 'gs-types';
+import { instanceofType, numberType, tupleOfType } from 'gs-types';
 import { of as observableOf, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
