@@ -11,7 +11,9 @@ import { Output } from '../types/output';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 import { HostAttribute } from './host-attribute';
+import { HostEmitter } from './host-emitter';
 import { HostHasAttribute } from './host-has-attribute';
+import { HostObserver } from './host-observer';
 
 
 type CompatibleProperties =
@@ -20,7 +22,9 @@ type CompatibleProperties =
     | UnresolvedOnKeydownInput
     | UnresolvedHasAttributeInput
     | UnresolvedAttributeInput<any>
-    | UnresolvedHandlerInput;
+    | UnresolvedHandlerInput
+    | HostEmitter<any>
+    | HostObserver<any>;
 
 interface PropertySpecs {
   readonly [key: string]: CompatibleProperties;
@@ -61,6 +65,14 @@ class HostInput<P extends PropertySpecs> implements Input<Element> {
 
     if (property instanceof UnresolvedHasAttributeInput) {
       return new HostHasAttribute(property.attrName);
+    }
+
+    if (property instanceof HostEmitter) {
+      return property;
+    }
+
+    if (property instanceof HostObserver) {
+      return property;
     }
 
     return property.resolve(context => this.getValue(context));
