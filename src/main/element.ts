@@ -1,14 +1,13 @@
 import { Errors } from 'gs-tools/export/error';
 import { elementWithTagType, Type } from 'gs-types';
 import { Observable, of as observableOf } from 'rxjs';
-import { distinctUntilChanged } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
-import { elementObservable } from '../util/element-observable';
 
 import { api, ConvertedSpec, UnconvertedSpec } from './api';
+import { ComponentSpec } from './component-spec';
 
 
 interface Properties<E extends Element> {
@@ -50,11 +49,6 @@ export class ElementInput<E extends Element, P extends Properties<E>> implements
 
     return resolvedProperties;
   }
-}
-
-export interface ComponentSpec<P extends UnconvertedSpec> {
-  readonly api: P;
-  readonly tag: string;
 }
 
 export function element<E extends Element, P extends Properties<E>>(

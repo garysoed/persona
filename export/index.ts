@@ -17,10 +17,11 @@ export { onKeydown } from '../src/input/on-keydown';
 
 // Main
 export { api } from '../src/main/api';
-export { element, ComponentSpec } from '../src/main/element';
+export { element } from '../src/main/element';
 export { host } from '../src/main/host';
 export { repeated } from '../src/main/repeated';
 export { single } from '../src/main/single';
+export { ComponentSpec } from '../src/main/component-spec';
 
 // Outputs
 export { attribute as attributeOut } from '../src/output/attribute';
@@ -53,6 +54,5 @@ export { InnerHtmlParseService } from '../src/render/inner-html-parse-service';
 export { NoopRenderSpec } from '../src/render/noop-render-spec';
 export { RenderSpec } from '../src/render/render-spec';
 export { SimpleElementRenderSpec } from '../src/render/simple-element-render-spec';
-// export { renderFromTemplate } from '../src/render/template-render-spec';
 
 export { booleanParser, enumParser, integerParser, listParser, mapParser, stringParser } from '../src/util/parsers';

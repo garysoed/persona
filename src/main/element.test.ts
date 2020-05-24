@@ -50,8 +50,8 @@ test('@persona/main/element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      const spyElement$ = createSpySubject(input.getValue(createFakeContext({shadowRoot})));
-      assert(spyElement$).to.emitErrorWithMessage(/Element of/);
+      assert(() => input.getValue(createFakeContext({shadowRoot})))
+          .to.throwErrorWithMessage(/Element of/);
     });
   });
 });

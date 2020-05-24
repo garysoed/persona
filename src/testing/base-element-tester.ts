@@ -1,7 +1,7 @@
 import { Vine } from 'grapevine';
 import { $, $filter, $head, arrayFrom } from 'gs-tools/export/collect';
 import { stringify, Verbosity } from 'moirai';
-import { Observable } from 'rxjs';
+import { fromEvent, Observable } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 
 import { __context, DecoratedElement } from '../core/custom-element-decorator';
@@ -15,7 +15,7 @@ import { RepeatedOutput } from '../main/repeated';
 import { SingleOutput } from '../main/single';
 import { AttributeOutput } from '../output/attribute';
 import { ClassToggleOutput } from '../output/class-toggle';
-import { DispatcherOutput } from '../output/dispatcher';
+import { DispatcherOutput, UnresolvedDispatcherOutput } from '../output/dispatcher';
 import { SetAttributeOutput } from '../output/set-attribute';
 import { StyleOutput } from '../output/style';
 import { Input } from '../types/input';
@@ -113,6 +113,14 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
       input: Input<E>,
   ): Observable<E> {
     return this.elementObs.pipe(getElement(context => input.getValue(context)));
+  }
+
+  getEvents<E extends Event>(
+      dispatcher: UnresolvedDispatcherOutput<E>,
+  ): Observable<E> {
+    return this.elementObs.pipe(
+        switchMap(element => fromEvent<E>(element, dispatcher.eventName)),
+    );
   }
 
   getHasClass(
