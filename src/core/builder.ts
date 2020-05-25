@@ -5,6 +5,7 @@ import { Errors } from 'gs-tools/export/error';
 import { iterableOfType, unknownType } from 'gs-types';
 
 import { UnresolvedAttributeInput } from '../input/attribute';
+import { UnresolvedHasAttributeInput } from '../input/has-attribute';
 import { UnconvertedSpec } from '../main/api';
 import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec';
@@ -80,7 +81,8 @@ export class Builder {
               Object.keys(api),
               $map(key => api[key]),
               $filter((spec): spec is UnresolvedAttributeInput<unknown> => {
-                return spec instanceof UnresolvedAttributeInput;
+                return spec instanceof UnresolvedAttributeInput ||
+                    spec instanceof UnresolvedHasAttributeInput;
               }),
               $map(({attrName}) => attrName),
               $asArray(),

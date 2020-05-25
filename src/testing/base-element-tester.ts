@@ -1,7 +1,8 @@
 import { Vine } from 'grapevine';
+import { fake, Spy, spy } from 'gs-testing';
 import { $, $filter, $head, arrayFrom } from 'gs-tools/export/collect';
 import { stringify, Verbosity } from 'moirai';
-import { fromEvent, Observable } from 'rxjs';
+import { fromEvent, Observable, Subject } from 'rxjs';
 import { map, switchMap, take, tap } from 'rxjs/operators';
 
 import { __context, DecoratedElement } from '../core/custom-element-decorator';
@@ -14,6 +15,7 @@ import { OnDomInput } from '../input/on-dom';
 import { RepeatedOutput } from '../main/repeated';
 import { SingleOutput } from '../main/single';
 import { AttributeOutput } from '../output/attribute';
+import { CallerOutput } from '../output/caller';
 import { ClassToggleOutput } from '../output/class-toggle';
 import { DispatcherOutput, UnresolvedDispatcherOutput } from '../output/dispatcher';
 import { SetAttributeOutput } from '../output/set-attribute';
@@ -31,7 +33,7 @@ interface Key {
 
 export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   constructor(
-      readonly elementObs: Observable<T>,
+      readonly element$: Observable<T>,
       readonly vine: Vine,
   ) { }
 
@@ -39,7 +41,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
       input: HandlerInput,
       args: readonly unknown[],
   ): Observable<unknown> {
-    return this.elementObs
+    return this.element$
         .pipe(
             getElement(context => input.resolver(context)),
             tap(el => (el as any)[input.functionName](...args)),
@@ -58,7 +60,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
       spec: OnDomInput<Event>,
       event: Event = new CustomEvent(spec.eventName),
   ): Observable<unknown> {
-    return this.elementObs
+    return this.element$
         .pipe(
             getElement(context => spec.resolver(context)),
             tap(targetEl => targetEl.dispatchEvent(event)),
@@ -67,7 +69,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   }
 
   getAttribute<T>(output: AttributeOutput<T>|AttributeInput<T>): Observable<T> {
-    return this.elementObs
+    return this.element$
         .pipe(
             getElement(context => output.resolver(context)),
             map(targetEl => {
@@ -90,7 +92,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   }
 
   getClassList(input: Input<Element>): Observable<Set<string>> {
-    return this.elementObs
+    return this.element$
         .pipe(
             getElement(shadowRoot => input.getValue(shadowRoot)),
             map(el => {
@@ -112,13 +114,13 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   getElement<E extends Element>(
       input: Input<E>,
   ): Observable<E> {
-    return this.elementObs.pipe(getElement(context => input.getValue(context)));
+    return this.element$.pipe(getElement(context => input.getValue(context)));
   }
 
   getEvents<E extends Event>(
       dispatcher: UnresolvedDispatcherOutput<E>,
   ): Observable<E> {
-    return this.elementObs.pipe(
+    return this.element$.pipe(
         switchMap(element => fromEvent<E>(element, dispatcher.eventName)),
     );
   }
@@ -126,7 +128,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   getHasClass(
       ioutput: ClassToggleOutput|HasClassInput,
   ): Observable<boolean> {
-    return this.elementObs
+    return this.element$
         .pipe(
             getElement(context => ioutput.resolver(context)),
             map(el => el.classList.contains(ioutput.className)),
@@ -136,7 +138,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   getNodesAfter(
       output: RepeatedOutput|SingleOutput,
   ): Observable<Node[]> {
-    return this.elementObs
+    return this.element$
         .pipe(
             getElement(context => output.resolver(context)),
             map(parentEl => findCommentNode(
@@ -166,7 +168,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   getStyle<S extends keyof CSSStyleDeclaration>(
       output: StyleOutput<S>,
   ): Observable<CSSStyleDeclaration[S]> {
-    return this.elementObs
+    return this.element$
         .pipe(
             getElement(context => output.resolver(context)),
             map(targetEl => targetEl.style[output.styleKey]),
@@ -176,7 +178,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   getTextContent(
       input: Input<Element>,
   ): Observable<string> {
-    return this.elementObs
+    return this.element$
         .pipe(
             getElement(context => input.getValue(context)),
             map(el => el.textContent || ''),
@@ -186,7 +188,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   hasAttribute(
       spec: SetAttributeOutput|HasAttributeInput,
   ): Observable<boolean> {
-    return this.elementObs
+    return this.element$
         .pipe(
             getElement(context => spec.resolver(context)),
             map(el => el.hasAttribute(spec.attrName)),
@@ -203,7 +205,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
       throw new Error(`Invalid value: ${value}`);
     }
 
-    return this.elementObs
+    return this.element$
         .pipe(
             getElement(context => input.resolver(context)),
             tap(targetEl => {
@@ -217,7 +219,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
       output: SetAttributeOutput|HasAttributeInput,
       value: boolean,
   ): Observable<unknown> {
-    return this.elementObs
+    return this.element$
         .pipe(
             getElement(context => output.resolver(context)),
             take(1),
@@ -235,7 +237,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
       input: Input<HTMLInputElement>,
       value: string,
   ): Observable<unknown> {
-    return this.elementObs
+    return this.element$
         .pipe(
             getElement(context => input.getValue(context)),
             take(1),
@@ -250,7 +252,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
       input: Input<Element>,
       keys: Key[],
   ): Observable<unknown> {
-    return this.elementObs
+    return this.element$
         .pipe(
             getElement(context => input.getValue(context)),
             tap(targetEl => {
@@ -277,6 +279,22 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
         );
   }
 
+  spyOnFunction(
+      outputInput: CallerOutput<unknown[]>|HandlerInput,
+  ): Observable<unknown[]> {
+    return this.element$
+        .pipe(
+            getElement(context => outputInput.resolver(context)),
+            switchMap(el => {
+              const subject = new Subject<unknown[]>();
+              fake(spy(el as any, outputInput.functionName)).call((...args) => {
+                subject.next(args);
+              });
+
+              return subject;
+            }),
+        );
+  }
 }
 
 function findCommentNode<R>(
