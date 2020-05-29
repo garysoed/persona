@@ -1,8 +1,8 @@
-import { integerParser, textContent } from 'export';
 import { assert, should, test } from 'gs-testing';
 
 import { attribute } from '../input/attribute';
-import { TextContentOutput } from '../output/text-content';
+import { textContent, TextContentOutput } from '../output/text-content';
+import { integerParser } from '../util/parsers';
 
 import { host } from './host';
 import { HostAttribute } from './host-attribute';

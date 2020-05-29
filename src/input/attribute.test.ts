@@ -2,9 +2,9 @@ import { assert, should, test } from 'gs-testing';
 import { integerConverter } from 'gs-tools/export/serializer';
 import { instanceofType } from 'gs-types';
 import { compose, human } from 'nabu';
-import { createFakeContext } from 'src/testing/create-fake-context';
 
 import { element } from '../main/element';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { attribute } from './attribute';
 

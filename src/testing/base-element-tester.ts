@@ -118,7 +118,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   }
 
   getEvents<E extends Event>(
-      dispatcher: UnresolvedDispatcherOutput<E>,
+      dispatcher: UnresolvedDispatcherOutput<E>|DispatcherOutput<E>,
   ): Observable<E> {
     return this.element$.pipe(
         switchMap(element => fromEvent<E>(element, dispatcher.eventName)),

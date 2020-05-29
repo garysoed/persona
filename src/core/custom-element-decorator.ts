@@ -1,6 +1,6 @@
 import { Vine } from 'grapevine';
 import { cache } from 'gs-tools/export/data';
-import { ReplaySubject, Subject } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
@@ -17,6 +17,14 @@ export type DecoratedElement = HTMLElement & {[__context]?: PersonaContext|null}
  * Main logic class of custom elements.
  */
 export class CustomElementDecorator {
+  private readonly onAttributeChanged$ = new Subject<AttributeChangedEvent>();
+  private readonly context = {
+    onAttributeChanged$: this.onAttributeChanged$,
+    shadowRoot: this.shadowRoot,
+    vine: this.vine,
+  };
+  private readonly instance = new (this.componentClass)(this.context);
+
   constructor(
       private readonly componentClass: CustomElementCtrlCtor,
       private readonly element: DecoratedElement,
@@ -25,45 +33,15 @@ export class CustomElementDecorator {
       private readonly vine: Vine,
       private readonly shadowMode: 'open' | 'closed' = 'closed',
   ) {
-
+    this.element[__context] = this.context;
   }
 
   attributeChangedCallback(attrName: string, oldValue: string, newValue: string): void {
-    const context = this.element[__context];
-    if (!context) {
-      return;
-    }
-    context.onAttributeChanged$.next({attrName});
+    this.onAttributeChanged$.next({attrName});
   }
 
-  connectedCallback(): void {
-    if (this.element[__context]) {
-      return;
-    }
-
-    const ctor = this.componentClass;
-    const onDisconnect$ = new ReplaySubject<void>(1);
-    const onAttributeChanged$ = new Subject<AttributeChangedEvent>();
-    const context = {
-      onAttributeChanged$,
-      onDisconnect$,
-      shadowRoot: this.shadowRoot,
-      vine: this.vine,
-    };
-    const componentInstance = new ctor(context);
-    componentInstance.run().pipe(takeUntil(onDisconnect$)).subscribe();
-    this.element[__context] = context;
-  }
-
-  disconnectedCallback(): void {
-    const context = this.element[__context];
-    if (context) {
-      context.onDisconnect$.next();
-      context.onDisconnect$.complete();
-      context.onAttributeChanged$.next();
-      context.onAttributeChanged$.complete();
-      this.element[__context] = null;
-    }
+  run(): Observable<unknown> {
+    return this.instance.run();
   }
 
   @cache()

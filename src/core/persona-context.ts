@@ -7,7 +7,6 @@ export interface AttributeChangedEvent {
 
 export interface PersonaContext {
   readonly onAttributeChanged$: Subject<AttributeChangedEvent>;
-  readonly onDisconnect$: ReplaySubject<void>;
   readonly shadowRoot: ShadowRoot;
   readonly vine: Vine;
 }

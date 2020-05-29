@@ -15,6 +15,7 @@ export class DispatcherOutput<E extends Event> implements Output<E> {
   private readonly caller: CallerOutput<[E]>;
 
   constructor(
+      readonly eventName: string,
       readonly resolver: Resolver<Element>,
   ) {
     this.caller = new CallerOutput(resolver, 'dispatchEvent');
@@ -33,7 +34,7 @@ export class UnresolvedDispatcherOutput<E extends Event> implements
   constructor(readonly eventName: string) { }
 
   resolve(resolver: Resolver<Element>): DispatcherOutput<E> {
-    return new DispatcherOutput(resolver);
+    return new DispatcherOutput(this.eventName, resolver);
   }
 }
 

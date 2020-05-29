@@ -3,6 +3,8 @@ import { $, $asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pip
 import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
 import { iterableOfType, unknownType } from 'gs-types';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';
@@ -149,6 +151,7 @@ function createCustomElementClass(
   };
   const htmlClass = class extends HTMLElement {
     private readonly decorator: CustomElementDecorator = decoratorFactory(this, 'closed');
+    private readonly onDisconnect$ = new Subject<void>();
 
     constructor() {
       super();
@@ -159,11 +162,11 @@ function createCustomElementClass(
     }
 
     connectedCallback(): void {
-      this.decorator.connectedCallback();
+      this.decorator.run().pipe(takeUntil(this.onDisconnect$)).subscribe();
     }
 
     disconnectedCallback(): void {
-      this.decorator.disconnectedCallback();
+      this.onDisconnect$.next(undefined);
     }
 
     static get observedAttributes(): readonly string[] {

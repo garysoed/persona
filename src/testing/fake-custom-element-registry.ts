@@ -6,6 +6,9 @@ import { __context, DecoratedElement } from '../core/custom-element-decorator';
 import { mutationObservable } from '../util/mutation-observable';
 
 type Listener = () => void;
+const __upgraded = Symbol('upgraded');
+
+type UpgradedElement = HTMLElement & {[__upgraded]?: boolean};
 
 export class FakeCustomElementRegistry implements CustomElementRegistry {
   private readonly definedElements: Map<string, CustomElementClass> = new Map();
@@ -57,11 +60,12 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     });
   }
 
-  private upgradeElement_(el: DecoratedElement): void {
-    if (el[__context]) {
+  private upgradeElement_(el: UpgradedElement): void {
+    if (el[__upgraded]) {
       // Already upgraded, so ignore it.
       return;
     }
+    el[__upgraded] = true;
 
     const tag = el.tagName.toLowerCase();
     const ctor = this.get(tag);
@@ -69,7 +73,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
       return;
     }
     const customElement = ctor[__customElementImplFactory](el, 'open');
-    customElement.connectedCallback();
+    run(customElement.run());
 
     run(mutationObservable(el, {attributes: true}).pipe(
         tap(records => {

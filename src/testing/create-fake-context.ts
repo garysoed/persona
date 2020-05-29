@@ -1,7 +1,8 @@
 import { Vine } from 'grapevine';
-import { ReplaySubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 import { PersonaContext } from '../core/persona-context';
+
 
 type PartialPersonaContext = Partial<PersonaContext> & {
   readonly shadowRoot: ShadowRoot;
@@ -10,7 +11,6 @@ type PartialPersonaContext = Partial<PersonaContext> & {
 export function createFakeContext(partial: PartialPersonaContext): PersonaContext {
   return {
     onAttributeChanged$: new Subject(),
-    onDisconnect$: new ReplaySubject<void>(1),
     vine: new Vine('test'),
     ...partial,
   };

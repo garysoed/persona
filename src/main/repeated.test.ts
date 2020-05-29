@@ -1,9 +1,9 @@
-import { NoopRenderSpec } from 'export';
 import { assert, run, should, test } from 'gs-testing';
 import { ArrayDiff } from 'gs-tools/export/rxjs';
 import { instanceofType } from 'gs-types';
 import { BehaviorSubject, of as observableOf, Subject } from 'rxjs';
 
+import { NoopRenderSpec } from '../render/noop-render-spec';
 import { RenderSpec } from '../render/render-spec';
 import { SimpleElementRenderSpec } from '../render/simple-element-render-spec';
 import { createFakeContext } from '../testing/create-fake-context';
