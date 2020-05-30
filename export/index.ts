@@ -18,6 +18,7 @@ export { onKeydown } from '../src/input/on-keydown';
 // Main
 export { api } from '../src/main/api';
 export { element } from '../src/main/element';
+export { emitter } from '../src/main/host-emitter';
 export { host } from '../src/main/host';
 export { repeated } from '../src/main/repeated';
 export { single } from '../src/main/single';

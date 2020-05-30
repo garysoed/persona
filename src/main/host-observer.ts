@@ -5,13 +5,16 @@ import { map, startWith, switchMap, take } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
+import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 
 export const CHECK_INTERVAL_MS = 20;
 
-export class HostObserver<T> implements Input<T> {
+export class HostObserver<T> implements
+    Input<T>,
+    UnresolvedElementProperty<Element, HostObserver<T>> {
   constructor(
-      private readonly propertyName: string,
+      readonly propertyName: string,
   ) { }
 
   getValue(context: PersonaContext): Observable<T> {
@@ -22,6 +25,10 @@ export class HostObserver<T> implements Input<T> {
         take(1),
         switchMap(obs => obs),
     );
+  }
+
+  resolve(): HostObserver<T> {
+    return this;
   }
 }
 

@@ -3,10 +3,14 @@ import { tap, withLatestFrom } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
+import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
-export class HostEmitter<T> implements Output<T> {
+
+export class HostEmitter<T> implements
+    Output<T>,
+    UnresolvedElementProperty<Element, HostEmitter<T>> {
   constructor(
-      private readonly propertyName: string,
+      readonly propertyName: string,
       private readonly subjectFactory: () => Subject<T>,
   ) { }
 
@@ -28,6 +32,10 @@ export class HostEmitter<T> implements Output<T> {
           subject.next(value);
         }),
     );
+  }
+
+  resolve(): HostEmitter<T> {
+    return this;
   }
 }
 
