@@ -1,19 +1,18 @@
 import { assertUnreachable } from 'gs-tools/export/typescript';
-import { ReplaySubject } from 'rxjs';
 
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHandlerInput } from '../input/handler';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';
 import { UnresolvedHasClassInput } from '../input/has-class';
 import { UnresolvedOnDomInput } from '../input/on-dom';
+import { UnresolvedPropertyObserver } from '../input/property-observer';
 import { UnresolvedAttributeOutput } from '../output/attribute';
 import { UnresolvedCallerOutput } from '../output/caller';
 import { UnresolvedClassToggleOutput } from '../output/class-toggle';
 import { UnresolvedDispatcherOutput } from '../output/dispatcher';
+import { UnresolvedPropertyEmitter } from '../output/property-emitter';
 import { UnresolvedSetAttributeOutput } from '../output/set-attribute';
 
-import { HostEmitter } from './host-emitter';
-import { HostObserver } from './host-observer';
 
 type ConvertibleProperty =
     UnresolvedAttributeInput<any>|
@@ -21,13 +20,13 @@ type ConvertibleProperty =
     UnresolvedOnDomInput<any>|
     UnresolvedHasAttributeInput|
     UnresolvedHasClassInput|
-    HostObserver<any>|
+    UnresolvedPropertyObserver|
     UnresolvedAttributeOutput<any>|
     UnresolvedCallerOutput<any>|
     UnresolvedDispatcherOutput<any>|
     UnresolvedSetAttributeOutput|
     UnresolvedClassToggleOutput|
-    HostEmitter<any>;
+    UnresolvedPropertyEmitter<any>;
 
 export interface UnconvertedSpec {
   readonly [key: string]: ConvertibleProperty;
@@ -39,13 +38,13 @@ export type ConvertedSpec<S> = S extends UnconvertedSpec ? {[K in keyof S]: Conv
     S extends UnresolvedOnDomInput<infer T> ? UnresolvedDispatcherOutput<T> :
     S extends UnresolvedHasAttributeInput ? UnresolvedSetAttributeOutput :
     S extends UnresolvedHasClassInput ? UnresolvedClassToggleOutput :
-    S extends HostObserver<infer T> ? HostEmitter<T> :
+    S extends UnresolvedPropertyObserver ? UnresolvedPropertyEmitter<unknown> :
     S extends UnresolvedAttributeOutput<infer T> ? UnresolvedAttributeInput<T> :
     S extends UnresolvedCallerOutput<readonly any[]> ? UnresolvedHandlerInput :
     S extends UnresolvedDispatcherOutput<infer T> ? UnresolvedOnDomInput<T> :
     S extends UnresolvedSetAttributeOutput ? UnresolvedHasAttributeInput :
     S extends UnresolvedClassToggleOutput ? UnresolvedHasClassInput :
-    S extends HostEmitter<infer T> ? HostObserver<T> :
+    S extends UnresolvedPropertyEmitter<unknown> ? UnresolvedPropertyObserver :
     never;
 
 /**
@@ -84,8 +83,8 @@ function convert(property: ConvertibleProperty): ConvertibleProperty {
     return new UnresolvedSetAttributeOutput(property.attrName);
   } else if (property instanceof UnresolvedHasClassInput) {
     return new UnresolvedClassToggleOutput(property.className);
-  } else if (property instanceof HostObserver) {
-    return new HostEmitter(property.propertyName, () => new ReplaySubject(1));
+  } else if (property instanceof UnresolvedPropertyObserver) {
+    return new UnresolvedPropertyEmitter(property.propertyName);
   } else if (property instanceof UnresolvedCallerOutput) {
     return new UnresolvedHandlerInput(property.functionName);
   } else if (property instanceof UnresolvedOnDomInput) {
@@ -96,8 +95,8 @@ function convert(property: ConvertibleProperty): ConvertibleProperty {
     return new UnresolvedHasAttributeInput(property.attrName);
   } else if (property instanceof UnresolvedClassToggleOutput) {
     return new UnresolvedHasClassInput(property.className);
-  } else if (property instanceof HostEmitter) {
-    return new HostObserver(property.propertyName);
+  } else if (property instanceof UnresolvedPropertyEmitter) {
+    return new UnresolvedPropertyObserver(property.propertyName);
   } else {
     throw assertUnreachable(property);
   }

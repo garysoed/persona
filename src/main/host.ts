@@ -6,14 +6,14 @@ import { UnresolvedHandlerInput } from '../input/handler';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';
 import { UnresolvedOnDomInput } from '../input/on-dom';
 import { UnresolvedOnKeydownInput } from '../input/on-keydown';
+import { UnresolvedPropertyObserver } from '../input/property-observer';
+import { UnresolvedPropertyEmitter } from '../output/property-emitter';
 import { Input } from '../types/input';
 import { Output } from '../types/output';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 import { HostAttribute } from './host-attribute';
-import { HostEmitter } from './host-emitter';
 import { HostHasAttribute } from './host-has-attribute';
-import { HostObserver } from './host-observer';
 
 
 type CompatibleProperties =
@@ -23,8 +23,8 @@ type CompatibleProperties =
     | UnresolvedHasAttributeInput
     | UnresolvedAttributeInput<any>
     | UnresolvedHandlerInput
-    | HostEmitter<any>
-    | HostObserver<any>;
+    | UnresolvedPropertyEmitter<any>
+    | UnresolvedPropertyObserver;
 
 interface PropertySpecs {
   readonly [key: string]: CompatibleProperties;
@@ -65,14 +65,6 @@ class HostInput<P extends PropertySpecs> implements Input<Element> {
 
     if (property instanceof UnresolvedHasAttributeInput) {
       return new HostHasAttribute(property.attrName);
-    }
-
-    if (property instanceof HostEmitter) {
-      return property;
-    }
-
-    if (property instanceof HostObserver) {
-      return property;
     }
 
     return property.resolve(context => this.getValue(context));

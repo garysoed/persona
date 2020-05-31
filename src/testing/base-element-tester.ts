@@ -1,5 +1,5 @@
 import { Vine } from 'grapevine';
-import { fake, Spy, spy } from 'gs-testing';
+import { fake, spy } from 'gs-testing';
 import { $, $filter, $head, arrayFrom } from 'gs-tools/export/collect';
 import { stringify, Verbosity } from 'moirai';
 import { fromEvent, Observable, Subject } from 'rxjs';
@@ -12,12 +12,15 @@ import { HandlerInput } from '../input/handler';
 import { HasAttributeInput } from '../input/has-attribute';
 import { HasClassInput } from '../input/has-class';
 import { OnDomInput } from '../input/on-dom';
+import { OnInputInput } from '../input/on-input';
+import { PropertyObserver } from '../input/property-observer';
 import { RepeatedOutput } from '../main/repeated';
 import { SingleOutput } from '../main/single';
 import { AttributeOutput } from '../output/attribute';
 import { CallerOutput } from '../output/caller';
 import { ClassToggleOutput } from '../output/class-toggle';
 import { DispatcherOutput, UnresolvedDispatcherOutput } from '../output/dispatcher';
+import { PropertyEmitter } from '../output/property-emitter';
 import { SetAttributeOutput } from '../output/set-attribute';
 import { StyleOutput } from '../output/style';
 import { Input } from '../types/input';
@@ -50,20 +53,22 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   }
 
   dispatchEvent<E extends Event>(
-      spec: OnDomInput<E>|DispatcherOutput<E>,
+      spec: OnDomInput<E>|DispatcherOutput<E>|OnInputInput,
       event: E,
   ): Observable<unknown>;
   dispatchEvent(
-      spec: OnDomInput<Event>|DispatcherOutput<Event>,
+      spec: OnDomInput<Event>|DispatcherOutput<Event>|OnInputInput,
   ): Observable<unknown>;
   dispatchEvent(
-      spec: OnDomInput<Event>,
-      event: Event = new CustomEvent(spec.eventName),
+      spec: OnDomInput<Event>|OnInputInput,
+      event?: Event,
   ): Observable<unknown> {
+    const eventName = spec instanceof OnInputInput ? 'input' : spec.eventName;
+    const normalizedEvent = event || new CustomEvent(eventName);
     return this.element$
         .pipe(
             getElement(context => spec.resolver(context)),
-            tap(targetEl => targetEl.dispatchEvent(event)),
+            tap(targetEl => targetEl.dispatchEvent(normalizedEvent)),
             take(1),
         );
   }
@@ -163,6 +168,13 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
               return nodes;
             }),
         );
+  }
+
+  getObserver(input: PropertyObserver|PropertyEmitter<unknown>): Observable<unknown> {
+    return this.element$.pipe(
+        getElement(context => input.resolver(context)),
+        switchMap(el => (el as any)[input.propertyName]),
+    );
   }
 
   getStyle<S extends keyof CSSStyleDeclaration>(

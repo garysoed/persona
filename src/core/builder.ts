@@ -3,12 +3,13 @@ import { $, $asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pip
 import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
 import { iterableOfType, unknownType } from 'gs-types';
-import { Subject } from 'rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';
 import { UnconvertedSpec } from '../main/api';
+import { UnresolvedPropertyEmitter } from '../output/property-emitter';
 import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec';
 
@@ -89,8 +90,20 @@ export class Builder {
               $map(({attrName}) => attrName),
               $asArray(),
           );
+
+          const emitters = $pipe(
+              Object.keys(api),
+              $map(key => api[key]),
+              $filter((spec): spec is UnresolvedPropertyEmitter<unknown> => {
+                return spec instanceof UnresolvedPropertyEmitter;
+              }),
+              $map(({propertyName}) => propertyName),
+              $asSet(),
+          );
+
           const elementClass = createCustomElementClass(
               componentClass,
+              emitters,
               observedAttributes,
               tag,
               templateService,
@@ -135,6 +148,7 @@ export class Builder {
 
 function createCustomElementClass(
     componentClass: CustomElementCtrlCtor,
+    emitters: ReadonlySet<string>,
     observedAttributes: readonly string[],
     tag: string,
     templateService: TemplateService,
@@ -144,6 +158,7 @@ function createCustomElementClass(
     return new CustomElementDecorator(
         componentClass,
         element,
+        emitters,
         tag,
         templateService,
         vine,
