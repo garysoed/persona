@@ -11,7 +11,7 @@ import { UnresolvedElementProperty } from '../types/unresolved-element-property'
 
 type ObservableElement = Element & {readonly [key: string]: Observable<unknown>};
 
-const CHECK_PERIOD_MS = 20;
+export const CHECK_PERIOD_MS = 20;
 
 export class PropertyObserver implements Input<unknown> {
   constructor(

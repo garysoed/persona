@@ -1,8 +1,9 @@
-import { run } from 'gs-testing';
+import { FakeTime, run } from 'gs-testing';
 import { tap } from 'rxjs/operators';
 
 import { __customElementImplFactory, CustomElementClass } from '../core/custom-element-class';
 import { __context, DecoratedElement } from '../core/custom-element-decorator';
+import { CHECK_PERIOD_MS } from '../input/property-observer';
 import { mutationObservable } from '../util/mutation-observable';
 
 type Listener = () => void;
@@ -14,7 +15,10 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
   private readonly definedElements: Map<string, CustomElementClass> = new Map();
   private readonly listeners_: Map<string, Listener[]> = new Map();
 
-  constructor(private readonly createElement_: (tag: string) => HTMLElement) { }
+  constructor(
+      private readonly createElement_: (tag: string) => HTMLElement,
+      private readonly fakeTime: FakeTime,
+  ) { }
 
   // TODO: parent shouldn't be here.
   create(tag: string, parent: HTMLElement|null): HTMLElement {
@@ -24,6 +28,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     }
 
     this.upgradeElement_(el);
+    this.fakeTime.tick(CHECK_PERIOD_MS);
 
     return el;
   }

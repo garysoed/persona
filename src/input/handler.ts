@@ -52,7 +52,7 @@ export function handler(functionName: string): UnresolvedHandlerInput {
   return new UnresolvedHandlerInput(functionName);
 }
 
-function getSubject(el: any, functionName: string): Subject<readonly unknown[]>|null {
+export function getSubject(el: any, functionName: string): Subject<readonly unknown[]>|null {
   const existingFn = el[functionName];
   if (!(existingFn instanceof Function)) {
     return null;

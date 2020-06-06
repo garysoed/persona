@@ -1,5 +1,5 @@
 import { Vine } from 'grapevine';
-import { fake, runEnvironment, spy } from 'gs-testing';
+import { fake, FakeTime, mockTime, runEnvironment, spy } from 'gs-testing';
 import { Errors } from 'gs-tools/export/error';
 
 import { Builder as PersonaBuilder } from '../core/builder';
@@ -16,6 +16,7 @@ import { PersonaTesterEnvironment } from './persona-tester-environment';
  */
 export class PersonaTester {
   constructor(
+      readonly fakeTime: FakeTime,
       readonly vine: Vine,
       private readonly customElementRegistry: FakeCustomElementRegistry,
   ) { }
@@ -50,7 +51,8 @@ export class PersonaTesterFactory {
     // tslint:disable-next-line: deprecation
     const origCreateElement = document.createElement;
     const createElement = (tag: string) => origCreateElement.call(document, tag);
-    const customElementRegistry = new FakeCustomElementRegistry(createElement);
+    const fakeTime = mockTime(window);
+    const customElementRegistry = new FakeCustomElementRegistry(createElement, fakeTime);
 
     const {vine} = this.personaBuilder.build(
         'test',
@@ -59,7 +61,7 @@ export class PersonaTesterFactory {
         customElementRegistry,
     );
 
-    const tester = new PersonaTester(vine, customElementRegistry);
+    const tester = new PersonaTester(fakeTime, vine, customElementRegistry);
     fake(spy(document, 'createElement'))
         .always().call(tag => {
           if (customElementRegistry.get(tag)) {
@@ -70,7 +72,6 @@ export class PersonaTesterFactory {
             return createElement(tag);
           }
         });
-
     mockMatchMedia(window);
     runEnvironment(new PersonaTesterEnvironment());
 

@@ -1,19 +1,19 @@
 import { Vine } from 'grapevine';
-import { fake, spy } from 'gs-testing';
+import { fake, FakeTime, spy } from 'gs-testing';
 import { $, $filter, $head, arrayFrom } from 'gs-tools/export/collect';
 import { stringify, Verbosity } from 'moirai';
 import { fromEvent, Observable, Subject } from 'rxjs';
-import { map, switchMap, take, tap } from 'rxjs/operators';
+import { map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
 import { __context, DecoratedElement } from '../core/custom-element-decorator';
 import { PersonaContext } from '../core/persona-context';
 import { AttributeInput } from '../input/attribute';
-import { HandlerInput } from '../input/handler';
+import { getSubject, HandlerInput } from '../input/handler';
 import { HasAttributeInput } from '../input/has-attribute';
 import { HasClassInput } from '../input/has-class';
 import { OnDomInput } from '../input/on-dom';
 import { OnInputInput } from '../input/on-input';
-import { PropertyObserver } from '../input/property-observer';
+import { CHECK_PERIOD_MS, PropertyObserver } from '../input/property-observer';
 import { RepeatedOutput } from '../main/repeated';
 import { SingleOutput } from '../main/single';
 import { AttributeOutput } from '../output/attribute';
@@ -71,6 +71,30 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
             tap(targetEl => targetEl.dispatchEvent(normalizedEvent)),
             take(1),
         );
+  }
+
+  forwardEmissions(
+      input: PropertyObserver|PropertyEmitter<unknown>,
+      value$: Observable<unknown>,
+  ): Observable<unknown> {
+    const subject$ = this.element$.pipe(
+        getElement(context => input.resolver(context)),
+        take(1),
+        map(el => {
+          const subject = (el as any)[input.propertyName];
+          if (!(subject instanceof Subject)) {
+            throw new Error(`Property ${input.propertyName} is not a Subject`);
+          }
+          return subject;
+        }),
+    );
+
+    return value$.pipe(
+        withLatestFrom(subject$),
+        tap(([value, subject]) => {
+          subject.next(value);
+        }),
+    );
   }
 
   getAttribute<T>(output: AttributeOutput<T>|AttributeInput<T>): Observable<T> {
@@ -293,15 +317,15 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
 
   spyOnFunction(
       outputInput: CallerOutput<unknown[]>|HandlerInput,
-  ): Observable<unknown[]> {
+  ): Observable<readonly unknown[]> {
     return this.element$
         .pipe(
             getElement(context => outputInput.resolver(context)),
             switchMap(el => {
-              const subject = new Subject<unknown[]>();
-              fake(spy(el as any, outputInput.functionName)).call((...args) => {
-                subject.next(args);
-              });
+              const subject = getSubject(el, outputInput.functionName);
+              if (!subject) {
+                throw new Error(`Subject for ${outputInput.functionName} not found`);
+              }
 
               return subject;
             }),
@@ -343,13 +367,4 @@ function getContext(element: DecoratedElement): PersonaContext {
   }
 
   return context;
-}
-
-function getShadowRoot(element: HTMLElement): ShadowRoot {
-  const shadowRoot = element.shadowRoot;
-  if (!shadowRoot) {
-    throw new Error(`ShadowRoot for element ${element} not found`);
-  }
-
-  return shadowRoot;
 }
