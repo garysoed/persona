@@ -24,7 +24,7 @@ type CompatibleProperties =
     | UnresolvedAttributeInput<any>
     | UnresolvedHandlerInput
     | UnresolvedPropertyEmitter<any>
-    | UnresolvedPropertyObserver;
+    | UnresolvedPropertyObserver<any>;
 
 interface PropertySpecs {
   readonly [key: string]: CompatibleProperties;

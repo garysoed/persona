@@ -20,7 +20,7 @@ type ConvertibleProperty =
     UnresolvedOnDomInput<any>|
     UnresolvedHasAttributeInput|
     UnresolvedHasClassInput|
-    UnresolvedPropertyObserver|
+    UnresolvedPropertyObserver<any>|
     UnresolvedAttributeOutput<any>|
     UnresolvedCallerOutput<any>|
     UnresolvedDispatcherOutput<any>|
@@ -38,13 +38,13 @@ export type ConvertedSpec<S> = S extends UnconvertedSpec ? {[K in keyof S]: Conv
     S extends UnresolvedOnDomInput<infer T> ? UnresolvedDispatcherOutput<T> :
     S extends UnresolvedHasAttributeInput ? UnresolvedSetAttributeOutput :
     S extends UnresolvedHasClassInput ? UnresolvedClassToggleOutput :
-    S extends UnresolvedPropertyObserver ? UnresolvedPropertyEmitter<unknown> :
+    S extends UnresolvedPropertyObserver<infer T> ? UnresolvedPropertyEmitter<T> :
     S extends UnresolvedAttributeOutput<infer T> ? UnresolvedAttributeInput<T> :
     S extends UnresolvedCallerOutput<readonly any[]> ? UnresolvedHandlerInput :
     S extends UnresolvedDispatcherOutput<infer T> ? UnresolvedOnDomInput<T> :
     S extends UnresolvedSetAttributeOutput ? UnresolvedHasAttributeInput :
     S extends UnresolvedClassToggleOutput ? UnresolvedHasClassInput :
-    S extends UnresolvedPropertyEmitter<unknown> ? UnresolvedPropertyObserver :
+    S extends UnresolvedPropertyEmitter<infer T> ? UnresolvedPropertyObserver<T> :
     never;
 
 /**

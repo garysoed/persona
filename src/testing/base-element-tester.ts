@@ -73,9 +73,9 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
         );
   }
 
-  forwardEmissions(
-      input: PropertyObserver|PropertyEmitter<unknown>,
-      value$: Observable<unknown>,
+  forwardEmissions<T>(
+      input: PropertyObserver<T>|PropertyEmitter<T>,
+      value$: Observable<T>,
   ): Observable<unknown> {
     const subject$ = this.element$.pipe(
         getElement(context => input.resolver(context)),
@@ -194,10 +194,10 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
         );
   }
 
-  getObserver(input: PropertyObserver|PropertyEmitter<unknown>): Observable<unknown> {
+  getObserver<T>(input: PropertyObserver<T>|PropertyEmitter<T>): Observable<T> {
     return this.element$.pipe(
         getElement(context => input.resolver(context)),
-        switchMap(el => (el as any)[input.propertyName]),
+        switchMap(el => (el as any)[input.propertyName] as Observable<T>),
     );
   }
 

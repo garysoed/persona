@@ -3,6 +3,7 @@ export { Input } from '../src/types/input';
 export { Output } from '../src/types/output';
 export { ShadowRootLike } from '../src/types/shadow-root-like';
 
-// Outputs
+// Inputs and Outputs
 export { AttributeInput, UnresolvedAttributeInput } from '../src/input/attribute';
 export { AttributeOutput } from '../src/output/attribute';
+export { PropertyEmitter } from '../src/output/property-emitter';
