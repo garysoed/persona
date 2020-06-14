@@ -1,10 +1,10 @@
 import { Vine, VineBuilder } from 'grapevine';
 import { $, $asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pipe } from 'gs-tools/export/collect';
-import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
+import { ClassAnnotation, ClassAnnotator, cache } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
 import { iterableOfType, unknownType } from 'gs-types';
-import { ReplaySubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Observable, Subject, defer, of as observableOf, merge, timer } from 'rxjs';
+import { take, switchMap, takeUntil, delay, share, tap} from 'rxjs/operators';
 
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';
@@ -16,6 +16,13 @@ import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec'
 import { __customElementImplFactory as __decoratorFactory, CustomElementClass } from './custom-element-class';
 import { CustomElementDecorator } from './custom-element-decorator';
 import { TemplateService } from './template-service';
+
+
+export interface AttributeChangedEvent {
+  readonly attrName: string;
+  readonly newValue: string;
+  readonly oldValue: string;
+}
 
 
 interface FullComponentData extends CustomElementSpec {
@@ -165,7 +172,14 @@ function createCustomElementClass(
         shadowMode);
   };
   const htmlClass = class extends HTMLElement {
-    private readonly decorator: CustomElementDecorator = decoratorFactory(this, 'closed');
+    private readonly decorator$ = timer(0).pipe(
+        switchMap(() => {
+          return observableOf(decoratorFactory(this, 'closed'));
+        }),
+        share(),
+    );
+
+    private readonly onAttributeChanged$ = new Subject<AttributeChangedEvent>();
     private readonly onDisconnect$ = new Subject<void>();
 
     constructor() {
@@ -173,11 +187,24 @@ function createCustomElementClass(
     }
 
     attributeChangedCallback(attrName: string, oldValue: string, newValue: string): void {
-      this.decorator.attributeChangedCallback(attrName, oldValue, newValue);
+      this.onAttributeChanged$.next({attrName, oldValue, newValue});
     }
 
     connectedCallback(): void {
-      this.decorator.run().pipe(takeUntil(this.onDisconnect$)).subscribe();
+      this.decorator$.pipe(
+          take(1),
+          switchMap(decorator => {
+            const onRun$ = decorator.run();
+            const onAttributeChanged$ = this.onAttributeChanged$.pipe(
+                tap(({attrName, oldValue, newValue}) => {
+                  decorator.attributeChangedCallback(attrName, oldValue, newValue);
+                }),
+            );
+
+            return merge(onRun$, onAttributeChanged$);
+          }),
+          takeUntil(this.onDisconnect$),
+      ).subscribe();
     }
 
     disconnectedCallback(): void {
