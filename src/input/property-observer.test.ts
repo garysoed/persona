@@ -31,18 +31,15 @@ test('@persona/input/property-observer', init => {
       assert(value$).to.emitSequence([1, 2, 3]);
     });
 
-    should(`regularly check when the observable is not initialized`, () => {
-      const elValue$ = new BehaviorSubject<number>(1);
-      const fakeTime = mockTime(window);
+    should(`add observable when the observable is not initialized`, () => {
       const value$ = createSpySubject(_.input.getValue(_.context));
 
-      assert(value$).toNot.emit();
+      const elValue$ = (_.el as any)[PROPERTY_NAME] as ReplaySubject<number>;
+      elValue$.next(1);
+      elValue$.next(2);
+      elValue$.next(3);
 
-      // Add the observable and tick time.
-      Object.assign(_.el, {[PROPERTY_NAME]: elValue$});
-      fakeTime.tickToTrigger();
-
-      assert(value$).to.emitSequence([1]);
+      assert(value$).to.emitSequence([1, 2, 3]);
     });
   });
 });

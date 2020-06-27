@@ -28,15 +28,12 @@ export class CustomElementDecorator {
   constructor(
       private readonly componentClass: CustomElementCtrlCtor,
       private readonly element: DecoratedElement,
-      private readonly emitters: ReadonlySet<string>,
       private readonly tag: string,
       private readonly templateService: TemplateService,
       private readonly vine: Vine,
       private readonly shadowMode: 'open' | 'closed' = 'closed',
   ) {
     this.element[__context] = this.context;
-
-    this.setupEmitters();
   }
 
   attributeChangedCallback(attrName: string, oldValue: string, newValue: string): void {
@@ -45,14 +42,6 @@ export class CustomElementDecorator {
 
   run(): Observable<unknown> {
     return this.instance.run();
-  }
-
-  private setupEmitters(): void {
-    const values: {[key: string]: Subject<unknown>} = {};
-    for (const key of this.emitters) {
-      values[key] = new ReplaySubject<unknown>(1);
-    }
-    Object.assign(this.element, values);
   }
 
   @cache()

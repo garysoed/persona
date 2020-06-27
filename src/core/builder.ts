@@ -1,13 +1,14 @@
 import { Vine, VineBuilder } from 'grapevine';
 import { $, $asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pipe } from 'gs-tools/export/collect';
-import { ClassAnnotation, ClassAnnotator, cache } from 'gs-tools/export/data';
+import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
 import { iterableOfType, unknownType } from 'gs-types';
-import { Observable, Subject, defer, of as observableOf, merge, timer } from 'rxjs';
-import { take, switchMap, takeUntil, delay, share, tap} from 'rxjs/operators';
+import { merge, of as observableOf, Subject, timer } from 'rxjs';
+import { share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';
+import { UnresolvedPropertyObserver } from '../input/property-observer';
 import { UnconvertedSpec } from '../main/api';
 import { UnresolvedPropertyEmitter } from '../output/property-emitter';
 import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
@@ -98,19 +99,8 @@ export class Builder {
               $asArray(),
           );
 
-          const emitters = $pipe(
-              Object.keys(api),
-              $map(key => api[key]),
-              $filter((spec): spec is UnresolvedPropertyEmitter<unknown> => {
-                return spec instanceof UnresolvedPropertyEmitter;
-              }),
-              $map(({propertyName}) => propertyName),
-              $asSet(),
-          );
-
           const elementClass = createCustomElementClass(
               componentClass,
-              emitters,
               observedAttributes,
               tag,
               templateService,
@@ -155,7 +145,6 @@ export class Builder {
 
 function createCustomElementClass(
     componentClass: CustomElementCtrlCtor,
-    emitters: ReadonlySet<string>,
     observedAttributes: readonly string[],
     tag: string,
     templateService: TemplateService,
@@ -165,11 +154,11 @@ function createCustomElementClass(
     return new CustomElementDecorator(
         componentClass,
         element,
-        emitters,
         tag,
         templateService,
         vine,
-        shadowMode);
+        shadowMode,
+    );
   };
   const htmlClass = class extends HTMLElement {
     private readonly decorator$ = timer(0).pipe(

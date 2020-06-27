@@ -1,6 +1,4 @@
-import { filterByType } from 'gs-tools/export/rxjs';
-import { instanceofType } from 'gs-types';
-import { interval, Observable } from 'rxjs';
+import { interval, Observable, ReplaySubject } from 'rxjs';
 import { map, startWith, switchMap, take } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
@@ -9,7 +7,7 @@ import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 
-type ObservableElement = Element & {readonly [key: string]: Observable<unknown>};
+type ObservableElement<T> = Element & {[key: string]: Observable<T>};
 
 export const CHECK_PERIOD_MS = 20;
 
@@ -24,8 +22,12 @@ export class PropertyObserver<T> implements Input<T> {
         switchMap(element => {
           return interval(CHECK_PERIOD_MS).pipe(
               startWith({}),
-              map(() => (element as ObservableElement)[this.propertyName]),
-              filterByType(instanceofType<Observable<T>>(Observable)),
+              map(() => {
+                const subject = (element as ObservableElement<T>)[this.propertyName] ||
+                    new ReplaySubject<T>(1);
+                (element as ObservableElement<T>)[this.propertyName] = subject;
+                return subject;
+              }),
               take(1),
               switchMap(obs => obs),
           );

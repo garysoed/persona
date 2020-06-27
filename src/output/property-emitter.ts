@@ -1,4 +1,4 @@
-import { OperatorFunction, pipe, Subject } from 'rxjs';
+import { OperatorFunction, pipe, ReplaySubject, Subject } from 'rxjs';
 import { tap, withLatestFrom } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
@@ -7,7 +7,7 @@ import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 
-type ObservableElement = Element & {readonly [key: string]: unknown};
+type ObservableElement = Element & {[key: string]: Subject<unknown>};
 
 export class PropertyEmitter<T> implements Output<T> {
   constructor(
@@ -19,12 +19,10 @@ export class PropertyEmitter<T> implements Output<T> {
     return pipe(
         withLatestFrom(this.resolver(context)),
         tap(([value, element]) => {
-          const subject = (element as ObservableElement)[this.propertyName];
-          if (!(subject instanceof Subject)) {
-            throw new Error(`Property ${this.propertyName} has no emitter`);
-          }
-
+          const subject = (element as ObservableElement)[this.propertyName] ||
+              new ReplaySubject<unknown>(1);
           subject.next(value);
+          (element as ObservableElement)[this.propertyName] = subject;
         }),
     );
   }

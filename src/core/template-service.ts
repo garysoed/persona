@@ -14,7 +14,7 @@ export class TemplateService {
 
     const templateStr = this.templateStr.get(tag);
     if (templateStr === undefined) {
-      throw new Error(`No template found for ${templateStr}`);
+      throw new Error(`No template found for ${tag}`);
     }
 
     const templateEl = this.rootDoc.createElement('template');

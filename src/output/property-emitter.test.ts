@@ -1,4 +1,4 @@
-import { assert, run, should, test } from 'gs-testing';
+import { assert, createSpySubject, run, should, test } from 'gs-testing';
 import { of as observableOf, ReplaySubject } from 'rxjs';
 
 import { host } from '../main/host';
@@ -28,9 +28,12 @@ test('@persona/output/property-emitter', init => {
       assert(elValue$).to.emitSequence([1, 2, 3]);
     });
 
-    should(`throw error when the observable is not initialized`, () => {
-      assert(observableOf(1, 2, 3).pipe(_.output.output(_.context)))
-          .to.emitErrorWithMessage(/has no emitter/);
+    should(`add observable when the observable is not initialized`, () => {
+      run(observableOf(1, 2, 3).pipe(_.output.output(_.context)));
+
+      const elValue$ = createSpySubject((_.el as any)[PROPERTY_NAME]);
+
+      assert(elValue$).to.emitSequence([3]);
     });
   });
 });
