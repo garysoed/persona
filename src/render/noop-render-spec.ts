@@ -3,15 +3,15 @@ import { NEVER, Observable } from 'rxjs';
 import { RenderSpec } from './render-spec';
 
 export class NoopRenderSpec implements RenderSpec {
-  canReuseElement(): boolean {
+  canReuseNode(): boolean {
     return true;
   }
 
-  createElement(): Observable<Element> {
+  createNode(): Observable<Element> {
     return NEVER;
   }
 
-  registerElement(element: Element): Observable<unknown> {
+  registerNode(element: Element): Observable<unknown> {
     return NEVER;
   }
 }

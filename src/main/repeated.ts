@@ -66,7 +66,7 @@ export class RepeatedOutput implements Output<ArrayDiff<RenderSpec>> {
   }
 
   private deleteEl(parentNode: Node, slotNode: Node, index: number): Observable<unknown> {
-    const curr = getEl(slotNode, index);
+    const curr = getNode(slotNode, index);
 
     if (!curr) {
       return NEVER;
@@ -83,7 +83,7 @@ export class RepeatedOutput implements Output<ArrayDiff<RenderSpec>> {
       spec: RenderSpec,
       index: number,
   ): Observable<unknown> {
-    return spec.createElement().pipe(
+    return spec.createNode().pipe(
         tap(newEl => {
           let curr = slotNode.nextSibling;
           for (let i = 0; i < index && curr !== null; i++) {
@@ -92,7 +92,7 @@ export class RepeatedOutput implements Output<ArrayDiff<RenderSpec>> {
           parentNode.insertBefore(newEl, curr);
         }),
         shareReplay({bufferSize: 1, refCount: true}),
-        switchMap(newEl => spec.registerElement(newEl)),
+        switchMap(newEl => spec.registerNode(newEl)),
     );
   }
 
@@ -102,15 +102,15 @@ export class RepeatedOutput implements Output<ArrayDiff<RenderSpec>> {
       spec: RenderSpec,
       index: number,
   ): Observable<unknown> {
-    const existingEl = getEl(slotNode, index);
+    const existingEl = getNode(slotNode, index);
 
-    if (!(existingEl instanceof HTMLElement) ||
-        !spec.canReuseElement(existingEl)) {
+    if (!(existingEl instanceof Node) ||
+        !spec.canReuseNode(existingEl)) {
       this.deleteEl(parentNode, slotNode, index);
       return this.insertEl(parentNode, slotNode, spec, index);
     }
 
-    return spec.registerElement(existingEl);
+    return spec.registerNode(existingEl);
   }
 }
 
@@ -131,7 +131,7 @@ export function repeated(
   return new UnresolvedRepeatedOutput(slotName);
 }
 
-function getEl(slotNode: Node, index: number): Node|null {
+function getNode(slotNode: Node, index: number): Node|null {
   let curr = slotNode.nextSibling;
   for (let i = 0; i < index && curr !== null; i++) {
     curr = curr.nextSibling;

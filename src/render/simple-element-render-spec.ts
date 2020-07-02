@@ -14,15 +14,15 @@ export class SimpleElementRenderSpec implements RenderSpec {
       private readonly innerText$: Observable<string> = observableOf(''),
   ) { }
 
-  canReuseElement(element: Element): boolean {
+  canReuseNode(element: Element): boolean {
     return element.tagName.toLowerCase() === this.tagName;
   }
 
-  createElement(): Observable<Element> {
+  createNode(): Observable<Element> {
     return observableOf(document.createElement(this.tagName));
   }
 
-  registerElement(element: Element): Observable<unknown> {
+  registerNode(element: Element): Observable<unknown> {
     const updateAttribute$ = this.attrs$.pipe(
         diffMap(),
         tap(diff => {

@@ -1,5 +1,5 @@
-import { assert, createSpySubject, mockTime, should, test } from 'gs-testing';
-import { BehaviorSubject, ReplaySubject } from 'rxjs';
+import { assert, createSpySubject, should, test } from 'gs-testing';
+import { ReplaySubject } from 'rxjs';
 
 import { host } from '../main/host';
 import { createFakeContext } from '../testing/create-fake-context';

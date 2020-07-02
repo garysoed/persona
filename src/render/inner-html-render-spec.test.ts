@@ -23,16 +23,16 @@ test('@persona/render/inner-html-render-spec', init => {
       const el = document.createElement('div');
       fake(_.mockInnerHtmlParseService.parse).always().return(observableOf(el));
 
-      assert(_.spec.createElement().pipe(map(el => el.tagName))).to.emitWith('DIV');
+      assert(_.spec.createNode().pipe(map(el => el.tagName))).to.emitWith('DIV');
 
       // Should emit the copy, not the exact instance.
-      assert(_.spec.createElement()).toNot.emitWith(el);
+      assert(_.spec.createNode()).toNot.emitWith(el);
     });
 
     should(`not emit the parse result if not an element`, () => {
       fake(_.mockInnerHtmlParseService.parse).always().return(observableOf(null));
 
-      assert(_.spec.createElement()).toNot.emit();
+      assert(_.spec.createNode()).toNot.emit();
     });
   });
 });

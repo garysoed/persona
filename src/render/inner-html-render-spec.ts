@@ -15,11 +15,11 @@ export class InnerHtmlRenderSpec implements RenderSpec {
       private readonly vine: Vine,
   ) { }
 
-  canReuseElement(): boolean {
+  canReuseNode(): boolean {
     return false;
   }
 
-  createElement(): Observable<Element> {
+  createNode(): Observable<Element> {
     return $innerHtmlParseService.get(this.vine).pipe(
         switchMap(service => service.parse(this.raw, this.supportedType)),
         filterByType(instanceofType(Element)),
@@ -27,7 +27,7 @@ export class InnerHtmlRenderSpec implements RenderSpec {
     );
   }
 
-  registerElement(): Observable<unknown> {
+  registerNode(): Observable<unknown> {
     return NEVER;
   }
 }

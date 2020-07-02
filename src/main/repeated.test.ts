@@ -251,34 +251,6 @@ test('@persona/output/repeated', init => {
       assert(el.textContent).to.equal('contenta');
     });
 
-    should(`replace the element correctly for 'set' if existing element is not HTMLElement`, () => {
-      const existingElement = document.createTextNode('text');
-      _.parentEl.appendChild(existingElement);
-
-      const setAttrs$ = new BehaviorSubject(new Map([['a', 'a'], ['b', 'b']]));
-      const setText$ = new BehaviorSubject('content');
-      _.diffSubject.next({
-        index: 0,
-        type: 'set',
-        value: new SimpleElementRenderSpec(TAG_NAME, setAttrs$, setText$),
-      });
-
-      const el = _.slot.nextSibling as HTMLElement;
-      assert(el.tagName.toLowerCase()).to.equal(TAG_NAME);
-      assert(el.getAttribute('a')).to.equal('a');
-      assert(el.getAttribute('b')).to.equal('b');
-      assert(el.textContent).to.equal('content');
-
-      assert(el.nextSibling).to.beNull();
-
-      // Change the attribute and text.
-      setAttrs$.next(new Map([['a', '1'], ['b', '1']]));
-      setText$.next('contenta');
-      assert(el.getAttribute('a')).to.equal('1');
-      assert(el.getAttribute('b')).to.equal('1');
-      assert(el.textContent).to.equal('contenta');
-    });
-
     should(`reuse existing element for 'set'`, () => {
       const existingElement = document.createElement(TAG_NAME);
       _.parentEl.appendChild(existingElement);

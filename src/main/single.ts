@@ -40,16 +40,16 @@ export class SingleOutput implements Output<RenderSpec|null> {
           }
 
           if (!previous) {
-            return current.createElement().pipe(
+            return current.createNode().pipe(
                 tap(newEl => parentEl.insertBefore(newEl, prevEl)),
                 shareReplay({bufferSize: 1, refCount: true}),
-                switchMap(newEl => current.registerElement(newEl)),
+                switchMap(newEl => current.registerNode(newEl)),
             );
           }
 
           // Try to reuse the element.
-          if (prevEl instanceof HTMLElement && current.canReuseElement(prevEl)) {
-            return current.registerElement(prevEl);
+          if (prevEl instanceof Node && current.canReuseNode(prevEl)) {
+            return current.registerNode(prevEl);
           }
 
           // Otherwise, remove the element, and create a new one.
@@ -57,10 +57,10 @@ export class SingleOutput implements Output<RenderSpec|null> {
             parentEl.removeChild(prevEl);
           }
 
-          return current.createElement().pipe(
+          return current.createNode().pipe(
               tap(newEl => parentEl.insertBefore(newEl, slotEl.nextSibling)),
               shareReplay({bufferSize: 1, refCount: true}),
-              switchMap(newEl => current.registerElement(newEl)),
+              switchMap(newEl => current.registerNode(newEl)),
           );
         }),
     );
