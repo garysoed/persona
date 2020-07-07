@@ -1,6 +1,6 @@
 import { filterNonNull, Runnable } from 'gs-tools/export/rxjs';
 import { Result } from 'nabu';
-import { fromEvent, merge, Observable, Subject } from 'rxjs';
+import { fromEvent, fromEventPattern, merge, Observable, Subject } from 'rxjs';
 import { map, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { LocationConverter } from './location-converter';
@@ -42,20 +42,14 @@ export class LocationService<S extends RouteSpec> extends Runnable {
           .pipe(
               map(() => windowObj.location.pathname),
               startWith(windowObj.location.pathname),
-              map(location => {
-                for (const specKey of Object.keys(this.specs) as Array<keyof S>) {
-                  const spec = this.specs[specKey];
-                  const result = spec.convertForward(location) as Result<Payloads<S>[keyof S]>;
-                  if (result.success) {
-                    return {
-                      payload: result.result,
-                      type: specKey,
-                    };
-                  }
+              map(location => this.parseLocation(location)),
+              tap(route => {
+                if (!route) {
+                  this.goToPath(this.defaultRoute.type, this.defaultRoute.payload);
                 }
-
-                this.goToPath(this.defaultRoute.type, this.defaultRoute.payload);
-                return this.defaultRoute;
+              }),
+              map(route => {
+                return route || this.defaultRoute;
               }),
           );
         }),
@@ -82,6 +76,41 @@ export class LocationService<S extends RouteSpec> extends Runnable {
     this.onGoToUrl$.next(url);
   }
 
+  interceptLinks(eventTarget: EventTarget): Observable<unknown> {
+    return fromEventPattern<Event>(
+        handler => {
+          eventTarget.addEventListener('click', handler);
+        },
+        handler => {
+          eventTarget.removeEventListener('click', handler);
+        },
+    )
+    .pipe(
+        tap(event => {
+          const target = event.target;
+          if (!(target instanceof Node)) {
+            return;
+          }
+          const anchorEl = findAnchorElement(target);
+          if (!anchorEl) {
+            return;
+          }
+
+          if (anchorEl.target === '_blank') {
+            return;
+          }
+
+          // DO NOT use href param, as it has the base url appended.
+          const href = anchorEl.getAttribute('href');
+          const route = this.parseLocation(href || '');
+          if (!route) {
+            return;
+          }
+          event.preventDefault();
+          this.goToPath(route.type, route.payload);
+        }),
+    );
+  }
 
   private getUrl<K extends keyof S>(type: K, payload: Payloads<S>[K]): string|null {
     const result = this.specs[type].convertBackward(payload);
@@ -90,6 +119,21 @@ export class LocationService<S extends RouteSpec> extends Runnable {
     }
 
     return result.result;
+  }
+
+  private parseLocation(location: string): Route<S, keyof S>|null {
+    for (const specKey of Object.keys(this.specs) as Array<keyof S>) {
+      const spec = this.specs[specKey];
+      const result = spec.convertForward(location) as Result<Payloads<S>[keyof S]>;
+      if (result.success) {
+        return {
+          payload: result.result,
+          type: specKey,
+        };
+      }
+    }
+
+    return null;
   }
 
   private setupGoToPath(): Observable<unknown> {
@@ -102,4 +146,13 @@ export class LocationService<S extends RouteSpec> extends Runnable {
             }),
         );
   }
+}
+
+function findAnchorElement(node: Node): HTMLAnchorElement|null {
+  if (node instanceof HTMLAnchorElement) {
+    return node;
+  }
+
+  const parent = node.parentNode;
+  return parent ? findAnchorElement(parent) : null;
 }
