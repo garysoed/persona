@@ -1,4 +1,4 @@
-import { assert, createSpyWindow, fake, should, test } from 'gs-testing';
+import { assert, createSpyObject, fake, should, test } from 'gs-testing';
 
 import { FakeMediaQuery } from '../testing/mock-match-media';
 
@@ -9,7 +9,7 @@ test('persona.input.mediaQuery', init => {
   const QUERY = 'query';
 
   const _ = init(() => {
-    const mockWindow = createSpyWindow();
+    const mockWindow = createSpyObject<Window>('Window', ['matchMedia']);
     const input = mediaQuery(QUERY, mockWindow);
 
     return {input, mockWindow};
