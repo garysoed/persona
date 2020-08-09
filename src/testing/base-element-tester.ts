@@ -1,6 +1,5 @@
 import { Vine } from 'grapevine';
-import { fake, FakeTime, spy } from 'gs-testing';
-import { $, $filter, $head, arrayFrom } from 'gs-tools/export/collect';
+import { $filter, $first, $pipe, arrayFrom } from 'gs-tools/export/collect';
 import { stringify, Verbosity } from 'moirai';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
@@ -13,7 +12,7 @@ import { HasAttributeInput } from '../input/has-attribute';
 import { HasClassInput } from '../input/has-class';
 import { OnDomInput } from '../input/on-dom';
 import { OnInputInput } from '../input/on-input';
-import { CHECK_PERIOD_MS, PropertyObserver } from '../input/property-observer';
+import { PropertyObserver } from '../input/property-observer';
 import { RepeatedOutput } from '../main/repeated';
 import { SingleOutput } from '../main/single';
 import { AttributeOutput } from '../output/attribute';
@@ -341,14 +340,14 @@ function findCommentNode<R>(
     return null;
   }
 
-  return $(
+  return $pipe(
       childNodes,
       $filter(node => {
         return node.nodeName === '#comment' &&
             !!node.nodeValue &&
             node.nodeValue.trim() === commentContent;
       }),
-      $head(),
+      $first(),
   ) || null;
 }
 

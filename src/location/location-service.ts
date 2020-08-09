@@ -1,4 +1,4 @@
-import { filterNonNull, Runnable } from 'gs-tools/export/rxjs';
+import { Runnable } from 'gs-tools/export/rxjs';
 import { Result } from 'nabu';
 import { fromEvent, fromEventPattern, merge, Observable, Subject } from 'rxjs';
 import { map, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
@@ -56,13 +56,12 @@ export class LocationService<S extends RouteSpec> extends Runnable {
     );
   }
 
-  getLocationOfType<K extends keyof S>(type: K): Observable<Route<S, K>> {
+  getLocationOfType<K extends keyof S>(type: K): Observable<Route<S, K>|null> {
     return this.getLocation()
         .pipe(
             map((location): Route<S, K>|null => {
               return location.type === type ? location as Route<S, K> : null;
             }),
-            filterNonNull(),
         );
   }
 

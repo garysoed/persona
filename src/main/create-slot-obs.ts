@@ -1,4 +1,4 @@
-import { $, $filter, $head, arrayFrom } from 'gs-tools/export/collect';
+import { $filter, $first, $pipe, arrayFrom } from 'gs-tools/export/collect';
 import { Observable } from 'rxjs';
 import { map, startWith, switchMap } from 'rxjs/operators';
 
@@ -25,13 +25,13 @@ function findCommentNode(
     childNodes: readonly Node[],
     commentContent: string,
 ): Node|null {
-  return $(
+  return $pipe(
       childNodes,
       $filter(node => {
         return node.nodeName === '#comment' &&
             !!node.nodeValue &&
             node.nodeValue.trim() === commentContent;
       }),
-      $head(),
+      $first(),
   ) || null;
 }

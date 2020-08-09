@@ -1,10 +1,11 @@
-import { assert, should, test } from 'gs-testing';
+import { assert, createSpySubject, should, test } from 'gs-testing';
 import { integerConverter } from 'gs-tools/export/serializer';
 import { instanceofType } from 'gs-types';
 import { compose, human } from 'nabu';
 
 import { element } from '../main/element';
 import { createFakeContext } from '../testing/create-fake-context';
+import { installFakeMutationObserver } from '../testing/fake-mutation-observer';
 
 import { attribute } from './attribute';
 
@@ -44,11 +45,9 @@ test('input.attribute', () => {
       assert(_.input.getValue(_.context)).to.emitWith(789);
     });
 
-    should(
-        `create observable that returns the default value if the element's attribute is missing`,
-        async () => {
-          assert(_.input.getValue(_.context)).to.emitWith(DEFAULT_VALUE);
-        });
+    should(`create observable that emits the default value if the element's attribute is missing`, () => {
+      assert(_.input.getValue(_.context)).to.emitWith(DEFAULT_VALUE);
+    });
   });
 
   test('getValue - no default value', init => {
@@ -80,10 +79,8 @@ test('input.attribute', () => {
       assert(_.input.getValue(_.context)).to.emitWith(789);
     });
 
-    should(
-        `create observable that returns undefined if the element's attribute is missing`,
-        async () => {
-          assert(_.input.getValue(_.context)).to.emitWith(undefined);
-        });
+    should(`create observable that returns undefined if the element's attribute is missing`, () => {
+      assert(_.input.getValue(_.context)).to.emitWith(undefined);
+    });
   });
 });

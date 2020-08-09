@@ -1,5 +1,5 @@
 import { Vine, VineBuilder } from 'grapevine';
-import { $, $asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pipe } from 'gs-tools/export/collect';
+import { $asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pipe } from 'gs-tools/export/collect';
 import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
 import { Errors } from 'gs-tools/export/error';
 import { iterableOfType, unknownType } from 'gs-types';
@@ -8,9 +8,7 @@ import { share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';
-import { UnresolvedPropertyObserver } from '../input/property-observer';
 import { UnconvertedSpec } from '../main/api';
-import { UnresolvedPropertyEmitter } from '../output/property-emitter';
 import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec';
 
@@ -215,7 +213,7 @@ function getAllCtrls(
 ): ReadonlySet<CustomElementCtrlCtor> {
   const ctrls = new Set(rootCtrls);
   for (const checkedCtrl of ctrls) {
-    const additionalCtors = $(
+    const additionalCtors = $pipe(
         customElementAnnotation.getAttachedValues(checkedCtrl),
         $map(([, value]) => value),
         $flat<FullComponentData>(),
@@ -240,7 +238,7 @@ function getSpecFromClassAnnotation<T extends CustomElementSpec|BaseCustomElemen
     ctrl: typeof CustomElementCtrl,
 ): T {
   return getSpec_(
-      $(
+      $pipe(
           annotation.data.getAttachedValues(ctrl),
           // Only take the first item
           $map(([, dataList]) => dataList[0]),
@@ -289,7 +287,7 @@ function runConfigures(
     ctrls: ReadonlySet<Function>,
     vine: Vine,
 ): void {
-  const configures = $(
+  const configures = $pipe(
       customElementAnnotation.getAllValues(),
       $filter(([key]) => ctrls.has(key)),
       $map(([, value]) => value),

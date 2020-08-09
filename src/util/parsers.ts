@@ -1,5 +1,5 @@
 import { integerConverter, listConverter, mapConverter, typeBased } from 'gs-tools/export/serializer';
-import { enums } from 'gs-tools/export/typescript';
+import { getAllValues } from 'gs-tools/export/typescript';
 import { booleanType } from 'gs-types';
 import { compose, Converter, human, identity, Result, Serializable } from 'nabu';
 
@@ -8,7 +8,7 @@ export function booleanParser(): Converter<boolean, string> {
 }
 
 export function enumParser<E extends string>(enumSet: any): Converter<E, string> {
-  const values = new Set(enums.getAllValues(enumSet));
+  const values = new Set(getAllValues(enumSet));
 
   return {
     convertBackward(value: string): Result<E> {

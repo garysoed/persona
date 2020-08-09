@@ -32,7 +32,7 @@ test('@persona/location/location-service', init => {
 
       assert(_.service.getLocation()).to.emitWith(
           objectThat<Route<typeof SPEC, 'pathA'>>().haveProperties({
-            payload: objectThat().haveProperties({a: 123}),
+            payload: objectThat<{a: number}>().haveProperties({a: 123}),
             type: 'pathA',
           }),
       );
@@ -57,16 +57,16 @@ test('@persona/location/location-service', init => {
 
       assert(_.service.getLocationOfType('pathA')).to.emitWith(
           objectThat<Route<typeof SPEC, 'pathA'>>().haveProperties({
-            payload: objectThat().haveProperties({a: 123}),
+            payload: objectThat<{a: number}>().haveProperties({a: 123}),
             type: 'pathA',
           }),
       );
     });
 
-    should(`not emit if location is of the wrong type`, () => {
+    should(`emit null if location is of the wrong type`, () => {
       _.fakeWindow.history.pushState({}, '', '/b/abc');
 
-      assert(_.service.getLocationOfType('pathA')).toNot.emit();
+      assert(_.service.getLocationOfType('pathA')).to.emitWith(null);
     });
   });
 
@@ -132,7 +132,7 @@ test('@persona/location/location-service', init => {
 
       assert(_.service.getLocation()).to.emitWith(
           objectThat<Route<typeof SPEC, 'pathA'>>().haveProperties({
-            payload: objectThat().haveProperties({a: 123}),
+            payload: objectThat<{a: number}>().haveProperties({a: 123}),
             type: 'pathA',
           }),
       );

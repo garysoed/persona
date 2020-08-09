@@ -1,6 +1,6 @@
 import { Converter } from 'nabu';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
@@ -19,6 +19,7 @@ export class AttributeInput<T> implements Input<T> {
 
   getValue(context: PersonaContext): Observable<T> {
     return this.getAttributeValue(context).pipe(
+        distinctUntilChanged(),
         map(unparsed => this.parseValue(unparsed)),
     );
   }
