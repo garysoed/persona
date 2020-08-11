@@ -1,6 +1,5 @@
 import { Vine } from 'grapevine';
 import { fake, FakeTime, mockTime, runEnvironment, spy } from 'gs-testing';
-import { Errors } from 'gs-tools/export/error';
 
 import { Builder as PersonaBuilder } from '../core/builder';
 import { MediaQueryInput } from '../input/media-query';
@@ -30,7 +29,7 @@ export class PersonaTester {
   setMedia(input: MediaQueryInput, value: boolean): void {
     const mediaQuery = window.matchMedia(input.query);
     if (!(mediaQuery instanceof FakeMediaQuery)) {
-      throw Errors.assert('mediaQuery').shouldBeAnInstanceOf(FakeMediaQuery).butWas(mediaQuery);
+      throw new Error(`mediaQuery should be a ${FakeMediaQuery} but was ${mediaQuery}`);
     }
 
     (mediaQuery as FakeMediaQuery).matches = value;

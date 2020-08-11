@@ -1,7 +1,6 @@
 import { Vine, VineBuilder } from 'grapevine';
 import { $asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pipe } from 'gs-tools/export/collect';
 import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
-import { Errors } from 'gs-tools/export/error';
 import { iterableOfType, unknownType } from 'gs-types';
 import { merge, of as observableOf, Subject, timer } from 'rxjs';
 import { share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
@@ -276,7 +275,7 @@ export function getSpec_<T extends CustomElementSpec|BaseCustomElementSpec>(
   }
 
   if (!combinedSpec) {
-    throw Errors.assert(`Annotations for ${ctrl.name}`).shouldExist().butNot();
+    throw new Error(`Annotations for ${ctrl.name} is missing`);
   }
 
   return combinedSpec;

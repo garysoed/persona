@@ -1,4 +1,3 @@
-import { Errors } from 'gs-tools/export/error';
 import { elementWithTagType, Type } from 'gs-types';
 import { Observable, of as observableOf } from 'rxjs';
 
@@ -32,7 +31,7 @@ export class ElementInput<E extends Element, P extends Properties<E>> implements
   getValue({shadowRoot}: PersonaContext): Observable<E> {
     const el = shadowRoot.getElementById(this.elementId);
     if (!this.type.check(el)) {
-      throw Errors.assert(`Element of [${this.elementId}]`).shouldBeA(this.type).butWas(el);
+      throw new Error(`Element of [${this.elementId}] should be a ${this.type} but was ${el}`);
     }
     return observableOf(el);
   }
