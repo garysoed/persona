@@ -13,6 +13,7 @@ export { hasClass } from '../src/input/has-class';
 export { mediaQuery } from '../src/input/media-query';
 export { observer } from '../src/input/property-observer';
 export { onDom } from '../src/input/on-dom';
+export { ownerDocument } from '../src/input/owner-document';
 export { onInput } from '../src/input/on-input';
 export { onKeydown } from '../src/input/on-keydown';
 
@@ -31,9 +32,11 @@ export { classlist } from '../src/output/classlist';
 export { classToggle } from '../src/output/class-toggle';
 export { dispatcher, DispatchFn } from '../src/output/dispatcher';
 export { emitter } from '../src/output/property-emitter';
+export { favicon } from '../src/output/favicon';
 export { noop } from '../src/output/noop';
 export { setAttribute } from '../src/output/set-attribute';
 export { style } from '../src/output/style';
+export { title } from '../src/output/title';
 export { textContent } from '../src/output/text-content';
 
 // Types
