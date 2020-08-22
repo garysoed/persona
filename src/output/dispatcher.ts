@@ -5,6 +5,7 @@ import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+import { UnresolvedOutput } from '../types/unresolved-output';
 
 import { CallerOutput } from './caller';
 
@@ -30,7 +31,7 @@ export class DispatcherOutput<E extends Event> implements Output<E> {
 }
 
 export class UnresolvedDispatcherOutput<E extends Event> implements
-    UnresolvedElementProperty<Element, DispatcherOutput<E>> {
+    UnresolvedElementProperty<Element, DispatcherOutput<E>>, UnresolvedOutput<E> {
   constructor(readonly eventName: string) { }
 
   resolve(resolver: Resolver<Element>): DispatcherOutput<E> {

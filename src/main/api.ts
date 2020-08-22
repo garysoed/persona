@@ -14,19 +14,23 @@ import { UnresolvedPropertyEmitter } from '../output/property-emitter';
 import { UnresolvedSetAttributeOutput } from '../output/set-attribute';
 
 
-type ConvertibleProperty =
+export type UnconvertedInput =
     UnresolvedAttributeInput<any>|
     UnresolvedHandlerInput|
     UnresolvedOnDomInput<any>|
     UnresolvedHasAttributeInput|
     UnresolvedHasClassInput|
-    UnresolvedPropertyObserver<any>|
+    UnresolvedPropertyObserver<any>;
+
+export type UnconvertedOutput =
     UnresolvedAttributeOutput<any>|
     UnresolvedCallerOutput<any>|
     UnresolvedDispatcherOutput<any>|
     UnresolvedSetAttributeOutput|
     UnresolvedClassToggleOutput|
     UnresolvedPropertyEmitter<any>;
+
+type ConvertibleProperty = UnconvertedInput|UnconvertedOutput;
 
 export interface UnconvertedSpec {
   readonly [key: string]: ConvertibleProperty;

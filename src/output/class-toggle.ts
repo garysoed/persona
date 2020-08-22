@@ -5,6 +5,7 @@ import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+import { UnresolvedOutput } from '../types/unresolved-output';
 
 
 export class ClassToggleOutput implements Output<boolean> {
@@ -24,7 +25,7 @@ export class ClassToggleOutput implements Output<boolean> {
 }
 
 export class UnresolvedClassToggleOutput
-    implements UnresolvedElementProperty<Element, ClassToggleOutput> {
+    implements UnresolvedElementProperty<Element, ClassToggleOutput>, UnresolvedOutput<boolean> {
   constructor(readonly className: string) { }
 
   resolve(resolver: Resolver<Element>): ClassToggleOutput {

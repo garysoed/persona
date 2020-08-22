@@ -21,7 +21,6 @@ export { onKeydown } from '../src/input/on-keydown';
 export { api } from '../src/main/api';
 export { element } from '../src/main/element';
 export { host } from '../src/main/host';
-export { repeated } from '../src/main/repeated';
 export { single } from '../src/main/single';
 export { ComponentSpec } from '../src/main/component-spec';
 
@@ -32,6 +31,7 @@ export { classlist } from '../src/output/classlist';
 export { classToggle } from '../src/output/class-toggle';
 export { dispatcher, DispatchFn } from '../src/output/dispatcher';
 export { emitter } from '../src/output/property-emitter';
+export { multi } from '../src/output/multi';
 export { favicon } from '../src/output/favicon';
 export { noop } from '../src/output/noop';
 export { setAttribute } from '../src/output/set-attribute';
@@ -59,5 +59,7 @@ export { InnerHtmlParseService } from '../src/render/inner-html-parse-service';
 export { NoopRenderSpec } from '../src/render/noop-render-spec';
 export { RenderSpec } from '../src/render/render-spec';
 export { SimpleElementRenderSpec } from '../src/render/simple-element-render-spec';
+export { renderCustomElement } from '../src/render/render-custom-element';
+export { renderElement } from '../src/render/render-element';
 
 export { booleanParser, enumParser, integerParser, listParser, mapParser, stringParser } from '../src/util/parsers';

@@ -5,6 +5,7 @@ import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+import { UnresolvedOutput } from '../types/unresolved-output';
 
 
 export class SetAttributeOutput implements Output<boolean> {
@@ -28,7 +29,7 @@ export class SetAttributeOutput implements Output<boolean> {
 }
 
 export class UnresolvedSetAttributeOutput implements
-    UnresolvedElementProperty<Element, SetAttributeOutput> {
+    UnresolvedElementProperty<Element, SetAttributeOutput>, UnresolvedOutput<boolean> {
   constructor(
       readonly attrName: string,
   ) { }

@@ -7,6 +7,7 @@ import { Input } from '../types/input';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { attributeObservable } from '../util/attribute-observable';
+import { UnresolvedInput } from '../types/unresolved-input';
 
 
 export class AttributeInput<T> implements Input<T> {
@@ -43,7 +44,7 @@ export class AttributeInput<T> implements Input<T> {
 }
 
 export class UnresolvedAttributeInput<T> implements
-    UnresolvedElementProperty<Element, AttributeInput<T>> {
+    UnresolvedElementProperty<Element, AttributeInput<T>>, UnresolvedInput<T> {
   constructor(
       readonly attrName: string,
       readonly parser: Converter<T, string>,

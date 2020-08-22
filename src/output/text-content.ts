@@ -5,6 +5,7 @@ import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+import { UnresolvedOutput } from '../types/unresolved-output';
 
 
 export class TextContentOutput implements Output<string> {
@@ -23,7 +24,7 @@ export class TextContentOutput implements Output<string> {
 }
 
 class UnresolvedTextContentOutput implements
-    UnresolvedElementProperty<Element, TextContentOutput> {
+    UnresolvedElementProperty<Element, TextContentOutput>, UnresolvedOutput<string> {
   resolve(resolver: Resolver<Element>): TextContentOutput {
     return new TextContentOutput(resolver);
   }

@@ -5,6 +5,7 @@ import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+import { UnresolvedOutput } from '../types/unresolved-output';
 
 
 type ElFunction<T extends readonly any[]> = (arg: T) => void;
@@ -34,7 +35,7 @@ export class CallerOutput<T extends readonly any[]> implements Output<T> {
 }
 
 export class UnresolvedCallerOutput<T extends readonly any[]> implements
-    UnresolvedElementProperty<Element, CallerOutput<T>> {
+    UnresolvedElementProperty<Element, CallerOutput<T>>, UnresolvedOutput<T> {
   constructor(readonly functionName: string) { }
 
   resolve(resolver: Resolver<Element>): CallerOutput<T> {

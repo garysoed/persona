@@ -5,6 +5,7 @@ import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+import { UnresolvedOutput } from '../types/unresolved-output';
 
 
 export class StyleOutput<S extends keyof CSSStyleDeclaration>
@@ -28,7 +29,8 @@ export class StyleOutput<S extends keyof CSSStyleDeclaration>
 }
 
 class UnresolvedStyleOutput<S extends keyof CSSStyleDeclaration> implements
-    UnresolvedElementProperty<HTMLElement, StyleOutput<S>> {
+    UnresolvedElementProperty<HTMLElement, StyleOutput<S>>,
+    UnresolvedOutput<CSSStyleDeclaration[S]> {
   constructor(
       private readonly styleKey: S,
   ) { }

@@ -5,6 +5,7 @@ import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+import { UnresolvedOutput } from '../types/unresolved-output';
 
 
 type ObservableElement = Element & {[key: string]: Subject<unknown>};
@@ -29,7 +30,7 @@ export class PropertyEmitter<T> implements Output<T> {
 }
 
 export class UnresolvedPropertyEmitter<T> implements
-    UnresolvedElementProperty<Element, PropertyEmitter<T>> {
+    UnresolvedElementProperty<Element, PropertyEmitter<T>>, UnresolvedOutput<T> {
   constructor(
       readonly propertyName: string,
   ) { }
