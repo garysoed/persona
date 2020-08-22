@@ -24,6 +24,17 @@ export interface Values {
   readonly textContent?: Observable<string>;
 }
 
+/**
+ * Renders an element given the tag name, attribute, and text content.
+ *
+ * @param tagName - Tag name of the element to create.
+ * @param values - Values to set to the element.
+ * @param context - The Persona context.
+ * @returns `Observable` that emits the created custom element. This only emits when the element is
+ *     created and will not emit if any of the element's properties changes.
+ *
+ * @thModule render.
+ */
 export function renderElement(
     tagName: string,
     values: Values,

@@ -1,4 +1,4 @@
-import { ArrayDiff } from 'gs-tools/export/rxjs';
+import { ArrayDiff, diffArray } from 'gs-tools/export/rxjs';
 import { assertUnreachable } from 'gs-tools/export/typescript';
 import { NEVER, Observable, OperatorFunction, pipe } from 'rxjs';
 import { tap, withLatestFrom } from 'rxjs/operators';
@@ -11,16 +11,17 @@ import { UnresolvedElementProperty } from '../types/unresolved-element-property'
 import { UnresolvedOutput } from '../types/unresolved-output';
 
 
-export class MultiOutput implements Output<ArrayDiff<Node>> {
+export class MultiOutput implements Output<readonly Node[]> {
   constructor(
       readonly slotName: string,
       readonly resolver: Resolver<Element>,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<ArrayDiff<Node>, unknown> {
+  output(context: PersonaContext): OperatorFunction<readonly Node[], unknown> {
     const parentEl$ = this.resolver(context);
 
     return pipe(
+        diffArray(),
         withLatestFrom(
             parentEl$,
             createSlotObs(parentEl$, this.slotName),
@@ -89,7 +90,7 @@ export class MultiOutput implements Output<ArrayDiff<Node>> {
 }
 
 class UnresolvedMultiOutput
-    implements UnresolvedElementProperty<Element, MultiOutput>, UnresolvedOutput<ArrayDiff<Node>> {
+    implements UnresolvedElementProperty<Element, MultiOutput>, UnresolvedOutput<readonly Node[]> {
   constructor(
       private readonly slotName: string,
   ) { }

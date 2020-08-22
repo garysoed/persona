@@ -38,12 +38,11 @@ export interface Values<S extends UnconvertedSpec> extends ElementValues {
 /**
  * Renders a custom element given the specs and values.
  *
- * @remarks
- * This optionally takes an object for additional custom
- *
  * @param spec - Custom element's specs.
  * @param values - Values to use for the custom element.
  * @param context - The Persona context.
+ * @returns `Observable` that emits the created custom element. This only emits when the element is
+ *     created and will not emit if any of the element's properties changes.
  *
  * @thModule render
  */

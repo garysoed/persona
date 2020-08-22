@@ -1,5 +1,4 @@
 import { assert, run, should, test } from 'gs-testing';
-import { ArrayDiff } from 'gs-tools/export/rxjs';
 import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 
@@ -36,7 +35,7 @@ test('@persona/output/multi', init => {
 
   test('output', _, init => {
     const _ = init(_ => {
-      const diff$ = new Subject<ArrayDiff<Node>>();
+      const diff$ = new Subject<readonly Node[]>();
 
       run(diff$.pipe(_.output.output(_.context)));
 
@@ -48,10 +47,7 @@ test('@persona/output/multi', init => {
       const node2 = document.createElement('div');
       const node3 = document.createElement('div');
 
-      _.diff$.next({
-        type: 'init',
-        value: [node1, node2, node3],
-      });
+      _.diff$.next([node1, node2, node3]);
 
       assert(_.slot.nextSibling).to.equal(node1);
       assert(_.slot.nextSibling?.nextSibling).to.equal(node2);
@@ -63,17 +59,10 @@ test('@persona/output/multi', init => {
       const node2 = document.createElement('div');
       const node3 = document.createElement('div');
 
-      _.diff$.next({
-        type: 'init',
-        value: [node1, node2, node3],
-      });
+      _.diff$.next([node1, node2, node3]);
 
       const insertNode = document.createElement('div');
-      _.diff$.next({
-        index: 0,
-        type: 'insert',
-        value: insertNode,
-      });
+      _.diff$.next([insertNode, node1, node2, node3]);
 
       assert(_.slot.nextSibling).to.equal(insertNode);
       assert(_.slot.nextSibling?.nextSibling).to.equal(node1);
@@ -85,17 +74,10 @@ test('@persona/output/multi', init => {
       const node1 = document.createElement('div');
       const node2 = document.createElement('div');
       const node3 = document.createElement('div');
-      _.diff$.next({
-        type: 'init',
-        value: [node1, node2, node3],
-      });
+      _.diff$.next([node1, node2, node3]);
 
       const insertNode = document.createElement('div');
-      _.diff$.next({
-        index: 2,
-        type: 'insert',
-        value: insertNode,
-      });
+      _.diff$.next([node1, node2, insertNode, node3]);
 
       assert(_.slot.nextSibling).to.equal(node1);
       assert(_.slot.nextSibling?.nextSibling).to.equal(node2);
@@ -107,17 +89,10 @@ test('@persona/output/multi', init => {
       const node1 = document.createElement('div');
       const node2 = document.createElement('div');
       const node3 = document.createElement('div');
-      _.diff$.next({
-        type: 'init',
-        value: [node1, node2, node3],
-      });
+      _.diff$.next([node1, node2, node3]);
 
       const insertNode = document.createElement('div');
-      _.diff$.next({
-        index: 4,
-        type: 'insert',
-        value: insertNode,
-      });
+      _.diff$.next([node1, node2, node3, insertNode]);
 
       assert(_.slot.nextSibling).to.equal(node1);
       assert(_.slot.nextSibling?.nextSibling).to.equal(node2);
@@ -129,12 +104,9 @@ test('@persona/output/multi', init => {
       const node1 = document.createElement('div');
       const node2 = document.createElement('div');
       const node3 = document.createElement('div');
-      _.diff$.next({
-        type: 'init',
-        value: [node1, node2, node3],
-      });
+      _.diff$.next([node1, node2, node3]);
 
-      _.diff$.next({index: 1, type: 'delete', value: node2});
+      _.diff$.next([node1, node3]);
 
       assert(_.slot.nextSibling).to.equal(node1);
       assert(_.slot.nextSibling?.nextSibling).to.equal(node3);
@@ -145,20 +117,13 @@ test('@persona/output/multi', init => {
       const node1 = document.createElement('div');
       const node2 = document.createElement('div');
       const node3 = document.createElement('div');
-      _.diff$.next({
-        type: 'init',
-        value: [node1, node2, node3],
-      });
+      _.diff$.next([node1, node2, node3]);
 
       const existingElement = document.createElement('div');
       _.parentEl.appendChild(existingElement);
 
       const setNode = document.createElement('div');
-      _.diff$.next({
-        index: 0,
-        type: 'set',
-        value: setNode,
-      });
+      _.diff$.next([setNode, node2, node3]);
 
       assert(_.slot.nextSibling).to.equal(setNode);
       assert(_.slot.nextSibling?.nextSibling).to.equal(node2);
