@@ -3,7 +3,7 @@ import { Observable, of as observableOf } from 'rxjs';
 
 export type ParseType = 'image/svg+xml'|'text/xml';
 
-export class InnerHtmlParseService {
+export class HtmlParseService {
   private readonly elMap = new Map<string, Observable<Element|null>>();
 
   constructor(
@@ -24,5 +24,5 @@ export class InnerHtmlParseService {
   }
 }
 
-export const $innerHtmlParseService = source(() => new InnerHtmlParseService());
+export const $htmlParseService = source(() => new HtmlParseService());
 

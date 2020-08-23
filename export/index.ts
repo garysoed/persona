@@ -21,7 +21,6 @@ export { onKeydown } from '../src/input/on-keydown';
 export { api } from '../src/main/api';
 export { element } from '../src/main/element';
 export { host } from '../src/main/host';
-export { single } from '../src/main/single';
 export { ComponentSpec } from '../src/main/component-spec';
 
 // Outputs
@@ -35,6 +34,7 @@ export { multi } from '../src/output/multi';
 export { favicon } from '../src/output/favicon';
 export { noop } from '../src/output/noop';
 export { setAttribute } from '../src/output/set-attribute';
+export { single } from '../src/output/single';
 export { style } from '../src/output/style';
 export { title } from '../src/output/title';
 export { textContent } from '../src/output/text-content';
@@ -52,14 +52,13 @@ export { LocationService, Route, RouteSpec } from '../src/location/location-serv
 export { fromPattern } from '../src/location/location-converter';
 
 // Render spec
-export { InnerHtmlRenderSpec } from '../src/render/inner-html-render-spec';
-export { $innerHtmlParseService, ParseType } from '../src/render/inner-html-parse-service';
-export { InnerHtmlParseService } from '../src/render/inner-html-parse-service';
+export { $htmlParseService as $innerHtmlParseService, ParseType } from '../src/render/html-parse-service';
+export { HtmlParseService as InnerHtmlParseService } from '../src/render/html-parse-service';
 
-export { NoopRenderSpec } from '../src/render/noop-render-spec';
-export { RenderSpec } from '../src/render/render-spec';
-export { SimpleElementRenderSpec } from '../src/render/simple-element-render-spec';
 export { renderCustomElement } from '../src/render/render-custom-element';
+export { renderDocumentFragment } from '../src/render/render-document-fragment';
 export { renderElement } from '../src/render/render-element';
+export { renderHtml } from '../src/render/render-html';
+export { renderTextNode } from '../src/render/render-text-node';
 
 export { booleanParser, enumParser, integerParser, listParser, mapParser, stringParser } from '../src/util/parsers';

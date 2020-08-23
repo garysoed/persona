@@ -1,4 +1,5 @@
-import { assert, createSpySubject, should, test } from 'gs-testing';
+import { arrayThat, assert, createSpySubject, should, test } from 'gs-testing';
+import { arrayFrom } from 'gs-tools/export/collect';
 import { of as observableOf } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 
@@ -62,5 +63,53 @@ test('@persona/render/render-element', init => {
 
     assert(tag$).to.emitSequence([TAG.toUpperCase()]);
     assert(text$).to.emitSequence([text2]);
+  });
+
+  should(`delete the children without emitting the element`, () => {
+    const child1 = document.createElement('div');
+    const child2 = document.createElement('div');
+    const values = {
+      children: observableOf([child1, child2], [child1]),
+    };
+    const element$ = renderElement(TAG, values, _.context)
+        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+
+    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
+    const children$ = createSpySubject(element$.pipe(map(el => arrayFrom(el.children))));
+
+    assert(tag$).to.emitSequence([TAG.toUpperCase()]);
+    assert(children$).to.emitSequence([arrayThat<Element>().haveExactElements([child1])]);
+  });
+
+  should(`insert the children without emitting the element`, () => {
+    const child1 = document.createElement('div');
+    const child2 = document.createElement('div');
+    const values = {
+      children: observableOf([child2], [child1, child2]),
+    };
+    const element$ = renderElement(TAG, values, _.context)
+        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+
+    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
+    const children$ = createSpySubject(element$.pipe(map(el => arrayFrom(el.children))));
+
+    assert(tag$).to.emitSequence([TAG.toUpperCase()]);
+    assert(children$).to.emitSequence([arrayThat<Element>().haveExactElements([child1, child2])]);
+  });
+
+  should(`set the children without emitting the element`, () => {
+    const child1 = document.createElement('div');
+    const child2 = document.createElement('div');
+    const values = {
+      children: observableOf([child2], [child1]),
+    };
+    const element$ = renderElement(TAG, values, _.context)
+        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+
+    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
+    const children$ = createSpySubject(element$.pipe(map(el => arrayFrom(el.children))));
+
+    assert(tag$).to.emitSequence([TAG.toUpperCase()]);
+    assert(children$).to.emitSequence([arrayThat<Element>().haveExactElements([child1])]);
   });
 });

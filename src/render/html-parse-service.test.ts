@@ -1,12 +1,12 @@
 import { assert, createSpyInstance, fake, resetCalls, should, test } from 'gs-testing';
 
-import { InnerHtmlParseService } from './inner-html-parse-service';
+import { HtmlParseService } from './html-parse-service';
 
 
-test('@persona/render/inner-html-parse-service', init => {
+test('@persona/render/html-parse-service', init => {
   const _ = init(() => {
     const mockDOMParser = createSpyInstance(DOMParser);
-    const service = new InnerHtmlParseService(mockDOMParser);
+    const service = new HtmlParseService(mockDOMParser);
     return {service, mockDOMParser};
   });
 

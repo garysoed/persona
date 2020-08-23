@@ -13,7 +13,6 @@ import { HasClassInput } from '../input/has-class';
 import { OnDomInput } from '../input/on-dom';
 import { OnInputInput } from '../input/on-input';
 import { PropertyObserver } from '../input/property-observer';
-import { SingleOutput } from '../main/single';
 import { AttributeOutput } from '../output/attribute';
 import { CallerOutput } from '../output/caller';
 import { ClassToggleOutput } from '../output/class-toggle';
@@ -21,6 +20,7 @@ import { DispatcherOutput, UnresolvedDispatcherOutput } from '../output/dispatch
 import { MultiOutput } from '../output/multi';
 import { PropertyEmitter } from '../output/property-emitter';
 import { SetAttributeOutput } from '../output/set-attribute';
+import { SingleOutput } from '../output/single';
 import { StyleOutput } from '../output/style';
 import { Input } from '../types/input';
 
