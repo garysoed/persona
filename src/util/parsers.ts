@@ -31,7 +31,7 @@ export function integerParser(): Converter<number, string> {
 
 export function listParser<T>(
     itemParser: Converter<T, Serializable>,
-): Converter<T[], string> {
+): Converter<readonly T[], string> {
   return compose(
       listConverter(itemParser),
       human(),

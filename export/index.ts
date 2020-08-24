@@ -13,6 +13,7 @@ export { hasClass } from '../src/input/has-class';
 export { mediaQuery } from '../src/input/media-query';
 export { observer } from '../src/input/property-observer';
 export { onDom } from '../src/input/on-dom';
+export { onMutation } from '../src/input/on-mutation';
 export { ownerDocument } from '../src/input/owner-document';
 export { onInput } from '../src/input/on-input';
 export { onKeydown } from '../src/input/on-keydown';

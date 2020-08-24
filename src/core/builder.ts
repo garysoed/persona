@@ -16,6 +16,8 @@ import { CustomElementDecorator } from './custom-element-decorator';
 import { TemplateService } from './template-service';
 
 
+const CLEANUP_DELAY_MS = 1000;
+
 export interface AttributeChangedEvent {
   readonly attrName: string;
   readonly newValue: string;
@@ -166,7 +168,8 @@ function createCustomElementClass(
     );
 
     private readonly onAttributeChanged$ = new Subject<AttributeChangedEvent>();
-    private readonly onDisconnect$ = new Subject<void>();
+    private readonly onCleanup$ = new Subject<void>();
+    private isCleanedUp = true;
 
     constructor() {
       super();
@@ -177,6 +180,10 @@ function createCustomElementClass(
     }
 
     connectedCallback(): void {
+      if (!this.isCleanedUp) {
+        return;
+      }
+
       this.decorator$.pipe(
           take(1),
           switchMap(decorator => {
@@ -189,12 +196,22 @@ function createCustomElementClass(
 
             return merge(onRun$, onAttributeChanged$);
           }),
-          takeUntil(this.onDisconnect$),
+          takeUntil(this.onCleanup$),
       ).subscribe();
+      this.isCleanedUp = false;
     }
 
     disconnectedCallback(): void {
-      this.onDisconnect$.next(undefined);
+      setTimeout(
+          () => {
+            if (this.isConnected) {
+              return;
+            }
+            this.onCleanup$.next(undefined);
+            this.isCleanedUp = true;
+          },
+          CLEANUP_DELAY_MS,
+      );
     }
 
     static get observedAttributes(): readonly string[] {

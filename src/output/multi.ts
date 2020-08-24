@@ -1,4 +1,4 @@
-import { ArrayDiff, diffArray } from 'gs-tools/export/rxjs';
+import { diffArray } from 'gs-tools/export/rxjs';
 import { assertUnreachable } from 'gs-tools/export/typescript';
 import { NEVER, Observable, OperatorFunction, pipe } from 'rxjs';
 import { tap, withLatestFrom } from 'rxjs/operators';

@@ -7,7 +7,7 @@ import { createFakeContext } from '../testing/create-fake-context';
 import { onInput } from './on-input';
 
 
-test('input.onInput', init => {
+test('@persona/input/on-input', init => {
   const ELEMENT_ID = 'test';
 
   const _ = init(() => {

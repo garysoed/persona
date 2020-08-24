@@ -12,7 +12,7 @@ test('@persona/util/mutation-observable', init => {
     return {};
   });
 
-  should(`emit the records correctly`, async () => {
+  should(`emit the records correctly`, () => {
     const rootEl = document.createElement('div').attachShadow({mode: 'open'});
     document.appendChild(rootEl);
     const addedEl = document.createElement('div');
