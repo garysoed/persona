@@ -1,9 +1,11 @@
 import { Vine } from 'grapevine';
 import { $filter, $first, $pipe, arrayFrom } from 'gs-tools/export/collect';
+import { debug } from 'gs-tools/export/rxjs';
 import { stringify, Verbosity } from 'moirai';
 import { fromEvent, Observable, Subject } from 'rxjs';
-import { map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { map, mapTo, startWith, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 
+import { mutationObservable } from '../../export';
 import { __context, DecoratedElement } from '../core/custom-element-decorator';
 import { PersonaContext } from '../core/persona-context';
 import { AttributeInput } from '../input/attribute';
@@ -33,6 +35,7 @@ interface Key {
   readonly shift?: boolean;
 }
 
+// TODO: Make all the getters responsive.
 export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   constructor(
       readonly element$: Observable<T>,
@@ -117,6 +120,27 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
               return value.result;
             }),
         );
+  }
+
+  getChildren(elementSelector: Input<Element>): Observable<readonly Node[]> {
+    return this.element$.pipe(
+        getElement(context => elementSelector.getValue(context)),
+        switchMap(el => mutationObservable(el, {childList: true}).pipe(
+            startWith({}),
+            mapTo(el),
+        )),
+        map(el => {
+          const children: Element[] = [];
+          for (let i = 0; i < el.childElementCount; i++) {
+            const child = el.children.item(i);
+            if (child) {
+              children.push(child);
+            }
+          }
+
+          return children;
+        }),
+    );
   }
 
   getClassList(input: Input<Element>): Observable<Set<string>> {
