@@ -1,4 +1,3 @@
-import { stream } from 'grapevine';
 import { Runnable } from 'gs-tools/export/rxjs';
 import { Observable } from 'rxjs';
 
@@ -24,13 +23,7 @@ export abstract class CustomElementCtrl extends Runnable {
   }
 
   protected declareInput<T>(input: Input<T>): Observable<T> {
-    return stream<T, CustomElementCtrl>(
-        (): Observable<T> => {
-          return input.getValue(this.context);
-        },
-        this,
-    )
-    .get(this.context.vine);
+    return input.getValue(this.context);
   }
 
   protected render<T>(outputs: Output<T>, value$: Observable<T>): void {

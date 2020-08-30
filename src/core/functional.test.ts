@@ -32,7 +32,7 @@ const $ = {
   }),
 };
 
-const $HANDLER = source(() => () => undefined);
+const $HANDLER = source('handler', () => () => undefined);
 
 @_p.baseCustomElement({
   shadowMode: 'open',
@@ -58,7 +58,8 @@ class ParentTestClass extends CustomElementCtrl {
 })
 class TestClass extends ParentTestClass {
   private readonly handlerSbj = $HANDLER.get(this.vine);
-  private readonly providesValueStream = stream(this.providesValue, this).get(this.vine);
+  private readonly providesValueStream = stream('providesValue', this.providesValue, this)
+      .get(this.vine);
 
   constructor(context: PersonaContext) {
     super(context);
@@ -69,7 +70,9 @@ class TestClass extends ParentTestClass {
   }
 
   protected overriddenRender(): Observable<string> {
-    return stream(this.providesValue, this).get(this.vine).pipe(map(value => `${value}abc`));
+    return stream('render', this.providesValue, this)
+        .get(this.vine)
+        .pipe(map(value => `${value}abc`));
   }
 
   private providesValue(): Observable<string> {

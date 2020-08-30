@@ -24,5 +24,5 @@ export class HtmlParseService {
   }
 }
 
-export const $htmlParseService = source(() => new HtmlParseService());
+export const $htmlParseService = source('HtmlParseService', () => new HtmlParseService());
 

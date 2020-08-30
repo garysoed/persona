@@ -1,6 +1,5 @@
 import { Vine } from 'grapevine';
 import { $filter, $first, $pipe, arrayFrom } from 'gs-tools/export/collect';
-import { debug } from 'gs-tools/export/rxjs';
 import { stringify, Verbosity } from 'moirai';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { map, mapTo, startWith, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
