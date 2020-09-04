@@ -255,7 +255,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
 
   // TODO: The inputs should take unresolved values too.
   setAttribute<T>(
-      input: AttributeInput<T>,
+      input: AttributeInput<T>|AttributeOutput<T>,
       value: T,
   ): Observable<unknown> {
     const result = input.parser.convertForward(value);

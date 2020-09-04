@@ -66,5 +66,18 @@ test('@persona/output/single', init => {
 
       assert(_.slot.nextSibling).to.beNull();
     });
+
+    should(`hide errors when deleting node`, () => {
+      const node = document.createElement('div');
+
+      _.render$.next(node);
+
+      const newParent = document.createElement('div');
+      newParent.appendChild(node);
+
+      _.render$.next(null);
+
+      assert(_.slot.nextSibling).to.beNull();
+    });
   });
 });

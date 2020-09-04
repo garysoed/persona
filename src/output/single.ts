@@ -30,7 +30,11 @@ export class SingleOutput implements Output<Node|null> {
         tap(([[previous, current], parentEl, slotEl]) => {
           // Remove the previous node.
           if (previous) {
-            parentEl.removeChild(previous);
+            try {
+              parentEl.removeChild(previous);
+            } catch (e) {
+              // ignored
+            }
           }
 
           // Add the new node.

@@ -113,6 +113,15 @@ test('@persona/output/multi', init => {
       assert(_.slot.nextSibling?.nextSibling?.nextSibling).to.beNull();
     });
 
+    should(`hide errors when deleting`, () => {
+      const node = document.createElement('div');
+      _.diff$.next([node, node]);
+
+      _.diff$.next([]);
+
+      assert(_.slot.nextSibling).to.beNull();
+    });
+
     should(`replace the element correctly for 'set'`, () => {
       const node1 = document.createElement('div');
       const node2 = document.createElement('div');

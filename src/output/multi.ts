@@ -60,7 +60,11 @@ export class MultiOutput implements Output<readonly Node[]> {
       return NEVER;
     }
 
-    parentNode.removeChild(curr);
+    try {
+      parentNode.removeChild(curr);
+    } catch (e) {
+      // ignored
+    }
 
     return NEVER;
   }
