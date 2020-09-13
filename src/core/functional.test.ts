@@ -1,4 +1,4 @@
-import { source, stream, VineBuilder } from 'grapevine';
+import { source, VineBuilder } from 'grapevine';
 import { assert, createSpy, should, test } from 'gs-testing';
 import { identity } from 'nabu';
 import { Observable, of as observableOf } from 'rxjs';
@@ -20,7 +20,7 @@ const _p = new PersonaBuilder(_v);
 const $$ = {
   tag: 'test-el',
   api: {
-    attr4: attributeIn('attr4', identity(), ''),
+    attr3: attributeIn('attr3', identity(), ''),
   },
 };
 const $ = {
@@ -28,7 +28,6 @@ const $ = {
     ...$$.api,
     attr1: attributeOut('attr1', identity()),
     attr2: attributeOut('attr2', identity()),
-    attr3: attributeOut('attr3', identity()),
   }),
 };
 
@@ -58,25 +57,21 @@ class ParentTestClass extends CustomElementCtrl {
 })
 class TestClass extends ParentTestClass {
   private readonly handlerSbj = $HANDLER.get(this.vine);
-  private readonly providesValueStream = stream('providesValue', this.providesValue, this)
-      .get(this.vine);
 
   constructor(context: PersonaContext) {
     super(context);
     this.render($.host._.attr1, this.overriddenRender());
-    this.render($.host._.attr2, this.providesValueStream);
-    this.render($.host._.attr3, this.overriddenRender());
+    this.render($.host._.attr2, this.overriddenRender());
     this.addSetup(this.setupHandler());
   }
 
   protected overriddenRender(): Observable<string> {
-    return stream('render', this.providesValue, this)
-        .get(this.vine)
+    return this.providesValue()
         .pipe(map(value => `${value}abc`));
   }
 
   private providesValue(): Observable<string> {
-    return this.declareInput($.host._.attr4).pipe(map(v => `123-${v}`));
+    return this.declareInput($.host._.attr3).pipe(map(v => `123-${v}`));
   }
 
   private setupHandler(): Observable<unknown> {
@@ -98,8 +93,7 @@ test('@persona/core/functional', init => {
 
   should(`set up the component correctly`, () => {
     assert(_.el.getAttribute($.host._.attr1)).to.emitWith('123-abc');
-    assert(_.el.getAttribute($.host._.attr2)).to.emitWith('123-');
-    assert(_.el.getAttribute($.host._.attr3)).to.emitWith('123-abc');
+    assert(_.el.getAttribute($.host._.attr2)).to.emitWith('123-abc');
 
     assert(_.el.element.shadowRoot?.mode).to.equal('open');
     assert(_.mockHandler).to.haveBeenCalledWith();
