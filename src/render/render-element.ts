@@ -1,11 +1,10 @@
-import { arrayFrom } from 'gs-tools/export/collect';
-import { diffArray, MapDiff } from 'gs-tools/export/rxjs';
-import { assertUnreachable } from 'gs-tools/export/typescript';
+import { diffArray } from 'gs-tools/export/rxjs';
 import { EMPTY, merge, Observable, of as observableOf } from 'rxjs';
 import { switchMap, switchMapTo, tap } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { ownerDocument } from '../input/owner-document';
+
 
 /**
  * Values for rendering the element.
@@ -16,7 +15,7 @@ export interface Values {
   /**
    * Attributes to apply to the element.
    */
-  readonly attrs?: ReadonlyMap<string, Observable<string>>;
+  readonly attrs?: ReadonlyMap<string, Observable<string|null>>;
 
   readonly children?: Observable<readonly Node[]>;
 
@@ -47,11 +46,15 @@ export function renderElement(
         const el = document.createElement(tagName);
         const onChange$List = [];
 
-        const extraAttrs = values.attrs || new Map<string, Observable<string>>();
+        const extraAttrs = values.attrs || new Map<string, Observable<string|null>>();
         for (const [attrName, attrValue$] of extraAttrs) {
           onChange$List.push(attrValue$.pipe(
               tap(value => {
-                el.setAttribute(attrName, value);
+                if (value === null) {
+                  el.removeAttribute(attrName);
+                } else {
+                  el.setAttribute(attrName, value);
+                }
               }),
           ));
         }

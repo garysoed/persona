@@ -49,6 +49,20 @@ test('@persona/render/render-element', init => {
     assert(b$).to.emitSequence([b2]);
   });
 
+  should(`delete the attribute if the value is null`, () => {
+    const values = {
+      attrs: new Map([['b', observableOf('bValue', null)]]),
+    };
+    const element$ = renderElement(TAG, values, _.context)
+        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+
+    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
+    const b$ = createSpySubject(element$.pipe(map(el => el.hasAttribute('b'))));
+
+    assert(tag$).to.emitSequence([TAG.toUpperCase()]);
+    assert(b$).to.emitSequence([false]);
+  });
+
   should(`update the text context without emitting the element`, () => {
     const text1 = 'text1';
     const text2 = 'text2';

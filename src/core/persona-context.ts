@@ -1,5 +1,5 @@
 import { Vine } from 'grapevine';
-import { ReplaySubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 export interface AttributeChangedEvent {
   readonly attrName: string;
