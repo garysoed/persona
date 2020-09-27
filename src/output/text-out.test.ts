@@ -5,15 +5,15 @@ import { Subject } from 'rxjs';
 import { element } from '../main/element';
 import { createFakeContext } from '../testing/create-fake-context';
 
-import { textContent } from './text-content';
+import { textOut } from './text-out';
 
 
-test('output.textContent', init => {
+test('@persona/output/text-out', init => {
   const ELEMENT_ID = 'test';
 
   const _ = init(() => {
     const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
-      text: textContent(),
+      text: textOut(),
     });
 
     const root = document.createElement('div');

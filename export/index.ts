@@ -39,7 +39,7 @@ export { setAttribute } from '../src/output/set-attribute';
 export { single } from '../src/output/single';
 export { style } from '../src/output/style';
 export { title } from '../src/output/title';
-export { textContent } from '../src/output/text-content';
+export { textOut as textContent } from '../src/output/text-out';
 
 // Types
 export { CustomElementCtrl } from '../src/types/custom-element-ctrl';

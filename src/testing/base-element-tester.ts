@@ -355,7 +355,7 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
   }
 }
 
-function findCommentNode<R>(
+function findCommentNode(
     childNodes: readonly Node[],
     commentContent: string|null,
 ): Node|null {

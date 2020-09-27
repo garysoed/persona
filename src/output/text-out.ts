@@ -8,7 +8,7 @@ import { UnresolvedElementProperty } from '../types/unresolved-element-property'
 import { UnresolvedOutput } from '../types/unresolved-output';
 
 
-export class TextContentOutput implements Output<string> {
+export class TextOutput implements Output<string> {
   constructor(
       private readonly resolver: Resolver<Element>,
   ) { }
@@ -23,13 +23,13 @@ export class TextContentOutput implements Output<string> {
   }
 }
 
-class UnresolvedTextContentOutput implements
-    UnresolvedElementProperty<Element, TextContentOutput>, UnresolvedOutput<string> {
-  resolve(resolver: Resolver<Element>): TextContentOutput {
-    return new TextContentOutput(resolver);
+class UnresolvedTextOutput implements
+    UnresolvedElementProperty<Element, TextOutput>, UnresolvedOutput<string> {
+  resolve(resolver: Resolver<Element>): TextOutput {
+    return new TextOutput(resolver);
   }
 }
 
-export function textContent(): UnresolvedTextContentOutput {
-  return new UnresolvedTextContentOutput();
+export function textOut(): UnresolvedTextOutput {
+  return new UnresolvedTextOutput();
 }
