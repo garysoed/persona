@@ -23,7 +23,7 @@ export class TextOutput implements Output<string> {
   }
 }
 
-class UnresolvedTextOutput implements
+export class UnresolvedTextOutput implements
     UnresolvedElementProperty<Element, TextOutput>, UnresolvedOutput<string> {
   resolve(resolver: Resolver<Element>): TextOutput {
     return new TextOutput(resolver);

@@ -17,6 +17,7 @@ export { onMutation } from '../src/input/on-mutation';
 export { ownerDocument } from '../src/input/owner-document';
 export { onInput } from '../src/input/on-input';
 export { onKeydown } from '../src/input/on-keydown';
+export { textIn } from '../src/input/text-in';
 
 // Main
 export { api } from '../src/main/api';
@@ -40,6 +41,7 @@ export { single } from '../src/output/single';
 export { style } from '../src/output/style';
 export { title } from '../src/output/title';
 export { textOut as textContent } from '../src/output/text-out';
+export { textOut } from '../src/output/text-out';
 
 // Types
 export { CustomElementCtrl } from '../src/types/custom-element-ctrl';
