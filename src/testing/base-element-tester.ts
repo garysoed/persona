@@ -306,6 +306,21 @@ export class BaseElementTester<T extends HTMLElement = HTMLElement> {
         );
   }
 
+  setText(
+      el: Input<Element>,
+      value: string,
+  ): Observable<unknown> {
+    return this.element$.pipe(
+        getElement(context => el.getValue(context)),
+        tap(el => {
+          el.textContent = value;
+          el.dispatchEvent(
+              new CustomEvent('pr-fake-mutation', {bubbles: true, detail: {record: []}}),
+          );
+        }),
+    );
+  }
+
   simulateKeypress(
       input: Input<Element>,
       keys: Key[],
