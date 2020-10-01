@@ -59,14 +59,14 @@ export function renderElement(
           ));
         }
 
-        const textContent$ = values.textContent || observableOf('');
+        const textContent$ = values.textContent ?? EMPTY;
         onChange$List.push(textContent$.pipe(
             tap(text => {
               el.textContent = text;
             }),
         ));
 
-        const children$ = values.children || observableOf([]);
+        const children$ = values.children ?? EMPTY;
         onChange$List.push(children$.pipe(
             diffArray(),
             tap(diff => {
