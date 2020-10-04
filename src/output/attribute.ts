@@ -21,18 +21,22 @@ export class AttributeOutput<T> implements Output<T> {
     return pipe(
         withLatestFrom(this.resolver(context)),
         tap(([value, el]) => {
-          const result = this.parser.convertForward(value);
-          if (result.success) {
-            const currentValue = el.getAttribute(this.attrName);
-            if (currentValue === result.result) {
-              return;
+          try {
+            const result = this.parser.convertForward(value);
+            if (result.success) {
+              const currentValue = el.getAttribute(this.attrName);
+              if (currentValue === result.result) {
+                return;
+              }
+
+              el.setAttribute(this.attrName, result.result);
             }
 
-            el.setAttribute(this.attrName, result.result);
-          }
-
-          if (value === this.defaultValue) {
-            el.removeAttribute(this.attrName);
+            if (value === this.defaultValue) {
+              el.removeAttribute(this.attrName);
+            }
+          } catch (e) {
+            // Do nothing.
           }
         }),
     );
