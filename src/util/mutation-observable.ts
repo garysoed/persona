@@ -1,5 +1,5 @@
 import { fromEventPattern, Observable } from 'rxjs';
-import { shareReplay } from 'rxjs/operators';
+import { share } from 'rxjs/operators';
 
 /**
  * Creates observable that listens to mutations on the given node.
@@ -19,5 +19,5 @@ export function mutationObservable(
       },
       (_, mutationObserver: MutationObserver) => mutationObserver.disconnect(),
   )
-  .pipe(shareReplay(1));
+  .pipe(share());
 }

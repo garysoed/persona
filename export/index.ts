@@ -49,6 +49,7 @@ export { CustomElementCtrl } from '../src/types/custom-element-ctrl';
 // Util
 export { mapOutput } from '../src/util/map-output';
 export { mutationObservable } from '../src/util/mutation-observable';
+export { resizeObservable } from '../src/util/resize-observable';
 export { splitOutput } from '../src/util/split-output';
 
 // Location

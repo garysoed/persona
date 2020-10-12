@@ -5,5 +5,6 @@ export { PersonaTesterFactory } from '../src/testing/persona-tester';
 export { PersonaTesterEnvironment } from '../src/testing/persona-tester-environment';
 export { createFakeContext } from '../src/testing/create-fake-context';
 export { installFakeMutationObserver } from '../src/testing/fake-mutation-observer';
+export { dispatchResizeEvent, installFakeResizeObserver } from '../src/testing/fake-resize-observer';
 
 export type { PersonaTester } from '../src/testing/persona-tester';
