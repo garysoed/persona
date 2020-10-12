@@ -9,8 +9,8 @@ import { share } from 'rxjs/operators';
 export function mutationObservable(
     targetNode: Node,
     options: MutationObserverInit,
-): Observable<MutationRecord[]> {
-  return fromEventPattern<MutationRecord[]>(
+): Observable<readonly MutationRecord[]> {
+  return fromEventPattern<readonly MutationRecord[]>(
       handler => {
         const mutationObserver = new MutationObserver(records => handler(records));
         mutationObserver.observe(targetNode, options);

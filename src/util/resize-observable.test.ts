@@ -21,8 +21,9 @@ test('@persona/util/resize-observable', init => {
     assert(records$).toNot.emit();
 
     addedEl.style.height = '23px';
-    dispatchResizeEvent(addedEl);
+    const records = [{contentRect: new DOMRect(1, 2, 3, 4)}];
+    dispatchResizeEvent(addedEl, records);
 
-    assert(records$).to.emit();
+    assert(records$).to.emitWith(records);
   });
 });

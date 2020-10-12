@@ -10,18 +10,22 @@ export declare interface ResizeObserver {
   observe(target: Element|SVGElement, options: ResizeObserverInit): void;
 }
 
+export declare interface ResizeObserverEntry {
+  readonly contentRect: DOMRect;
+}
+
 declare var ResizeObserver: {
   prototype: ResizeObserver;
-  new (callback: () => any): ResizeObserver;
+  new (callback: (entries: readonly ResizeObserverEntry[]) => any): ResizeObserver;
 };
 
 export function resizeObservable(
     targetEl: Element,
     options: ResizeObserverInit,
-): Observable<{}> {
-  return fromEventPattern<{}>(
+): Observable<readonly ResizeObserverEntry[]> {
+  return fromEventPattern<readonly ResizeObserverEntry[]>(
       handler => {
-        const observer = new ResizeObserver(() => handler({}));
+        const observer = new ResizeObserver(entries => handler(entries));
         observer.observe(targetEl, options);
 
         return observer;
