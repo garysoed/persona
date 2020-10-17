@@ -2,7 +2,7 @@ import { assert, createSpySubject, runEnvironment, should, test } from 'gs-testi
 import { instanceofType } from 'gs-types';
 import { filter, map } from 'rxjs/operators';
 
-import { element } from '../main/element';
+import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
 import { PersonaTesterEnvironment } from '../testing/persona-tester-environment';
 

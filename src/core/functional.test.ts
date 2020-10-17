@@ -5,7 +5,7 @@ import { Observable, of as observableOf } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 import { attribute as attributeIn } from '../input/attribute';
-import { host } from '../main/host';
+import { host } from '../selector/host';
 import { attribute as attributeOut } from '../output/attribute';
 import { PersonaTesterFactory } from '../testing/persona-tester';
 import { CustomElementCtrl } from '../types/custom-element-ctrl';

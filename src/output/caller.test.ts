@@ -2,7 +2,7 @@ import { assert, createSpy, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { of as observableOf } from 'rxjs';
 
-import { element } from '../main/element';
+import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
 
 import { caller } from './caller';

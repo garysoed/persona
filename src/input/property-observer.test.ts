@@ -1,7 +1,7 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
 import { ReplaySubject } from 'rxjs';
 
-import { host } from '../main/host';
+import { host } from '../selector/host';
 import { createFakeContext } from '../testing/create-fake-context';
 
 import { observer } from './property-observer';

@@ -3,7 +3,7 @@ import { integerConverter } from 'gs-tools/export/serializer';
 import { instanceofType } from 'gs-types';
 import { compose, human } from 'nabu';
 
-import { element } from '../main/element';
+import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
 
 import { attribute } from './attribute';

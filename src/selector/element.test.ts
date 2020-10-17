@@ -1,4 +1,4 @@
-import { assert, createSpySubject, should, test } from 'gs-testing';
+import { assert, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 
 import { createFakeContext } from '../testing/create-fake-context';
@@ -19,8 +19,7 @@ test('@persona/main/element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      const spyElement$ = createSpySubject(input.getValue(createFakeContext({shadowRoot})));
-      assert(spyElement$).to.emitWith(el);
+      assert(input.getElement(createFakeContext({shadowRoot}))).to.equal(el);
     });
 
     should(`handle component specs`, () => {
@@ -35,8 +34,7 @@ test('@persona/main/element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      const spyElement$ = createSpySubject(input.getValue(createFakeContext({shadowRoot})));
-      assert(spyElement$).to.emitWith(el);
+      assert(input.getElement(createFakeContext({shadowRoot}))).to.equal(el);
     });
 
     should(`throw error if the element is of the wrong type`, () => {
@@ -50,7 +48,7 @@ test('@persona/main/element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      assert(() => input.getValue(createFakeContext({shadowRoot})))
+      assert(() => input.getElement(createFakeContext({shadowRoot})))
           .to.throwErrorWithMessage(/Element of/);
     });
   });

@@ -14,8 +14,6 @@ import { HasClassInput } from '../input/has-class';
 import { OnDomInput } from '../input/on-dom';
 import { OnInputInput } from '../input/on-input';
 import { PropertyObserver } from '../input/property-observer';
-import { ElementInput } from '../main/element';
-import { HostInput } from '../main/host';
 import { AttributeOutput } from '../output/attribute';
 import { CallerOutput } from '../output/caller';
 import { ClassToggleOutput } from '../output/class-toggle';
@@ -26,6 +24,7 @@ import { SetAttributeOutput } from '../output/set-attribute';
 import { SingleOutput } from '../output/single';
 import { StyleOutput } from '../output/style';
 import { Resolver } from '../types/resolver';
+import { Selector } from '../types/selector';
 
 
 interface Key {
@@ -45,7 +44,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
       readonly vine: Vine,
   ) { }
 
-  addSlotElement(input: ElementInput<HTMLSlotElement, any>, node: Node): Observable<unknown> {
+  addSlotElement(input: Selector<HTMLSlotElement>, node: Node): Observable<unknown> {
     return this.element$.pipe(
         getElement(context => input.getElement(context)),
         tap(slotEl => {
@@ -135,9 +134,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
         );
   }
 
-  getChildren(
-      elementSelector: ElementInput<Element, any>,
-  ): Observable<readonly Node[]> |HostInput<any> {
+  getChildren(elementSelector: Selector<Element>): Observable<readonly Node[]> {
     return this.element$.pipe(
         getElement(context => elementSelector.getElement(context)),
         switchMap(el => mutationObservable(el, {childList: true}).pipe(
@@ -158,7 +155,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     );
   }
 
-  getClassList(input: ElementInput<Element, any>|HostInput<any>): Observable<Set<string>> {
+  getClassList(input: Selector<Element>): Observable<Set<string>> {
     return this.element$
         .pipe(
             getElement(context => input.getElement(context)),
@@ -178,9 +175,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
         );
   }
 
-  getElement<E extends Element>(
-      input: ElementInput<E, any>,
-  ): Observable<E> {
+  getElement<E extends Element>(input: Selector<E>): Observable<E> {
     return this.element$.pipe(getElement(context => input.getElement(context)));
   }
 
@@ -249,9 +244,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
         );
   }
 
-  getTextContent(
-      input: ElementInput<Element, any>|HostInput<any>,
-  ): Observable<string> {
+  getTextContent(input: Selector<Element>): Observable<string> {
     return this.element$
         .pipe(
             getElement(context => input.getElement(context)),
@@ -307,10 +300,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
         );
   }
 
-  setInputValue(
-      input: ElementInput<HTMLInputElement, any>,
-      value: string,
-  ): Observable<unknown> {
+  setInputValue(input: Selector<HTMLInputElement>, value: string): Observable<unknown> {
     return this.element$
         .pipe(
             getElement(context => input.getElement(context)),
@@ -322,10 +312,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
         );
   }
 
-  setText(
-      el: ElementInput<Element, any>|HostInput<any>,
-      value: string,
-  ): Observable<unknown> {
+  setText(el: Selector<Element>, value: string): Observable<unknown> {
     return this.element$.pipe(
         getElement(context => el.getElement(context)),
         tap(el => {
@@ -337,10 +324,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     );
   }
 
-  simulateKeypress(
-      input: ElementInput<Element, any>|HostInput<any>,
-      keys: Key[],
-  ): Observable<unknown> {
+  simulateKeypress(input: Selector<Element>, keys: readonly Key[]): Observable<unknown> {
     return this.element$
         .pipe(
             getElement(context => input.getElement(context)),

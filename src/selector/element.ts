@@ -1,12 +1,10 @@
 import { elementWithTagType, Type } from 'gs-types';
-import { Observable, of as observableOf } from 'rxjs';
 
 import { PersonaContext } from '../core/persona-context';
-import { Input } from '../types/input';
+import { api, ConvertedSpec, UnconvertedSpec } from '../main/api';
+import { ComponentSpec } from '../main/component-spec';
+import { Selector } from '../types/selector';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
-
-import { api, ConvertedSpec, UnconvertedSpec } from './api';
-import { ComponentSpec } from './component-spec';
 
 
 interface Properties<E extends Element> {
@@ -17,7 +15,7 @@ type Resolved<E extends Element, P extends Properties<E>> = {
   [K in keyof P]: P[K] extends UnresolvedElementProperty<E, infer R> ? R : never;
 };
 
-export class ElementInput<E extends Element, P extends Properties<E>> implements Input<E> {
+export class ElementSelector<E extends Element, P extends Properties<E>> implements Selector<E> {
   readonly _: Resolved<E, P>;
 
   constructor(
@@ -34,10 +32,6 @@ export class ElementInput<E extends Element, P extends Properties<E>> implements
       throw new Error(`Element of [${this.elementId}] should be a ${this.type} but was ${el}`);
     }
     return el;
-  }
-
-  getValue(context: PersonaContext): Observable<E> {
-    return observableOf(this.getElement(context));
   }
 
   private resolve(properties: P): Resolved<E, P> {
@@ -58,21 +52,21 @@ export function element<E extends Element, P extends Properties<E>>(
     id: string,
     type: Type<E>,
     properties: P,
-): ElementInput<E, P>;
+): ElementSelector<E, P>;
 export function element<P extends UnconvertedSpec, PX extends Properties<Element>>(
     id: string,
     spec: ComponentSpec<P>,
     properties: PX,
-): ElementInput<HTMLElement, ConvertedSpec<P>&PX>;
+): ElementSelector<HTMLElement, ConvertedSpec<P>&PX>;
 export function element(
     id: string,
     typeOrSpec: Type<Element>|ComponentSpec<UnconvertedSpec>,
     properties: Properties<Element>,
-): ElementInput<Element, Properties<Element>> {
+): ElementSelector<Element, Properties<Element>> {
   if (typeOrSpec instanceof Type) {
-    return new ElementInput(id, properties, typeOrSpec);
+    return new ElementSelector(id, properties, typeOrSpec);
   } else {
-    return new ElementInput(
+    return new ElementSelector(
         id,
         {
           ...api(typeOrSpec.api),

@@ -2,7 +2,7 @@ import { assert, run, should, test } from 'gs-testing';
 import { identity } from 'nabu';
 import { of as observableOf } from 'rxjs';
 
-import { host } from '../main/host';
+import { host } from '../selector/host';
 import { attribute } from '../output/attribute';
 import { createFakeContext } from '../testing/create-fake-context';
 

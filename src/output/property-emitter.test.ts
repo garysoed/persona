@@ -1,7 +1,7 @@
 import { assert, createSpySubject, run, should, test } from 'gs-testing';
 import { of as observableOf, ReplaySubject } from 'rxjs';
 
-import { host } from '../main/host';
+import { host } from '../selector/host';
 import { createFakeContext } from '../testing/create-fake-context';
 
 import { emitter } from './property-emitter';

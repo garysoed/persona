@@ -22,8 +22,6 @@ export { textIn } from '../src/input/text-in';
 
 // Main
 export { api } from '../src/main/api';
-export { host } from '../src/main/host';
-export { element } from '../src/main/element';
 export { ComponentSpec } from '../src/main/component-spec';
 
 // Outputs
@@ -42,6 +40,10 @@ export { style } from '../src/output/style';
 export { title } from '../src/output/title';
 export { textOut as textContent } from '../src/output/text-out';
 export { textOut } from '../src/output/text-out';
+
+// Selectors
+export { host } from '../src/selector/host';
+export { element } from '../src/selector/element';
 
 // Types
 export { CustomElementCtrl } from '../src/types/custom-element-ctrl';

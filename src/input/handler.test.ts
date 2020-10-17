@@ -3,7 +3,7 @@ import { instanceofType, numberType, tupleOfType } from 'gs-types';
 import { of as observableOf, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { element } from '../main/element';
+import { element } from '../selector/element';
 import { caller } from '../output/caller';
 import { createFakeContext } from '../testing/create-fake-context';
 

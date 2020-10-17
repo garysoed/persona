@@ -1,14 +1,12 @@
-import { Observable, of as observableOf } from 'rxjs';
-
 import { PersonaContext } from '../core/persona-context';
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';
+import { HostAttribute } from '../main/host-attribute';
+import { HostHasAttribute } from '../main/host-has-attribute';
 import { Input } from '../types/input';
 import { Output } from '../types/output';
+import { Selector } from '../types/selector';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
-
-import { HostAttribute } from './host-attribute';
-import { HostHasAttribute } from './host-has-attribute';
 
 
 interface PropertySpecs {
@@ -19,7 +17,7 @@ type Resolved<P extends PropertySpecs> = {
   [K in keyof P]: P[K] extends UnresolvedElementProperty<Element, infer R> ? R : never;
 };
 
-export class HostInput<P extends PropertySpecs> implements Input<Element> {
+export class HostSelector<P extends PropertySpecs> implements Selector<Element> {
   readonly _ = this.resolveProperties();
 
   constructor(
@@ -28,10 +26,6 @@ export class HostInput<P extends PropertySpecs> implements Input<Element> {
 
   getElement(context: PersonaContext): Element {
     return context.shadowRoot.host;
-  }
-
-  getValue(context: PersonaContext): Observable<Element> {
-    return observableOf(this.getElement(context));
   }
 
   private resolveProperties(): Resolved<P> {
@@ -62,6 +56,6 @@ export class HostInput<P extends PropertySpecs> implements Input<Element> {
   }
 }
 
-export function host<P extends PropertySpecs>(apiSpecs: P): HostInput<P> {
-  return new HostInput(apiSpecs);
+export function host<P extends PropertySpecs>(apiSpecs: P): HostSelector<P> {
+  return new HostSelector(apiSpecs);
 }

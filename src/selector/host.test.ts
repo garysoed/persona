@@ -1,11 +1,11 @@
 import { assert, should, test } from 'gs-testing';
 
 import { attribute } from '../input/attribute';
+import { HostAttribute } from '../main/host-attribute';
 import { textOut, TextOutput } from '../output/text-out';
 import { integerParser } from '../util/parsers';
 
 import { host } from './host';
-import { HostAttribute } from './host-attribute';
 
 
 test('@persona/main/host', init => {

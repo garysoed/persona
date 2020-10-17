@@ -1,7 +1,7 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 
-import { element } from '../main/element';
+import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
 
 import { MatchOptions, onKeydown, OnKeydownInput } from './on-keydown';

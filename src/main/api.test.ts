@@ -15,10 +15,10 @@ import { caller } from '../output/caller';
 import { classToggle } from '../output/class-toggle';
 import { dispatcher } from '../output/dispatcher';
 import { setAttribute } from '../output/set-attribute';
+import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
 
 import { api } from './api';
-import { element } from './element';
 
 
 test('@persona/main/api', init => {
