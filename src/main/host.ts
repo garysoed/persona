@@ -19,7 +19,7 @@ type Resolved<P extends PropertySpecs> = {
   [K in keyof P]: P[K] extends UnresolvedElementProperty<Element, infer R> ? R : never;
 };
 
-class HostInput<P extends PropertySpecs> implements Input<Element> {
+export class HostInput<P extends PropertySpecs> implements Input<Element> {
   readonly _ = this.resolveProperties();
 
   constructor(
