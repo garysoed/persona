@@ -1,5 +1,5 @@
 import { Converter } from 'nabu';
-import { Observable, of as observableOf } from 'rxjs';
+import { Observable } from 'rxjs';
 import { filter, map, startWith } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
@@ -13,7 +13,7 @@ export class HostAttribute<T> extends AttributeInput<T> implements Input<T> {
       readonly parser: Converter<T, string>,
       readonly defaultValue: T,
   ) {
-    super(attrName, parser, defaultValue, ({shadowRoot}) => observableOf(shadowRoot.host));
+    super(attrName, parser, defaultValue, ({shadowRoot}) => shadowRoot.host);
   }
 
   protected getAttributeValue(context: PersonaContext): Observable<string> {

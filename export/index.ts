@@ -17,13 +17,13 @@ export { onMutation } from '../src/input/on-mutation';
 export { ownerDocument } from '../src/input/owner-document';
 export { onInput } from '../src/input/on-input';
 export { onKeydown } from '../src/input/on-keydown';
+export { slotted } from '../src/input/slotted';
 export { textIn } from '../src/input/text-in';
 
 // Main
 export { api } from '../src/main/api';
 export { host } from '../src/main/host';
 export { element } from '../src/main/element';
-export { slotted } from '../src/main/slotted';
 export { ComponentSpec } from '../src/main/component-spec';
 
 // Outputs

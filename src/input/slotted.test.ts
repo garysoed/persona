@@ -1,5 +1,7 @@
-import { assert, createSpySubject, should, test } from 'gs-testing';
+import { arrayThat, assert, createSpySubject, should, test } from 'gs-testing';
+import { instanceofType } from 'gs-types';
 
+import { element } from '../main/element';
 import { createFakeContext } from '../testing/create-fake-context';
 
 import { slotted } from './slotted';
@@ -9,7 +11,9 @@ test('@persona/main/slotted', () => {
   test('getValue', () => {
     should(`emit the element correctly`, () => {
       const id = 'id';
-      const input = slotted(id, 1, {});
+      const $ = element(id, instanceofType(HTMLSlotElement), {
+        slot: slotted(),
+      });
       const slotName = 'slotName';
 
       const root = document.createElement('div');
@@ -28,23 +32,8 @@ test('@persona/main/slotted', () => {
       el2.setAttribute('slot', slotName);
       root.appendChild(el2);
 
-      const spyElement$ = createSpySubject(input.getValue(createFakeContext({shadowRoot})));
-      assert(spyElement$).to.emitWith(el2);
-    });
-
-    should(`throw error if the element is not an HTMLSlotElement`, () => {
-      const id = 'id';
-      const input = slotted(id, {});
-
-      const root = document.createElement('div');
-      const shadowRoot = root.attachShadow({mode: 'open'});
-
-      const el = document.createElement('input');
-      el.id = id;
-      shadowRoot.appendChild(el);
-
-      assert(() => input.getValue(createFakeContext({shadowRoot})))
-          .to.throwErrorWithMessage(/Element of/);
+      const spyElement$ = createSpySubject($._.slot.getValue(createFakeContext({shadowRoot})));
+      assert(spyElement$).to.emitWith(arrayThat<Node>().haveExactElements([el1, el2]));
     });
   });
 });

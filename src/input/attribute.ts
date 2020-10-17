@@ -1,5 +1,5 @@
 import { Converter } from 'nabu';
-import { Observable } from 'rxjs';
+import { Observable, of as observableOf } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
@@ -29,7 +29,7 @@ export class AttributeInput<T> implements Input<T> {
     return attributeObservable(
         this.attrName,
         unparsed => unparsed,
-        this.resolver(context),
+        observableOf(this.resolver(context)),
     );
   }
 

@@ -1,4 +1,4 @@
-import { Observable, of as observableOf } from 'rxjs';
+import { Observable } from 'rxjs';
 import { filter, map, startWith } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
@@ -10,7 +10,7 @@ export class HostHasAttribute extends HasAttributeInput implements Input<boolean
   constructor(
       readonly attrName: string,
   ) {
-    super(attrName, ({shadowRoot}) => observableOf(shadowRoot.host));
+    super(attrName, ({shadowRoot}) => shadowRoot.host);
   }
 
   getValue(context: PersonaContext): Observable<boolean> {

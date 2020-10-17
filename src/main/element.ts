@@ -28,12 +28,16 @@ export class ElementInput<E extends Element, P extends Properties<E>> implements
     this._ = this.resolve(properties);
   }
 
-  getValue({shadowRoot}: PersonaContext): Observable<E> {
+  getElement({shadowRoot}: PersonaContext): E {
     const el = shadowRoot.getElementById(this.elementId);
     if (!this.type.check(el)) {
       throw new Error(`Element of [${this.elementId}] should be a ${this.type} but was ${el}`);
     }
-    return observableOf(el);
+    return el;
+  }
+
+  getValue(context: PersonaContext): Observable<E> {
+    return observableOf(this.getElement(context));
   }
 
   private resolve(properties: P): Resolved<E, P> {
@@ -43,7 +47,7 @@ export class ElementInput<E extends Element, P extends Properties<E>> implements
         continue;
       }
 
-      resolvedProperties[key] = properties[key].resolve(root => this.getValue(root));
+      resolvedProperties[key] = properties[key].resolve(context => this.getElement(context));
     }
 
     return resolvedProperties;

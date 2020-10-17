@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { defer, Observable } from 'rxjs';
 import { distinctUntilChanged, map, shareReplay, startWith, switchMap } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
@@ -15,24 +15,22 @@ export class HasAttributeInput implements Input<boolean> {
   ) { }
 
   getValue(context: PersonaContext): Observable<boolean> {
-    return this.resolver(context)
-        .pipe(
-            switchMap(el =>
-                mutationObservable(
-                    el,
-                    {
-                      attributeFilter: [this.attrName],
-                      attributes: true,
-                    },
-                )
-                .pipe(
-                    map(() => el.hasAttribute(this.attrName)),
-                    startWith(el.hasAttribute(this.attrName)),
-                ),
-            ),
-            distinctUntilChanged(),
-            shareReplay(1),
-        );
+    return defer(() => {
+      const el = this.resolver(context);
+      return mutationObservable(
+          el,
+          {
+            attributeFilter: [this.attrName],
+            attributes: true,
+          },
+      )
+      .pipe(
+          map(() => el.hasAttribute(this.attrName)),
+          startWith(el.hasAttribute(this.attrName)),
+          distinctUntilChanged(),
+          shareReplay(1),
+      );
+    });
   }
 }
 

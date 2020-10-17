@@ -14,6 +14,7 @@ import { HasClassInput } from '../input/has-class';
 import { OnDomInput } from '../input/on-dom';
 import { OnInputInput } from '../input/on-input';
 import { PropertyObserver } from '../input/property-observer';
+import { ElementInput } from '../main/element';
 import { AttributeOutput } from '../output/attribute';
 import { CallerOutput } from '../output/caller';
 import { ClassToggleOutput } from '../output/class-toggle';
@@ -24,6 +25,7 @@ import { SetAttributeOutput } from '../output/set-attribute';
 import { SingleOutput } from '../output/single';
 import { StyleOutput } from '../output/style';
 import { Input } from '../types/input';
+import { Resolver } from '../types/resolver';
 
 
 interface Key {
@@ -123,9 +125,9 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
         );
   }
 
-  getChildren(elementSelector: Input<Element>): Observable<readonly Node[]> {
+  getChildren(elementSelector: ElementInput<Element, any>): Observable<readonly Node[]> {
     return this.element$.pipe(
-        getElement(context => elementSelector.getValue(context)),
+        getElement(context => elementSelector.getElement(context)),
         switchMap(el => mutationObservable(el, {childList: true}).pipe(
             startWith({}),
             mapTo(el),
@@ -144,10 +146,10 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     );
   }
 
-  getClassList(input: Input<Element>): Observable<Set<string>> {
+  getClassList(input: ElementInput<Element, any>): Observable<Set<string>> {
     return this.element$
         .pipe(
-            getElement(shadowRoot => input.getValue(shadowRoot)),
+            getElement(context => input.getElement(context)),
             map(el => {
               const classList = el.classList;
               const classes = new Set<string>();
@@ -165,9 +167,9 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
   }
 
   getElement<E extends Element>(
-      input: Input<E>,
+      input: ElementInput<E, any>,
   ): Observable<E> {
-    return this.element$.pipe(getElement(context => input.getValue(context)));
+    return this.element$.pipe(getElement(context => input.getElement(context)));
   }
 
   getEvents<E extends Event>(
@@ -236,11 +238,11 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
   }
 
   getTextContent(
-      input: Input<Element>,
+      input: ElementInput<Element, any>,
   ): Observable<string> {
     return this.element$
         .pipe(
-            getElement(context => input.getValue(context)),
+            getElement(context => input.getElement(context)),
             map(el => el.textContent || ''),
         );
   }
@@ -294,12 +296,12 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
   }
 
   setInputValue(
-      input: Input<HTMLInputElement>,
+      input: ElementInput<HTMLInputElement, any>,
       value: string,
   ): Observable<unknown> {
     return this.element$
         .pipe(
-            getElement(context => input.getValue(context)),
+            getElement(context => input.getElement(context)),
             take(1),
             tap(targetEl => {
               targetEl.value = value;
@@ -309,11 +311,11 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
   }
 
   setText(
-      el: Input<Element>,
+      el: ElementInput<Element, any>,
       value: string,
   ): Observable<unknown> {
     return this.element$.pipe(
-        getElement(context => el.getValue(context)),
+        getElement(context => el.getElement(context)),
         tap(el => {
           el.textContent = value;
           el.dispatchEvent(
@@ -324,12 +326,12 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
   }
 
   simulateKeypress(
-      input: Input<Element>,
+      input: ElementInput<Element, any>,
       keys: Key[],
   ): Observable<unknown> {
     return this.element$
         .pipe(
-            getElement(context => input.getValue(context)),
+            getElement(context => input.getElement(context)),
             tap(targetEl => {
               for (const {key, alt, ctrl, meta, shift} of keys) {
                 const keydownEvent = new KeyboardEvent('keydown', {
@@ -393,9 +395,9 @@ function findCommentNode(
 }
 
 function getElement<E extends Element>(
-    resolver: (context: PersonaContext) => Observable<E>,
+    resolver: Resolver<E>,
 ): (source: Observable<HTMLElement>) => Observable<E> {
-  return switchMap(element => {
+  return map(element => {
     return resolver(getContext(element));
   });
 }

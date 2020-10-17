@@ -1,5 +1,4 @@
 import { Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
@@ -26,9 +25,8 @@ export class OnMutationInput implements Input<readonly MutationRecord[]> {
    * @internal
    */
   getValue(context: PersonaContext): Observable<readonly MutationRecord[]> {
-    return this.resolver(context).pipe(
-        switchMap(el => mutationObservable(el, this.config)),
-    );
+    const el = this.resolver(context);
+    return mutationObservable(el, this.config);
   }
 }
 

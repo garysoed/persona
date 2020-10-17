@@ -1,6 +1,6 @@
 import { diffArray } from 'gs-tools/export/rxjs';
 import { assertUnreachable } from 'gs-tools/export/typescript';
-import { NEVER, Observable, OperatorFunction, pipe } from 'rxjs';
+import { NEVER, Observable, of as observableOf, OperatorFunction, pipe } from 'rxjs';
 import { tap, withLatestFrom } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
@@ -18,15 +18,14 @@ export class MultiOutput implements Output<readonly Node[]> {
   ) { }
 
   output(context: PersonaContext): OperatorFunction<readonly Node[], unknown> {
-    const parentEl$ = this.resolver(context);
+    const parentEl = this.resolver(context);
 
     return pipe(
         diffArray(),
         withLatestFrom(
-            parentEl$,
-            createSlotObs(parentEl$, this.slotName),
+            createSlotObs(observableOf(parentEl), this.slotName),
         ),
-        tap(([diff, parentEl, slotNode]) => {
+        tap(([diff, slotNode]) => {
           if (!slotNode) {
             return;
           }

@@ -1,5 +1,5 @@
 import { OperatorFunction, pipe } from 'rxjs';
-import { tap, withLatestFrom } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
@@ -16,8 +16,8 @@ export class ClassToggleOutput implements Output<boolean> {
 
   output(context: PersonaContext): OperatorFunction<boolean, unknown> {
     return pipe(
-        withLatestFrom(this.resolver(context)),
-        tap(([value, el]) => {
+        tap(value => {
+          const el = this.resolver(context);
           el.classList.toggle(this.className, value);
         }),
     );

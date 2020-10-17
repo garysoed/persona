@@ -1,5 +1,5 @@
 import { OperatorFunction, pipe, ReplaySubject, Subject } from 'rxjs';
-import { tap, withLatestFrom } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
@@ -18,9 +18,9 @@ export class PropertyEmitter<T> implements Output<T> {
 
   output(context: PersonaContext): OperatorFunction<T, unknown> {
     return pipe(
-        withLatestFrom(this.resolver(context)),
-        tap(([value, element]) => {
-          const subject = (element as ObservableElement)[this.propertyName] ||
+        tap(value => {
+          const element = this.resolver(context);
+          const subject = (element as ObservableElement)[this.propertyName] ??
               new ReplaySubject<unknown>(1);
           subject.next(value);
           (element as ObservableElement)[this.propertyName] = subject;

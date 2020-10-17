@@ -18,20 +18,17 @@ export class PropertyObserver<T> implements Input<T> {
   ) { }
 
   getValue(context: PersonaContext): Observable<T> {
-    return this.resolver(context).pipe(
-        switchMap(element => {
-          return interval(CHECK_PERIOD_MS).pipe(
-              startWith({}),
-              map(() => {
-                const subject = (element as ObservableElement<T>)[this.propertyName] ||
-                    new ReplaySubject<T>(1);
-                (element as ObservableElement<T>)[this.propertyName] = subject;
-                return subject;
-              }),
-              take(1),
-              switchMap(obs => obs),
-          );
+    const element = this.resolver(context);
+    return interval(CHECK_PERIOD_MS).pipe(
+        startWith({}),
+        map(() => {
+          const subject = (element as ObservableElement<T>)[this.propertyName] ||
+              new ReplaySubject<T>(1);
+          (element as ObservableElement<T>)[this.propertyName] = subject;
+          return subject;
         }),
+        take(1),
+        switchMap(obs => obs),
     );
   }
 }

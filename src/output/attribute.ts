@@ -1,6 +1,6 @@
 import { Converter } from 'nabu';
 import { OperatorFunction, pipe } from 'rxjs';
-import { tap, withLatestFrom } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
@@ -19,8 +19,8 @@ export class AttributeOutput<T> implements Output<T> {
 
   output(context: PersonaContext): OperatorFunction<T, unknown> {
     return pipe(
-        withLatestFrom(this.resolver(context)),
-        tap(([value, el]) => {
+        tap(value => {
+          const el = this.resolver(context);
           try {
             const result = this.parser.convertForward(value);
             if (result.success) {

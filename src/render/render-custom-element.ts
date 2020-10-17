@@ -58,7 +58,7 @@ export function renderCustomElement<S extends UnconvertedSpec>(
   )
   .pipe(
       switchMap(el => {
-        const resolver = () => observableOf(el);
+        const resolver = () => el;
         const onChange$List = [];
 
         const convertedSpec = api(spec.api);

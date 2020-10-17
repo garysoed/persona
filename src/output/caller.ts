@@ -1,5 +1,5 @@
 import { combineLatest, concat, interval, Observable, OperatorFunction } from 'rxjs';
-import { filter, map, shareReplay, startWith, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, shareReplay, startWith, take, tap, withLatestFrom } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
@@ -48,22 +48,17 @@ export function caller<T extends readonly any[]>(functionName: string): Unresolv
 }
 
 function createFnObs<T extends readonly any[]>(
-    elementObs: Observable<Element>,
+    el: Element,
     functionName: string,
 ): Observable<ElFunction<T>> {
-  return elementObs
+  // Wait until the function exist.
+  return interval(FUNCTION_CHECK_MS)
       .pipe(
-          switchMap(el => {
-            // Wait until the function exist.
-            return interval(FUNCTION_CHECK_MS)
-                .pipe(
-                    startWith({}),
-                    map(() => (el as any)[functionName]),
-                    filter((fn): fn is Function => fn instanceof Function),
-                    map(fn => ((args: readonly any[]) => fn.call(el, ...args))),
-                    take(1),
-                );
-          }),
-          shareReplay(1),
+          startWith({}),
+          map(() => (el as any)[functionName]),
+          filter((fn): fn is Function => fn instanceof Function),
+          map(fn => ((args: readonly any[]) => fn.call(el, ...args))),
+          take(1),
+          shareReplay({bufferSize: 1, refCount: true}),
       );
 }

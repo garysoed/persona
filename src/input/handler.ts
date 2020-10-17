@@ -1,5 +1,4 @@
-import { Observable, Subject } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { defer, Observable, Subject } from 'rxjs';
 
 import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
@@ -16,24 +15,22 @@ export class HandlerInput implements Input<readonly unknown[]> {
   ) { }
 
   getValue(context: PersonaContext): Observable<readonly unknown[]> {
-    return this.resolver(context)
-        .pipe(
-            switchMap(el => {
-              const existingSubject = getSubject(el, this.functionName);
-              if (existingSubject) {
-                return existingSubject;
-              }
+    return defer(() => {
+      const el = this.resolver(context);
+      const existingSubject = getSubject(el, this.functionName);
+      if (existingSubject) {
+        return existingSubject;
+      }
 
-              const subject = new Subject<readonly unknown[]>();
-              const fn = Object.assign(
-                  (...payload: readonly unknown[]) => subject.next(payload),
-                  {[__subject]: subject},
-              );
-              (el as any)[this.functionName] = fn;
+      const subject = new Subject<readonly unknown[]>();
+      const fn = Object.assign(
+          (...payload: readonly unknown[]) => subject.next(payload),
+          {[__subject]: subject},
+      );
+      (el as any)[this.functionName] = fn;
 
-              return subject;
-            }),
-        );
+      return subject;
+    });
   }
 }
 

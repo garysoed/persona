@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { map, startWith, switchMap } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
@@ -12,15 +12,11 @@ export class TextInput implements Input<string> {
   constructor(readonly resolver: Resolver<Element>) { }
 
   getValue(context: PersonaContext): Observable<string> {
-    return this.resolver(context)
+    const el = this.resolver(context);
+    return mutationObservable(el, {characterData: true, childList: true, subtree: true})
         .pipe(
-            switchMap(el => {
-              return mutationObservable(el, {characterData: true, childList: true, subtree: true})
-                  .pipe(
-                      startWith({}),
-                      map(() => el.textContent || ''),
-                  );
-            }),
+            startWith({}),
+            map(() => el.textContent || ''),
         );
   }
 }

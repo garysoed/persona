@@ -1,4 +1,4 @@
-import { combineLatest, OperatorFunction } from 'rxjs';
+import { OperatorFunction } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
@@ -16,15 +16,13 @@ export class StyleOutput<S extends keyof CSSStyleDeclaration>
   ) { }
 
   output(context: PersonaContext): OperatorFunction<CSSStyleDeclaration[S], unknown> {
-    return value$ => combineLatest([
-        this.resolver(context),
-        value$,
-    ])
-    .pipe(
-        tap(([el, value]) => {
-          el.style[this.styleKey] = value;
-        }),
-    );
+    return value$ => value$
+        .pipe(
+            tap(value => {
+              const el = this.resolver(context);
+              el.style[this.styleKey] = value;
+            }),
+        );
   }
 }
 

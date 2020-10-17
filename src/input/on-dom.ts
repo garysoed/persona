@@ -1,5 +1,4 @@
 import { fromEvent, Observable } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
@@ -15,8 +14,8 @@ export class OnDomInput<E extends Event> implements Input<E> {
   ) { }
 
   getValue(context: PersonaContext): Observable<E> {
-    return this.resolver(context)
-        .pipe(switchMap(el => fromEvent<E>(el, this.eventName, this.options)));
+    const el = this.resolver(context);
+    return fromEvent<E>(el, this.eventName, this.options);
   }
 }
 

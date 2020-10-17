@@ -3,7 +3,7 @@ import { $asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pipe }
 import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
 import { iterableOfType, unknownType } from 'gs-types';
 import { merge, of as observableOf, Subject, timer } from 'rxjs';
-import { share, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { shareReplay, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';
@@ -164,7 +164,7 @@ function createCustomElementClass(
         switchMap(() => {
           return observableOf(decoratorFactory(this, 'closed'));
         }),
-        share(),
+        shareReplay({bufferSize: 1, refCount: false}),
     );
 
     private readonly onAttributeChanged$ = new Subject<AttributeChangedEvent>();

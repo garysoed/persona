@@ -1,4 +1,4 @@
-import { combineLatest, OperatorFunction } from 'rxjs';
+import { OperatorFunction } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
@@ -14,9 +14,10 @@ export class TextOutput implements Output<string> {
   ) { }
 
   output(context: PersonaContext): OperatorFunction<string, unknown> {
-    return value$ => combineLatest([this.resolver(context), value$])
+    return value$ => value$
         .pipe(
-            tap(([el, value]) => {
+            tap(value => {
+              const el = this.resolver(context);
               el.textContent = value;
             }),
         );

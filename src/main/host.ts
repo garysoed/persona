@@ -26,8 +26,12 @@ class HostInput<P extends PropertySpecs> implements Input<Element> {
       private readonly properties: P,
   ) { }
 
+  getElement(context: PersonaContext): Element {
+    return context.shadowRoot.host;
+  }
+
   getValue(context: PersonaContext): Observable<Element> {
-    return observableOf(context.shadowRoot.host);
+    return observableOf(this.getElement(context));
   }
 
   private resolveProperties(): Resolved<P> {
@@ -54,7 +58,7 @@ class HostInput<P extends PropertySpecs> implements Input<Element> {
       return new HostHasAttribute(property.attrName);
     }
 
-    return property.resolve(context => this.getValue(context));
+    return property.resolve(context => this.getElement(context));
   }
 }
 

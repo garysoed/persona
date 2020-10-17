@@ -1,5 +1,5 @@
 import { diff } from 'gs-tools/export/util';
-import { combineLatest, OperatorFunction } from 'rxjs';
+import { OperatorFunction } from 'rxjs';
 import { pairwise, startWith, tap } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
@@ -15,23 +15,22 @@ export class ClasslistOutput implements Output<ReadonlySet<string>> {
   ) { }
 
   output(context: PersonaContext): OperatorFunction<ReadonlySet<string>, unknown> {
-    return value$ => combineLatest([
-          this.resolver(context),
-          value$.pipe(startWith(new Set<string>()), pairwise()),
-        ])
-        .pipe(
-            tap(([el, [prevClasses, currClasses]]) => {
-              const {added, deleted} = diff(prevClasses, currClasses);
+    return value$ => value$.pipe(
+        startWith(new Set<string>()),
+        pairwise(),
+        tap(([prevClasses, currClasses]) => {
+          const el = this.resolver(context);
+          const {added, deleted} = diff(prevClasses, currClasses);
 
-              for (const item of added) {
-                el.classList.add(item);
-              }
+          for (const item of added) {
+            el.classList.add(item);
+          }
 
-              for (const item of deleted) {
-                el.classList.remove(item);
-              }
-            }),
-        );
+          for (const item of deleted) {
+            el.classList.remove(item);
+          }
+        }),
+    );
   }
 }
 
