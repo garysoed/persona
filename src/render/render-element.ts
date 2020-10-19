@@ -5,6 +5,9 @@ import { switchMap, switchMapTo, tap } from 'rxjs/operators';
 import { PersonaContext } from '../core/persona-context';
 import { ownerDocument } from '../input/owner-document';
 
+import { __id } from './node-with-id';
+import { setId } from './set-id';
+
 
 /**
  * Values for rendering the element.
@@ -39,8 +42,9 @@ export interface Values {
 export function renderElement(
     tagName: string,
     values: Values,
+    id: {},
     context: PersonaContext,
-): Observable<HTMLElement> {
+): Observable<HTMLElement&{[__id]: {}}> {
   return ownerDocument().getValue(context).pipe(
       switchMap(document => {
         const el = document.createElement(tagName);
@@ -97,7 +101,7 @@ export function renderElement(
         ));
 
         return merge(
-            observableOf(el),
+            observableOf(setId(el, id)),
             merge(...onChange$List).pipe(switchMapTo(EMPTY)),
         );
       }),

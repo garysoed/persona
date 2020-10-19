@@ -68,5 +68,7 @@ export { renderDocumentFragment } from '../src/render/render-document-fragment';
 export { renderElement } from '../src/render/render-element';
 export { renderHtml } from '../src/render/render-html';
 export { renderTextNode } from '../src/render/render-text-node';
+export { NodeWithId } from '../src/render/node-with-id';
+export { setId } from '../src/render/set-id';
 
 export { booleanParser, enumParser, integerParser, listParser, mapParser, stringParser } from '../src/util/parsers';

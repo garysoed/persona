@@ -6,6 +6,7 @@ import { attribute } from '../input/attribute';
 import { createFakeContext } from '../testing/create-fake-context';
 import { integerParser, stringParser } from '../util/parsers';
 
+import { __id } from './node-with-id';
 import { renderCustomElement } from './render-custom-element';
 
 const $spec = {
@@ -25,18 +26,21 @@ test('@persona/render/render-custom-element', init => {
   });
 
   should(`emit the custom element`, () => {
+    const id = 'id';
     const a = 'avalue';
     const values = {
       inputs: {a: observableOf(a)},
     };
-    const element$ = renderCustomElement($spec, values, _.context)
+    const element$ = renderCustomElement($spec, values, id, _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
     const a$ = createSpySubject(element$.pipe(map(el => el.getAttribute($spec.api.a.attrName))));
+    const id$ = createSpySubject(element$.pipe(map(el => el[__id])));
 
     assert(tag$).to.emitSequence([$spec.tag.toUpperCase()]);
     assert(a$).to.emitSequence([a]);
+    assert(id$).to.emitSequence([id]);
   });
 
   should(`update the inputs without emitting the custom element`, () => {
@@ -45,7 +49,7 @@ test('@persona/render/render-custom-element', init => {
     const values = {
       inputs: {a: observableOf(a1, a2)},
     };
-    const element$ = renderCustomElement($spec, values, _.context)
+    const element$ = renderCustomElement($spec, values, 'id', _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
@@ -61,7 +65,7 @@ test('@persona/render/render-custom-element', init => {
     const values = {
       attrs: new Map([['b', observableOf(b1, b2)]]),
     };
-    const element$ = renderCustomElement($spec, values, _.context)
+    const element$ = renderCustomElement($spec, values, 'id', _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
@@ -77,7 +81,7 @@ test('@persona/render/render-custom-element', init => {
     const values = {
       textContent: observableOf(text1, text2),
     };
-    const element$ = renderCustomElement($spec, values, _.context)
+    const element$ = renderCustomElement($spec, values, 'id', _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));

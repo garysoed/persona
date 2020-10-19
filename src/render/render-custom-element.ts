@@ -7,6 +7,7 @@ import { ComponentSpec } from '../main/component-spec';
 import { UnresolvedInput } from '../types/unresolved-input';
 import { UnresolvedOutput } from '../types/unresolved-output';
 
+import { __id } from './node-with-id';
 import { renderElement, Values as ElementValues } from './render-element';
 
 
@@ -49,14 +50,10 @@ export interface Values<S extends UnconvertedSpec> extends ElementValues {
 export function renderCustomElement<S extends UnconvertedSpec>(
     spec: ComponentSpec<S>,
     values: Values<S>,
+    id: {},
     context: PersonaContext,
-): Observable<HTMLElement> {
-  return renderElement(
-      spec.tag,
-      values,
-      context,
-  )
-  .pipe(
+): Observable<HTMLElement&{[__id]: {}}> {
+  return renderElement(spec.tag, values, id, context).pipe(
       switchMap(el => {
         const resolver = () => el;
         const onChange$List = [];

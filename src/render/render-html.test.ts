@@ -2,10 +2,10 @@ import { assert, createSpyInstance, fake, should, test } from 'gs-testing';
 import { of as observableOf } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { renderHtml } from '../../export';
-import { createFakeContext } from '../../export/testing';
+import { createFakeContext } from '../testing/create-fake-context';
 
 import { $htmlParseService, HtmlParseService } from './html-parse-service';
+import { renderHtml } from './render-html';
 
 
 test('@persona/render/render-html', init => {
@@ -25,12 +25,12 @@ test('@persona/render/render-html', init => {
     const el = document.createElement('div');
     fake(_.mockHtmlParseService.parse).always().return(observableOf(el));
 
-    const tagName$ = renderHtml(RAW, SUPPORTED_TYPE, _.context)
-        .pipe(map(el => (el as HTMLElement).tagName));
+    const tagName$ = renderHtml(RAW, SUPPORTED_TYPE, 'id', _.context)
+        .pipe(map(el => (el as unknown as HTMLElement).tagName));
 
     assert(tagName$).to.emitWith('DIV');
 
     // Should emit the copy, not the exact instance.
-    assert(renderHtml(RAW, SUPPORTED_TYPE, _.context)).toNot.emitWith(el);
+    assert(renderHtml(RAW, SUPPORTED_TYPE, 'id', _.context)).toNot.emitWith(el as any);
   });
 });

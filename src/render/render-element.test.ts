@@ -23,7 +23,7 @@ test('@persona/render/render-element', init => {
     const values = {
       attrs: new Map([['a', observableOf(a)]]),
     };
-    const element$ = renderElement(TAG, values, _.context)
+    const element$ = renderElement(TAG, values, 'id', _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
@@ -39,7 +39,7 @@ test('@persona/render/render-element', init => {
     const values = {
       attrs: new Map([['b', observableOf(b1, b2)]]),
     };
-    const element$ = renderElement(TAG, values, _.context)
+    const element$ = renderElement(TAG, values, 'id', _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
@@ -53,7 +53,7 @@ test('@persona/render/render-element', init => {
     const values = {
       attrs: new Map([['b', observableOf('bValue', null)]]),
     };
-    const element$ = renderElement(TAG, values, _.context)
+    const element$ = renderElement(TAG, values, 'id', _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
@@ -69,7 +69,7 @@ test('@persona/render/render-element', init => {
     const values = {
       textContent: observableOf(text1, text2),
     };
-    const element$ = renderElement(TAG, values, _.context)
+    const element$ = renderElement(TAG, values, 'id', _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
@@ -85,7 +85,7 @@ test('@persona/render/render-element', init => {
     const values = {
       children: observableOf([child1, child2], [child1]),
     };
-    const element$ = renderElement(TAG, values, _.context)
+    const element$ = renderElement(TAG, values, 'id', _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
@@ -101,7 +101,7 @@ test('@persona/render/render-element', init => {
     const values = {
       children: observableOf([child2], [child1, child2]),
     };
-    const element$ = renderElement(TAG, values, _.context)
+    const element$ = renderElement(TAG, values, 'id', _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
@@ -117,7 +117,7 @@ test('@persona/render/render-element', init => {
     const values = {
       children: observableOf([child2], [child1]),
     };
-    const element$ = renderElement(TAG, values, _.context)
+    const element$ = renderElement(TAG, values, 'id', _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
