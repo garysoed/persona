@@ -4,24 +4,30 @@ import { distinctUntilChanged, pairwise, startWith, tap, withLatestFrom } from '
 
 import { PersonaContext } from '../core/persona-context';
 import { createSlotObs } from '../main/create-slot-obs';
+import { __id, NodeWithId } from '../render/node-with-id';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { UnresolvedOutput } from '../types/unresolved-output';
 
 
-export class SingleOutput implements Output<Node|null> {
+export class SingleOutput implements Output<NodeWithId|null> {
   constructor(
       readonly slotName: string,
       readonly resolver: Resolver<Element>,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<Node|null, unknown> {
+  output(context: PersonaContext): OperatorFunction<NodeWithId|null, unknown> {
     const parent = this.resolver(context);
 
     return pipe(
         startWith(null),
-        distinctUntilChanged(),
+        distinctUntilChanged((a, b) => {
+          if (a !== null && b !== null) {
+            return a[__id] === b[__id];
+          }
+          return a === b;
+        }),
         pairwise(),
         withLatestFrom(
             createSlotObs(observableOf(parent), this.slotName).pipe(filterNonNull()),
@@ -46,7 +52,7 @@ export class SingleOutput implements Output<Node|null> {
 }
 
 class UnresolvedSingleOutput implements
-    UnresolvedElementProperty<Element, SingleOutput>, UnresolvedOutput<Node|null> {
+    UnresolvedElementProperty<Element, SingleOutput>, UnresolvedOutput<NodeWithId|null> {
   constructor(readonly slotName: string) { }
 
   resolve(resolver: Resolver<Element>): SingleOutput {

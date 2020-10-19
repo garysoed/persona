@@ -5,23 +5,24 @@ import { tap, withLatestFrom } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 import { createSlotObs } from '../main/create-slot-obs';
+import { __id, NodeWithId } from '../render/node-with-id';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { UnresolvedOutput } from '../types/unresolved-output';
 
 
-export class MultiOutput implements Output<readonly Node[]> {
+export class MultiOutput implements Output<readonly NodeWithId[]> {
   constructor(
       readonly slotName: string,
       readonly resolver: Resolver<Element>,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<readonly Node[], unknown> {
+  output(context: PersonaContext): OperatorFunction<readonly NodeWithId[], unknown> {
     const parentEl = this.resolver(context);
 
     return pipe(
-        diffArray(),
+        diffArray((a, b) => a[__id] === b[__id]),
         withLatestFrom(
             createSlotObs(observableOf(parentEl), this.slotName),
         ),
@@ -92,8 +93,9 @@ export class MultiOutput implements Output<readonly Node[]> {
   }
 }
 
-class UnresolvedMultiOutput
-    implements UnresolvedElementProperty<Element, MultiOutput>, UnresolvedOutput<readonly Node[]> {
+class UnresolvedMultiOutput implements
+    UnresolvedElementProperty<Element, MultiOutput>,
+    UnresolvedOutput<readonly NodeWithId[]> {
   constructor(
       private readonly slotName: string,
   ) { }

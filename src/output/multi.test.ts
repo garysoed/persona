@@ -2,11 +2,17 @@ import { assert, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 
+import { __id, NodeWithId } from '../render/node-with-id';
 import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
 
 import { multi } from './multi';
 
+
+function createNode(id: string): NodeWithId {
+  const node = document.createElement('div');
+  return Object.assign(node, {[__id]: id});
+}
 
 test('@persona/output/multi', init => {
   const ELEMENT_ID = 'elementId';
@@ -35,7 +41,7 @@ test('@persona/output/multi', init => {
 
   test('output', _, init => {
     const _ = init(_ => {
-      const diff$ = new Subject<readonly Node[]>();
+      const diff$ = new Subject<readonly NodeWithId[]>();
 
       run(diff$.pipe(_.output.output(_.context)));
 
@@ -43,9 +49,9 @@ test('@persona/output/multi', init => {
     });
 
     should(`process 'init' correctly`, () => {
-      const node1 = document.createElement('div');
-      const node2 = document.createElement('div');
-      const node3 = document.createElement('div');
+      const node1 = createNode('1');
+      const node2 = createNode('2');
+      const node3 = createNode('3');
 
       _.diff$.next([node1, node2, node3]);
 
@@ -55,13 +61,13 @@ test('@persona/output/multi', init => {
     });
 
     should(`process 'insert' correctly for index 0`, () => {
-      const node1 = document.createElement('div');
-      const node2 = document.createElement('div');
-      const node3 = document.createElement('div');
+      const node1 = createNode('1');
+      const node2 = createNode('2');
+      const node3 = createNode('3');
 
       _.diff$.next([node1, node2, node3]);
 
-      const insertNode = document.createElement('div');
+      const insertNode = createNode('insert');
       _.diff$.next([insertNode, node1, node2, node3]);
 
       assert(_.slot.nextSibling).to.equal(insertNode);
@@ -71,12 +77,12 @@ test('@persona/output/multi', init => {
     });
 
     should(`process 'insert' correctly for index 2`, () => {
-      const node1 = document.createElement('div');
-      const node2 = document.createElement('div');
-      const node3 = document.createElement('div');
+      const node1 = createNode('1');
+      const node2 = createNode('2');
+      const node3 = createNode('3');
       _.diff$.next([node1, node2, node3]);
 
-      const insertNode = document.createElement('div');
+      const insertNode = createNode('insert');
       _.diff$.next([node1, node2, insertNode, node3]);
 
       assert(_.slot.nextSibling).to.equal(node1);
@@ -86,12 +92,12 @@ test('@persona/output/multi', init => {
     });
 
     should(`process 'insert' correctly for large index`, () => {
-      const node1 = document.createElement('div');
-      const node2 = document.createElement('div');
-      const node3 = document.createElement('div');
+      const node1 = createNode('1');
+      const node2 = createNode('2');
+      const node3 = createNode('3');
       _.diff$.next([node1, node2, node3]);
 
-      const insertNode = document.createElement('div');
+      const insertNode = createNode('insert');
       _.diff$.next([node1, node2, node3, insertNode]);
 
       assert(_.slot.nextSibling).to.equal(node1);
@@ -101,9 +107,9 @@ test('@persona/output/multi', init => {
     });
 
     should(`process 'delete' correctly`, () => {
-      const node1 = document.createElement('div');
-      const node2 = document.createElement('div');
-      const node3 = document.createElement('div');
+      const node1 = createNode('1');
+      const node2 = createNode('2');
+      const node3 = createNode('3');
       _.diff$.next([node1, node2, node3]);
 
       _.diff$.next([node1, node3]);
@@ -113,8 +119,19 @@ test('@persona/output/multi', init => {
       assert(_.slot.nextSibling?.nextSibling?.nextSibling).to.beNull();
     });
 
+    should(`ignore node insertions with the same id`, () => {
+      const node1 = createNode('1');
+      const node2 = createNode('1');
+
+      _.diff$.next([node1]);
+      _.diff$.next([node2]);
+
+      assert(_.slot.nextSibling).to.equal(node1);
+      assert(_.slot.nextSibling?.nextSibling).to.beNull();
+    });
+
     should(`hide errors when deleting`, () => {
-      const node = document.createElement('div');
+      const node = createNode('n');
       _.diff$.next([node, node]);
 
       _.diff$.next([]);
@@ -123,15 +140,15 @@ test('@persona/output/multi', init => {
     });
 
     should(`replace the element correctly for 'set'`, () => {
-      const node1 = document.createElement('div');
-      const node2 = document.createElement('div');
-      const node3 = document.createElement('div');
+      const node1 = createNode('1');
+      const node2 = createNode('2');
+      const node3 = createNode('3');
       _.diff$.next([node1, node2, node3]);
 
-      const existingElement = document.createElement('div');
+      const existingElement = createNode('existing');
       _.parentEl.appendChild(existingElement);
 
-      const setNode = document.createElement('div');
+      const setNode = createNode('set');
       _.diff$.next([setNode, node2, node3]);
 
       assert(_.slot.nextSibling).to.equal(setNode);

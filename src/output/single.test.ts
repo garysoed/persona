@@ -2,11 +2,17 @@ import { assert, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { Subject } from 'rxjs';
 
+import { __id, NodeWithId } from '../render/node-with-id';
 import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
 
 import { single } from './single';
 
+
+function createNode(id: string): NodeWithId {
+  const node = document.createElement('div');
+  return Object.assign(node, {[__id]: id});
+}
 
 test('@persona/output/single', init => {
   const ELEMENT_ID = 'elementId';
@@ -34,7 +40,7 @@ test('@persona/output/single', init => {
 
   test('output', _, init => {
     const _ = init(_ => {
-      const render$ = new Subject<Node|null>();
+      const render$ = new Subject<NodeWithId|null>();
 
       run(render$.pipe(_.output.output(_.context)));
 
@@ -42,7 +48,7 @@ test('@persona/output/single', init => {
     });
 
     should(`process correctly for adding a node`, () => {
-      const node = document.createElement('div');
+      const node = createNode('n');
       _.render$.next(node);
 
       assert(_.slot.nextSibling).to.equal(node);
@@ -50,29 +56,40 @@ test('@persona/output/single', init => {
     });
 
     should(`process correctly for replacing a node`, () => {
-      const node1 = document.createElement('div');
+      const node1 = createNode('1');
       _.render$.next(node1);
 
-      const node2 = document.createElement('div');
+      const node2 = createNode('2');
       _.render$.next(node2);
 
       assert(_.slot.nextSibling).to.equal(node2);
       assert(_.slot.nextSibling?.nextSibling).to.beNull();
     });
 
+    should(`not replace node if the new one has the same ID`, () => {
+      const node1 = createNode('1');
+      _.render$.next(node1);
+
+      const node2 = createNode('1');
+      _.render$.next(node2);
+
+      assert(_.slot.nextSibling).to.equal(node1);
+      assert(_.slot.nextSibling?.nextSibling).to.beNull();
+    });
+
     should(`process correctly for deleting a node`, () => {
-      _.render$.next(document.createElement('div'));
+      _.render$.next(createNode('n'));
       _.render$.next(null);
 
       assert(_.slot.nextSibling).to.beNull();
     });
 
     should(`hide errors when deleting node`, () => {
-      const node = document.createElement('div');
+      const node = createNode('n');
 
       _.render$.next(node);
 
-      const newParent = document.createElement('div');
+      const newParent = createNode('new');
       newParent.appendChild(node);
 
       _.render$.next(null);
