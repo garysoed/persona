@@ -9,7 +9,7 @@ import { createFakeContext } from '../testing/create-fake-context';
 import { single } from './single';
 
 
-function createNode(id: string): NodeWithId {
+function createNode(id: string): NodeWithId<Node> {
   const node = document.createElement('div');
   return Object.assign(node, {[__id]: id});
 }
@@ -40,7 +40,7 @@ test('@persona/output/single', init => {
 
   test('output', _, init => {
     const _ = init(_ => {
-      const render$ = new Subject<NodeWithId|null>();
+      const render$ = new Subject<NodeWithId<Node>|null>();
 
       run(render$.pipe(_.output.output(_.context)));
 

@@ -22,14 +22,14 @@ export function renderHtml(
     supportedType: ParseType,
     id: {},
     context: PersonaContext,
-): Observable<NodeWithId|null> {
+): Observable<NodeWithId<Element>|null> {
   return $htmlParseService.get(context.vine).pipe(
       switchMap(service => service.parse(raw, supportedType)),
       map(el => {
         if (!el) {
           return null;
         }
-        return Object.assign(el.cloneNode(true), {[__id]: id});
+        return Object.assign(el.cloneNode(true) as Element, {[__id]: id});
       }),
   );
 }

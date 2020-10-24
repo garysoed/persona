@@ -11,13 +11,13 @@ import { UnresolvedElementProperty } from '../types/unresolved-element-property'
 import { UnresolvedOutput } from '../types/unresolved-output';
 
 
-export class SingleOutput implements Output<NodeWithId|null> {
+export class SingleOutput implements Output<NodeWithId<Node>|null> {
   constructor(
       readonly slotName: string,
       readonly resolver: Resolver<Element>,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<NodeWithId|null, unknown> {
+  output(context: PersonaContext): OperatorFunction<NodeWithId<Node>|null, unknown> {
     const parent = this.resolver(context);
 
     return pipe(
@@ -52,7 +52,7 @@ export class SingleOutput implements Output<NodeWithId|null> {
 }
 
 class UnresolvedSingleOutput implements
-    UnresolvedElementProperty<Element, SingleOutput>, UnresolvedOutput<NodeWithId|null> {
+    UnresolvedElementProperty<Element, SingleOutput>, UnresolvedOutput<NodeWithId<Node>|null> {
   constructor(readonly slotName: string) { }
 
   resolve(resolver: Resolver<Element>): SingleOutput {

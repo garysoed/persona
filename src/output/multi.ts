@@ -12,13 +12,13 @@ import { UnresolvedElementProperty } from '../types/unresolved-element-property'
 import { UnresolvedOutput } from '../types/unresolved-output';
 
 
-export class MultiOutput implements Output<readonly NodeWithId[]> {
+export class MultiOutput implements Output<ReadonlyArray<NodeWithId<Node>>> {
   constructor(
       readonly slotName: string,
       readonly resolver: Resolver<Element>,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<readonly NodeWithId[], unknown> {
+  output(context: PersonaContext): OperatorFunction<ReadonlyArray<NodeWithId<Node>>, unknown> {
     const parentEl = this.resolver(context);
 
     return pipe(
@@ -95,7 +95,7 @@ export class MultiOutput implements Output<readonly NodeWithId[]> {
 
 class UnresolvedMultiOutput implements
     UnresolvedElementProperty<Element, MultiOutput>,
-    UnresolvedOutput<readonly NodeWithId[]> {
+    UnresolvedOutput<ReadonlyArray<NodeWithId<Node>>> {
   constructor(
       private readonly slotName: string,
   ) { }

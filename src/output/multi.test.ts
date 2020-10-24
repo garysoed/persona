@@ -9,7 +9,7 @@ import { createFakeContext } from '../testing/create-fake-context';
 import { multi } from './multi';
 
 
-function createNode(id: string): NodeWithId {
+function createNode(id: string): NodeWithId<Node> {
   const node = document.createElement('div');
   return Object.assign(node, {[__id]: id});
 }
@@ -41,7 +41,7 @@ test('@persona/output/multi', init => {
 
   test('output', _, init => {
     const _ = init(_ => {
-      const diff$ = new Subject<readonly NodeWithId[]>();
+      const diff$ = new Subject<ReadonlyArray<NodeWithId<Node>>>();
 
       run(diff$.pipe(_.output.output(_.context)));
 

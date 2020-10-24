@@ -10,7 +10,7 @@ export function renderTextNode(
     text$: Observable<string>,
     id: any,
     context: PersonaContext,
-): Observable<NodeWithId> {
+): Observable<NodeWithId<Text>> {
   return defer(() => {
     const ownerDocument = context.shadowRoot.ownerDocument;
     if (!ownerDocument) {
