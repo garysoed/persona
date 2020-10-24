@@ -2,8 +2,8 @@ import { Vine, VineBuilder } from 'grapevine';
 import { $asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pipe } from 'gs-tools/export/collect';
 import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
 import { iterableOfType, unknownType } from 'gs-types';
-import { merge, of as observableOf, Subject, timer } from 'rxjs';
-import { shareReplay, switchMap, take, takeUntil, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, EMPTY, merge, of as observableOf, Subject, timer } from 'rxjs';
+import { distinctUntilChanged, mapTo, shareReplay, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 import { UnresolvedAttributeInput } from '../input/attribute';
 import { UnresolvedHasAttributeInput } from '../input/has-attribute';
@@ -167,12 +167,12 @@ function createCustomElementClass(
         shareReplay({bufferSize: 1, refCount: false}),
     );
 
+    private readonly isConnected$ = new BehaviorSubject(false);
     private readonly onAttributeChanged$ = new Subject<AttributeChangedEvent>();
-    private readonly onCleanup$ = new Subject<void>();
-    private isCleanedUp = true;
 
     constructor() {
       super();
+      this.run();
     }
 
     attributeChangedCallback(attrName: string, oldValue: string, newValue: string): void {
@@ -180,38 +180,39 @@ function createCustomElementClass(
     }
 
     connectedCallback(): void {
-      if (!this.isCleanedUp) {
-        return;
-      }
-
-      this.decorator$.pipe(
-          take(1),
-          switchMap(decorator => {
-            const onRun$ = decorator.run();
-            const onAttributeChanged$ = this.onAttributeChanged$.pipe(
-                tap(({attrName, oldValue, newValue}) => {
-                  decorator.attributeChangedCallback(attrName, oldValue, newValue);
-                }),
-            );
-
-            return merge(onRun$, onAttributeChanged$);
-          }),
-          takeUntil(this.onCleanup$),
-      ).subscribe();
-      this.isCleanedUp = false;
+      this.isConnected$.next(true);
     }
 
     disconnectedCallback(): void {
-      setTimeout(
-          () => {
-            if (this.isConnected) {
-              return;
-            }
-            this.onCleanup$.next(undefined);
-            this.isCleanedUp = true;
-          },
-          CLEANUP_DELAY_MS,
+      this.isConnected$.next(false);
+    }
+
+    private run(): void {
+      const isConnected$ = this.isConnected$.pipe(
+          switchMap(isConnected => {
+            return isConnected ? observableOf(true) : timer(CLEANUP_DELAY_MS).pipe(mapTo(false));
+          }),
+          distinctUntilChanged(),
       );
+
+      combineLatest([this.decorator$, isConnected$])
+          .pipe(
+              switchMap(([decorator, isConnected]) => {
+                if (!isConnected) {
+                  return EMPTY;
+                }
+
+                const onRun$ = decorator.run();
+                const onAttributeChanged$ = this.onAttributeChanged$.pipe(
+                    tap(({attrName, oldValue, newValue}) => {
+                      decorator.attributeChangedCallback(attrName, oldValue, newValue);
+                    }),
+                );
+
+                return merge(onRun$, onAttributeChanged$);
+              }),
+          )
+          .subscribe();
     }
 
     static get observedAttributes(): readonly string[] {
