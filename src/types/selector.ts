@@ -1,5 +1,7 @@
 import { PersonaContext } from '../core/persona-context';
 
-export interface Selector<E extends Element> {
-  getElement(context: PersonaContext): E;
+import { Selectable } from './selectable';
+
+export interface Selector<S extends Selectable> {
+  getElement(context: PersonaContext): S;
 }

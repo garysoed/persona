@@ -1,9 +1,10 @@
 import { Input } from './input';
 import { Output } from './output';
 import { Resolver } from './resolver';
+import { Selectable } from './selectable';
 
 export interface UnresolvedElementProperty<
-    E extends Element,
+    S extends Selectable,
     R extends Output<any>|Input<any>> {
-  resolve(resolver: Resolver<E>): R;
+  resolve(resolver: Resolver<S>): R;
 }

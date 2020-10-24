@@ -44,6 +44,7 @@ export { textOut } from '../src/output/text-out';
 // Selectors
 export { host } from '../src/selector/host';
 export { element } from '../src/selector/element';
+export { root } from '../src/selector/root';
 export { Selector } from '../src/types/selector';
 
 // Types
