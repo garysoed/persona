@@ -6,16 +6,10 @@ import { ComponentSpec } from '../main/component-spec';
 import { Selector } from '../types/selector';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
+import { PropertySpecs, Resolved } from './property-spec';
 
-interface Properties<E extends Element> {
-  readonly [key: string]: UnresolvedElementProperty<E, any>;
-}
 
-type Resolved<E extends Element, P extends Properties<E>> = {
-  [K in keyof P]: P[K] extends UnresolvedElementProperty<E, infer R> ? R : never;
-};
-
-export class ElementSelector<E extends Element, P extends Properties<E>> implements Selector<E> {
+export class ElementSelector<E extends Element, P extends PropertySpecs<E>> implements Selector<E> {
   readonly _: Resolved<E, P>;
 
   constructor(
@@ -48,12 +42,12 @@ export class ElementSelector<E extends Element, P extends Properties<E>> impleme
   }
 }
 
-export function element<E extends Element, P extends Properties<E>>(
+export function element<E extends Element, P extends PropertySpecs<E>>(
     id: string,
     type: Type<E>,
     properties: P,
 ): ElementSelector<E, P>;
-export function element<P extends UnconvertedSpec, PX extends Properties<Element>>(
+export function element<P extends UnconvertedSpec, PX extends PropertySpecs<Element>>(
     id: string,
     spec: ComponentSpec<P>,
     properties: PX,
@@ -61,8 +55,8 @@ export function element<P extends UnconvertedSpec, PX extends Properties<Element
 export function element(
     id: string,
     typeOrSpec: Type<Element>|ComponentSpec<UnconvertedSpec>,
-    properties: Properties<Element>,
-): ElementSelector<Element, Properties<Element>> {
+    properties: PropertySpecs<Element>,
+): ElementSelector<Element, PropertySpecs<Element>> {
   if (typeOrSpec instanceof Type) {
     return new ElementSelector(id, properties, typeOrSpec);
   } else {

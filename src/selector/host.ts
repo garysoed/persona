@@ -8,16 +8,9 @@ import { Output } from '../types/output';
 import { Selector } from '../types/selector';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
+import { PropertySpecs, Resolved } from './property-spec';
 
-interface PropertySpecs {
-  readonly [key: string]: UnresolvedElementProperty<Element, any>;
-}
-
-type Resolved<P extends PropertySpecs> = {
-  [K in keyof P]: P[K] extends UnresolvedElementProperty<Element, infer R> ? R : never;
-};
-
-export class HostSelector<P extends PropertySpecs> implements Selector<Element> {
+export class HostSelector<P extends PropertySpecs<Element>> implements Selector<Element> {
   readonly _ = this.resolveProperties();
 
   constructor(
@@ -28,8 +21,8 @@ export class HostSelector<P extends PropertySpecs> implements Selector<Element> 
     return context.shadowRoot.host;
   }
 
-  private resolveProperties(): Resolved<P> {
-    const resolvedProperties: Resolved<any> = {};
+  private resolveProperties(): Resolved<Element, P> {
+    const resolvedProperties: Resolved<Element, any> = {};
     for (const key in this.properties) {
       if (!this.properties.hasOwnProperty(key)) {
         continue;
@@ -56,6 +49,6 @@ export class HostSelector<P extends PropertySpecs> implements Selector<Element> 
   }
 }
 
-export function host<P extends PropertySpecs>(apiSpecs: P): HostSelector<P> {
+export function host<P extends PropertySpecs<Element>>(apiSpecs: P): HostSelector<P> {
   return new HostSelector(apiSpecs);
 }
