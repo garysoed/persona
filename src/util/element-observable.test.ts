@@ -5,7 +5,7 @@ import { PersonaTesterEnvironment } from '../testing/persona-tester-environment'
 import { elementObservable } from './element-observable';
 
 
-test('@persona/util/elementObservable', init => {
+test('@persona/util/element-observable', init => {
   init(() => {
     runEnvironment(new PersonaTesterEnvironment());
     return {};

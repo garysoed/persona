@@ -6,41 +6,24 @@ import { mutationObservable } from './mutation-observable';
 /**
  * Creates observable that returns the parsed value of the attribute specified.
  */
-export function attributeObservable<T>(
+export function attributeObservable(
+    element: Element,
     attrName: string,
-    parse: (unparsed: string) => T,
-    elementObs: Observable<Element>,
-): Observable<T> {
-  return elementObs
-      .pipe(
-          switchMap(el => {
-            return combineLatest(
-                observableOf(el),
-                mutationObservable(
-                    el,
-                    {
-                      attributeFilter: [attrName],
-                      attributeOldValue: true,
-                      attributes: true,
-                    },
-                ),
-            )
-            .pipe(
-                map(([el]) => {
-                  return el.getAttribute(attrName) || '';
-                }),
-                startWith(el.getAttribute(attrName) || ''),
-            );
-          }),
-          distinctUntilChanged(),
-          switchMap(unparsedValue => {
-            try {
-              const value = parse(unparsedValue);
-              return observableOf(value);
-            } catch (e) {
-              return NEVER;
-            }
-          }),
-          shareReplay(1),
-      );
+): Observable<string> {
+  return mutationObservable(
+      element,
+      {
+        attributeFilter: [attrName],
+        attributeOldValue: true,
+        attributes: true,
+      },
+  )
+  .pipe(
+      map(() => {
+        return element.getAttribute(attrName) || '';
+      }),
+      startWith(element.getAttribute(attrName) || ''),
+      distinctUntilChanged(),
+      shareReplay({bufferSize: 1, refCount: true}),
+  );
 }
