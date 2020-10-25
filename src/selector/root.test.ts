@@ -17,7 +17,7 @@ test('@persona/selector/root', init => {
       const shadowRoot = el.attachShadow({mode: 'open'});
       const context = createFakeContext({shadowRoot});
 
-      assert(_.input.getElement(context)).to.equal(shadowRoot);
+      assert(_.input.getSelectable(context)).to.equal(shadowRoot);
     });
   });
 });

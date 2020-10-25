@@ -17,7 +17,7 @@ export class HostSelector<P extends PropertySpecs<Element>> implements Selector<
       private readonly properties: P,
   ) { }
 
-  getElement(context: PersonaContext): Element {
+  getSelectable(context: PersonaContext): Element {
     return context.shadowRoot.host;
   }
 
@@ -45,7 +45,7 @@ export class HostSelector<P extends PropertySpecs<Element>> implements Selector<
       return new HostHasAttribute(property.attrName);
     }
 
-    return property.resolve(context => this.getElement(context));
+    return property.resolve(context => this.getSelectable(context));
   }
 }
 

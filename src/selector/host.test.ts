@@ -25,7 +25,7 @@ test('@persona/selector/host', init => {
       const shadowRoot = el.attachShadow({mode: 'open'});
       const context = createFakeContext({shadowRoot});
 
-      assert(_.input.getElement(context)).to.equal(el);
+      assert(_.input.getSelectable(context)).to.equal(el);
       assert(_.input._.attrIn).to.beAnInstanceOf(HostAttribute);
       assert(_.input._.output).to.beAnInstanceOf(TextOutput);
     });

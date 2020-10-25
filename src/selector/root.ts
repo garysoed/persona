@@ -17,7 +17,7 @@ export class RootSelector<P extends PropertySpecs<ShadowRoot>> implements Select
       private readonly properties: P,
   ) { }
 
-  getElement(context: PersonaContext): ShadowRoot {
+  getSelectable(context: PersonaContext): ShadowRoot {
     return context.shadowRoot;
   }
 
@@ -45,7 +45,7 @@ export class RootSelector<P extends PropertySpecs<ShadowRoot>> implements Select
       return new HostHasAttribute(property.attrName);
     }
 
-    return property.resolve(context => this.getElement(context));
+    return property.resolve(context => this.getSelectable(context));
   }
 }
 

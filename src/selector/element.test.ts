@@ -19,7 +19,7 @@ test('@persona/selector/element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      assert(input.getElement(createFakeContext({shadowRoot}))).to.equal(el);
+      assert(input.getSelectable(createFakeContext({shadowRoot}))).to.equal(el);
     });
 
     should(`handle component specs`, () => {
@@ -34,7 +34,7 @@ test('@persona/selector/element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      assert(input.getElement(createFakeContext({shadowRoot}))).to.equal(el);
+      assert(input.getSelectable(createFakeContext({shadowRoot}))).to.equal(el);
     });
 
     should(`throw error if the element is of the wrong type`, () => {
@@ -48,7 +48,7 @@ test('@persona/selector/element', () => {
       el.id = ID;
       shadowRoot.appendChild(el);
 
-      assert(() => input.getElement(createFakeContext({shadowRoot})))
+      assert(() => input.getSelectable(createFakeContext({shadowRoot})))
           .to.throwErrorWithMessage(/Element of/);
     });
   });

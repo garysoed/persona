@@ -1,12 +1,10 @@
 import { Vine } from 'grapevine';
 import { $filter, $first, $pipe, arrayFrom } from 'gs-tools/export/collect';
 import { stringify, Verbosity } from 'moirai';
-import { fromEvent, Observable, of as observableOf, Subject } from 'rxjs';
-import { map, mapTo, startWith, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { fromEvent, Observable, Subject } from 'rxjs';
+import { map, mapTo, startWith } from 'rxjs/operators';
 
-import { mutationObservable } from '../../export';
 import { __context, DecoratedElement } from '../core/custom-element-decorator';
-import { PersonaContext } from '../core/persona-context';
 import { AttributeInput } from '../input/attribute';
 import { getSubject, HandlerInput } from '../input/handler';
 import { HasAttributeInput } from '../input/has-attribute';
@@ -17,7 +15,7 @@ import { PropertyObserver } from '../input/property-observer';
 import { AttributeOutput } from '../output/attribute';
 import { CallerOutput } from '../output/caller';
 import { ClassToggleOutput } from '../output/class-toggle';
-import { DispatcherOutput, UnresolvedDispatcherOutput } from '../output/dispatcher';
+import { DispatcherOutput } from '../output/dispatcher';
 import { MultiOutput } from '../output/multi';
 import { PropertyEmitter } from '../output/property-emitter';
 import { SetAttributeOutput } from '../output/set-attribute';
@@ -26,6 +24,8 @@ import { StyleOutput } from '../output/style';
 import { Resolver } from '../types/resolver';
 import { Selectable } from '../types/selectable';
 import { Selector } from '../types/selector';
+import { attributeObservable } from '../util/attribute-observable';
+import { mutationObservable } from '../util/mutation-observable';
 
 
 interface Key {
@@ -38,110 +38,66 @@ interface Key {
 
 
 export class ElementTester<T extends HTMLElement = HTMLElement> {
-  readonly element$ = observableOf(this.element);
-
   constructor(
       readonly element: T,
       readonly vine: Vine,
   ) { }
 
-  addSlotElement(input: Selector<HTMLSlotElement>, node: Node): Observable<unknown> {
-    return this.element$.pipe(
-        getElement(context => input.getElement(context)),
-        tap(slotEl => {
-          this.element.appendChild(node);
-          slotEl.dispatchEvent(new CustomEvent('slotchange'));
-        }),
-    );
+  addSlotElement(input: Selector<HTMLSlotElement>, node: Node): void {
+    const slotEl = resolveSelectable(this.element, context => input.getSelectable(context));
+    this.element.appendChild(node);
+    slotEl.dispatchEvent(new CustomEvent('slotchange'));
   }
 
-  callFunction(
-      input: HandlerInput,
-      args: readonly unknown[],
-  ): Observable<unknown> {
-    return this.element$
-        .pipe(
-            getElement(context => input.resolver(context)),
-            tap(el => (el as any)[input.functionName](...args)),
-            take(1),
-        );
+  callFunction(input: HandlerInput, args: readonly unknown[]): void {
+    const el = resolveSelectable(this.element, context => input.resolver(context));
+    (el as any)[input.functionName](...args);
   }
 
   dispatchEvent<E extends Event>(
       spec: OnDomInput<E>|DispatcherOutput<E>|OnInputInput,
       event: E,
-  ): Observable<unknown>;
+  ): void;
   dispatchEvent(
       spec: OnDomInput<Event>|DispatcherOutput<Event>|OnInputInput,
-  ): Observable<unknown>;
+  ): void;
   dispatchEvent(
       spec: OnDomInput<Event>|OnInputInput,
       event?: Event,
-  ): Observable<unknown> {
+  ): void {
     const eventName = spec instanceof OnInputInput ? 'input' : spec.eventName;
     const normalizedEvent = event || new CustomEvent(eventName);
-    return this.element$
-        .pipe(
-            getElement(context => spec.resolver(context)),
-            tap(targetEl => targetEl.dispatchEvent(normalizedEvent)),
-            take(1),
-        );
-  }
-
-  forwardEmissions<T>(
-      input: PropertyObserver<T>|PropertyEmitter<T>,
-      value$: Observable<T>,
-  ): Observable<unknown> {
-    const subject$ = this.element$.pipe(
-        getElement(context => input.resolver(context)),
-        take(1),
-        map(el => {
-          const subject = (el as any)[input.propertyName];
-          if (!(subject instanceof Subject)) {
-            throw new Error(`Property ${input.propertyName} is not a Subject`);
-          }
-          return subject;
-        }),
-    );
-
-    return value$.pipe(
-        withLatestFrom(subject$),
-        tap(([value, subject]) => {
-          subject.next(value);
-        }),
-    );
+    const targetEl = resolveSelectable(this.element, context => spec.resolver(context));
+    targetEl.dispatchEvent(normalizedEvent);
   }
 
   getAttribute<T>(output: AttributeOutput<T>|AttributeInput<T>): Observable<T> {
-    return this.element$
-        .pipe(
-            getElement(context => output.resolver(context)),
-            map(targetEl => {
-              const strValue = targetEl.getAttribute(output.attrName);
-              const value = output.parser.convertBackward(strValue || '');
-              if (!value.success) {
-                if (output.defaultValue !== undefined) {
-                  return output.defaultValue;
-                }
+    const targetEl = resolveSelectable(this.element, context => output.resolver(context));
+    return attributeObservable(targetEl, output.attrName).pipe(
+        map(() => {
+          const strValue = targetEl.getAttribute(output.attrName);
+          const value = output.parser.convertBackward(strValue || '');
+          if (!value.success) {
+            if (output.defaultValue !== undefined) {
+              return output.defaultValue;
+            }
 
-                throw new Error(
-                    `Value ${stringify(strValue, Verbosity.DEBUG)} is the wrong type for ` +
-                    `${stringify(output, Verbosity.DEBUG)}`,
-                );
-              }
+            throw new Error(
+                `Value ${stringify(strValue, Verbosity.DEBUG)} is the wrong type for ` +
+                `${stringify(output, Verbosity.DEBUG)}`,
+            );
+          }
 
-              return value.result;
-            }),
-        );
+          return value.result;
+        }),
+    );
   }
 
   getChildren(elementSelector: Selector<Element>): Observable<readonly Node[]> {
-    return this.element$.pipe(
-        getElement(context => elementSelector.getElement(context)),
-        switchMap(el => mutationObservable(el, {childList: true}).pipe(
-            startWith({}),
-            mapTo(el),
-        )),
+    const el = resolveSelectable(this.element, context => elementSelector.getSelectable(context));
+    return mutationObservable(el, {childList: true}).pipe(
+        startWith({}),
+        mapTo(el),
         map(el => {
           const children: Element[] = [];
           for (let i = 0; i < el.childElementCount; i++) {
@@ -156,218 +112,154 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     );
   }
 
-  getClassList(input: Selector<Element>): Observable<Set<string>> {
-    return this.element$
-        .pipe(
-            getElement(context => input.getElement(context)),
-            map(el => {
-              const classList = el.classList;
-              const classes = new Set<string>();
-              for (let i = 0; i < classList.length; i++) {
-                const classItem = classList.item(i);
-                if (!classItem) {
-                  continue;
-                }
-                classes.add(classItem);
-              }
+  getClassList(input: Selector<Element>): ReadonlySet<string> {
+    const el = resolveSelectable(this.element, context => input.getSelectable(context));
+    const classList = el.classList;
+    const classes = new Set<string>();
+    for (let i = 0; i < classList.length; i++) {
+      const classItem = classList.item(i);
+      if (!classItem) {
+        continue;
+      }
+      classes.add(classItem);
+    }
 
-              return new Set(classes);
-            }),
-        );
+    return new Set(classes);
   }
 
-  getElement<E extends Element>(input: Selector<E>): Observable<E> {
-    return this.element$.pipe(getElement(context => input.getElement(context)));
+  getElement<E extends Element>(selector: Selector<E>): E {
+    return resolveSelectable(this.element, context => selector.getSelectable(context));
   }
 
-  getEvents<E extends Event>(
-      dispatcher: UnresolvedDispatcherOutput<E>|DispatcherOutput<E>,
-  ): Observable<E> {
-    return this.element$.pipe(
-        switchMap(element => fromEvent<E>(element, dispatcher.eventName)),
-    );
-  }
-
-  getHasClass(
-      ioutput: ClassToggleOutput|HasClassInput,
-  ): Observable<boolean> {
-    return this.element$
-        .pipe(
-            getElement(context => ioutput.resolver(context)),
-            map(el => el.classList.contains(ioutput.className)),
-        );
+  getEvents<E extends Event>(dispatcher: DispatcherOutput<E>): Observable<E> {
+    const element = resolveSelectable(this.element, context => dispatcher.resolver(context));
+    return fromEvent<E>(element, dispatcher.eventName);
   }
 
   getNodesAfter(
       output: MultiOutput|SingleOutput,
-  ): Observable<Node[]> {
-    return this.element$
-        .pipe(
-            getElement(context => output.resolver(context)),
-            map(parentEl => findCommentNode(
-                arrayFrom(parentEl.childNodes),
-                output.slotName,
-            )),
-            map(slotEl => {
-              if (!slotEl) {
-                throw new Error(`Slot ${output.slotName} cannot be found`);
-              }
+  ): readonly Node[] {
+    const parentEl = resolveSelectable(this.element, context => output.resolver(context));
+    const slotEl = findCommentNode(arrayFrom(parentEl.childNodes), output.slotName);
+    if (!slotEl) {
+      throw new Error(`Slot ${output.slotName} cannot be found`);
+    }
+    const nodes = [];
+    let node = slotEl.nextSibling;
+    while (node) {
+      nodes.push(node);
+      node = node.nextSibling;
+    }
 
-              return slotEl;
-            }),
-            map(slotEl => {
-              const nodes = [];
-              let node = slotEl.nextSibling;
-              while (node) {
-                nodes.push(node);
-                node = node.nextSibling;
-              }
-
-              return nodes;
-            }),
-        );
+    return nodes;
   }
 
   getObserver<T>(input: PropertyObserver<T>|PropertyEmitter<T>): Observable<T> {
-    return this.element$.pipe(
-        getElement(context => input.resolver(context)),
-        switchMap(el => (el as any)[input.propertyName] as Observable<T>),
-    );
+    const el = resolveSelectable(this.element, context => input.resolver(context));
+    return (el as any)[input.propertyName] as Observable<T>;
   }
 
-  getStyle<S extends keyof CSSStyleDeclaration>(
-      output: StyleOutput<S>,
-  ): Observable<CSSStyleDeclaration[S]> {
-    return this.element$
-        .pipe(
-            getElement(context => output.resolver(context)),
-            map(targetEl => targetEl.style[output.styleKey]),
-        );
+  getStyle<S extends keyof CSSStyleDeclaration>(output: StyleOutput<S>): CSSStyleDeclaration[S] {
+    const targetEl = resolveSelectable(this.element, context => output.resolver(context));
+    return targetEl.style[output.styleKey];
   }
 
-  getTextContent(input: Selector<Element>): Observable<string> {
-    return this.element$
-        .pipe(
-            getElement(context => input.getElement(context)),
-            map(el => el.textContent || ''),
-        );
+  getTextContent(input: Selector<Element>): string {
+    const el = resolveSelectable(this.element, context => input.getSelectable(context));
+    return el.textContent || '';
   }
 
   hasAttribute(
       spec: SetAttributeOutput|HasAttributeInput,
-  ): Observable<boolean> {
-    return this.element$
-        .pipe(
-            getElement(context => spec.resolver(context)),
-            map(el => el.hasAttribute(spec.attrName)),
-        );
+  ): boolean {
+    const el = resolveSelectable(this.element, context => spec.resolver(context));
+    return el.hasAttribute(spec.attrName);
   }
 
-  // TODO: The inputs should take unresolved values too.
-  setAttribute<T>(
-      input: AttributeInput<T>|AttributeOutput<T>,
+  hasClass(ioutput: ClassToggleOutput|HasClassInput): boolean {
+    const el = resolveSelectable(this.element, context => ioutput.resolver(context));
+    return el.classList.contains(ioutput.className);
+  }
+
+  nextValue<T>(
+      input: PropertyObserver<T>|PropertyEmitter<T>,
       value: T,
-  ): Observable<unknown> {
+  ): void {
+    const el = resolveSelectable(this.element, context => input.resolver(context));
+    const subject = (el as any)[input.propertyName];
+    if (!(subject instanceof Subject)) {
+      throw new Error(`Property ${input.propertyName} is not a Subject`);
+    }
+
+    subject.next(value);
+  }
+
+  setAttribute<T>(input: AttributeInput<T>|AttributeOutput<T>, value: T): void {
     const result = input.parser.convertForward(value);
     if (!result.success) {
       throw new Error(`Invalid value: ${value}`);
     }
 
-    return this.element$
-        .pipe(
-            getElement(context => input.resolver(context)),
-            tap(targetEl => {
-              targetEl.setAttribute(input.attrName, result.result);
-            }),
-            take(1),
-        );
+    const targetEl = resolveSelectable(this.element, context => input.resolver(context));
+    targetEl.setAttribute(input.attrName, result.result);
   }
 
-  setHasAttribute(
-      output: SetAttributeOutput|HasAttributeInput,
-      value: boolean,
-  ): Observable<unknown> {
-    return this.element$
-        .pipe(
-            getElement(context => output.resolver(context)),
-            take(1),
-            tap(targetEl => {
-              if (value) {
-                targetEl.setAttribute(output.attrName, '');
-              } else {
-                targetEl.removeAttribute(output.attrName);
-              }
-            }),
-        );
+  setHasAttribute(output: SetAttributeOutput|HasAttributeInput, value: boolean): void {
+    const targetEl = resolveSelectable(this.element, context => output.resolver(context));
+    if (value) {
+      targetEl.setAttribute(output.attrName, '');
+    } else {
+      targetEl.removeAttribute(output.attrName);
+    }
   }
 
-  setInputValue(input: Selector<HTMLInputElement>, value: string): Observable<unknown> {
-    return this.element$
-        .pipe(
-            getElement(context => input.getElement(context)),
-            take(1),
-            tap(targetEl => {
-              targetEl.value = value;
-              targetEl.dispatchEvent(new CustomEvent('input'));
-            }),
-        );
+  setInputValue(selector: Selector<HTMLInputElement>, value: string): void {
+    const targetEl = resolveSelectable(this.element, context => selector.getSelectable(context));
+    targetEl.value = value;
+    targetEl.dispatchEvent(new CustomEvent('input'));
   }
 
-  setText(el: Selector<Element>, value: string): Observable<unknown> {
-    return this.element$.pipe(
-        getElement(context => el.getElement(context)),
-        tap(el => {
-          el.textContent = value;
-          el.dispatchEvent(
-              new CustomEvent('pr-fake-mutation', {bubbles: true, detail: {record: []}}),
-          );
-        }),
+  setText(selector: Selector<Element>, value: string): void {
+    const el = resolveSelectable(this.element, context => selector.getSelectable(context));
+    el.textContent = value;
+    el.dispatchEvent(
+        new CustomEvent('pr-fake-mutation', {bubbles: true, detail: {record: []}}),
     );
   }
 
-  simulateKeypress(input: Selector<Element>, keys: readonly Key[]): Observable<unknown> {
-    return this.element$
-        .pipe(
-            getElement(context => input.getElement(context)),
-            tap(targetEl => {
-              for (const {key, alt, ctrl, meta, shift} of keys) {
-                const keydownEvent = new KeyboardEvent('keydown', {
-                  altKey: alt,
-                  ctrlKey: ctrl,
-                  key,
-                  metaKey: meta,
-                  shiftKey: shift,
-                });
-                targetEl.dispatchEvent(keydownEvent);
+  simulateKeypress(selector: Selector<Element>, keys: readonly Key[]): void {
+    const targetEl = resolveSelectable(this.element, context => selector.getSelectable(context));
+    for (const {key, alt, ctrl, meta, shift} of keys) {
+      const keydownEvent = new KeyboardEvent('keydown', {
+        altKey: alt,
+        ctrlKey: ctrl,
+        key,
+        metaKey: meta,
+        shiftKey: shift,
+      });
+      targetEl.dispatchEvent(keydownEvent);
 
-                const keyupEvent = new KeyboardEvent('keyup', {
-                  altKey: alt,
-                  ctrlKey: ctrl,
-                  key,
-                  metaKey: meta,
-                  shiftKey: shift,
-                });
-                targetEl.dispatchEvent(keyupEvent);
-              }
-            }),
-        );
+      const keyupEvent = new KeyboardEvent('keyup', {
+        altKey: alt,
+        ctrlKey: ctrl,
+        key,
+        metaKey: meta,
+        shiftKey: shift,
+      });
+      targetEl.dispatchEvent(keyupEvent);
+    }
   }
 
   spyOnFunction(
       outputInput: CallerOutput<unknown[]>|HandlerInput,
   ): Observable<readonly unknown[]> {
-    return this.element$
-        .pipe(
-            getElement(context => outputInput.resolver(context)),
-            switchMap(el => {
-              const subject = getSubject(el, outputInput.functionName);
-              if (!subject) {
-                throw new Error(`Subject for ${outputInput.functionName} not found`);
-              }
+    const el = resolveSelectable(this.element, context => outputInput.resolver(context));
+    const subject = getSubject(el, outputInput.functionName);
+    if (!subject) {
+      throw new Error(`Subject for ${outputInput.functionName} not found`);
+    }
 
-              return subject;
-            }),
-        );
+    return subject;
   }
 }
 
@@ -391,19 +283,13 @@ function findCommentNode(
   ) || null;
 }
 
-function getElement<S extends Selectable>(
+function resolveSelectable<S extends Selectable>(
+    element: DecoratedElement,
     resolver: Resolver<S>,
-): (source: Observable<HTMLElement>) => Observable<S> {
-  return map(element => {
-    return resolver(getContext(element));
-  });
-}
-
-function getContext(element: DecoratedElement): PersonaContext {
+): S {
   const context = element[__context];
   if (!context) {
     throw new Error(`Context for element ${element} not found`);
   }
-
-  return context;
+  return resolver(context);
 }

@@ -4,7 +4,6 @@ import { PersonaContext } from '../core/persona-context';
 import { api, ConvertedSpec, UnconvertedSpec } from '../main/api';
 import { ComponentSpec } from '../main/component-spec';
 import { Selector } from '../types/selector';
-import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 import { PropertySpecs, Resolved } from './property-spec';
 
@@ -20,7 +19,7 @@ export class ElementSelector<E extends Element, P extends PropertySpecs<E>> impl
     this._ = this.resolve(properties);
   }
 
-  getElement({shadowRoot}: PersonaContext): E {
+  getSelectable({shadowRoot}: PersonaContext): E {
     const el = shadowRoot.getElementById(this.elementId);
     if (!this.type.check(el)) {
       throw new Error(`Element of [${this.elementId}] should be a ${this.type} but was ${el}`);
@@ -35,7 +34,7 @@ export class ElementSelector<E extends Element, P extends PropertySpecs<E>> impl
         continue;
       }
 
-      resolvedProperties[key] = properties[key].resolve(context => this.getElement(context));
+      resolvedProperties[key] = properties[key].resolve(context => this.getSelectable(context));
     }
 
     return resolvedProperties;
