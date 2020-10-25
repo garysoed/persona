@@ -11,6 +11,18 @@ type TypeOf<S extends Spec> = {
   readonly [K in keyof S]: S[K] extends Converter<infer T, string> ? T : never
 };
 
+/**
+ * Creates location converter from a given pattern.
+ *
+ * This method takes in a pattern, which is a string that looks like a path. If parts of the path
+ * is of format `:name`, this method will include the value of that part of the path in the hash
+ * in the returned object. For example, the matching string `/:a/_/:b` will match the hash path
+ * `/hello/_/location` and returns the object `{a: 'hello', b: 'location'}`.
+ *
+ * @param pattern The pattern to generate the matcher.
+ * @param spec Object with keys corresponding to a key in the pattern and converter for each key.
+ * @return Converter for the location.
+ */
 export function fromPattern<S extends Spec>(
     pattern: string,
     spec: S,
