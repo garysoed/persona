@@ -8,6 +8,7 @@ import { createSlotObs } from '../main/create-slot-obs';
 import { __id, NodeWithId } from '../render/node-with-id';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
+import { Selectable } from '../types/selectable';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { UnresolvedOutput } from '../types/unresolved-output';
 
@@ -15,7 +16,7 @@ import { UnresolvedOutput } from '../types/unresolved-output';
 export class MultiOutput implements Output<ReadonlyArray<NodeWithId<Node>>> {
   constructor(
       readonly slotName: string,
-      readonly resolver: Resolver<Element>,
+      readonly resolver: Resolver<Selectable>,
   ) { }
 
   output(context: PersonaContext): OperatorFunction<ReadonlyArray<NodeWithId<Node>>, unknown> {
@@ -70,7 +71,7 @@ export class MultiOutput implements Output<ReadonlyArray<NodeWithId<Node>>> {
   }
 
   private insertEl(
-      parentNode: Element,
+      parentNode: Selectable,
       slotNode: Node,
       node: Node,
       index: number,
@@ -83,7 +84,7 @@ export class MultiOutput implements Output<ReadonlyArray<NodeWithId<Node>>> {
   }
 
   private setEl(
-      parentNode: Element,
+      parentNode: Selectable,
       slotNode: Node,
       node: Node,
       index: number,
@@ -94,13 +95,13 @@ export class MultiOutput implements Output<ReadonlyArray<NodeWithId<Node>>> {
 }
 
 class UnresolvedMultiOutput implements
-    UnresolvedElementProperty<Element, MultiOutput>,
+    UnresolvedElementProperty<Selectable, MultiOutput>,
     UnresolvedOutput<ReadonlyArray<NodeWithId<Node>>> {
   constructor(
       private readonly slotName: string,
   ) { }
 
-  resolve(resolver: Resolver<Element>): MultiOutput {
+  resolve(resolver: Resolver<Selectable>): MultiOutput {
     return new MultiOutput(this.slotName, resolver);
   }
 }

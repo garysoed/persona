@@ -7,6 +7,7 @@ import { createSlotObs } from '../main/create-slot-obs';
 import { __id, NodeWithId } from '../render/node-with-id';
 import { Output } from '../types/output';
 import { Resolver } from '../types/resolver';
+import { Selectable } from '../types/selectable';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { UnresolvedOutput } from '../types/unresolved-output';
 
@@ -14,7 +15,7 @@ import { UnresolvedOutput } from '../types/unresolved-output';
 export class SingleOutput implements Output<NodeWithId<Node>|null> {
   constructor(
       readonly slotName: string,
-      readonly resolver: Resolver<Element>,
+      readonly resolver: Resolver<Selectable>,
   ) { }
 
   output(context: PersonaContext): OperatorFunction<NodeWithId<Node>|null, unknown> {
@@ -52,10 +53,10 @@ export class SingleOutput implements Output<NodeWithId<Node>|null> {
 }
 
 class UnresolvedSingleOutput implements
-    UnresolvedElementProperty<Element, SingleOutput>, UnresolvedOutput<NodeWithId<Node>|null> {
+    UnresolvedElementProperty<Selectable, SingleOutput>, UnresolvedOutput<NodeWithId<Node>|null> {
   constructor(readonly slotName: string) { }
 
-  resolve(resolver: Resolver<Element>): SingleOutput {
+  resolve(resolver: Resolver<Selectable>): SingleOutput {
     return new SingleOutput(this.slotName, resolver);
   }
 }

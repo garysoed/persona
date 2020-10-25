@@ -24,6 +24,7 @@ import { SetAttributeOutput } from '../output/set-attribute';
 import { SingleOutput } from '../output/single';
 import { StyleOutput } from '../output/style';
 import { Resolver } from '../types/resolver';
+import { Selectable } from '../types/selectable';
 import { Selector } from '../types/selector';
 
 
@@ -390,9 +391,9 @@ function findCommentNode(
   ) || null;
 }
 
-function getElement<E extends Element>(
-    resolver: Resolver<E>,
-): (source: Observable<HTMLElement>) => Observable<E> {
+function getElement<S extends Selectable>(
+    resolver: Resolver<S>,
+): (source: Observable<HTMLElement>) => Observable<S> {
   return map(element => {
     return resolver(getContext(element));
   });
