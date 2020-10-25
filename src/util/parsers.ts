@@ -1,7 +1,7 @@
 import { integerConverter, listConverter, mapConverter, typeBased } from 'gs-tools/export/serializer';
 import { getAllValues } from 'gs-tools/export/typescript';
 import { booleanType } from 'gs-types';
-import { compose, Converter, human, identity, Result, Serializable } from 'nabu';
+import { compose, Converter, human, identity, Result } from 'nabu';
 
 export function booleanParser(): Converter<boolean, string> {
   return compose(typeBased(booleanType), human());
@@ -30,7 +30,7 @@ export function integerParser(): Converter<number, string> {
 }
 
 export function listParser<T>(
-    itemParser: Converter<T, Serializable>,
+    itemParser: Converter<T, unknown>,
 ): Converter<readonly T[], string> {
   return compose(
       listConverter(itemParser),
