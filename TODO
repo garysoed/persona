@@ -1,9 +1,5 @@
 persona
   v2.0
-    ✔   host selector
-    ✔   Better custom element interfacing
-    ✔   Disable host selection from element.
-    ✔   Optional element watching.
     ☐   Log the registration.
 
 
