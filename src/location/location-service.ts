@@ -140,7 +140,7 @@ export class LocationService<S extends RouteSpec> extends Runnable {
         .pipe(
             withLatestFrom(this.window$),
             tap(([url, windowObj]) => {
-              windowObj.history.pushState({}, 'TODO', url);
+              windowObj.history.pushState({}, 'unused', url);
               this.onPushState$.next({});
             }),
         );

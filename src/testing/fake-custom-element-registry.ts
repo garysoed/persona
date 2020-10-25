@@ -20,13 +20,8 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
       private readonly fakeTime: FakeTime,
   ) { }
 
-  // TODO: parent shouldn't be here.
-  create(tag: string, parent: HTMLElement|null): HTMLElement {
+  create(tag: string): HTMLElement {
     const el = this.createElement_(tag);
-    if (parent) {
-      parent.appendChild(el);
-    }
-
     this.upgradeElement_(el);
     this.fakeTime.tick(CHECK_PERIOD_MS);
 

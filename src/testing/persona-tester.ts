@@ -21,7 +21,7 @@ export class PersonaTester {
   ) { }
 
   createElement<T extends HTMLElement>(tag: string): ElementTester<T> {
-    const element = this.customElementRegistry.create(tag, null) as T;
+    const element = this.customElementRegistry.create(tag) as T;
 
     return new ElementTester(element, this.vine);
   }

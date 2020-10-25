@@ -16,7 +16,6 @@ export class HtmlParseService {
       return existingEl$;
     }
 
-    // TODO: Do this in web worker?
     const xmlDoc = this.domParser.parseFromString(raw, supportedType);
     const el$ = observableOf(xmlDoc.children.item(0));
     this.elMap.set(raw, el$);
