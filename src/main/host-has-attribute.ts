@@ -1,9 +1,9 @@
 import { Observable } from 'rxjs';
 import { filter, map, startWith } from 'rxjs/operators';
 
-import { PersonaContext } from '../core/persona-context';
 import { HasAttributeInput } from '../input/has-attribute';
 import { Input } from '../types/input';
+import { PersonaContext } from '../core/persona-context';
 
 
 export class HostHasAttribute extends HasAttributeInput implements Input<boolean> {

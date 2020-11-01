@@ -1,14 +1,14 @@
-import { defer, EMPTY, merge, Observable, of as observableOf } from 'rxjs';
+import { EMPTY, Observable, defer, merge, of as observableOf } from 'rxjs';
 import { switchMapTo, tap } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
 
-import { __id, NodeWithId } from './node-with-id';
+import { NodeWithId, __id } from './node-with-id';
 
 
 export function renderTextNode(
     text$: Observable<string>,
-    id: any,
+    id: unknown,
     context: PersonaContext,
 ): Observable<NodeWithId<Text>> {
   return defer(() => {

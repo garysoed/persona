@@ -1,9 +1,9 @@
+import { Subject } from 'rxjs';
 import { assert, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
-import { Subject } from 'rxjs';
 
-import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
 
 import { setAttribute } from './set-attribute';
 
@@ -29,7 +29,7 @@ test('output.setAttribute', init => {
   });
 
   test('output', () => {
-    should(`update the attribute correctly`, () => {
+    should('update the attribute correctly', () => {
       const value$ = new Subject<boolean>();
 
       run(value$.pipe(_.output.output(_.context)));

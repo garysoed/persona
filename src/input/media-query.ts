@@ -1,4 +1,4 @@
-import { fromEvent, Observable } from 'rxjs';
+import { Observable, fromEvent } from 'rxjs';
 import { map, shareReplay, startWith } from 'rxjs/operators';
 
 import { Input } from '../types/input';

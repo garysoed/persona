@@ -1,9 +1,9 @@
+import { Subject } from 'rxjs';
 import { assert, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
-import { Subject } from 'rxjs';
 
-import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
 
 import { textOut } from './text-out';
 
@@ -28,7 +28,7 @@ test('@persona/output/text-out', init => {
   });
 
   test('output', () => {
-    should(`set the text content correctly`, () => {
+    should('set the text content correctly', () => {
       const value$ = new Subject<string>();
 
       run(value$.pipe(_.output.output(_.context)));

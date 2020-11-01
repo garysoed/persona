@@ -1,8 +1,8 @@
-import { assert, createSpySubject, should, test } from 'gs-testing';
 import { ReplaySubject } from 'rxjs';
+import { assert, createSpySubject, should, test } from 'gs-testing';
 
-import { host } from '../selector/host';
 import { createFakeContext } from '../testing/create-fake-context';
+import { host } from '../selector/host';
 
 import { observer } from './property-observer';
 
@@ -19,7 +19,7 @@ test('@persona/input/property-observer', init => {
   });
 
   test('getValue', () => {
-    should(`emit values emitted by the observable`, () => {
+    should('emit values emitted by the observable', () => {
       const elValue$ = new ReplaySubject<number>(1);
       Object.assign(_.el, {[PROPERTY_NAME]: elValue$});
 
@@ -31,7 +31,7 @@ test('@persona/input/property-observer', init => {
       assert(value$).to.emitSequence([1, 2, 3]);
     });
 
-    should(`add observable when the observable is not initialized`, () => {
+    should('add observable when the observable is not initialized', () => {
       const value$ = createSpySubject(_.input.getValue(_.context));
 
       const elValue$ = (_.el as any)[PROPERTY_NAME] as ReplaySubject<number>;

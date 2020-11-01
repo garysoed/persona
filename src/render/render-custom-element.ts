@@ -1,14 +1,14 @@
-import { EMPTY, merge, Observable, of as observableOf } from 'rxjs';
+import { EMPTY, Observable, merge, of as observableOf } from 'rxjs';
 import { switchMap, switchMapTo } from 'rxjs/operators';
 
-import { PersonaContext } from '../core/persona-context';
-import { api, UnconvertedSpec } from '../main/api';
 import { ComponentSpec } from '../main/component-spec';
+import { PersonaContext } from '../core/persona-context';
+import { UnconvertedSpec, api } from '../main/api';
 import { UnresolvedInput } from '../types/unresolved-input';
 import { UnresolvedOutput } from '../types/unresolved-output';
 
+import { Values as ElementValues, renderElement } from './render-element';
 import { __id } from './node-with-id';
-import { renderElement, Values as ElementValues } from './render-element';
 
 
 /**
@@ -50,12 +50,12 @@ export interface Values<S extends UnconvertedSpec> extends ElementValues {
 export function renderCustomElement<S extends UnconvertedSpec>(
     spec: ComponentSpec<S>,
     values: Values<S>,
-    id: {},
+    id: unknown,
     context: PersonaContext,
-): Observable<HTMLElement&{[__id]: {}}> {
+): Observable<HTMLElement&{[__id]: unknown}> {
   return renderElement(spec.tag, values, id, context).pipe(
       switchMap(el => {
-        const resolver = () => el;
+        const resolver = (): HTMLElement => el;
         const onChange$List = [];
 
         const convertedSpec = api(spec.api);

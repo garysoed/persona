@@ -1,10 +1,10 @@
+import { CHECK_PERIOD_MS } from '../input/property-observer';
+import { CustomElementClass, __customElementImplFactory } from '../core/custom-element-class';
 import { FakeTime, run } from 'gs-testing';
+import { arrayFrom } from 'gs-tools/export/collect';
+import { mutationObservable } from '../util/mutation-observable';
 import { tap } from 'rxjs/operators';
 
-import { __customElementImplFactory, CustomElementClass } from '../core/custom-element-class';
-import { __context, DecoratedElement } from '../core/custom-element-decorator';
-import { CHECK_PERIOD_MS } from '../input/property-observer';
-import { mutationObservable } from '../util/mutation-observable';
 
 type Listener = () => void;
 const __upgraded = Symbol('upgraded');
@@ -41,7 +41,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     return this.definedElements.get(tag) || null;
   }
 
-  upgrade(root: Node): void {
+  upgrade(): void {
     throw new Error('Method not implemented.');
   }
 
@@ -89,9 +89,9 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     ));
 
     // Recursively upgrade the element.
-    const nodeList = el.shadowRoot!.querySelectorAll('*');
-    for (let i = 0; i < nodeList.length; i++) {
-      const node = nodeList.item(i);
+    const nodeList = el.shadowRoot?.querySelectorAll('*');
+    const nodeArray = nodeList ? arrayFrom(nodeList) : [];
+    for (const node of nodeArray) {
       if (!(node instanceof HTMLElement)) {
         continue;
       }

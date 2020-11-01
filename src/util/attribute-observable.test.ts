@@ -11,7 +11,7 @@ test('@persona/util/attribute-observable', init => {
     return {};
   });
 
-  should(`emit the attribute values correctly`, async () => {
+  should('emit the attribute values correctly', async () => {
     const attrName = 'attr-name';
     const el = document.createElement('div');
 

@@ -1,12 +1,14 @@
-import { defer, Observable, Subject } from 'rxjs';
+import { Observable, Subject, defer } from 'rxjs';
 
-import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
+import { PersonaContext } from '../core/persona-context';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
 
 const __subject = Symbol('subject');
+
+type DecoratedElement = Element & Record<string, unknown>;
 
 export class HandlerInput implements Input<readonly unknown[]> {
   constructor(
@@ -17,7 +19,7 @@ export class HandlerInput implements Input<readonly unknown[]> {
   getValue(context: PersonaContext): Observable<readonly unknown[]> {
     return defer(() => {
       const el = this.resolver(context);
-      const existingSubject = getSubject(el, this.functionName);
+      const existingSubject = getSubject(el as DecoratedElement, this.functionName);
       if (existingSubject) {
         return existingSubject;
       }
@@ -49,13 +51,16 @@ export function handler(functionName: string): UnresolvedHandlerInput {
   return new UnresolvedHandlerInput(functionName);
 }
 
-export function getSubject(el: any, functionName: string): Subject<readonly unknown[]>|null {
+export function getSubject(
+    el: DecoratedElement,
+    functionName: string,
+): Subject<readonly unknown[]>|null {
   const existingFn = el[functionName];
   if (!(existingFn instanceof Function)) {
     return null;
   }
 
-  const subject = existingFn[__subject];
+  const subject = (existingFn as any)[__subject];
   if (!(subject instanceof Subject)) {
     return null;
   }

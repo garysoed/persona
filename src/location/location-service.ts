@@ -1,6 +1,6 @@
-import { Runnable } from 'gs-tools/export/rxjs';
+import { Observable, Subject, fromEvent, fromEventPattern, merge } from 'rxjs';
 import { Result } from 'nabu';
-import { fromEvent, fromEventPattern, merge, Observable, Subject } from 'rxjs';
+import { Runnable } from 'gs-tools/export/rxjs';
 import { map, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
 
 import { LocationConverter } from './location-converter';
@@ -21,7 +21,7 @@ export interface Route<S extends RouteSpec, K extends keyof S> {
 
 export class LocationService<S extends RouteSpec> extends Runnable {
   private readonly onGoToUrl$: Subject<string> = new Subject();
-  private readonly onPushState$: Subject<{}> = new Subject();
+  private readonly onPushState$: Subject<unknown> = new Subject();
 
   constructor(
       private readonly specs: S,
@@ -39,19 +39,19 @@ export class LocationService<S extends RouteSpec> extends Runnable {
               fromEvent<PopStateEvent>(windowObj, 'popstate'),
               this.onPushState$,
           )
-          .pipe(
-              map(() => windowObj.location.pathname),
-              startWith(windowObj.location.pathname),
-              map(location => this.parseLocation(location)),
-              tap(route => {
-                if (!route) {
-                  this.goToPath(this.defaultRoute.type, this.defaultRoute.payload);
-                }
-              }),
-              map(route => {
-                return route || this.defaultRoute;
-              }),
-          );
+              .pipe(
+                  map(() => windowObj.location.pathname),
+                  startWith(windowObj.location.pathname),
+                  map(location => this.parseLocation(location)),
+                  tap(route => {
+                    if (!route) {
+                      this.goToPath(this.defaultRoute.type, this.defaultRoute.payload);
+                    }
+                  }),
+                  map(route => {
+                    return route || this.defaultRoute;
+                  }),
+              );
         }),
     );
   }
@@ -84,31 +84,31 @@ export class LocationService<S extends RouteSpec> extends Runnable {
           eventTarget.removeEventListener('click', handler);
         },
     )
-    .pipe(
-        tap(event => {
-          const target = event.target;
-          if (!(target instanceof Node)) {
-            return;
-          }
-          const anchorEl = findAnchorElement(target);
-          if (!anchorEl) {
-            return;
-          }
+        .pipe(
+            tap(event => {
+              const target = event.target;
+              if (!(target instanceof Node)) {
+                return;
+              }
+              const anchorEl = findAnchorElement(target);
+              if (!anchorEl) {
+                return;
+              }
 
-          if (anchorEl.target === '_blank') {
-            return;
-          }
+              if (anchorEl.target === '_blank') {
+                return;
+              }
 
-          // DO NOT use href param, as it has the base url appended.
-          const href = anchorEl.getAttribute('href');
-          const route = this.parseLocation(href || '');
-          if (!route) {
-            return;
-          }
-          event.preventDefault();
-          this.goToPath(route.type, route.payload);
-        }),
-    );
+              // DO NOT use href param, as it has the base url appended.
+              const href = anchorEl.getAttribute('href');
+              const route = this.parseLocation(href || '');
+              if (!route) {
+                return;
+              }
+              event.preventDefault();
+              this.goToPath(route.type, route.payload);
+            }),
+        );
   }
 
   private getUrl<K extends keyof S>(type: K, payload: Payloads<S>[K]): string|null {

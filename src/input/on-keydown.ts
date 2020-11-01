@@ -1,5 +1,5 @@
-import { booleanType } from 'gs-types';
 import { Observable } from 'rxjs';
+import { booleanType } from 'gs-types';
 import { filter, tap } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';

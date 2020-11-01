@@ -1,8 +1,8 @@
 import { assert, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 
-import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
 
 import { hasAttribute } from './has-attribute';
 
@@ -29,7 +29,7 @@ test('persona.input.hasAttribute', init => {
   });
 
   test('getValue', () => {
-    should(`create observable that emits true iff the attribute exists`, () => {
+    should('create observable that emits true iff the attribute exists', () => {
       _.el.setAttribute(ATTR_NAME, '');
       assert(_.input.getValue(_.context)).to.emitWith(true);
 

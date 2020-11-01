@@ -11,7 +11,7 @@ test('@persona/util/element-observable', init => {
     return {};
   });
 
-  should(`emit the elements correctly`, async () => {
+  should('emit the elements correctly', async () => {
     const rootEl = document.createElement('div').attachShadow({mode: 'open'});
     const addedEl = document.createElement('div');
 

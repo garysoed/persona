@@ -1,8 +1,8 @@
 import { assert, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 
-import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
 
 import { hasClass } from './has-class';
 
@@ -28,13 +28,13 @@ test('persona.input.hasClass', init => {
   });
 
   test('getValue', () => {
-    should(`emit true if the class exists`, () => {
+    should('emit true if the class exists', () => {
       _.el.classList.add(CLASSNAME);
 
       assert(_.input.getValue(_.context)).to.emitWith(true);
     });
 
-    should(`emit false if the class doesn't exist`, () => {
+    should('emit false if the class doesn\'t exist', () => {
       assert(_.input.getValue(_.context)).to.emitWith(false);
     });
   });

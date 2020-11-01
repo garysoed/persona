@@ -16,7 +16,7 @@ test('persona.input.mediaQuery', init => {
   });
 
   test('getValue', () => {
-    should(`emit the correct value on changes`, () => {
+    should('emit the correct value on changes', () => {
       const fakeQuery = new FakeMediaQuery(QUERY);
       fake(_.mockWindow.matchMedia).when(QUERY).return(fakeQuery as any);
 

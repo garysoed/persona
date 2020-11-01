@@ -1,4 +1,4 @@
-import { ResizeObserver, ResizeObserverEntry, ResizeObserverInit } from '../util/resize-observable';
+import { ResizeObserver, ResizeObserverEntry } from '../util/resize-observable';
 
 const EVENT = 'pr-fake-resize';
 
@@ -9,7 +9,7 @@ class FakeResizeObserver implements ResizeObserver {
     // noop
   }
 
-  observe(target: Element | SVGElement, options: ResizeObserverInit): void {
+  observe(target: Element | SVGElement): void {
     target.addEventListener(EVENT, (event: Event) => {
       this.callback((event as CustomEvent).detail as readonly ResizeObserverEntry[]);
     });

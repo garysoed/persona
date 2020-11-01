@@ -4,8 +4,8 @@ import { of as observableOf } from 'rxjs';
 import { createFakeWindow } from '../testing/fake-window';
 import { integerParser } from '../util/parsers';
 
-import { fromPattern } from './location-converter';
 import { LocationService, Route } from './location-service';
+import { fromPattern } from './location-converter';
 
 
 const SPEC = {
@@ -27,7 +27,7 @@ test('@persona/location/location-service', init => {
   });
 
   test('getLocation', () => {
-    should(`emit the first matching path`, () => {
+    should('emit the first matching path', () => {
       _.fakeWindow.history.pushState({}, '', '/a/123');
 
       assert(_.service.getLocation()).to.emitWith(
@@ -38,7 +38,7 @@ test('@persona/location/location-service', init => {
       );
     });
 
-    should(`emit and go to the default path if none of the specs match`, () => {
+    should('emit and go to the default path if none of the specs match', () => {
       _.fakeWindow.history.pushState({}, '', '/un/match');
 
       assert(_.service.getLocation()).to.emitWith(
@@ -47,12 +47,12 @@ test('@persona/location/location-service', init => {
             type: 'default',
           }),
       );
-      assert(_.fakeWindow.location.pathname).to.equal(`/`);
+      assert(_.fakeWindow.location.pathname).to.equal('/');
     });
   });
 
   test('getLocationOfType', () => {
-    should(`emit the location if it has the correct type`, () => {
+    should('emit the location if it has the correct type', () => {
       _.fakeWindow.history.pushState({}, '', '/a/123');
 
       assert(_.service.getLocationOfType('pathA')).to.emitWith(
@@ -63,7 +63,7 @@ test('@persona/location/location-service', init => {
       );
     });
 
-    should(`emit null if location is of the wrong type`, () => {
+    should('emit null if location is of the wrong type', () => {
       _.fakeWindow.history.pushState({}, '', '/b/abc');
 
       assert(_.service.getLocationOfType('pathA')).to.emitWith(null);
@@ -71,7 +71,7 @@ test('@persona/location/location-service', init => {
   });
 
   test('goToPath', () => {
-    should(`push the history correctly`, () => {
+    should('push the history correctly', () => {
       const a = 123;
 
       _.service.goToPath('pathA', {a});
@@ -81,7 +81,7 @@ test('@persona/location/location-service', init => {
   });
 
   test('interceptLinks', () => {
-    should(`intercept click events from child of anchor elements`, () => {
+    should('intercept click events from child of anchor elements', () => {
       const codeEl = document.createElement('code');
       const anchorEl = document.createElement('a');
       anchorEl.href = '/a/123';
@@ -95,10 +95,10 @@ test('@persona/location/location-service', init => {
       codeEl.dispatchEvent(event);
 
       assert(preventDefaultSpy).to.haveBeenCalledWith();
-      assert(_.fakeWindow.location.pathname).to.equal(`/a/123`);
+      assert(_.fakeWindow.location.pathname).to.equal('/a/123');
     });
 
-    should(`not intercept if location results in invalid route`, () => {
+    should('not intercept if location results in invalid route', () => {
       const anchorEl = document.createElement('a');
       anchorEl.href = '/unmatch';
 
@@ -111,7 +111,7 @@ test('@persona/location/location-service', init => {
       assert(_.fakeWindow.location.pathname).to.equal('');
     });
 
-    should(`not intercept if the anchor element's target is _blank`, () => {
+    should('not intercept if the anchor element\'s target is _blank', () => {
       const anchorEl = document.createElement('a');
       anchorEl.href = '/unmatch';
       anchorEl.target = '_blank';
@@ -127,7 +127,7 @@ test('@persona/location/location-service', init => {
   });
 
   test('parseLocation', () => {
-    should(`return the first matching path`, () => {
+    should('return the first matching path', () => {
       _.fakeWindow.history.pushState({}, '', '/a/123');
 
       assert(_.service.getLocation()).to.emitWith(
@@ -138,7 +138,7 @@ test('@persona/location/location-service', init => {
       );
     });
 
-    should(`return null if none of the specs match`, () => {
+    should('return null if none of the specs match', () => {
       _.fakeWindow.history.pushState({}, '', '/un/match');
 
       assert(_.service.getLocation()).to.emitWith(

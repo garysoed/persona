@@ -1,9 +1,9 @@
 import { assert, createSpySubject, should, teardown, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 
-import { installFakeMutationObserver } from '../../export/testing';
-import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
+import { installFakeMutationObserver } from '../../export/testing';
 
 import { textIn } from './text-in';
 
@@ -34,7 +34,7 @@ test('@persona/input/text-input', init => {
   });
 
   test('getValue', () => {
-    should(`create observable that emits the values`, () => {
+    should('create observable that emits the values', () => {
 
       const initValue = 'initValue';
       _.el.textContent = initValue;

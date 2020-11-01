@@ -1,4 +1,4 @@
-import { fromEventPattern, Observable } from 'rxjs';
+import { Observable, fromEventPattern } from 'rxjs';
 import { share } from 'rxjs/operators';
 
 export interface ResizeObserverInit {
@@ -14,7 +14,7 @@ export declare interface ResizeObserverEntry {
   readonly contentRect: DOMRect;
 }
 
-declare var ResizeObserver: {
+declare const ResizeObserver: {
   prototype: ResizeObserver;
   new (callback: (entries: readonly ResizeObserverEntry[]) => any): ResizeObserver;
 };
@@ -32,5 +32,5 @@ export function resizeObservable(
       },
       (_, observer: ResizeObserver) => observer.disconnect(),
   )
-  .pipe(share());
+      .pipe(share());
 }

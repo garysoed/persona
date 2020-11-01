@@ -14,7 +14,7 @@ test('@persona/render/render-document-fragment', init => {
     return {context};
   });
 
-  should(`emit the document fragment`, () => {
+  should('emit the document fragment', () => {
     const nodeType$ = createSpySubject(
         renderDocumentFragment(_.context).pipe(map(node => node.nodeType)),
     );

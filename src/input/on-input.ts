@@ -1,8 +1,8 @@
-import { fromEvent, Observable } from 'rxjs';
+import { Observable, fromEvent } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
+import { PersonaContext } from '../core/persona-context';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 

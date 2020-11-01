@@ -1,15 +1,15 @@
 import { OperatorFunction } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
+import { PersonaContext } from '../core/persona-context';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { UnresolvedOutput } from '../types/unresolved-output';
 
 
 export class StyleOutput<S extends keyof CSSStyleDeclaration>
-    implements Output<CSSStyleDeclaration[S]> {
+implements Output<CSSStyleDeclaration[S]> {
   constructor(
       readonly resolver: Resolver<HTMLElement>,
       readonly styleKey: S,

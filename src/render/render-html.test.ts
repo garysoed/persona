@@ -1,6 +1,6 @@
 import { assert, createSpyInstance, fake, should, test } from 'gs-testing';
-import { of as observableOf } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { of as observableOf } from 'rxjs';
 
 import { createFakeContext } from '../testing/create-fake-context';
 
@@ -21,7 +21,7 @@ test('@persona/render/render-html', init => {
     return {context, mockHtmlParseService};
   });
 
-  should(`emit the parse result`, () => {
+  should('emit the parse result', () => {
     const el = document.createElement('div');
     fake(_.mockHtmlParseService.parse).always().return(observableOf(el));
 

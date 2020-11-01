@@ -6,7 +6,7 @@ import { createFakeContext } from '../testing/create-fake-context';
 import { title } from './title';
 
 test('@persona/output/title', () => {
-  should(`set the title correctly`, () => {
+  should('set the title correctly', () => {
     const ownerDocument = createSpyObject<Document>('Document', []);
     const shadowRoot = createSpyObject<ShadowRoot>('ShadowRoot', [], {ownerDocument});
     const context = createFakeContext({shadowRoot});

@@ -1,8 +1,8 @@
 import { assert, createSpySubject, runEnvironment, should, test } from 'gs-testing';
 
-import { resizeObservable } from '../../export';
-import { dispatchResizeEvent } from '../testing/fake-resize-observer';
 import { PersonaTesterEnvironment } from '../testing/persona-tester-environment';
+import { dispatchResizeEvent } from '../testing/fake-resize-observer';
+import { resizeObservable } from '../../export';
 
 
 test('@persona/util/resize-observable', init => {
@@ -11,7 +11,7 @@ test('@persona/util/resize-observable', init => {
     return {};
   });
 
-  should(`emit correctly`, () => {
+  should('emit correctly', () => {
     const addedEl = document.createElement('div');
     addedEl.style.position = 'fixed';
     addedEl.style.height = '0';

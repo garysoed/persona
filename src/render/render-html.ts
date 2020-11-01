@@ -4,7 +4,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { PersonaContext } from '../core/persona-context';
 
 import { $htmlParseService, ParseType } from './html-parse-service';
-import { __id, NodeWithId } from './node-with-id';
+import { NodeWithId, __id } from './node-with-id';
 
 
 /**
@@ -20,7 +20,7 @@ import { __id, NodeWithId } from './node-with-id';
 export function renderHtml(
     raw: string,
     supportedType: ParseType,
-    id: {},
+    id: unknown,
     context: PersonaContext,
 ): Observable<NodeWithId<Element>|null> {
   return $htmlParseService.get(context.vine).pipe(

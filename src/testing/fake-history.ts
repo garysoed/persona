@@ -44,13 +44,13 @@ export class FakeHistory implements History {
     }
   }
 
-  pushState(data: any, title: string, url?: string|null|undefined): void {
+  pushState(data: unknown, title: string, url?: string|null|undefined): void {
     this.historyData.splice(this.index, this.length - this.index, {data, title, url});
 
     this.setUrl(url);
   }
 
-  replaceState(data: any, title: string, url?: string|null|undefined): void {
+  replaceState(data: unknown, title: string, url?: string|null|undefined): void {
     this.historyData[this.index] = {data, title, url};
 
     this.setUrl(url);

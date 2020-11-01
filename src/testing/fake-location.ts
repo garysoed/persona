@@ -75,11 +75,11 @@ export class FakeLocation implements Location {
     return this.url.protocol;
   }
 
-  reload(forcedReload?: boolean): void {
+  reload(): void {
     throw new Error('Method not implemented.');
   }
 
-  replace(url: string): void {
+  replace(): void {
     throw new Error('Method not implemented.');
   }
 

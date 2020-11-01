@@ -1,8 +1,8 @@
-import { OperatorFunction, pipe, ReplaySubject, Subject } from 'rxjs';
+import { OperatorFunction, ReplaySubject, Subject, pipe } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
+import { PersonaContext } from '../core/persona-context';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { UnresolvedOutput } from '../types/unresolved-output';

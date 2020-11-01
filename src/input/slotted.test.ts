@@ -1,15 +1,15 @@
 import { arrayThat, assert, createSpySubject, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 
-import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
 
 import { slotted } from './slotted';
 
 
 test('@persona/main/slotted', () => {
   test('getValue', () => {
-    should(`emit the element correctly`, () => {
+    should('emit the element correctly', () => {
       const id = 'id';
       const $ = element(id, instanceofType(HTMLSlotElement), {
         slot: slotted(),

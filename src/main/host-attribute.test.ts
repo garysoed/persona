@@ -1,5 +1,5 @@
-import { assert, createSpySubject, should, test } from 'gs-testing';
 import { Subject } from 'rxjs';
+import { assert, createSpySubject, should, test } from 'gs-testing';
 
 import { AttributeChangedEvent } from '../core/persona-context';
 import { createFakeContext } from '../testing/create-fake-context';
@@ -28,7 +28,7 @@ test('@persona/main/host-attribute', init => {
       return _;
     });
 
-    should(`emit correctly parsed attributes`, () => {
+    should('emit correctly parsed attributes', () => {
       const newValue = 34;
 
       const value$ = createSpySubject(_.input.getValue(_.context));
@@ -40,9 +40,9 @@ test('@persona/main/host-attribute', init => {
       assert(value$).to.emitSequence([INIT_VALUE, newValue]);
     });
 
-    should(`emit the default value if parse failed`, () => {
+    should('emit the default value if parse failed', () => {
       const value$ = createSpySubject(_.input.getValue(_.context));
-      _.el.setAttribute(ATTR_NAME, `invalid`);
+      _.el.setAttribute(ATTR_NAME, 'invalid');
 
       _.context.onAttributeChanged$.next({
         attrName: ATTR_NAME,
@@ -50,15 +50,15 @@ test('@persona/main/host-attribute', init => {
       assert(value$).to.emitSequence([INIT_VALUE, DEFAULT_VALUE]);
     });
 
-    should(`start by emitting the current attribute value`, () => {
+    should('start by emitting the current attribute value', () => {
       const value$ = createSpySubject(_.input.getValue(_.context));
 
       assert(value$).to.emitSequence([INIT_VALUE]);
     });
 
-    should(`not emit if attribute name doesn't match`, () => {
+    should('not emit if attribute name doesn\'t match', () => {
       const value$ = createSpySubject(_.input.getValue(_.context));
-      _.el.setAttribute(ATTR_NAME, `12`);
+      _.el.setAttribute(ATTR_NAME, '12');
 
       _.context.onAttributeChanged$.next({
         attrName: 'other',

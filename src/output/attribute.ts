@@ -2,8 +2,8 @@ import { Converter } from 'nabu';
 import { OperatorFunction, pipe } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
+import { PersonaContext } from '../core/persona-context';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { UnresolvedOutput } from '../types/unresolved-output';

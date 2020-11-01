@@ -11,7 +11,7 @@ test('@persona/render/html-parse-service', init => {
   });
 
   test('parse', () => {
-    should(`return the parsed element`, () => {
+    should('return the parsed element', () => {
       const mockEl = document.createElement('div');
       const parsedDoc = new Document();
       parsedDoc.appendChild(mockEl);
@@ -24,7 +24,7 @@ test('@persona/render/html-parse-service', init => {
 
     });
 
-    should(`return the cached data if any`, () => {
+    should('return the cached data if any', () => {
       const mockEl = document.createElement('div');
       const parsedDoc = new Document();
       parsedDoc.appendChild(mockEl);

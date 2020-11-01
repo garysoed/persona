@@ -1,8 +1,8 @@
-import { elementWithTagType, Type } from 'gs-types';
+import { Type, elementWithTagType } from 'gs-types';
 
-import { PersonaContext } from '../core/persona-context';
-import { api, ConvertedSpec, UnconvertedSpec } from '../main/api';
 import { ComponentSpec } from '../main/component-spec';
+import { ConvertedSpec, UnconvertedSpec, api } from '../main/api';
+import { PersonaContext } from '../core/persona-context';
 import { Selector } from '../types/selector';
 
 import { PropertySpecs, Resolved } from './property-spec';

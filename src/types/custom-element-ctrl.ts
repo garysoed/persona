@@ -1,5 +1,5 @@
-import { Runnable } from 'gs-tools/export/rxjs';
 import { Observable } from 'rxjs';
+import { Runnable } from 'gs-tools/export/rxjs';
 
 import { PersonaContext } from '../core/persona-context';
 

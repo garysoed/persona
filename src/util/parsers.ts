@@ -1,13 +1,13 @@
-import { integerConverter, listConverter, mapConverter, typeBased } from 'gs-tools/export/serializer';
-import { getAllValues } from 'gs-tools/export/typescript';
+import { Converter, Result, compose, human, identity } from 'nabu';
 import { booleanType } from 'gs-types';
-import { compose, Converter, human, identity, Result } from 'nabu';
+import { getAllValues } from 'gs-tools/export/typescript';
+import { integerConverter, listConverter, mapConverter, typeBased } from 'gs-tools/export/serializer';
 
 export function booleanParser(): Converter<boolean, string> {
   return compose(typeBased(booleanType), human());
 }
 
-export function enumParser<E extends string>(enumSet: any): Converter<E, string> {
+export function enumParser<E extends string>(enumSet: unknown): Converter<E, string> {
   const values = new Set(getAllValues(enumSet));
 
   return {

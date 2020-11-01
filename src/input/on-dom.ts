@@ -1,7 +1,7 @@
-import { fromEvent, Observable } from 'rxjs';
+import { Observable, fromEvent } from 'rxjs';
 
-import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
+import { PersonaContext } from '../core/persona-context';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 
@@ -20,7 +20,7 @@ export class OnDomInput<E extends Event> implements Input<E> {
 }
 
 export class UnresolvedOnDomInput<E extends Event>
-    implements UnresolvedElementProperty<Element, OnDomInput<E>> {
+implements UnresolvedElementProperty<Element, OnDomInput<E>> {
   constructor(
       readonly eventName: string,
       private readonly options: AddEventListenerOptions,

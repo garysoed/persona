@@ -6,7 +6,7 @@ import { fake, spy } from 'gs-testing';
 export class FakeMediaQuery extends EventTarget implements MediaQueryList {
   onchange: ((this: MediaQueryList, ev: MediaQueryListEvent) => any)|null = null;
   private readonly eventTarget: EventTarget = document.createElement('div');
-  private matches_: boolean = false;
+  private matches_ = false;
 
   constructor(
       readonly media: string,
@@ -22,7 +22,7 @@ export class FakeMediaQuery extends EventTarget implements MediaQueryList {
     this.eventTarget.addEventListener(type, listener, options);
   }
 
-  addListener(listener: ((this: MediaQueryList, ev: MediaQueryListEvent) => any) | null): void {
+  addListener(): void {
     throw new Error('Deprecated');
   }
 
@@ -51,7 +51,7 @@ export class FakeMediaQuery extends EventTarget implements MediaQueryList {
     this.eventTarget.removeEventListener(type, listener, options);
   }
 
-  removeListener(listener: ((this: MediaQueryList, ev: MediaQueryListEvent) => any) | null): void {
+  removeListener(): void {
     throw new Error('Deprecated');
   }
 }

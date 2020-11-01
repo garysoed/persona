@@ -2,8 +2,8 @@ import { Converter } from 'nabu';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
-import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
+import { PersonaContext } from '../core/persona-context';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { UnresolvedInput } from '../types/unresolved-input';

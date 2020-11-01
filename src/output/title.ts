@@ -1,9 +1,9 @@
 import { OperatorFunction, pipe } from 'rxjs';
 import { tap, withLatestFrom } from 'rxjs/operators';
 
+import { Output } from '../types/output';
 import { PersonaContext } from '../core/persona-context';
 import { ownerDocument } from '../input/owner-document';
-import { Output } from '../types/output';
 
 
 /**

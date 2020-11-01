@@ -9,12 +9,12 @@ test('@persona/output/favicon', init => {
   const _ = init(() => {
     const head = document.createElement('head');
     const ownerDocument = createSpyObject<Document>(
-      'Document',
-      [],
-      {
-        head,
-        createElement: (tag: string) => document.createElement(tag),
-      });
+        'Document',
+        [],
+        {
+          head,
+          createElement: (tag: string) => document.createElement(tag),
+        });
     const shadowRoot = createSpyObject<ShadowRoot>('ShadowRoot', [], {ownerDocument});
     const context = createFakeContext({shadowRoot});
     const output = favicon();
@@ -22,7 +22,7 @@ test('@persona/output/favicon', init => {
     return {context, head, output};
   });
 
-  should(`create the link element correctly`, () => {
+  should('create the link element correctly', () => {
     const href = 'href';
     run(observableOf(href).pipe(_.output.output(_.context)));
 
@@ -31,7 +31,7 @@ test('@persona/output/favicon', init => {
     assert(el.href).to.match(new RegExp(href));
   });
 
-  should(`reuse an existing link element if one exists`, () => {
+  should('reuse an existing link element if one exists', () => {
     const linkEl = document.createElement('link');
     linkEl.rel = 'icon';
     _.head.appendChild(linkEl);

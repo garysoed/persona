@@ -1,3 +1,5 @@
+import { arrayFrom } from 'gs-tools/export/collect';
+
 export type AttributesSpec = Iterable<[string, string]>;
 
 export function createElementFromSpec(
@@ -14,8 +16,8 @@ export function createElementFromSpec(
 
 export function applyAttributes(element: HTMLElement, attributes: AttributesSpec): void {
   const existingAttributes: Attr[] = [];
-  for (let i = 0; i < element.attributes.length; i++) {
-    existingAttributes.push(element.attributes.item(i)!);
+  for (const attr of arrayFrom(element.attributes)) {
+    existingAttributes.push(attr);
   }
 
   for (const existingAttribute of existingAttributes) {

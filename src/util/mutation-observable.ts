@@ -1,4 +1,4 @@
-import { fromEventPattern, Observable } from 'rxjs';
+import { Observable, fromEventPattern } from 'rxjs';
 import { share } from 'rxjs/operators';
 
 /**
@@ -19,5 +19,5 @@ export function mutationObservable(
       },
       (_, mutationObserver: MutationObserver) => mutationObserver.disconnect(),
   )
-  .pipe(share());
+      .pipe(share());
 }

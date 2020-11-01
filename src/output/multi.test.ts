@@ -1,10 +1,10 @@
+import { Subject } from 'rxjs';
 import { assert, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
-import { Subject } from 'rxjs';
 
-import { __id, NodeWithId } from '../render/node-with-id';
-import { element } from '../selector/element';
+import { NodeWithId, __id } from '../render/node-with-id';
 import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
 
 import { multi } from './multi';
 
@@ -48,7 +48,7 @@ test('@persona/output/multi', init => {
       return {..._, diff$};
     });
 
-    should(`process 'init' correctly`, () => {
+    should('process \'init\' correctly', () => {
       const node1 = createNode('1');
       const node2 = createNode('2');
       const node3 = createNode('3');
@@ -60,7 +60,7 @@ test('@persona/output/multi', init => {
       assert(_.slot.nextSibling?.nextSibling?.nextSibling).to.equal(node3);
     });
 
-    should(`process 'insert' correctly for index 0`, () => {
+    should('process \'insert\' correctly for index 0', () => {
       const node1 = createNode('1');
       const node2 = createNode('2');
       const node3 = createNode('3');
@@ -76,7 +76,7 @@ test('@persona/output/multi', init => {
       assert(_.slot.nextSibling?.nextSibling?.nextSibling?.nextSibling).to.equal(node3);
     });
 
-    should(`process 'insert' correctly for index 2`, () => {
+    should('process \'insert\' correctly for index 2', () => {
       const node1 = createNode('1');
       const node2 = createNode('2');
       const node3 = createNode('3');
@@ -91,7 +91,7 @@ test('@persona/output/multi', init => {
       assert(_.slot.nextSibling?.nextSibling?.nextSibling?.nextSibling).to.equal(node3);
     });
 
-    should(`process 'insert' correctly for large index`, () => {
+    should('process \'insert\' correctly for large index', () => {
       const node1 = createNode('1');
       const node2 = createNode('2');
       const node3 = createNode('3');
@@ -106,7 +106,7 @@ test('@persona/output/multi', init => {
       assert(_.slot.nextSibling?.nextSibling?.nextSibling?.nextSibling).to.equal(insertNode);
     });
 
-    should(`process 'delete' correctly`, () => {
+    should('process \'delete\' correctly', () => {
       const node1 = createNode('1');
       const node2 = createNode('2');
       const node3 = createNode('3');
@@ -119,7 +119,7 @@ test('@persona/output/multi', init => {
       assert(_.slot.nextSibling?.nextSibling?.nextSibling).to.beNull();
     });
 
-    should(`ignore node insertions with the same id`, () => {
+    should('ignore node insertions with the same id', () => {
       const node1 = createNode('1');
       const node2 = createNode('1');
 
@@ -130,7 +130,7 @@ test('@persona/output/multi', init => {
       assert(_.slot.nextSibling?.nextSibling).to.beNull();
     });
 
-    should(`hide errors when deleting`, () => {
+    should('hide errors when deleting', () => {
       const node = createNode('n');
       _.diff$.next([node, node]);
 
@@ -139,7 +139,7 @@ test('@persona/output/multi', init => {
       assert(_.slot.nextSibling).to.beNull();
     });
 
-    should(`replace the element correctly for 'set'`, () => {
+    should('replace the element correctly for \'set\'', () => {
       const node1 = createNode('1');
       const node2 = createNode('2');
       const node3 = createNode('3');

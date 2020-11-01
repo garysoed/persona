@@ -8,7 +8,7 @@ import { element } from './element';
 
 test('@persona/selector/element', () => {
   test('getValue', () => {
-    should(`emit the element correctly`, () => {
+    should('emit the element correctly', () => {
       const ID = 'id';
       const input = element(ID, instanceofType(HTMLDivElement), {});
 
@@ -22,7 +22,7 @@ test('@persona/selector/element', () => {
       assert(input.getSelectable(createFakeContext({shadowRoot}))).to.equal(el);
     });
 
-    should(`handle component specs`, () => {
+    should('handle component specs', () => {
       const ID = 'id';
       const tag = 'tag';
       const input = element(ID, {tag, api: {}}, {});
@@ -37,7 +37,7 @@ test('@persona/selector/element', () => {
       assert(input.getSelectable(createFakeContext({shadowRoot}))).to.equal(el);
     });
 
-    should(`throw error if the element is of the wrong type`, () => {
+    should('throw error if the element is of the wrong type', () => {
       const ID = 'id';
       const input = element(ID, instanceofType(HTMLDivElement), {});
 

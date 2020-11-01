@@ -1,13 +1,13 @@
+import { ReplaySubject, of as observableOf } from 'rxjs';
 import { assert, createSpySubject, run, should, teardown, test } from 'gs-testing';
-import { instanceofType, numberType, tupleOfType } from 'gs-types';
-import { of as observableOf, ReplaySubject } from 'rxjs';
-import { map } from 'rxjs/operators';
-
-import { element } from '../selector/element';
 import { caller } from '../output/caller';
 import { createFakeContext } from '../testing/create-fake-context';
-
+import { element } from '../selector/element';
 import { handler } from './handler';
+import { instanceofType } from 'gs-types';
+import { map } from 'rxjs/operators';
+
+
 
 
 test('@persona/input/handler', init => {
@@ -40,7 +40,7 @@ test('@persona/input/handler', init => {
   });
 
   test('getValue', () => {
-    should(`creates a function that emits values`, () => {
+    should('creates a function that emits values', () => {
       const value = 123;
 
       const subject = createSpySubject(_.input.getValue(_.context).pipe(map(([v]) => v)));

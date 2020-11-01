@@ -6,7 +6,7 @@ import { ownerDocument } from './owner-document';
 
 
 test('@persona/input/owner-document', () => {
-  should(`emit the owner document`, () => {
+  should('emit the owner document', () => {
     const document = new Document();
     const el = document.createElement('div');
     const context = createFakeContext({

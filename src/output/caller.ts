@@ -1,8 +1,8 @@
-import { combineLatest, concat, interval, Observable, OperatorFunction } from 'rxjs';
+import { Observable, OperatorFunction, combineLatest, concat, interval } from 'rxjs';
 import { filter, map, shareReplay, startWith, take, tap, withLatestFrom } from 'rxjs/operators';
 
-import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
+import { PersonaContext } from '../core/persona-context';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { UnresolvedOutput } from '../types/unresolved-output';
@@ -27,9 +27,9 @@ export class CallerOutput<T extends readonly any[]> implements Output<T> {
           combineLatest([value$, fn$]).pipe(take(1)),
           value$.pipe(withLatestFrom(fn$)),
       )
-      .pipe(
-          tap(([value, fn]) => fn(value)),
-      );
+          .pipe(
+              tap(([value, fn]) => fn(value)),
+          );
     };
   }
 }
@@ -47,6 +47,8 @@ export function caller<T extends readonly any[]>(functionName: string): Unresolv
   return new UnresolvedCallerOutput(functionName);
 }
 
+type ElementFn = (this: Element, ...args: any[]) => unknown;
+
 function createFnObs<T extends readonly any[]>(
     el: Element,
     functionName: string,
@@ -56,7 +58,7 @@ function createFnObs<T extends readonly any[]>(
       .pipe(
           startWith({}),
           map(() => (el as any)[functionName]),
-          filter((fn): fn is Function => fn instanceof Function),
+          filter((fn): fn is ElementFn => fn instanceof Function),
           map(fn => ((args: readonly any[]) => fn.call(el, ...args))),
           take(1),
           shareReplay({bufferSize: 1, refCount: true}),

@@ -1,13 +1,13 @@
-import { assert, createSpySubject, run, should, test } from 'gs-testing';
-import { of as observableOf } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
-
+import { __id } from './node-with-id';
+import { assert, createSpySubject, should, test } from 'gs-testing';
 import { attribute } from '../input/attribute';
 import { createFakeContext } from '../testing/create-fake-context';
 import { integerParser, stringParser } from '../util/parsers';
-
-import { __id } from './node-with-id';
+import { map, shareReplay } from 'rxjs/operators';
+import { of as observableOf } from 'rxjs';
 import { renderCustomElement } from './render-custom-element';
+
+
 
 const $spec = {
   tag: 'pr-test',
@@ -25,7 +25,7 @@ test('@persona/render/render-custom-element', init => {
     return {context};
   });
 
-  should(`emit the custom element`, () => {
+  should('emit the custom element', () => {
     const id = 'id';
     const a = 'avalue';
     const values = {
@@ -43,7 +43,7 @@ test('@persona/render/render-custom-element', init => {
     assert(id$).to.emitSequence([id]);
   });
 
-  should(`update the inputs without emitting the custom element`, () => {
+  should('update the inputs without emitting the custom element', () => {
     const a1 = 'a1';
     const a2 = 'a2';
     const values = {
@@ -59,7 +59,7 @@ test('@persona/render/render-custom-element', init => {
     assert(a$).to.emitSequence([a2]);
   });
 
-  should(`update the extra attributes without emitting the custom element`, () => {
+  should('update the extra attributes without emitting the custom element', () => {
     const b1 = 'b1';
     const b2 = 'b2';
     const values = {
@@ -75,7 +75,7 @@ test('@persona/render/render-custom-element', init => {
     assert(b$).to.emitSequence([b2]);
   });
 
-  should(`update the text context without emitting the custom element`, () => {
+  should('update the text context without emitting the custom element', () => {
     const text1 = 'text1';
     const text2 = 'text2';
     const values = {

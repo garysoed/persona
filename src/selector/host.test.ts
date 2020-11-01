@@ -1,8 +1,8 @@
 import { assert, should, test } from 'gs-testing';
 
-import { attribute } from '../input/attribute';
 import { HostAttribute } from '../main/host-attribute';
-import { textOut, TextOutput } from '../output/text-out';
+import { TextOutput, textOut } from '../output/text-out';
+import { attribute } from '../input/attribute';
 import { createFakeContext } from '../testing/create-fake-context';
 import { integerParser } from '../util/parsers';
 
@@ -20,7 +20,7 @@ test('@persona/selector/host', init => {
   });
 
   test('resolveProperties', () => {
-    should(`resolve the properties correctly`, () => {
+    should('resolve the properties correctly', () => {
       const el = document.createElement('div');
       const shadowRoot = el.attachShadow({mode: 'open'});
       const context = createFakeContext({shadowRoot});

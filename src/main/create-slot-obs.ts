@@ -9,17 +9,17 @@ export function createSlotObs(
     parentElObs: Observable<Selectable>,
     slotName: string,
 ): Observable<Node|null> {
-return parentElObs
-    .pipe(
-        switchMap(parentEl => {
-          return mutationObservable(parentEl, {childList: true})
-              .pipe(
-                  map(() => parentEl.childNodes),
-                  startWith(parentEl.childNodes),
-              );
-        }),
-        map(childNodes => findCommentNode(arrayFrom(childNodes), slotName)),
-    );
+  return parentElObs
+      .pipe(
+          switchMap(parentEl => {
+            return mutationObservable(parentEl, {childList: true})
+                .pipe(
+                    map(() => parentEl.childNodes),
+                    startWith(parentEl.childNodes),
+                );
+          }),
+          map(childNodes => findCommentNode(arrayFrom(childNodes), slotName)),
+      );
 }
 
 function findCommentNode(

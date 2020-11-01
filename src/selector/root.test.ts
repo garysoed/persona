@@ -12,7 +12,7 @@ test('@persona/selector/root', init => {
   });
 
   test('resolveProperties', () => {
-    should(`resolve the properties correctly`, () => {
+    should('resolve the properties correctly', () => {
       const el = document.createElement('div');
       const shadowRoot = el.attachShadow({mode: 'open'});
       const context = createFakeContext({shadowRoot});

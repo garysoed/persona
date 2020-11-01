@@ -1,10 +1,10 @@
+import { Subject } from 'rxjs';
 import { assert, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
-import { Subject } from 'rxjs';
 
-import { __id, NodeWithId } from '../render/node-with-id';
-import { element } from '../selector/element';
+import { NodeWithId, __id } from '../render/node-with-id';
 import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
 
 import { single } from './single';
 
@@ -47,7 +47,7 @@ test('@persona/output/single', init => {
       return {..._, render$};
     });
 
-    should(`process correctly for adding a node`, () => {
+    should('process correctly for adding a node', () => {
       const node = createNode('n');
       _.render$.next(node);
 
@@ -55,7 +55,7 @@ test('@persona/output/single', init => {
       assert(_.slot.nextSibling?.nextSibling).to.beNull();
     });
 
-    should(`process correctly for replacing a node`, () => {
+    should('process correctly for replacing a node', () => {
       const node1 = createNode('1');
       _.render$.next(node1);
 
@@ -66,7 +66,7 @@ test('@persona/output/single', init => {
       assert(_.slot.nextSibling?.nextSibling).to.beNull();
     });
 
-    should(`not replace node if the new one has the same ID`, () => {
+    should('not replace node if the new one has the same ID', () => {
       const node1 = createNode('1');
       _.render$.next(node1);
 
@@ -77,14 +77,14 @@ test('@persona/output/single', init => {
       assert(_.slot.nextSibling?.nextSibling).to.beNull();
     });
 
-    should(`process correctly for deleting a node`, () => {
+    should('process correctly for deleting a node', () => {
       _.render$.next(createNode('n'));
       _.render$.next(null);
 
       assert(_.slot.nextSibling).to.beNull();
     });
 
-    should(`hide errors when deleting node`, () => {
+    should('hide errors when deleting node', () => {
       const node = createNode('n');
 
       _.render$.next(node);

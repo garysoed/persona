@@ -1,5 +1,5 @@
-import { assert, createSpySubject, should, test } from 'gs-testing';
 import { Subject } from 'rxjs';
+import { assert, createSpySubject, should, test } from 'gs-testing';
 
 import { AttributeChangedEvent } from '../core/persona-context';
 import { createFakeContext } from '../testing/create-fake-context';
@@ -20,7 +20,7 @@ test('@persona/main/host-has-attribute', init => {
   });
 
   test('getValue', () => {
-    should(`emit correct values`, () => {
+    should('emit correct values', () => {
       const value$ = createSpySubject(_.input.getValue(_.context));
       _.el.setAttribute(ATTR_NAME, '34');
 
@@ -30,7 +30,7 @@ test('@persona/main/host-has-attribute', init => {
       assert(value$).to.emitSequence([false, true]);
     });
 
-    should(`not emit if attribute name doesn't match`, () => {
+    should('not emit if attribute name doesn\'t match', () => {
       const value$ = createSpySubject(_.input.getValue(_.context));
 
       _.context.onAttributeChanged$.next({

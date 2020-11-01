@@ -1,9 +1,9 @@
+import { Subject } from 'rxjs';
 import { assert, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
-import { Subject } from 'rxjs';
 
-import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
 
 import { classToggle } from './class-toggle';
 
@@ -30,7 +30,7 @@ test('persona.output.classToggle', init => {
   });
 
   test('output', () => {
-    should(`update the attribute correctly`, () => {
+    should('update the attribute correctly', () => {
       const value$ = new Subject<boolean>();
 
       run(value$.pipe(_.output.output(_.context)));

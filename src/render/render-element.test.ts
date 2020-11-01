@@ -1,7 +1,7 @@
-import { arrayThat, assert, createSpySubject, should, test } from 'gs-testing';
 import { arrayFrom } from 'gs-tools/export/collect';
-import { of as observableOf } from 'rxjs';
+import { arrayThat, assert, createSpySubject, should, test } from 'gs-testing';
 import { map, shareReplay } from 'rxjs/operators';
+import { of as observableOf } from 'rxjs';
 
 import { createFakeContext } from '../testing/create-fake-context';
 
@@ -18,7 +18,7 @@ test('@persona/render/render-element', init => {
     return {context};
   });
 
-  should(`emit the element`, () => {
+  should('emit the element', () => {
     const a = 'avalue';
     const values = {
       attrs: new Map([['a', observableOf(a)]]),
@@ -33,7 +33,7 @@ test('@persona/render/render-element', init => {
     assert(a$).to.emitSequence([a]);
   });
 
-  should(`update the attributes without emitting the element`, () => {
+  should('update the attributes without emitting the element', () => {
     const b1 = 'b1';
     const b2 = 'b2';
     const values = {
@@ -49,7 +49,7 @@ test('@persona/render/render-element', init => {
     assert(b$).to.emitSequence([b2]);
   });
 
-  should(`delete the attribute if the value is null`, () => {
+  should('delete the attribute if the value is null', () => {
     const values = {
       attrs: new Map([['b', observableOf('bValue', null)]]),
     };
@@ -63,7 +63,7 @@ test('@persona/render/render-element', init => {
     assert(b$).to.emitSequence([false]);
   });
 
-  should(`update the text context without emitting the element`, () => {
+  should('update the text context without emitting the element', () => {
     const text1 = 'text1';
     const text2 = 'text2';
     const values = {
@@ -79,7 +79,7 @@ test('@persona/render/render-element', init => {
     assert(text$).to.emitSequence([text2]);
   });
 
-  should(`delete the children without emitting the element`, () => {
+  should('delete the children without emitting the element', () => {
     const child1 = document.createElement('div');
     const child2 = document.createElement('div');
     const values = {
@@ -95,7 +95,7 @@ test('@persona/render/render-element', init => {
     assert(children$).to.emitSequence([arrayThat<Element>().haveExactElements([child1])]);
   });
 
-  should(`insert the children without emitting the element`, () => {
+  should('insert the children without emitting the element', () => {
     const child1 = document.createElement('div');
     const child2 = document.createElement('div');
     const values = {
@@ -111,7 +111,7 @@ test('@persona/render/render-element', init => {
     assert(children$).to.emitSequence([arrayThat<Element>().haveExactElements([child1, child2])]);
   });
 
-  should(`set the children without emitting the element`, () => {
+  should('set the children without emitting the element', () => {
     const child1 = document.createElement('div');
     const child2 = document.createElement('div');
     const values = {

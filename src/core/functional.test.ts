@@ -1,14 +1,14 @@
-import { source, VineBuilder } from 'grapevine';
+import { Observable, of as observableOf } from 'rxjs';
+import { VineBuilder, source } from 'grapevine';
 import { assert, createSpy, should, test } from 'gs-testing';
 import { identity } from 'nabu';
-import { Observable, of as observableOf } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
-import { attribute as attributeIn } from '../input/attribute';
-import { host } from '../selector/host';
-import { attribute as attributeOut } from '../output/attribute';
-import { PersonaTesterFactory } from '../testing/persona-tester';
 import { CustomElementCtrl } from '../types/custom-element-ctrl';
+import { PersonaTesterFactory } from '../testing/persona-tester';
+import { attribute as attributeIn } from '../input/attribute';
+import { attribute as attributeOut } from '../output/attribute';
+import { host } from '../selector/host';
 
 import { Builder as PersonaBuilder } from './builder';
 import { PersonaContext } from './persona-context';
@@ -91,7 +91,7 @@ test('@persona/core/functional', init => {
     return {el, tester, mockHandler};
   });
 
-  should(`set up the component correctly`, () => {
+  should('set up the component correctly', () => {
     assert(_.el.getAttribute($.host._.attr1)).to.emitWith('123-abc');
     assert(_.el.getAttribute($.host._.attr2)).to.emitWith('123-abc');
 

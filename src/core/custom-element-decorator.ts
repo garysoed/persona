@@ -1,12 +1,10 @@
+import { AttributeChangedEvent, PersonaContext } from './persona-context';
+import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
+import { Observable, Subject } from 'rxjs';
+import { TemplateService } from './template-service';
 import { Vine } from 'grapevine';
 import { cache } from 'gs-tools/export/data';
-import { Observable, ReplaySubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 
-import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
-
-import { AttributeChangedEvent, PersonaContext } from './persona-context';
-import { TemplateService } from './template-service';
 
 export const SHADOW_ROOT = Symbol('shadowRoot');
 export const __context = Symbol('context');
@@ -36,7 +34,7 @@ export class CustomElementDecorator {
     this.element[__context] = this.context;
   }
 
-  attributeChangedCallback(attrName: string, oldValue: string, newValue: string): void {
+  attributeChangedCallback(attrName: string): void {
     this.onAttributeChanged$.next({attrName});
   }
 

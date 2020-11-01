@@ -18,7 +18,7 @@ test('@persona/core/template-service', init => {
   });
 
   test('getTemplate', () => {
-    should(`create the template element with the correct content`, () => {
+    should('create the template element with the correct content', () => {
       const el = _.service.getTemplate(TAG).content;
 
       assert(el.childElementCount).to.equal(1);
@@ -26,13 +26,13 @@ test('@persona/core/template-service', init => {
       assert(el.children.item(0)!.id).to.equal('test');
     });
 
-    should(`throw error if the matching template string cannot be found`, () => {
+    should('throw error if the matching template string cannot be found', () => {
       assert(() => {
         _.service.getTemplate('other-tag');
       }).to.throwErrorWithMessage(/No template found/);
     });
 
-    should(`return the previous created template without creating it`, () => {
+    should('return the previous created template without creating it', () => {
       const el = _.service.getTemplate(TAG);
       const el2 = _.service.getTemplate(TAG);
 

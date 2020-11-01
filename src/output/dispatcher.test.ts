@@ -1,9 +1,9 @@
+import { Subject, fromEvent } from 'rxjs';
 import { assert, createSpySubject, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
-import { fromEvent, Subject } from 'rxjs';
 
-import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
 
 import { dispatcher } from './dispatcher';
 
@@ -30,7 +30,7 @@ test('output.dispatcher', init => {
   });
 
   test('output', () => {
-    should(`create observable that emits the dispatcher`, async () => {
+    should('create observable that emits the dispatcher', async () => {
       const calledSubject = createSpySubject(fromEvent(_.el, 'eventName'));
 
       const event$ = new Subject<Event>();

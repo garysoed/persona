@@ -1,7 +1,7 @@
 import { Observable, of as observableOf } from 'rxjs';
 
-import { PersonaContext } from '../core/persona-context';
 import { Input } from '../types/input';
+import { PersonaContext } from '../core/persona-context';
 
 /**
  * Inputs the owner document of the context.

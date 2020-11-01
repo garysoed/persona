@@ -1,10 +1,10 @@
 import { assert, createSpySubject, runEnvironment, should, test } from 'gs-testing';
-import { instanceofType } from 'gs-types';
 import { filter, map } from 'rxjs/operators';
+import { instanceofType } from 'gs-types';
 
-import { element } from '../selector/element';
-import { createFakeContext } from '../testing/create-fake-context';
 import { PersonaTesterEnvironment } from '../testing/persona-tester-environment';
+import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
 
 import { onMutation } from './on-mutation';
 
@@ -29,7 +29,7 @@ test('@persona/input/on-mutation', init => {
     return {input: $._.onMutation, context: createFakeContext({shadowRoot}), el};
   });
 
-  should(`emit the records correctly`, () => {
+  should('emit the records correctly', () => {
     const addedEl = document.createElement('div');
     const records$ = createSpySubject(_.input.getValue(_.context)
         .pipe(

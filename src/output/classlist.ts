@@ -1,9 +1,9 @@
-import { diff } from 'gs-tools/export/util';
 import { OperatorFunction } from 'rxjs';
+import { diff } from 'gs-tools/export/util';
 import { pairwise, startWith, tap } from 'rxjs/operators';
 
-import { PersonaContext } from '../core/persona-context';
 import { Output } from '../types/output';
+import { PersonaContext } from '../core/persona-context';
 import { Resolver } from '../types/resolver';
 import { UnresolvedElementProperty } from '../types/unresolved-element-property';
 import { UnresolvedOutput } from '../types/unresolved-output';

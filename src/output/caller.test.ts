@@ -2,8 +2,8 @@ import { assert, createSpy, run, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 import { of as observableOf } from 'rxjs';
 
-import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
 
 import { caller } from './caller';
 
@@ -29,7 +29,7 @@ test('input.caller', init => {
   });
 
   test('output', () => {
-    should(`call the function specified`, () => {
+    should('call the function specified', () => {
       const spy = createSpy<void, [number]>('handler');
       (_.el as any)[FUNCTION_NAME] = spy;
 

@@ -1,9 +1,9 @@
+import { FakeTime, fake, mockTime, runEnvironment, spy } from 'gs-testing';
 import { Vine } from 'grapevine';
-import { fake, FakeTime, mockTime, runEnvironment, spy } from 'gs-testing';
 
-import { Builder as PersonaBuilder } from '../core/builder';
-import { MediaQueryInput } from '../input/media-query';
 import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
+import { MediaQueryInput } from '../input/media-query';
+import { Builder as PersonaBuilder } from '../core/builder';
 
 import { ElementTester } from './element-tester';
 import { FakeCustomElementRegistry } from './fake-custom-element-registry';
@@ -47,9 +47,10 @@ export class PersonaTesterFactory {
   ) { }
 
   build(rootCtors: CustomElementCtrlCtor[], rootDoc: Document): PersonaTester {
-    // tslint:disable-next-line: deprecation
     const origCreateElement = document.createElement;
-    const createElement = (tag: string) => origCreateElement.call(document, tag);
+    function createElement(tag: string): HTMLElement {
+      return origCreateElement.call(document, tag);
+    }
     const fakeTime = mockTime(window);
     const customElementRegistry = new FakeCustomElementRegistry(createElement, fakeTime);
 

@@ -39,7 +39,7 @@ export function fromPattern<S extends Spec>(
 
     convertForward(value: string): Result<TypeOf<S>> {
       const replacedSpec = pattern.replace(
-          /:([^\/?]+)(\??)/g,
+          /:([^/?]+)(\??)/g,
           (_, key, optional) => {
             const match = optional ? '*' : '+';
 

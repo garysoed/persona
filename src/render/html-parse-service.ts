@@ -1,5 +1,5 @@
-import { source } from 'grapevine';
 import { Observable, of as observableOf } from 'rxjs';
+import { source } from 'grapevine';
 
 export type ParseType = 'image/svg+xml'|'text/xml';
 

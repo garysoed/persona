@@ -1,9 +1,9 @@
-import { assert, should, test } from 'gs-testing';
 import { applyAttributes } from './create-element-from-spec';
+import { assert, should, test } from 'gs-testing';
 
 test('@persona/main/create-element-from-spec', () => {
   test('applyAttributes', () => {
-    should(`apply the attributes correctly`, () => {
+    should('apply the attributes correctly', () => {
       const el = document.createElement('div');
       el.setAttribute('a', '1');
       el.setAttribute('b', '2');

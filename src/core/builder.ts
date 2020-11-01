@@ -1,19 +1,17 @@
-import { Vine, VineBuilder } from 'grapevine';
 import { $asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pipe } from 'gs-tools/export/collect';
-import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
-import { iterableOfType, unknownType } from 'gs-types';
-import { BehaviorSubject, combineLatest, EMPTY, merge, of as observableOf, Subject, timer } from 'rxjs';
-import { distinctUntilChanged, mapTo, shareReplay, switchMap, take, takeUntil, tap } from 'rxjs/operators';
-
-import { UnresolvedAttributeInput } from '../input/attribute';
-import { UnresolvedHasAttributeInput } from '../input/has-attribute';
-import { UnconvertedSpec } from '../main/api';
-import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec';
-
-import { __customElementImplFactory as __decoratorFactory, CustomElementClass } from './custom-element-class';
+import { BehaviorSubject, EMPTY, Subject, combineLatest, merge, of as observableOf, timer } from 'rxjs';
+import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
+import { CustomElementClass, __customElementImplFactory as __decoratorFactory } from './custom-element-class';
+import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
 import { CustomElementDecorator } from './custom-element-decorator';
 import { TemplateService } from './template-service';
+import { UnconvertedSpec } from '../main/api';
+import { UnresolvedAttributeInput } from '../input/attribute';
+import { UnresolvedHasAttributeInput } from '../input/has-attribute';
+import { Vine, VineBuilder } from 'grapevine';
+import { distinctUntilChanged, mapTo, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { iterableOfType, unknownType } from 'gs-types';
 
 
 const CLEANUP_DELAY_MS = 1000;
@@ -38,7 +36,7 @@ interface RegistrationSpec {
 
 export class Builder {
   private readonly baseCustomElementAnnotator = new ClassAnnotator(
-      (_target: Function, spec: BaseCustomElementSpec) => ({
+      (_target: unknown, spec: BaseCustomElementSpec) => ({
         data: {
           ...spec,
         },
@@ -47,7 +45,7 @@ export class Builder {
   );
 
   private readonly customElementAnnotator = new ClassAnnotator(
-      (target: Function, spec: CustomElementSpec) => ({
+      (target: unknown, spec: CustomElementSpec) => ({
         data: {
           componentClass: target as CustomElementCtrlCtor,
           ...spec,
@@ -149,7 +147,7 @@ function createCustomElementClass(
     templateService: TemplateService,
     vine: Vine,
 ): CustomElementClass {
-  const decoratorFactory = (element: HTMLElement, shadowMode: 'open'|'closed') => {
+  const decoratorFactory = (element: HTMLElement, shadowMode: 'open'|'closed'): CustomElementDecorator => {
     return new CustomElementDecorator(
         componentClass,
         element,
@@ -204,8 +202,8 @@ function createCustomElementClass(
 
                 const onRun$ = decorator.run();
                 const onAttributeChanged$ = this.onAttributeChanged$.pipe(
-                    tap(({attrName, oldValue, newValue}) => {
-                      decorator.attributeChangedCallback(attrName, oldValue, newValue);
+                    tap(({attrName}) => {
+                      decorator.attributeChangedCallback(attrName);
                     }),
                 );
 
@@ -301,6 +299,7 @@ export function getSpec_<T extends CustomElementSpec|BaseCustomElementSpec>(
 
 function runConfigures(
     customElementAnnotation: ClassAnnotation<FullComponentData>,
+    // eslint-disable-next-line @typescript-eslint/ban-types
     ctrls: ReadonlySet<Function>,
     vine: Vine,
 ): void {

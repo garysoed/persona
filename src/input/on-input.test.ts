@@ -1,8 +1,8 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 
-import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
 
 import { onInput } from './on-input';
 
@@ -28,7 +28,7 @@ test('@persona/input/on-input', init => {
   });
 
   test('getValue', () => {
-    should(`create observable that emits the values`, () => {
+    should('create observable that emits the values', () => {
       const inputEvent = new CustomEvent('input');
 
       const initValue = 'initValue';

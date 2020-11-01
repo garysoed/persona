@@ -1,5 +1,5 @@
+import { EMPTY, Observable, merge, of as observableOf } from 'rxjs';
 import { diffArray } from 'gs-tools/export/rxjs';
-import { EMPTY, merge, Observable, of as observableOf } from 'rxjs';
 import { switchMap, switchMapTo, tap } from 'rxjs/operators';
 
 import { PersonaContext } from '../core/persona-context';
@@ -42,9 +42,9 @@ export interface Values {
 export function renderElement(
     tagName: string,
     values: Values,
-    id: {},
+    id: unknown,
     context: PersonaContext,
-): Observable<HTMLElement&{[__id]: {}}> {
+): Observable<HTMLElement&{[__id]: unknown}> {
   return ownerDocument().getValue(context).pipe(
       switchMap(document => {
         const el = document.createElement(tagName);
@@ -84,11 +84,12 @@ export function renderElement(
                     el.appendChild(child);
                   }
                   break;
-                case 'insert':
+                case 'insert':{
                   const insertBefore = el.children.item(diff.index);
                   el.insertBefore(diff.value, insertBefore);
                   break;
-                case 'set':
+                }
+                case 'set':{
                   const toDelete = el.children.item(diff.index);
                   const setBefore = toDelete?.nextSibling || null;
                   if (toDelete) {
@@ -96,6 +97,7 @@ export function renderElement(
                   }
                   el.insertBefore(diff.value, setBefore);
                   break;
+                }
               }
             }),
         ));

@@ -1,10 +1,10 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
 import { instanceofType } from 'gs-types';
 
-import { element } from '../selector/element';
 import { createFakeContext } from '../testing/create-fake-context';
+import { element } from '../selector/element';
 
-import { MatchOptions, onKeydown, OnKeydownInput } from './on-keydown';
+import { MatchOptions, OnKeydownInput, onKeydown } from './on-keydown';
 
 test('input.onKeydown', init => {
   const KEY = 'key';
@@ -30,7 +30,7 @@ test('input.onKeydown', init => {
   });
 
   test('getValue', () => {
-    should(`match the key correctly`, () => {
+    should('match the key correctly', () => {
       const spySubject = createSpySubject(createInput({}).getValue(_.context));
 
       const event = new KeyboardEvent('keydown', {key: KEY});
@@ -41,7 +41,7 @@ test('input.onKeydown', init => {
       assert(spySubject).to.emitSequence([event]);
     });
 
-    should(`match the alt correctly`, () => {
+    should('match the alt correctly', () => {
       const matchOptions: MatchOptions = {};
       const spySubject = createSpySubject(createInput(matchOptions).getValue(_.context));
 
@@ -72,7 +72,7 @@ test('input.onKeydown', init => {
       assert(spySubject).to.emitWith(nonAltEvent);
     });
 
-    should(`match the ctrl correctly`, () => {
+    should('match the ctrl correctly', () => {
       const matchOptions: MatchOptions = {};
       const spySubject = createSpySubject(createInput(matchOptions).getValue(_.context));
 
@@ -103,7 +103,7 @@ test('input.onKeydown', init => {
       assert(spySubject).to.emitWith(nonCtrlEvent);
     });
 
-    should(`match the meta correctly`, () => {
+    should('match the meta correctly', () => {
       const matchOptions: MatchOptions = {};
       const spySubject = createSpySubject(createInput(matchOptions).getValue(_.context));
 
@@ -134,7 +134,7 @@ test('input.onKeydown', init => {
       assert(spySubject).to.emitWith(nonMetaEvent);
     });
 
-    should(`match the shift correctly`, () => {
+    should('match the shift correctly', () => {
       const matchOptions: MatchOptions = {};
       const spySubject = createSpySubject(createInput(matchOptions).getValue(_.context));
 
@@ -165,7 +165,7 @@ test('input.onKeydown', init => {
       assert(spySubject).to.emitWith(nonShiftEvent);
     });
 
-    should(`ignore if event is not KeyboardEvent`, () => {
+    should('ignore if event is not KeyboardEvent', () => {
       const matchOptions: MatchOptions = {};
       const spySubject = createSpySubject(createInput(matchOptions).getValue(_.context));
 
@@ -173,7 +173,7 @@ test('input.onKeydown', init => {
       _.el.dispatchEvent(event);
       assert(spySubject).to.emitWith(event);
 
-      _.el.dispatchEvent(new CustomEvent<{}>('keydown'));
+      _.el.dispatchEvent(new CustomEvent<unknown>('keydown'));
       assert(spySubject).to.emitSequence([event]);
     });
   });

@@ -1,6 +1,6 @@
 import { assert, createSpySubject, should, test } from 'gs-testing';
-import { of as observableOf } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
+import { of as observableOf } from 'rxjs';
 
 import { createFakeContext } from '../testing/create-fake-context';
 
@@ -14,7 +14,7 @@ test('@persona/render/render-text-node', init => {
     return {context};
   });
 
-  should(`emit the text node`, () => {
+  should('emit the text node', () => {
     const text = 'text';
     const node$ = renderTextNode(observableOf(text), text, _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
@@ -26,7 +26,7 @@ test('@persona/render/render-text-node', init => {
     assert(nodeType$).to.emitSequence([Node.TEXT_NODE]);
   });
 
-  should(`update the textContent without emitting the node`, () => {
+  should('update the textContent without emitting the node', () => {
     const text1 = 'text1';
     const text2 = 'text2';
     const node$ = renderTextNode(observableOf(text1, text2), {}, _.context)
