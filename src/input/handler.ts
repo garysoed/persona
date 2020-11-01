@@ -52,10 +52,10 @@ export function handler(functionName: string): UnresolvedHandlerInput {
 }
 
 export function getSubject(
-    el: DecoratedElement,
+    el: Element,
     functionName: string,
 ): Subject<readonly unknown[]>|null {
-  const existingFn = el[functionName];
+  const existingFn = (el as DecoratedElement)[functionName];
   if (!(existingFn instanceof Function)) {
     return null;
   }

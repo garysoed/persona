@@ -77,13 +77,12 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
 
     run(mutationObservable(el, {attributes: true}).pipe(
         tap(records => {
-          for (const {attributeName, oldValue} of records) {
+          for (const {attributeName} of records) {
             if (!attributeName) {
               continue;
             }
 
-            const newValue = el.getAttribute(attributeName);
-            customElement.attributeChangedCallback(attributeName, oldValue || '', newValue || '');
+            customElement.attributeChangedCallback(attributeName);
           }
         }),
     ));
