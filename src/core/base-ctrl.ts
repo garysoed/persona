@@ -15,10 +15,6 @@ interface ResolvedSelector {
   readonly _: ResolvedInputOutputs;
 }
 
-interface CustomElementSpec {
-  readonly [key: string]: ResolvedSelector;
-}
-
 type InputsOf<S extends CustomElementSpec> = {
   [K in keyof S]: S[K]['_'] extends ResolvedInput<infer T> ? T : never;
 }

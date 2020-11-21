@@ -6,6 +6,6 @@ export interface PropertySpecs<S extends Selectable> {
 }
 
 export type Resolved<S extends Selectable, P extends PropertySpecs<S>> = {
-  [K in keyof P]: P[K] extends UnresolvedElementProperty<S, infer R> ? R : never;
+  readonly [K in keyof P]: P[K] extends UnresolvedElementProperty<S, infer R> ? R : never;
 };
 
