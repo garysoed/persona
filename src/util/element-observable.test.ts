@@ -1,8 +1,8 @@
-import { assert, createSpySubject, runEnvironment, should, test } from 'gs-testing';
+import {assert, createSpySubject, runEnvironment, should, test} from 'gs-testing';
 
-import { PersonaTesterEnvironment } from '../testing/persona-tester-environment';
+import {PersonaTesterEnvironment} from '../testing/persona-tester-environment';
 
-import { elementObservable } from './element-observable';
+import {elementObservable} from './element-observable';
 
 
 test('@persona/util/element-observable', init => {

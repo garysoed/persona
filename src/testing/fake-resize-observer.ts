@@ -1,4 +1,4 @@
-import { ResizeObserver, ResizeObserverEntry } from '../util/resize-observable';
+import {ResizeObserver, ResizeObserverEntry} from '../util/resize-observable';
 
 const EVENT = 'pr-fake-resize';
 

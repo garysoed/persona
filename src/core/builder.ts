@@ -1,17 +1,19 @@
-import { $asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pipe } from 'gs-tools/export/collect';
-import { BaseCustomElementSpec, CustomElementSpec } from '../types/element-spec';
-import { BehaviorSubject, EMPTY, Subject, combineLatest, merge, of as observableOf, timer } from 'rxjs';
-import { ClassAnnotation, ClassAnnotator } from 'gs-tools/export/data';
-import { CustomElementClass, __customElementImplFactory as __decoratorFactory } from './custom-element-class';
-import { CustomElementCtrl, CustomElementCtrlCtor } from '../types/custom-element-ctrl';
-import { CustomElementDecorator } from './custom-element-decorator';
-import { TemplateService } from './template-service';
-import { UnconvertedSpec } from '../main/api';
-import { UnresolvedAttributeInput } from '../input/attribute';
-import { UnresolvedHasAttributeInput } from '../input/has-attribute';
-import { Vine, VineBuilder } from 'grapevine';
-import { distinctUntilChanged, mapTo, shareReplay, switchMap, tap } from 'rxjs/operators';
-import { iterableOfType, unknownType } from 'gs-types';
+import {Vine, VineBuilder} from 'grapevine';
+import {$asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pipe} from 'gs-tools/export/collect';
+import {ClassAnnotation, ClassAnnotator} from 'gs-tools/export/data';
+import {iterableOfType, unknownType} from 'gs-types';
+import {BehaviorSubject, EMPTY, Subject, combineLatest, merge, of as observableOf, timer} from 'rxjs';
+import {distinctUntilChanged, mapTo, shareReplay, switchMap, tap} from 'rxjs/operators';
+
+import {UnresolvedAttributeInput} from '../input/attribute';
+import {UnresolvedHasAttributeInput} from '../input/has-attribute';
+import {UnconvertedSpec} from '../main/api';
+import {CustomElementCtrl, CustomElementCtrlCtor} from '../types/custom-element-ctrl';
+import {BaseCustomElementSpec, CustomElementSpec} from '../types/element-spec';
+
+import {CustomElementClass, __customElementImplFactory as __decoratorFactory} from './custom-element-class';
+import {CustomElementDecorator} from './custom-element-decorator';
+import {TemplateService} from './template-service';
 
 
 const CLEANUP_DELAY_MS = 1000;

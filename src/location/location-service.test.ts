@@ -1,11 +1,11 @@
-import { assert, objectThat, run, should, spy, test } from 'gs-testing';
-import { of as observableOf } from 'rxjs';
+import {assert, objectThat, run, should, spy, test} from 'gs-testing';
+import {of as observableOf} from 'rxjs';
 
-import { createFakeWindow } from '../testing/fake-window';
-import { integerParser } from '../util/parsers';
+import {createFakeWindow} from '../testing/fake-window';
+import {integerParser} from '../util/parsers';
 
-import { LocationService, Route } from './location-service';
-import { fromPattern } from './location-converter';
+import {fromPattern} from './location-converter';
+import {LocationService, Route} from './location-service';
 
 
 const SPEC = {

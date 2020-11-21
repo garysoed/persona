@@ -1,6 +1,6 @@
-import { OperatorFunction, pipe } from 'rxjs';
+import {OperatorFunction, pipe} from 'rxjs';
 
-import { Output } from '../types/output';
+import {Output} from '../types/output';
 
 
 class Noop implements Output<any> {

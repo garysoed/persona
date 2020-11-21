@@ -1,10 +1,10 @@
-import { Observable } from 'rxjs';
+import {Observable} from 'rxjs';
 
-import { Input } from '../types/input';
-import { PersonaContext } from '../core/persona-context';
-import { Resolver } from '../types/resolver';
-import { UnresolvedElementProperty } from '../types/unresolved-element-property';
-import { mutationObservable } from '../util/mutation-observable';
+import {PersonaContext} from '../core/persona-context';
+import {Input} from '../types/input';
+import {Resolver} from '../types/resolver';
+import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {mutationObservable} from '../util/mutation-observable';
 
 
 /**

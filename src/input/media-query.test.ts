@@ -1,8 +1,8 @@
-import { assert, createSpyObject, fake, should, test } from 'gs-testing';
+import {assert, createSpyObject, fake, should, test} from 'gs-testing';
 
-import { FakeMediaQuery } from '../testing/mock-match-media';
+import {FakeMediaQuery} from '../testing/mock-match-media';
 
-import { mediaQuery } from './media-query';
+import {mediaQuery} from './media-query';
 
 
 test('persona.input.mediaQuery', init => {

@@ -1,11 +1,11 @@
-import { assert, createSpySubject, should, teardown, test } from 'gs-testing';
-import { instanceofType } from 'gs-types';
+import {assert, createSpySubject, should, teardown, test} from 'gs-testing';
+import {instanceofType} from 'gs-types';
 
-import { createFakeContext } from '../testing/create-fake-context';
-import { element } from '../selector/element';
-import { installFakeMutationObserver } from '../../export/testing';
+import {installFakeMutationObserver} from '../../export/testing';
+import {element} from '../selector/element';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { textIn } from './text-in';
+import {textIn} from './text-in';
 
 
 test('@persona/input/text-input', init => {

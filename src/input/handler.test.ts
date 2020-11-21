@@ -1,13 +1,13 @@
-import { ReplaySubject, of as observableOf } from 'rxjs';
-import { assert, createSpySubject, run, should, teardown, test } from 'gs-testing';
-import { caller } from '../output/caller';
-import { createFakeContext } from '../testing/create-fake-context';
-import { element } from '../selector/element';
-import { handler } from './handler';
-import { instanceofType } from 'gs-types';
-import { map } from 'rxjs/operators';
+import {assert, createSpySubject, run, should, teardown, test} from 'gs-testing';
+import {instanceofType} from 'gs-types';
+import {ReplaySubject, of as observableOf} from 'rxjs';
+import {map} from 'rxjs/operators';
 
+import {caller} from '../output/caller';
+import {element} from '../selector/element';
+import {createFakeContext} from '../testing/create-fake-context';
 
+import {handler} from './handler';
 
 
 test('@persona/input/handler', init => {

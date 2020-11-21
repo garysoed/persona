@@ -1,4 +1,4 @@
-import { FakeEventTarget } from './fake-event-target';
+import {FakeEventTarget} from './fake-event-target';
 
 interface HistoryData {
   data: any;

@@ -1,12 +1,14 @@
-import { __id } from './node-with-id';
-import { assert, createSpySubject, should, test } from 'gs-testing';
-import { attribute } from '../input/attribute';
-import { createFakeContext } from '../testing/create-fake-context';
-import { integerParser, stringParser } from '../util/parsers';
-import { map, shareReplay } from 'rxjs/operators';
-import { of as observableOf } from 'rxjs';
-import { renderCustomElement } from './render-custom-element';
+import {assert, createSpySubject, should, test} from 'gs-testing';
+import {of as observableOf} from 'rxjs';
+import {map, shareReplay} from 'rxjs/operators';
 
+import {attribute} from '../input/attribute';
+import {createFakeContext} from '../testing/create-fake-context';
+import {integerParser, stringParser} from '../util/parsers';
+
+
+import {__id} from './node-with-id';
+import {renderCustomElement} from './render-custom-element';
 
 
 const $spec = {

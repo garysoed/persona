@@ -1,11 +1,11 @@
-import { OperatorFunction, ReplaySubject, Subject, pipe } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import {OperatorFunction, ReplaySubject, Subject, pipe} from 'rxjs';
+import {tap} from 'rxjs/operators';
 
-import { Output } from '../types/output';
-import { PersonaContext } from '../core/persona-context';
-import { Resolver } from '../types/resolver';
-import { UnresolvedElementProperty } from '../types/unresolved-element-property';
-import { UnresolvedOutput } from '../types/unresolved-output';
+import {PersonaContext} from '../core/persona-context';
+import {Output} from '../types/output';
+import {Resolver} from '../types/resolver';
+import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedOutput} from '../types/unresolved-output';
 
 
 type ObservableElement = Element & {[key: string]: Subject<unknown>};

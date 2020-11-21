@@ -17,10 +17,11 @@
   },
   "homepage": "https://github.com/garysoed/persona#readme",
   "devDependencies": {
+    "@types/jasmine": "^2.8.16",
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",
-    "@types/jasmine": "^2.8.16",
     "eslint": "^7.12.1",
+    "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-sort-imports-es6-autofix": "^0.5.0",
     "html-loader": "^0.5.5",
     "jasmine": "^3.1.0",

@@ -1,17 +1,17 @@
-import { Observable, of as observableOf } from 'rxjs';
-import { VineBuilder, source } from 'grapevine';
-import { assert, createSpy, should, test } from 'gs-testing';
-import { identity } from 'nabu';
-import { map, tap } from 'rxjs/operators';
+import {VineBuilder, source} from 'grapevine';
+import {assert, createSpy, should, test} from 'gs-testing';
+import {identity} from 'nabu';
+import {Observable, of as observableOf} from 'rxjs';
+import {map, tap} from 'rxjs/operators';
 
-import { CustomElementCtrl } from '../types/custom-element-ctrl';
-import { PersonaTesterFactory } from '../testing/persona-tester';
-import { attribute as attributeIn } from '../input/attribute';
-import { attribute as attributeOut } from '../output/attribute';
-import { host } from '../selector/host';
+import {attribute as attributeIn} from '../input/attribute';
+import {attribute as attributeOut} from '../output/attribute';
+import {host} from '../selector/host';
+import {PersonaTesterFactory} from '../testing/persona-tester';
+import {CustomElementCtrl} from '../types/custom-element-ctrl';
 
-import { Builder as PersonaBuilder } from './builder';
-import { PersonaContext } from './persona-context';
+import {Builder as PersonaBuilder} from './builder';
+import {PersonaContext} from './persona-context';
 
 
 const _v = new VineBuilder();

@@ -1,4 +1,4 @@
-import { arrayFrom } from 'gs-tools/export/collect';
+import {arrayFrom} from 'gs-tools/export/collect';
 
 export type AttributesSpec = Iterable<[string, string]>;
 

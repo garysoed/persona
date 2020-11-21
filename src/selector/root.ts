@@ -1,14 +1,14 @@
-import { HostAttribute } from '../main/host-attribute';
-import { HostHasAttribute } from '../main/host-has-attribute';
-import { Input } from '../types/input';
-import { Output } from '../types/output';
-import { PersonaContext } from '../core/persona-context';
-import { Selector } from '../types/selector';
-import { UnresolvedAttributeInput } from '../input/attribute';
-import { UnresolvedElementProperty } from '../types/unresolved-element-property';
-import { UnresolvedHasAttributeInput } from '../input/has-attribute';
+import {PersonaContext} from '../core/persona-context';
+import {UnresolvedAttributeInput} from '../input/attribute';
+import {UnresolvedHasAttributeInput} from '../input/has-attribute';
+import {HostAttribute} from '../main/host-attribute';
+import {HostHasAttribute} from '../main/host-has-attribute';
+import {Input} from '../types/input';
+import {Output} from '../types/output';
+import {Selector} from '../types/selector';
+import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 
-import { PropertySpecs, Resolved } from './property-spec';
+import {PropertySpecs, Resolved} from './property-spec';
 
 export class RootSelector<P extends PropertySpecs<ShadowRoot>> implements Selector<ShadowRoot> {
   readonly _ = this.resolveProperties();

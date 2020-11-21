@@ -1,10 +1,10 @@
-import { Observable, fromEvent } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import {Observable, fromEvent} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 
-import { Input } from '../types/input';
-import { PersonaContext } from '../core/persona-context';
-import { Resolver } from '../types/resolver';
-import { UnresolvedInput } from '../types/unresolved-input';
+import {PersonaContext} from '../core/persona-context';
+import {Input} from '../types/input';
+import {Resolver} from '../types/resolver';
+import {UnresolvedInput} from '../types/unresolved-input';
 
 
 export class SlottedInput implements Input<readonly Node[]> {

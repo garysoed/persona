@@ -1,6 +1,6 @@
-import { OperatorFunction } from 'rxjs';
+import {OperatorFunction} from 'rxjs';
 
-import { PersonaContext } from '../core/persona-context';
+import {PersonaContext} from '../core/persona-context';
 
 
 export interface Output<T> {

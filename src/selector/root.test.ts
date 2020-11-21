@@ -1,8 +1,8 @@
-import { assert, should, test } from 'gs-testing';
+import {assert, should, test} from 'gs-testing';
 
-import { createFakeContext } from '../testing/create-fake-context';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { root } from './root';
+import {root} from './root';
 
 test('@persona/selector/root', init => {
   const _ = init(() => {

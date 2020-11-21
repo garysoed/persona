@@ -1,9 +1,10 @@
-import { CHECK_PERIOD_MS } from '../input/property-observer';
-import { CustomElementClass, __customElementImplFactory } from '../core/custom-element-class';
-import { FakeTime, run } from 'gs-testing';
-import { arrayFrom } from 'gs-tools/export/collect';
-import { mutationObservable } from '../util/mutation-observable';
-import { tap } from 'rxjs/operators';
+import {FakeTime, run} from 'gs-testing';
+import {arrayFrom} from 'gs-tools/export/collect';
+import {tap} from 'rxjs/operators';
+
+import {CustomElementClass, __customElementImplFactory} from '../core/custom-element-class';
+import {CHECK_PERIOD_MS} from '../input/property-observer';
+import {mutationObservable} from '../util/mutation-observable';
 
 
 type Listener = () => void;

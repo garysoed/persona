@@ -1,12 +1,12 @@
-import { Observable } from 'rxjs';
-import { booleanType } from 'gs-types';
-import { filter, tap } from 'rxjs/operators';
+import {booleanType} from 'gs-types';
+import {Observable} from 'rxjs';
+import {filter, tap} from 'rxjs/operators';
 
-import { PersonaContext } from '../core/persona-context';
-import { Resolver } from '../types/resolver';
-import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+import {PersonaContext} from '../core/persona-context';
+import {Resolver} from '../types/resolver';
+import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 
-import { OnDomInput } from './on-dom';
+import {OnDomInput} from './on-dom';
 
 
 /**

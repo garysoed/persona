@@ -1,10 +1,10 @@
-import { assert, createSpySubject, should, test } from 'gs-testing';
-import { instanceofType } from 'gs-types';
+import {assert, createSpySubject, should, test} from 'gs-testing';
+import {instanceofType} from 'gs-types';
 
-import { createFakeContext } from '../testing/create-fake-context';
-import { element } from '../selector/element';
+import {element} from '../selector/element';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { MatchOptions, OnKeydownInput, onKeydown } from './on-keydown';
+import {MatchOptions, OnKeydownInput, onKeydown} from './on-keydown';
 
 test('input.onKeydown', init => {
   const KEY = 'key';

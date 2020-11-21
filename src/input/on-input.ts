@@ -1,10 +1,10 @@
-import { Observable, fromEvent } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {Observable, fromEvent} from 'rxjs';
+import {map} from 'rxjs/operators';
 
-import { Input } from '../types/input';
-import { PersonaContext } from '../core/persona-context';
-import { Resolver } from '../types/resolver';
-import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+import {PersonaContext} from '../core/persona-context';
+import {Input} from '../types/input';
+import {Resolver} from '../types/resolver';
+import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 
 
 export class OnInputInput implements Input<string> {

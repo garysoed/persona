@@ -1,10 +1,10 @@
-import { Converter } from 'nabu';
-import { Observable } from 'rxjs';
-import { filter, map, startWith } from 'rxjs/operators';
+import {Converter} from 'nabu';
+import {Observable} from 'rxjs';
+import {filter, map, startWith} from 'rxjs/operators';
 
-import { AttributeInput } from '../input/attribute';
-import { Input } from '../types/input';
-import { PersonaContext } from '../core/persona-context';
+import {PersonaContext} from '../core/persona-context';
+import {AttributeInput} from '../input/attribute';
+import {Input} from '../types/input';
 
 
 export class HostAttribute<T> extends AttributeInput<T> implements Input<T> {

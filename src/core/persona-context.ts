@@ -1,5 +1,5 @@
-import { Subject } from 'rxjs';
-import { Vine } from 'grapevine';
+import {Vine} from 'grapevine';
+import {Subject} from 'rxjs';
 
 export interface AttributeChangedEvent {
   readonly attrName: string;

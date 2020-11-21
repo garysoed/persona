@@ -1,11 +1,11 @@
-import { arrayFrom } from 'gs-tools/export/collect';
-import { arrayThat, assert, createSpySubject, should, test } from 'gs-testing';
-import { map, shareReplay } from 'rxjs/operators';
-import { of as observableOf } from 'rxjs';
+import {arrayThat, assert, createSpySubject, should, test} from 'gs-testing';
+import {arrayFrom} from 'gs-tools/export/collect';
+import {of as observableOf} from 'rxjs';
+import {map, shareReplay} from 'rxjs/operators';
 
-import { createFakeContext } from '../testing/create-fake-context';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { renderElement } from './render-element';
+import {renderElement} from './render-element';
 
 
 test('@persona/render/render-element', init => {

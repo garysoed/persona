@@ -1,31 +1,31 @@
-import { $filter, $first, $pipe, arrayFrom } from 'gs-tools/export/collect';
-import { Observable, Subject, fromEvent } from 'rxjs';
-import { Verbosity, stringify } from 'moirai';
-import { Vine } from 'grapevine';
-import { map, mapTo, startWith } from 'rxjs/operators';
+import {Vine} from 'grapevine';
+import {$filter, $first, $pipe, arrayFrom} from 'gs-tools/export/collect';
+import {Verbosity, stringify} from 'moirai';
+import {Observable, Subject, fromEvent} from 'rxjs';
+import {map, mapTo, startWith} from 'rxjs/operators';
 
-import { AttributeInput } from '../input/attribute';
-import { AttributeOutput } from '../output/attribute';
-import { CallerOutput } from '../output/caller';
-import { ClassToggleOutput } from '../output/class-toggle';
-import { DecoratedElement, __context } from '../core/custom-element-decorator';
-import { DispatcherOutput } from '../output/dispatcher';
-import { HandlerInput, getSubject } from '../input/handler';
-import { HasAttributeInput } from '../input/has-attribute';
-import { HasClassInput } from '../input/has-class';
-import { MultiOutput } from '../output/multi';
-import { OnDomInput } from '../input/on-dom';
-import { OnInputInput } from '../input/on-input';
-import { PropertyEmitter } from '../output/property-emitter';
-import { PropertyObserver } from '../input/property-observer';
-import { Resolver } from '../types/resolver';
-import { Selectable } from '../types/selectable';
-import { Selector } from '../types/selector';
-import { SetAttributeOutput } from '../output/set-attribute';
-import { SingleOutput } from '../output/single';
-import { StyleOutput } from '../output/style';
-import { attributeObservable } from '../util/attribute-observable';
-import { mutationObservable } from '../util/mutation-observable';
+import {DecoratedElement, __context} from '../core/custom-element-decorator';
+import {AttributeInput} from '../input/attribute';
+import {HandlerInput, getSubject} from '../input/handler';
+import {HasAttributeInput} from '../input/has-attribute';
+import {HasClassInput} from '../input/has-class';
+import {OnDomInput} from '../input/on-dom';
+import {OnInputInput} from '../input/on-input';
+import {PropertyObserver} from '../input/property-observer';
+import {AttributeOutput} from '../output/attribute';
+import {CallerOutput} from '../output/caller';
+import {ClassToggleOutput} from '../output/class-toggle';
+import {DispatcherOutput} from '../output/dispatcher';
+import {MultiOutput} from '../output/multi';
+import {PropertyEmitter} from '../output/property-emitter';
+import {SetAttributeOutput} from '../output/set-attribute';
+import {SingleOutput} from '../output/single';
+import {StyleOutput} from '../output/style';
+import {Resolver} from '../types/resolver';
+import {Selectable} from '../types/selectable';
+import {Selector} from '../types/selector';
+import {attributeObservable} from '../util/attribute-observable';
+import {mutationObservable} from '../util/mutation-observable';
 
 
 interface Key {

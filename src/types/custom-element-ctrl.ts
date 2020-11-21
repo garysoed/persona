@@ -1,10 +1,10 @@
-import { Observable } from 'rxjs';
-import { Runnable } from 'gs-tools/export/rxjs';
+import {Runnable} from 'gs-tools/export/rxjs';
+import {Observable} from 'rxjs';
 
-import { PersonaContext } from '../core/persona-context';
+import {PersonaContext} from '../core/persona-context';
 
-import { Input } from './input';
-import { Output } from './output';
+import {Input} from './input';
+import {Output} from './output';
 
 
 export type CustomElementCtrlCtor = new (context: PersonaContext) => CustomElementCtrl;

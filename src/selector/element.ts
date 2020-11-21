@@ -1,11 +1,11 @@
-import { Type, elementWithTagType } from 'gs-types';
+import {Type, elementWithTagType} from 'gs-types';
 
-import { ComponentSpec } from '../main/component-spec';
-import { ConvertedSpec, UnconvertedSpec, api } from '../main/api';
-import { PersonaContext } from '../core/persona-context';
-import { Selector } from '../types/selector';
+import {PersonaContext} from '../core/persona-context';
+import {ConvertedSpec, UnconvertedSpec, api} from '../main/api';
+import {ComponentSpec} from '../main/component-spec';
+import {Selector} from '../types/selector';
 
-import { PropertySpecs, Resolved } from './property-spec';
+import {PropertySpecs, Resolved} from './property-spec';
 
 
 export class ElementSelector<E extends Element, P extends PropertySpecs<E>> implements Selector<E> {

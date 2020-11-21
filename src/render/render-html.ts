@@ -1,10 +1,10 @@
-import { Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import {Observable} from 'rxjs';
+import {map, switchMap} from 'rxjs/operators';
 
-import { PersonaContext } from '../core/persona-context';
+import {PersonaContext} from '../core/persona-context';
 
-import { $htmlParseService, ParseType } from './html-parse-service';
-import { NodeWithId, __id } from './node-with-id';
+import {$htmlParseService, ParseType} from './html-parse-service';
+import {NodeWithId, __id} from './node-with-id';
 
 
 /**

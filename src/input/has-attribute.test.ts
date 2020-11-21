@@ -1,10 +1,10 @@
-import { assert, should, test } from 'gs-testing';
-import { instanceofType } from 'gs-types';
+import {assert, should, test} from 'gs-testing';
+import {instanceofType} from 'gs-types';
 
-import { createFakeContext } from '../testing/create-fake-context';
-import { element } from '../selector/element';
+import {element} from '../selector/element';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { hasAttribute } from './has-attribute';
+import {hasAttribute} from './has-attribute';
 
 
 test('persona.input.hasAttribute', init => {

@@ -1,9 +1,9 @@
-import { assert, should, test } from 'gs-testing';
-import { instanceofType } from 'gs-types';
+import {assert, should, test} from 'gs-testing';
+import {instanceofType} from 'gs-types';
 
-import { createFakeContext } from '../testing/create-fake-context';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { element } from './element';
+import {element} from './element';
 
 
 test('@persona/selector/element', () => {

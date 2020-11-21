@@ -1,24 +1,24 @@
-import { Subject, fromEvent, of as observableOf } from 'rxjs';
-import { assert, createSpy, createSpySubject, run, should, test } from 'gs-testing';
-import { compose, human } from 'nabu';
-import { instanceofType } from 'gs-types';
-import { integerConverter } from 'gs-tools/export/serializer';
-import { map } from 'rxjs/operators';
+import {assert, createSpy, createSpySubject, run, should, test} from 'gs-testing';
+import {integerConverter} from 'gs-tools/export/serializer';
+import {instanceofType} from 'gs-types';
+import {compose, human} from 'nabu';
+import {Subject, fromEvent, of as observableOf} from 'rxjs';
+import {map} from 'rxjs/operators';
 
-import { attribute as attributeIn } from '../input/attribute';
-import { attribute as attributeOut } from '../output/attribute';
-import { caller } from '../output/caller';
-import { classToggle } from '../output/class-toggle';
-import { createFakeContext } from '../testing/create-fake-context';
-import { dispatcher } from '../output/dispatcher';
-import { element } from '../selector/element';
-import { handler } from '../input/handler';
-import { hasAttribute } from '../input/has-attribute';
-import { hasClass } from '../input/has-class';
-import { onDom } from '../input/on-dom';
-import { setAttribute } from '../output/set-attribute';
+import {attribute as attributeIn} from '../input/attribute';
+import {handler} from '../input/handler';
+import {hasAttribute} from '../input/has-attribute';
+import {hasClass} from '../input/has-class';
+import {onDom} from '../input/on-dom';
+import {attribute as attributeOut} from '../output/attribute';
+import {caller} from '../output/caller';
+import {classToggle} from '../output/class-toggle';
+import {dispatcher} from '../output/dispatcher';
+import {setAttribute} from '../output/set-attribute';
+import {element} from '../selector/element';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { api } from './api';
+import {api} from './api';
 
 
 test('@persona/main/api', init => {

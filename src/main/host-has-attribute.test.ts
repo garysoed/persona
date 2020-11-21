@@ -1,10 +1,10 @@
-import { Subject } from 'rxjs';
-import { assert, createSpySubject, should, test } from 'gs-testing';
+import {assert, createSpySubject, should, test} from 'gs-testing';
+import {Subject} from 'rxjs';
 
-import { AttributeChangedEvent } from '../core/persona-context';
-import { createFakeContext } from '../testing/create-fake-context';
+import {AttributeChangedEvent} from '../core/persona-context';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { HostHasAttribute } from './host-has-attribute';
+import {HostHasAttribute} from './host-has-attribute';
 
 
 test('@persona/main/host-has-attribute', init => {

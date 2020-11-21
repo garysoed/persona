@@ -1,9 +1,9 @@
-import { $filter, $first, $pipe, arrayFrom } from 'gs-tools/export/collect';
-import { Observable } from 'rxjs';
-import { map, startWith, switchMap } from 'rxjs/operators';
+import {$filter, $first, $pipe, arrayFrom} from 'gs-tools/export/collect';
+import {Observable} from 'rxjs';
+import {map, startWith, switchMap} from 'rxjs/operators';
 
-import { Selectable } from '../types/selectable';
-import { mutationObservable } from '../util/mutation-observable';
+import {Selectable} from '../types/selectable';
+import {mutationObservable} from '../util/mutation-observable';
 
 export function createSlotObs(
     parentElObs: Observable<Selectable>,

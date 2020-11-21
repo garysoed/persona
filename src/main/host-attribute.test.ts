@@ -1,11 +1,11 @@
-import { Subject } from 'rxjs';
-import { assert, createSpySubject, should, test } from 'gs-testing';
+import {assert, createSpySubject, should, test} from 'gs-testing';
+import {Subject} from 'rxjs';
 
-import { AttributeChangedEvent } from '../core/persona-context';
-import { createFakeContext } from '../testing/create-fake-context';
-import { integerParser } from '../util/parsers';
+import {AttributeChangedEvent} from '../core/persona-context';
+import {createFakeContext} from '../testing/create-fake-context';
+import {integerParser} from '../util/parsers';
 
-import { HostAttribute } from './host-attribute';
+import {HostAttribute} from './host-attribute';
 
 test('@persona/main/host-attribute', init => {
   const ATTR_NAME = 'attr';

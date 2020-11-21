@@ -1,9 +1,9 @@
-import { Observable, Subject, fromEvent, fromEventPattern, merge } from 'rxjs';
-import { Result } from 'nabu';
-import { Runnable } from 'gs-tools/export/rxjs';
-import { map, startWith, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import {Runnable} from 'gs-tools/export/rxjs';
+import {Result} from 'nabu';
+import {Observable, Subject, fromEvent, fromEventPattern, merge} from 'rxjs';
+import {map, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 
-import { LocationConverter } from './location-converter';
+import {LocationConverter} from './location-converter';
 
 
 export interface RouteSpec {

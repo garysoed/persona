@@ -1,11 +1,11 @@
-import { Subject } from 'rxjs';
-import { assert, run, should, test } from 'gs-testing';
-import { instanceofType } from 'gs-types';
+import {assert, run, should, test} from 'gs-testing';
+import {instanceofType} from 'gs-types';
+import {Subject} from 'rxjs';
 
-import { createFakeContext } from '../testing/create-fake-context';
-import { element } from '../selector/element';
+import {element} from '../selector/element';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { textOut } from './text-out';
+import {textOut} from './text-out';
 
 
 test('@persona/output/text-out', init => {

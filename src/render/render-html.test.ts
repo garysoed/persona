@@ -1,11 +1,11 @@
-import { assert, createSpyInstance, fake, should, test } from 'gs-testing';
-import { map } from 'rxjs/operators';
-import { of as observableOf } from 'rxjs';
+import {assert, createSpyInstance, fake, should, test} from 'gs-testing';
+import {of as observableOf} from 'rxjs';
+import {map} from 'rxjs/operators';
 
-import { createFakeContext } from '../testing/create-fake-context';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { $htmlParseService, HtmlParseService } from './html-parse-service';
-import { renderHtml } from './render-html';
+import {$htmlParseService, HtmlParseService} from './html-parse-service';
+import {renderHtml} from './render-html';
 
 
 test('@persona/render/render-html', init => {

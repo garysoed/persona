@@ -1,12 +1,12 @@
-import { assert, createSpySubject, runEnvironment, should, test } from 'gs-testing';
-import { filter, map } from 'rxjs/operators';
-import { instanceofType } from 'gs-types';
+import {assert, createSpySubject, runEnvironment, should, test} from 'gs-testing';
+import {instanceofType} from 'gs-types';
+import {filter, map} from 'rxjs/operators';
 
-import { PersonaTesterEnvironment } from '../testing/persona-tester-environment';
-import { createFakeContext } from '../testing/create-fake-context';
-import { element } from '../selector/element';
+import {element} from '../selector/element';
+import {createFakeContext} from '../testing/create-fake-context';
+import {PersonaTesterEnvironment} from '../testing/persona-tester-environment';
 
-import { onMutation } from './on-mutation';
+import {onMutation} from './on-mutation';
 
 
 test('@persona/input/on-mutation', init => {

@@ -1,7 +1,7 @@
-import { Environment } from 'gs-testing';
+import {Environment} from 'gs-testing';
 
-import { installFakeMutationObserver } from './fake-mutation-observer';
-import { installFakeResizeObserver } from './fake-resize-observer';
+import {installFakeMutationObserver} from './fake-mutation-observer';
+import {installFakeResizeObserver} from './fake-resize-observer';
 
 export class PersonaTesterEnvironment extends Environment {
   private uninstallFakeMutationObserver: (() => void)|null = null;

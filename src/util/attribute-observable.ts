@@ -1,6 +1,7 @@
-import { Observable } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, startWith } from 'rxjs/operators';
-import { mutationObservable } from './mutation-observable';
+import {Observable} from 'rxjs';
+import {distinctUntilChanged, map, shareReplay, startWith} from 'rxjs/operators';
+
+import {mutationObservable} from './mutation-observable';
 
 
 /**

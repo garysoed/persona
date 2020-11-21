@@ -1,5 +1,5 @@
-import { Observable, fromEventPattern } from 'rxjs';
-import { share } from 'rxjs/operators';
+import {Observable, fromEventPattern} from 'rxjs';
+import {share} from 'rxjs/operators';
 
 export interface ResizeObserverInit {
   readonly box?: 'content-box'|'border-box';

@@ -1,5 +1,5 @@
-import { Observable, fromEventPattern } from 'rxjs';
-import { share } from 'rxjs/operators';
+import {Observable, fromEventPattern} from 'rxjs';
+import {share} from 'rxjs/operators';
 
 /**
  * Creates observable that listens to mutations on the given node.

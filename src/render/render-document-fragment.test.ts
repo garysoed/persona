@@ -1,9 +1,9 @@
-import { assert, createSpySubject, should, test } from 'gs-testing';
-import { map } from 'rxjs/operators';
+import {assert, createSpySubject, should, test} from 'gs-testing';
+import {map} from 'rxjs/operators';
 
-import { createFakeContext } from '../testing/create-fake-context';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { renderDocumentFragment } from './render-document-fragment';
+import {renderDocumentFragment} from './render-document-fragment';
 
 
 test('@persona/render/render-document-fragment', init => {

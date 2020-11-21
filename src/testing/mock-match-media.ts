@@ -1,4 +1,4 @@
-import { fake, spy } from 'gs-testing';
+import {fake, spy} from 'gs-testing';
 
 /**
  * @internal

@@ -1,9 +1,9 @@
-import { Observable, OperatorFunction, pipe } from 'rxjs';
-import { map, shareReplay, tap, withLatestFrom } from 'rxjs/operators';
+import {Observable, OperatorFunction, pipe} from 'rxjs';
+import {map, shareReplay, tap, withLatestFrom} from 'rxjs/operators';
 
-import { Output } from '../types/output';
-import { PersonaContext } from '../core/persona-context';
-import { ownerDocument } from '../input/owner-document';
+import {PersonaContext} from '../core/persona-context';
+import {ownerDocument} from '../input/owner-document';
+import {Output} from '../types/output';
 
 
 /**

@@ -1,9 +1,9 @@
-import { Result } from 'nabu';
-import { assert, objectThat, should, test } from 'gs-testing';
+import {assert, objectThat, should, test} from 'gs-testing';
+import {Result} from 'nabu';
 
-import { integerParser, stringParser } from '../util/parsers';
+import {integerParser, stringParser} from '../util/parsers';
 
-import { fromPattern } from './location-converter';
+import {fromPattern} from './location-converter';
 
 test('@persona/location/location-converter', () => {
   test('fromPattern', () => {

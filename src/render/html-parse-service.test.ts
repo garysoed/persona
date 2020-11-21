@@ -1,6 +1,6 @@
-import { assert, createSpyInstance, fake, resetCalls, should, test } from 'gs-testing';
+import {assert, createSpyInstance, fake, resetCalls, should, test} from 'gs-testing';
 
-import { HtmlParseService } from './html-parse-service';
+import {HtmlParseService} from './html-parse-service';
 
 
 test('@persona/render/html-parse-service', init => {

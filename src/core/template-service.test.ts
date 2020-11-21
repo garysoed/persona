@@ -1,6 +1,6 @@
-import { assert, should, test } from 'gs-testing';
+import {assert, should, test} from 'gs-testing';
 
-import { TemplateService } from './template-service';
+import {TemplateService} from './template-service';
 
 
 test('@persona/core/template-service', init => {

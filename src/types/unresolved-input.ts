@@ -1,5 +1,5 @@
-import { Input } from './input';
-import { Resolver } from './resolver';
+import {Input} from './input';
+import {Resolver} from './resolver';
 
 
 export interface UnresolvedInput<T> {

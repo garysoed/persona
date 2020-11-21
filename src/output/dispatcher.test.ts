@@ -1,11 +1,11 @@
-import { Subject, fromEvent } from 'rxjs';
-import { assert, createSpySubject, run, should, test } from 'gs-testing';
-import { instanceofType } from 'gs-types';
+import {assert, createSpySubject, run, should, test} from 'gs-testing';
+import {instanceofType} from 'gs-types';
+import {Subject, fromEvent} from 'rxjs';
 
-import { createFakeContext } from '../testing/create-fake-context';
-import { element } from '../selector/element';
+import {element} from '../selector/element';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { dispatcher } from './dispatcher';
+import {dispatcher} from './dispatcher';
 
 
 test('output.dispatcher', init => {

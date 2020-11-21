@@ -1,8 +1,8 @@
-import { Vine } from 'grapevine';
+import {Vine} from 'grapevine';
 
-import { UnconvertedSpec } from '../main/api';
+import {UnconvertedSpec} from '../main/api';
 
-import { CustomElementCtrlCtor } from './custom-element-ctrl';
+import {CustomElementCtrlCtor} from './custom-element-ctrl';
 
 
 export interface BaseCustomElementSpec {

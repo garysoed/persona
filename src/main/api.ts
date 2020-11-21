@@ -1,19 +1,19 @@
-import { assertUnreachable } from 'gs-tools/export/typescript';
+import {assertUnreachable} from 'gs-tools/export/typescript';
 
-import { UnresolvedAttributeInput } from '../input/attribute';
-import { UnresolvedAttributeOutput } from '../output/attribute';
-import { UnresolvedCallerOutput } from '../output/caller';
-import { UnresolvedClassToggleOutput } from '../output/class-toggle';
-import { UnresolvedDispatcherOutput } from '../output/dispatcher';
-import { UnresolvedHandlerInput } from '../input/handler';
-import { UnresolvedHasAttributeInput } from '../input/has-attribute';
-import { UnresolvedHasClassInput } from '../input/has-class';
-import { UnresolvedOnDomInput } from '../input/on-dom';
-import { UnresolvedPropertyEmitter } from '../output/property-emitter';
-import { UnresolvedPropertyObserver } from '../input/property-observer';
-import { UnresolvedSetAttributeOutput } from '../output/set-attribute';
-import { UnresolvedTextInput } from '../input/text-in';
-import { UnresolvedTextOutput } from '../output/text-out';
+import {UnresolvedAttributeInput} from '../input/attribute';
+import {UnresolvedHandlerInput} from '../input/handler';
+import {UnresolvedHasAttributeInput} from '../input/has-attribute';
+import {UnresolvedHasClassInput} from '../input/has-class';
+import {UnresolvedOnDomInput} from '../input/on-dom';
+import {UnresolvedPropertyObserver} from '../input/property-observer';
+import {UnresolvedTextInput} from '../input/text-in';
+import {UnresolvedAttributeOutput} from '../output/attribute';
+import {UnresolvedCallerOutput} from '../output/caller';
+import {UnresolvedClassToggleOutput} from '../output/class-toggle';
+import {UnresolvedDispatcherOutput} from '../output/dispatcher';
+import {UnresolvedPropertyEmitter} from '../output/property-emitter';
+import {UnresolvedSetAttributeOutput} from '../output/set-attribute';
+import {UnresolvedTextOutput} from '../output/text-out';
 
 
 export type UnconvertedInput =

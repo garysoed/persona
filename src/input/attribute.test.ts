@@ -1,12 +1,12 @@
-import { assert, should, test } from 'gs-testing';
-import { compose, human } from 'nabu';
-import { instanceofType } from 'gs-types';
-import { integerConverter } from 'gs-tools/export/serializer';
+import {assert, should, test} from 'gs-testing';
+import {integerConverter} from 'gs-tools/export/serializer';
+import {instanceofType} from 'gs-types';
+import {compose, human} from 'nabu';
 
-import { createFakeContext } from '../testing/create-fake-context';
-import { element } from '../selector/element';
+import {element} from '../selector/element';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { attribute } from './attribute';
+import {attribute} from './attribute';
 
 
 test('input.attribute', () => {

@@ -1,13 +1,13 @@
-import { Subject } from 'rxjs';
-import { assert, run, should, test } from 'gs-testing';
-import { compose, human } from 'nabu';
-import { instanceofType } from 'gs-types';
-import { integerConverter } from 'gs-tools/export/serializer';
+import {assert, run, should, test} from 'gs-testing';
+import {integerConverter} from 'gs-tools/export/serializer';
+import {instanceofType} from 'gs-types';
+import {compose, human} from 'nabu';
+import {Subject} from 'rxjs';
 
-import { createFakeContext } from '../testing/create-fake-context';
-import { element } from '../selector/element';
+import {element} from '../selector/element';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { attribute } from './attribute';
+import {attribute} from './attribute';
 
 
 test('output.attribute', init => {

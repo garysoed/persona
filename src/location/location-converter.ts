@@ -1,4 +1,4 @@
-import { Converter, Result } from 'nabu';
+import {Converter, Result} from 'nabu';
 
 export type LocationConverter<T> = Converter<string, T>;
 

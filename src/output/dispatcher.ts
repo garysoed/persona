@@ -1,13 +1,13 @@
-import { OperatorFunction, pipe } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {OperatorFunction, pipe} from 'rxjs';
+import {map} from 'rxjs/operators';
 
-import { Output } from '../types/output';
-import { PersonaContext } from '../core/persona-context';
-import { Resolver } from '../types/resolver';
-import { UnresolvedElementProperty } from '../types/unresolved-element-property';
-import { UnresolvedOutput } from '../types/unresolved-output';
+import {PersonaContext} from '../core/persona-context';
+import {Output} from '../types/output';
+import {Resolver} from '../types/resolver';
+import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedOutput} from '../types/unresolved-output';
 
-import { CallerOutput } from './caller';
+import {CallerOutput} from './caller';
 
 
 export type DispatchFn<E extends Event> = (event: E) => void;

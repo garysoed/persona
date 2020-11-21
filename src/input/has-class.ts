@@ -1,11 +1,11 @@
-import { Observable, defer } from 'rxjs';
-import { distinctUntilChanged, map, shareReplay, startWith } from 'rxjs/operators';
+import {Observable, defer} from 'rxjs';
+import {distinctUntilChanged, map, shareReplay, startWith} from 'rxjs/operators';
 
-import { Input } from '../types/input';
-import { PersonaContext } from '../core/persona-context';
-import { Resolver } from '../types/resolver';
-import { UnresolvedElementProperty } from '../types/unresolved-element-property';
-import { mutationObservable } from '../util/mutation-observable';
+import {PersonaContext} from '../core/persona-context';
+import {Input} from '../types/input';
+import {Resolver} from '../types/resolver';
+import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {mutationObservable} from '../util/mutation-observable';
 
 
 export class HasClassInput implements Input<boolean> {

@@ -1,14 +1,14 @@
-import { EMPTY, Observable, merge, of as observableOf } from 'rxjs';
-import { switchMap, switchMapTo } from 'rxjs/operators';
+import {EMPTY, Observable, merge, of as observableOf} from 'rxjs';
+import {switchMap, switchMapTo} from 'rxjs/operators';
 
-import { ComponentSpec } from '../main/component-spec';
-import { PersonaContext } from '../core/persona-context';
-import { UnconvertedSpec, api } from '../main/api';
-import { UnresolvedInput } from '../types/unresolved-input';
-import { UnresolvedOutput } from '../types/unresolved-output';
+import {PersonaContext} from '../core/persona-context';
+import {UnconvertedSpec, api} from '../main/api';
+import {ComponentSpec} from '../main/component-spec';
+import {UnresolvedInput} from '../types/unresolved-input';
+import {UnresolvedOutput} from '../types/unresolved-output';
 
-import { Values as ElementValues, renderElement } from './render-element';
-import { __id } from './node-with-id';
+import {__id} from './node-with-id';
+import {Values as ElementValues, renderElement} from './render-element';
 
 
 /**

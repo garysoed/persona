@@ -1,12 +1,12 @@
-import { assert, should, test } from 'gs-testing';
+import {assert, should, test} from 'gs-testing';
 
-import { HostAttribute } from '../main/host-attribute';
-import { TextOutput, textOut } from '../output/text-out';
-import { attribute } from '../input/attribute';
-import { createFakeContext } from '../testing/create-fake-context';
-import { integerParser } from '../util/parsers';
+import {attribute} from '../input/attribute';
+import {HostAttribute} from '../main/host-attribute';
+import {TextOutput, textOut} from '../output/text-out';
+import {createFakeContext} from '../testing/create-fake-context';
+import {integerParser} from '../util/parsers';
 
-import { host } from './host';
+import {host} from './host';
 
 
 test('@persona/selector/host', init => {

@@ -1,11 +1,11 @@
-import { assert, createSpy, run, should, test } from 'gs-testing';
-import { instanceofType } from 'gs-types';
-import { of as observableOf } from 'rxjs';
+import {assert, createSpy, run, should, test} from 'gs-testing';
+import {instanceofType} from 'gs-types';
+import {of as observableOf} from 'rxjs';
 
-import { createFakeContext } from '../testing/create-fake-context';
-import { element } from '../selector/element';
+import {element} from '../selector/element';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { caller } from './caller';
+import {caller} from './caller';
 
 
 test('input.caller', init => {

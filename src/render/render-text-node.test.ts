@@ -1,10 +1,10 @@
-import { assert, createSpySubject, should, test } from 'gs-testing';
-import { map, shareReplay } from 'rxjs/operators';
-import { of as observableOf } from 'rxjs';
+import {assert, createSpySubject, should, test} from 'gs-testing';
+import {of as observableOf} from 'rxjs';
+import {map, shareReplay} from 'rxjs/operators';
 
-import { createFakeContext } from '../testing/create-fake-context';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { renderTextNode } from './render-text-node';
+import {renderTextNode} from './render-text-node';
 
 test('@persona/render/render-text-node', init => {
   const _ = init(() => {

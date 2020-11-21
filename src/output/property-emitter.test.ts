@@ -1,10 +1,10 @@
-import { ReplaySubject, of as observableOf } from 'rxjs';
-import { assert, createSpySubject, run, should, test } from 'gs-testing';
+import {assert, createSpySubject, run, should, test} from 'gs-testing';
+import {ReplaySubject, of as observableOf} from 'rxjs';
 
-import { createFakeContext } from '../testing/create-fake-context';
-import { host } from '../selector/host';
+import {host} from '../selector/host';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { emitter } from './property-emitter';
+import {emitter} from './property-emitter';
 
 
 test('@persona/output/property-emitter', init => {

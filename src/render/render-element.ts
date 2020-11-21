@@ -1,12 +1,12 @@
-import { EMPTY, Observable, merge, of as observableOf } from 'rxjs';
-import { diffArray } from 'gs-tools/export/rxjs';
-import { switchMap, switchMapTo, tap } from 'rxjs/operators';
+import {diffArray} from 'gs-tools/export/rxjs';
+import {EMPTY, Observable, merge, of as observableOf} from 'rxjs';
+import {switchMap, switchMapTo, tap} from 'rxjs/operators';
 
-import { PersonaContext } from '../core/persona-context';
-import { ownerDocument } from '../input/owner-document';
+import {PersonaContext} from '../core/persona-context';
+import {ownerDocument} from '../input/owner-document';
 
-import { __id } from './node-with-id';
-import { setId } from './set-id';
+import {__id} from './node-with-id';
+import {setId} from './set-id';
 
 
 /**

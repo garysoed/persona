@@ -1,10 +1,10 @@
-import { Observable, ReplaySubject, interval } from 'rxjs';
-import { map, startWith, switchMap, take } from 'rxjs/operators';
+import {Observable, ReplaySubject, interval} from 'rxjs';
+import {map, startWith, switchMap, take} from 'rxjs/operators';
 
-import { Input } from '../types/input';
-import { PersonaContext } from '../core/persona-context';
-import { Resolver } from '../types/resolver';
-import { UnresolvedElementProperty } from '../types/unresolved-element-property';
+import {PersonaContext} from '../core/persona-context';
+import {Input} from '../types/input';
+import {Resolver} from '../types/resolver';
+import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 
 
 type ObservableElement<T> = Element & {[key: string]: Observable<T>};

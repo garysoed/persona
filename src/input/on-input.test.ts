@@ -1,10 +1,10 @@
-import { assert, createSpySubject, should, test } from 'gs-testing';
-import { instanceofType } from 'gs-types';
+import {assert, createSpySubject, should, test} from 'gs-testing';
+import {instanceofType} from 'gs-types';
 
-import { createFakeContext } from '../testing/create-fake-context';
-import { element } from '../selector/element';
+import {element} from '../selector/element';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { onInput } from './on-input';
+import {onInput} from './on-input';
 
 
 test('@persona/input/on-input', init => {

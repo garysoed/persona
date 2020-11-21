@@ -1,14 +1,14 @@
-import { FakeTime, fake, mockTime, runEnvironment, spy } from 'gs-testing';
-import { Vine } from 'grapevine';
+import {Vine} from 'grapevine';
+import {FakeTime, fake, mockTime, runEnvironment, spy} from 'gs-testing';
 
-import { CustomElementCtrlCtor } from '../types/custom-element-ctrl';
-import { MediaQueryInput } from '../input/media-query';
-import { Builder as PersonaBuilder } from '../core/builder';
+import {Builder as PersonaBuilder} from '../core/builder';
+import {MediaQueryInput} from '../input/media-query';
+import {CustomElementCtrlCtor} from '../types/custom-element-ctrl';
 
-import { ElementTester } from './element-tester';
-import { FakeCustomElementRegistry } from './fake-custom-element-registry';
-import { FakeMediaQuery, mockMatchMedia } from './mock-match-media';
-import { PersonaTesterEnvironment } from './persona-tester-environment';
+import {ElementTester} from './element-tester';
+import {FakeCustomElementRegistry} from './fake-custom-element-registry';
+import {FakeMediaQuery, mockMatchMedia} from './mock-match-media';
+import {PersonaTesterEnvironment} from './persona-tester-environment';
 
 /**
  * Used to test UI implemented using Persona.

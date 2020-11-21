@@ -1,9 +1,9 @@
-import { EMPTY, Observable, defer, merge, of as observableOf } from 'rxjs';
-import { switchMapTo, tap } from 'rxjs/operators';
+import {EMPTY, Observable, defer, merge, of as observableOf} from 'rxjs';
+import {switchMapTo, tap} from 'rxjs/operators';
 
-import { PersonaContext } from '../core/persona-context';
+import {PersonaContext} from '../core/persona-context';
 
-import { NodeWithId, __id } from './node-with-id';
+import {NodeWithId, __id} from './node-with-id';
 
 
 export function renderTextNode(

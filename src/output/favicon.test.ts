@@ -1,9 +1,9 @@
-import { assert, createSpyObject, run, should, test } from 'gs-testing';
-import { of as observableOf } from 'rxjs';
+import {assert, createSpyObject, run, should, test} from 'gs-testing';
+import {of as observableOf} from 'rxjs';
 
-import { createFakeContext } from '../testing/create-fake-context';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { favicon } from './favicon';
+import {favicon} from './favicon';
 
 test('@persona/output/favicon', init => {
   const _ = init(() => {

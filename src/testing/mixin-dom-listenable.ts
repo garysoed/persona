@@ -1,4 +1,4 @@
-import { SpyObj } from 'gs-testing';
+import {SpyObj} from 'gs-testing';
 
 export function mixinDomListenable<T>(target: SpyObj<T>): T {
   const el = window.document.createElement('div');

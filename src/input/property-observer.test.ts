@@ -1,10 +1,10 @@
-import { ReplaySubject } from 'rxjs';
-import { assert, createSpySubject, should, test } from 'gs-testing';
+import {assert, createSpySubject, should, test} from 'gs-testing';
+import {ReplaySubject} from 'rxjs';
 
-import { createFakeContext } from '../testing/create-fake-context';
-import { host } from '../selector/host';
+import {host} from '../selector/host';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { observer } from './property-observer';
+import {observer} from './property-observer';
 
 
 test('@persona/input/property-observer', init => {

@@ -1,8 +1,8 @@
-import { assert, should, test } from 'gs-testing';
+import {assert, should, test} from 'gs-testing';
 
-import { createFakeContext } from '../testing/create-fake-context';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { ownerDocument } from './owner-document';
+import {ownerDocument} from './owner-document';
 
 
 test('@persona/input/owner-document', () => {

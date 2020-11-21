@@ -1,7 +1,7 @@
-import { Subject } from 'rxjs';
-import { Vine } from 'grapevine';
+import {Vine} from 'grapevine';
+import {Subject} from 'rxjs';
 
-import { PersonaContext } from '../core/persona-context';
+import {PersonaContext} from '../core/persona-context';
 
 
 type PartialPersonaContext = Partial<PersonaContext> & {

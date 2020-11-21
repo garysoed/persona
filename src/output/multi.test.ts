@@ -1,12 +1,12 @@
-import { Subject } from 'rxjs';
-import { assert, run, should, test } from 'gs-testing';
-import { instanceofType } from 'gs-types';
+import {assert, run, should, test} from 'gs-testing';
+import {instanceofType} from 'gs-types';
+import {Subject} from 'rxjs';
 
-import { NodeWithId, __id } from '../render/node-with-id';
-import { createFakeContext } from '../testing/create-fake-context';
-import { element } from '../selector/element';
+import {NodeWithId, __id} from '../render/node-with-id';
+import {element} from '../selector/element';
+import {createFakeContext} from '../testing/create-fake-context';
 
-import { multi } from './multi';
+import {multi} from './multi';
 
 
 function createNode(id: string): NodeWithId<Node> {

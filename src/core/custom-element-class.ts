@@ -1,4 +1,4 @@
-import { CustomElementDecorator } from './custom-element-decorator';
+import {CustomElementDecorator} from './custom-element-decorator';
 
 export const __customElementImplFactory = Symbol('customElementImpl');
 

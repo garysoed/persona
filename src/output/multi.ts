@@ -1,16 +1,16 @@
-import { NEVER, Observable, OperatorFunction, of as observableOf, pipe } from 'rxjs';
-import { assertUnreachable } from 'gs-tools/export/typescript';
-import { diffArray } from 'gs-tools/export/rxjs';
-import { tap, withLatestFrom } from 'rxjs/operators';
+import {diffArray} from 'gs-tools/export/rxjs';
+import {assertUnreachable} from 'gs-tools/export/typescript';
+import {NEVER, Observable, OperatorFunction, of as observableOf, pipe} from 'rxjs';
+import {tap, withLatestFrom} from 'rxjs/operators';
 
-import { NodeWithId, __id } from '../render/node-with-id';
-import { Output } from '../types/output';
-import { PersonaContext } from '../core/persona-context';
-import { Resolver } from '../types/resolver';
-import { Selectable } from '../types/selectable';
-import { UnresolvedElementProperty } from '../types/unresolved-element-property';
-import { UnresolvedOutput } from '../types/unresolved-output';
-import { createSlotObs } from '../main/create-slot-obs';
+import {PersonaContext} from '../core/persona-context';
+import {createSlotObs} from '../main/create-slot-obs';
+import {NodeWithId, __id} from '../render/node-with-id';
+import {Output} from '../types/output';
+import {Resolver} from '../types/resolver';
+import {Selectable} from '../types/selectable';
+import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedOutput} from '../types/unresolved-output';
 
 
 export class MultiOutput implements Output<ReadonlyArray<NodeWithId<Node>>> {

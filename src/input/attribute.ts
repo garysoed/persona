@@ -1,13 +1,13 @@
-import { Converter } from 'nabu';
-import { Observable } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import {Converter} from 'nabu';
+import {Observable} from 'rxjs';
+import {distinctUntilChanged, map} from 'rxjs/operators';
 
-import { Input } from '../types/input';
-import { PersonaContext } from '../core/persona-context';
-import { Resolver } from '../types/resolver';
-import { UnresolvedElementProperty } from '../types/unresolved-element-property';
-import { UnresolvedInput } from '../types/unresolved-input';
-import { attributeObservable } from '../util/attribute-observable';
+import {PersonaContext} from '../core/persona-context';
+import {Input} from '../types/input';
+import {Resolver} from '../types/resolver';
+import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedInput} from '../types/unresolved-input';
+import {attributeObservable} from '../util/attribute-observable';
 
 
 export class AttributeInput<T> implements Input<T> {

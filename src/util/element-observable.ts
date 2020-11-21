@@ -1,7 +1,7 @@
-import { Observable, throwError } from 'rxjs';
-import { filter, map, shareReplay, startWith } from 'rxjs/operators';
+import {Observable, throwError} from 'rxjs';
+import {filter, map, shareReplay, startWith} from 'rxjs/operators';
 
-import { mutationObservable } from './mutation-observable';
+import {mutationObservable} from './mutation-observable';
 
 /**
  * Creates observable that returns the element selected by the given selector.

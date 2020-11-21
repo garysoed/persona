@@ -1,11 +1,11 @@
-import { Observable, OperatorFunction, combineLatest, concat, interval } from 'rxjs';
-import { filter, map, shareReplay, startWith, take, tap, withLatestFrom } from 'rxjs/operators';
+import {Observable, OperatorFunction, combineLatest, concat, interval} from 'rxjs';
+import {filter, map, shareReplay, startWith, take, tap, withLatestFrom} from 'rxjs/operators';
 
-import { Output } from '../types/output';
-import { PersonaContext } from '../core/persona-context';
-import { Resolver } from '../types/resolver';
-import { UnresolvedElementProperty } from '../types/unresolved-element-property';
-import { UnresolvedOutput } from '../types/unresolved-output';
+import {PersonaContext} from '../core/persona-context';
+import {Output} from '../types/output';
+import {Resolver} from '../types/resolver';
+import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedOutput} from '../types/unresolved-output';
 
 
 type ElFunction<T extends readonly any[]> = (arg: T) => void;

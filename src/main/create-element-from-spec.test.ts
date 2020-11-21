@@ -1,5 +1,6 @@
-import { applyAttributes } from './create-element-from-spec';
-import { assert, should, test } from 'gs-testing';
+import {assert, should, test} from 'gs-testing';
+
+import {applyAttributes} from './create-element-from-spec';
 
 test('@persona/main/create-element-from-spec', () => {
   test('applyAttributes', () => {

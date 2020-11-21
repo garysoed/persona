@@ -1,6 +1,6 @@
-import { Observable } from 'rxjs';
+import {Observable} from 'rxjs';
 
-import { PersonaContext } from '../core/persona-context';
+import {PersonaContext} from '../core/persona-context';
 
 
 export interface Input<T> {

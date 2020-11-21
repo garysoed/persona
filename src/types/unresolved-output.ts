@@ -1,5 +1,5 @@
-import { Output } from './output';
-import { Resolver } from './resolver';
+import {Output} from './output';
+import {Resolver} from './resolver';
 
 
 export interface UnresolvedOutput<T> {
