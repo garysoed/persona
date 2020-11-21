@@ -1,6 +1,7 @@
 import {Vine} from 'grapevine';
 import {FakeTime, fake, mockTime, runEnvironment, spy} from 'gs-testing';
 
+import {BaseCtrlCtor} from '../core/base-ctrl';
 import {Builder as PersonaBuilder} from '../core/builder';
 import {MediaQueryInput} from '../input/media-query';
 import {CustomElementCtrlCtor} from '../types/custom-element-ctrl';
@@ -46,7 +47,7 @@ export class PersonaTesterFactory {
       private readonly personaBuilder: PersonaBuilder,
   ) { }
 
-  build(rootCtors: CustomElementCtrlCtor[], rootDoc: Document): PersonaTester {
+  build(rootCtors: ReadonlyArray<CustomElementCtrlCtor|BaseCtrlCtor>, rootDoc: Document): PersonaTester {
     const origCreateElement = document.createElement;
     function createElement(tag: string): HTMLElement {
       return origCreateElement.call(document, tag);

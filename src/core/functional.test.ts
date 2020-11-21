@@ -1,4 +1,4 @@
-import {VineBuilder, source} from 'grapevine';
+import {source, VineBuilder} from 'grapevine';
 import {assert, createSpy, should, test} from 'gs-testing';
 import {identity} from 'nabu';
 import {Observable, of as observableOf} from 'rxjs';
@@ -8,8 +8,8 @@ import {attribute as attributeIn} from '../input/attribute';
 import {attribute as attributeOut} from '../output/attribute';
 import {host} from '../selector/host';
 import {PersonaTesterFactory} from '../testing/persona-tester';
-import {CustomElementCtrl} from '../types/custom-element-ctrl';
 
+import {BaseCtrl, ValuesOf} from './base-ctrl';
 import {Builder as PersonaBuilder} from './builder';
 import {PersonaContext} from './persona-context';
 
@@ -23,6 +23,14 @@ const $$ = {
     attr3: attributeIn('attr3', identity(), ''),
   },
 };
+
+const $p = {
+  host: host({
+    ...$$.api,
+    attr1: attributeOut('attr1', identity()),
+  }),
+};
+
 const $ = {
   host: host({
     ...$$.api,
@@ -36,15 +44,21 @@ const $HANDLER = source('handler', () => () => undefined);
 @_p.baseCustomElement({
   shadowMode: 'open',
 })
-class ParentTestClass extends CustomElementCtrl {
-  constructor(context: PersonaContext) {
-    super(context);
-
-    this.render($.host._.attr1, this.overriddenRender());
+abstract class ParentTestClass<S extends typeof $p> extends BaseCtrl<S> {
+  constructor(context: PersonaContext, spec: S) {
+    super(context, spec);
   }
 
   protected overriddenRender(): Observable<string> {
     return observableOf('abc');
+  }
+
+  get baseValues(): ValuesOf<typeof $p> {
+    return {
+      host: {
+        attr1: this.overriddenRender(),
+      },
+    };
   }
 }
 
@@ -55,13 +69,11 @@ class ParentTestClass extends CustomElementCtrl {
   ...$$,
   template: '',
 })
-class TestClass extends ParentTestClass {
+class TestClass extends ParentTestClass<typeof $> {
   private readonly handlerSbj = $HANDLER.get(this.vine);
 
   constructor(context: PersonaContext) {
-    super(context);
-    this.render($.host._.attr1, this.overriddenRender());
-    this.render($.host._.attr2, this.overriddenRender());
+    super(context, $);
     this.addSetup(this.setupHandler());
   }
 
@@ -71,11 +83,20 @@ class TestClass extends ParentTestClass {
   }
 
   private providesValue(): Observable<string> {
-    return this.declareInput($.host._.attr3).pipe(map(v => `123-${v}`));
+    return this.inputs.host.attr3.pipe(map(v => `123-${v}`));
   }
 
   private setupHandler(): Observable<unknown> {
     return this.handlerSbj.pipe(tap(handler => handler()));
+  }
+
+  get values(): ValuesOf<typeof $> {
+    return {
+      host: {
+        attr1: this.overriddenRender(),
+        attr2: this.overriddenRender(),
+      },
+    };
   }
 }
 
