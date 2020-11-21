@@ -5,6 +5,6 @@ import {Output} from './output';
 import {Selectable} from './selectable';
 
 export interface Selector<S extends Selectable> {
-  readonly _: {readonly [key: string]: Input<unknown>|Output<unknown>};
+  readonly _: {readonly [key: string]: Input<unknown>|Output<any>};
   getSelectable(context: PersonaContext): S;
 }

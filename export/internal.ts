@@ -10,4 +10,4 @@ export {DispatcherOutput} from '../src/output/dispatcher';
 export {MultiOutput} from '../src/output/multi';
 export {PropertyEmitter} from '../src/output/property-emitter';
 export {StyleOutput} from '../src/output/style';
-export {UnconvertedInput, UnconvertedSpec} from '../src/main/api';
+export {UnresolvedInput as UnconvertedInput, UnresolvedSpec as UnconvertedSpec} from '../src/main/api';

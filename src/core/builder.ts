@@ -7,10 +7,11 @@ import {distinctUntilChanged, mapTo, shareReplay, switchMap, tap} from 'rxjs/ope
 
 import {UnresolvedAttributeInput} from '../input/attribute';
 import {UnresolvedHasAttributeInput} from '../input/has-attribute';
-import {UnconvertedSpec} from '../main/api';
+import {UnresolvedSpec} from '../main/api';
 import {CustomElementCtrl, CustomElementCtrlCtor} from '../types/custom-element-ctrl';
 import {BaseCustomElementSpec, CustomElementSpec} from '../types/element-spec';
 
+import {BaseCtrl, BaseCtrlCtor} from './base-ctrl';
 import {CustomElementClass, __customElementImplFactory as __decoratorFactory} from './custom-element-class';
 import {CustomElementDecorator} from './custom-element-decorator';
 import {TemplateService} from './template-service';
@@ -26,12 +27,12 @@ export interface AttributeChangedEvent {
 
 
 interface FullComponentData extends CustomElementSpec {
-  readonly componentClass: CustomElementCtrlCtor;
+  readonly componentClass: CustomElementCtrlCtor|BaseCtrlCtor;
 }
 
 interface RegistrationSpec {
-  readonly componentClass: CustomElementCtrlCtor;
-  readonly api: UnconvertedSpec;
+  readonly componentClass: CustomElementCtrlCtor|BaseCtrlCtor;
+  readonly api: UnresolvedSpec;
   readonly tag: string;
   readonly template: string;
 }
@@ -49,7 +50,7 @@ export class Builder {
   private readonly customElementAnnotator = new ClassAnnotator(
       (target: unknown, spec: CustomElementSpec) => ({
         data: {
-          componentClass: target as CustomElementCtrlCtor,
+          componentClass: target as CustomElementCtrlCtor|BaseCtrlCtor,
           ...spec,
         },
         newTarget: undefined,
@@ -64,7 +65,7 @@ export class Builder {
 
   build(
       appName: string,
-      rootCtrls: CustomElementCtrlCtor[],
+      rootCtrls: ReadonlyArray<CustomElementCtrlCtor|BaseCtrlCtor>,
       rootDoc: Document,
       customElementRegistry: CustomElementRegistry,
   ): {vine: Vine} {
@@ -120,7 +121,7 @@ export class Builder {
   }
 
   private register(
-      rootCtrls: Set<CustomElementCtrlCtor>,
+      rootCtrls: Set<CustomElementCtrlCtor|BaseCtrlCtor>,
   ): Map<string, RegistrationSpec> {
     const registeredComponentSpecs = new Map<string, RegistrationSpec>();
 
@@ -143,7 +144,7 @@ export class Builder {
 }
 
 function createCustomElementClass(
-    componentClass: CustomElementCtrlCtor,
+    componentClass: CustomElementCtrlCtor|BaseCtrlCtor,
     observedAttributes: readonly string[],
     tag: string,
     templateService: TemplateService,
@@ -225,9 +226,9 @@ function createCustomElementClass(
 }
 
 function getAllCtrls(
-    rootCtrls: CustomElementCtrlCtor[],
+    rootCtrls: ReadonlyArray<CustomElementCtrlCtor|BaseCtrlCtor>,
     customElementAnnotation: ClassAnnotation<FullComponentData>,
-): ReadonlySet<CustomElementCtrlCtor> {
+): ReadonlySet<CustomElementCtrlCtor|BaseCtrlCtor> {
   const ctrls = new Set(rootCtrls);
   for (const checkedCtrl of ctrls) {
     const additionalCtors = $pipe(
@@ -236,7 +237,7 @@ function getAllCtrls(
         $flat<FullComponentData>(),
         $map(data => data.dependencies),
         $filterDefined(),
-        $flat<CustomElementCtrlCtor>(),
+        $flat<CustomElementCtrlCtor|BaseCtrlCtor>(),
         $asSet(),
     );
 
@@ -252,7 +253,7 @@ function getAllCtrls(
 
 function getSpecFromClassAnnotation<T extends CustomElementSpec|BaseCustomElementSpec>(
     annotation: ClassAnnotator<T, [any]>,
-    ctrl: typeof CustomElementCtrl,
+    ctrl: typeof CustomElementCtrl|typeof BaseCtrl,
 ): T {
   return getSpec_(
       $pipe(
@@ -268,7 +269,7 @@ function getSpecFromClassAnnotation<T extends CustomElementSpec|BaseCustomElemen
 
 export function getSpec_<T extends CustomElementSpec|BaseCustomElementSpec>(
     annotations: readonly T[],
-    ctrl: typeof CustomElementCtrl,
+    ctrl: typeof CustomElementCtrl|typeof BaseCtrl,
 ): T {
   let combinedSpec: T|null = null;
   for (const spec of annotations) {

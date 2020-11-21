@@ -16,7 +16,7 @@ import {UnresolvedSetAttributeOutput} from '../output/set-attribute';
 import {UnresolvedTextOutput} from '../output/text-out';
 
 
-export type UnconvertedInput =
+export type UnresolvedInput =
     UnresolvedAttributeInput<any>|
     UnresolvedHandlerInput|
     UnresolvedOnDomInput<any>|
@@ -25,7 +25,7 @@ export type UnconvertedInput =
     UnresolvedPropertyObserver<any>|
     UnresolvedTextInput;
 
-export type UnconvertedOutput =
+export type UnresolvedOutput =
     UnresolvedAttributeOutput<any>|
     UnresolvedCallerOutput<any>|
     UnresolvedDispatcherOutput<any>|
@@ -34,13 +34,13 @@ export type UnconvertedOutput =
     UnresolvedPropertyEmitter<any>|
     UnresolvedTextOutput;
 
-type ConvertibleProperty = UnconvertedInput|UnconvertedOutput;
+type ResolvableProperty = UnresolvedInput|UnresolvedOutput;
 
-export interface UnconvertedSpec {
-  readonly [key: string]: ConvertibleProperty;
+export interface UnresolvedSpec {
+  readonly [key: string]: ResolvableProperty;
 }
 
-export type ConvertedSpec<S> = S extends UnconvertedSpec ? {[K in keyof S]: ConvertedSpec<S[K]>} :
+export type ResolvedSpec<S> = S extends UnresolvedSpec ? {[K in keyof S]: ResolvedSpec<S[K]>} :
     S extends UnresolvedAttributeInput<infer T> ? UnresolvedAttributeOutput<T> :
     S extends UnresolvedHandlerInput ? UnresolvedCallerOutput<unknown[]> :
     S extends UnresolvedOnDomInput<infer T> ? UnresolvedDispatcherOutput<T> :
@@ -60,21 +60,21 @@ export type ConvertedSpec<S> = S extends UnconvertedSpec ? {[K in keyof S]: Conv
 /**
  * Takes a spec, and converts it to an API.
  */
-export function api<U extends UnconvertedSpec>(spec: U): ConvertedSpec<U> {
-  const convertedSpecs: Partial<ConvertedSpec<U>> = {};
-  const unconvertedSpec = spec as UnconvertedSpec;
+export function api<U extends UnresolvedSpec>(spec: U): ResolvedSpec<U> {
+  const convertedSpecs: Partial<ResolvedSpec<U>> = {};
+  const unconvertedSpec = spec as UnresolvedSpec;
   for (const key in unconvertedSpec) {
     if (!spec.hasOwnProperty(key)) {
       continue;
     }
 
-    convertedSpecs[key as keyof ConvertedSpec<U>] = convert(unconvertedSpec[key]) as any;
+    convertedSpecs[key as keyof ResolvedSpec<U>] = convert(unconvertedSpec[key]) as any;
   }
 
-  return convertedSpecs as ConvertedSpec<U>;
+  return convertedSpecs as ResolvedSpec<U>;
 }
 
-function convert(property: ConvertibleProperty): ConvertibleProperty {
+function convert(property: ResolvableProperty): ResolvableProperty {
   if (property instanceof UnresolvedAttributeInput) {
     return new UnresolvedAttributeOutput(
         property.attrName,

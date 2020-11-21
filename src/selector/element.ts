@@ -1,7 +1,7 @@
 import {Type, elementWithTagType} from 'gs-types';
 
 import {PersonaContext} from '../core/persona-context';
-import {ConvertedSpec, UnconvertedSpec, api} from '../main/api';
+import {ResolvedSpec, UnresolvedSpec, api} from '../main/api';
 import {ComponentSpec} from '../main/component-spec';
 import {Selector} from '../types/selector';
 
@@ -46,14 +46,14 @@ export function element<E extends Element, P extends PropertySpecs<E>>(
     type: Type<E>,
     properties: P,
 ): ElementSelector<E, P>;
-export function element<P extends UnconvertedSpec, PX extends PropertySpecs<Element>>(
+export function element<P extends UnresolvedSpec, PX extends PropertySpecs<Element>>(
     id: string,
     spec: ComponentSpec<P>,
     properties: PX,
-): ElementSelector<HTMLElement, ConvertedSpec<P>&PX>;
+): ElementSelector<HTMLElement, ResolvedSpec<P>&PX>;
 export function element(
     id: string,
-    typeOrSpec: Type<Element>|ComponentSpec<UnconvertedSpec>,
+    typeOrSpec: Type<Element>|ComponentSpec<UnresolvedSpec>,
     properties: PropertySpecs<Element>,
 ): ElementSelector<Element, PropertySpecs<Element>> {
   if (typeOrSpec instanceof Type) {

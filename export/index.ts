@@ -4,6 +4,7 @@ export {AriaRole} from '../src/a11y/aria-role';
 // Core
 export {Builder as PersonaBuilder} from '../src/core/builder';
 export {AttributeChangedEvent, PersonaContext} from '../src/core/persona-context';
+export {BaseCtrl, InputsOf, ValuesOf} from '../src/core/base-ctrl';
 
 // Inputs
 export {attribute as attributeIn} from '../src/input/attribute';
@@ -49,6 +50,7 @@ export {Selector} from '../src/types/selector';
 
 // Types
 export {CustomElementCtrl} from '../src/types/custom-element-ctrl';
+export {InternalElementSpec} from '../src/types/internal-element-spec';
 
 // Util
 export {mutationObservable} from '../src/util/mutation-observable';

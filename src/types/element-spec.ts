@@ -1,6 +1,6 @@
 import {Vine} from 'grapevine';
 
-import {UnconvertedSpec} from '../main/api';
+import {UnresolvedSpec} from '../main/api';
 
 import {CustomElementCtrlCtor} from './custom-element-ctrl';
 
@@ -12,7 +12,7 @@ export interface BaseCustomElementSpec {
 }
 
 export interface CustomElementSpec extends BaseCustomElementSpec {
-  readonly api: UnconvertedSpec;
+  readonly api: UnresolvedSpec;
   readonly tag: string;
   readonly template: string;
 }

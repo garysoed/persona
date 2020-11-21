@@ -2,7 +2,7 @@ import {EMPTY, Observable, merge, of as observableOf} from 'rxjs';
 import {switchMap, switchMapTo} from 'rxjs/operators';
 
 import {PersonaContext} from '../core/persona-context';
-import {UnconvertedSpec, api} from '../main/api';
+import {UnresolvedSpec, api} from '../main/api';
 import {ComponentSpec} from '../main/component-spec';
 import {UnresolvedInput} from '../types/unresolved-input';
 import {UnresolvedOutput} from '../types/unresolved-output';
@@ -20,7 +20,7 @@ import {Values as ElementValues, renderElement} from './render-element';
  *
  * @thHidden
  */
-export type InputsOf<S extends UnconvertedSpec> = Partial<{
+export type InputsOf<S extends UnresolvedSpec> = Partial<{
   readonly [K in keyof S]: S[K] extends UnresolvedInput<infer T> ? Observable<T> : never;
 }>;
 
@@ -29,7 +29,7 @@ export type InputsOf<S extends UnconvertedSpec> = Partial<{
  *
  * @thHidden
  */
-export interface Values<S extends UnconvertedSpec> extends ElementValues {
+export interface Values<S extends UnresolvedSpec> extends ElementValues {
   /**
    * Inputs to the custom element.
    */
@@ -47,7 +47,7 @@ export interface Values<S extends UnconvertedSpec> extends ElementValues {
  *
  * @thModule render
  */
-export function renderCustomElement<S extends UnconvertedSpec>(
+export function renderCustomElement<S extends UnresolvedSpec>(
     spec: ComponentSpec<S>,
     values: Values<S>,
     id: unknown,

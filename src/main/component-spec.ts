@@ -1,6 +1,6 @@
-import {UnconvertedSpec} from './api';
+import {UnresolvedSpec} from './api';
 
-export interface ComponentSpec<P extends UnconvertedSpec> {
+export interface ComponentSpec<P extends UnresolvedSpec> {
   readonly api: P;
   readonly tag: string;
 }
