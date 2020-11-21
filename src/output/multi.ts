@@ -14,6 +14,8 @@ import {UnresolvedOutput} from '../types/unresolved-output';
 
 
 export class MultiOutput implements Output<ReadonlyArray<NodeWithId<Node>>> {
+  readonly type = 'out';
+
   constructor(
       readonly slotName: string,
       readonly resolver: Resolver<Selectable>,

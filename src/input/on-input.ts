@@ -8,6 +8,8 @@ import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 
 
 export class OnInputInput implements Input<string> {
+  readonly type = 'inp';
+
   constructor(
       private readonly options: AddEventListenerOptions,
       readonly resolver: Resolver<HTMLInputElement>,

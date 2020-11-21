@@ -7,6 +7,8 @@ import {Input} from '../types/input';
  * Inputs the owner document of the context.
  */
 export class OwnerDocumentInput implements Input<Document> {
+  readonly type = 'inp';
+
   /**
    * Emits the owner document in the context.
    *

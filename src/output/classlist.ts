@@ -10,6 +10,8 @@ import {UnresolvedOutput} from '../types/unresolved-output';
 
 
 export class ClasslistOutput implements Output<ReadonlySet<string>> {
+  readonly type = 'out';
+
   constructor(
       private readonly resolver: Resolver<Element>,
   ) { }

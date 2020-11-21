@@ -9,6 +9,8 @@ import {UnresolvedOutput} from '../types/unresolved-output';
 
 
 export class SetAttributeOutput implements Output<boolean> {
+  readonly type = 'out';
+
   constructor(
       readonly attrName: string,
       readonly resolver: Resolver<Element>,

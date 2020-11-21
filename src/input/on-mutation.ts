@@ -13,6 +13,8 @@ import {mutationObservable} from '../util/mutation-observable';
  * @thHidden
  */
 export class OnMutationInput implements Input<readonly MutationRecord[]> {
+  readonly type = 'inp';
+
   /**
    * @internal
    */

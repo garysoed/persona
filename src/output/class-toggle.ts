@@ -9,6 +9,8 @@ import {UnresolvedOutput} from '../types/unresolved-output';
 
 
 export class ClassToggleOutput implements Output<boolean> {
+  readonly type = 'out';
+
   constructor(
       readonly className: string,
       readonly resolver: Resolver<Element>,

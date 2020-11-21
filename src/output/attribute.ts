@@ -10,6 +10,8 @@ import {UnresolvedOutput} from '../types/unresolved-output';
 
 
 export class AttributeOutput<T> implements Output<T> {
+  readonly type = 'out';
+
   constructor(
       readonly attrName: string,
       readonly parser: Converter<T, string>,

@@ -13,6 +13,8 @@ import {UnresolvedOutput} from '../types/unresolved-output';
 
 
 export class SingleOutput implements Output<NodeWithId<Node>|null> {
+  readonly type = 'out';
+
   constructor(
       readonly slotName: string,
       readonly resolver: Resolver<Selectable>,

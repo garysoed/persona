@@ -13,6 +13,8 @@ import {CallerOutput} from './caller';
 export type DispatchFn<E extends Event> = (event: E) => void;
 
 export class DispatcherOutput<E extends Event> implements Output<E> {
+  readonly type = 'out';
+
   private readonly caller: CallerOutput<[E]>;
 
   constructor(

@@ -14,6 +14,8 @@ import {Output} from '../types/output';
  * `<head>`. Otherwise, it will try to reuse one.
  */
 export class Favicon implements Output<string> {
+  readonly type = 'out';
+
   /**
    * Sets the favicon of the owner document in the context.
    *

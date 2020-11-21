@@ -9,6 +9,8 @@ import {mutationObservable} from '../util/mutation-observable';
 
 
 export class TextInput implements Input<string> {
+  readonly type = 'inp';
+
   constructor(readonly resolver: Resolver<Element>) { }
 
   getValue(context: PersonaContext): Observable<string> {

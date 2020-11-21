@@ -10,6 +10,8 @@ import {Output} from '../types/output';
  * Sets the title of the owner document of the context.
  */
 export class Title implements Output<string> {
+  readonly type = 'out';
+
   /**
    * Sets the title of the owner document in the context.
    *

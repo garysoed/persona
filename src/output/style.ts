@@ -10,6 +10,8 @@ import {UnresolvedOutput} from '../types/unresolved-output';
 
 export class StyleOutput<S extends keyof CSSStyleDeclaration>
 implements Output<CSSStyleDeclaration[S]> {
+  readonly type = 'out';
+
   constructor(
       readonly resolver: Resolver<HTMLElement>,
       readonly styleKey: S,

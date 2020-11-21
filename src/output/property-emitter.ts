@@ -11,6 +11,8 @@ import {UnresolvedOutput} from '../types/unresolved-output';
 type ObservableElement = Element & {[key: string]: Subject<unknown>};
 
 export class PropertyEmitter<T> implements Output<T> {
+  readonly type = 'out';
+
   constructor(
       readonly propertyName: string,
       readonly resolver: Resolver<Element>,

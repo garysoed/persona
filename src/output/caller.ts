@@ -13,6 +13,8 @@ type ElFunction<T extends readonly any[]> = (arg: T) => void;
 const FUNCTION_CHECK_MS = 10;
 
 export class CallerOutput<T extends readonly any[]> implements Output<T> {
+  readonly type = 'out';
+
   constructor(
       readonly resolver: Resolver<Element>,
       readonly functionName: string,
