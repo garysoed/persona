@@ -24,7 +24,7 @@ export type InputsOf<S extends InternalElementSpec> = {
 }
 
 export type ValuesOf<S extends InternalElementSpec> = {
-  readonly [K in keyof S]?: SelectedOutputsOf<S[K]>;
+  readonly [K in keyof S]: SelectedOutputsOf<S[K]>;
 }
 
 export type BaseCtrlCtor = new (context: PersonaContext) => BaseCtrl<any>;
