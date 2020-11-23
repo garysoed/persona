@@ -23,8 +23,9 @@ export type InputsOf<S extends InternalElementSpec> = {
   readonly [K in keyof S]: SelectedInputsOf<S[K]>;
 }
 
+// TODO: Make this exclude empty ones.
 export type ValuesOf<S extends InternalElementSpec> = {
-  readonly [K in keyof S]: SelectedOutputsOf<S[K]>;
+  readonly [K in keyof S]?: SelectedOutputsOf<S[K]>;
 }
 
 export type BaseCtrlCtor = new (context: PersonaContext) => BaseCtrl<any>;
@@ -35,18 +36,19 @@ export abstract class BaseCtrl<S extends InternalElementSpec> extends Runnable {
 
   constructor(
       protected readonly context: PersonaContext,
-      private readonly internalElementSpec: S,
   ) {
     super();
     this.addSetup(this.renderAll());
   }
 
+  protected abstract get specs(): S;
+
   protected abstract get values(): ValuesOf<S>;
 
   protected get inputs(): InputsOf<S> {
     const inputs: Partial<InputsOf<S>> = {};
-    for (const selectorKey of getOwnPropertyKeys(this.internalElementSpec)) {
-      const selectedInputs = this.getInputs(this.internalElementSpec[selectorKey]);
+    for (const selectorKey of getOwnPropertyKeys(this.specs)) {
+      const selectedInputs = this.getInputs(this.specs[selectorKey]);
       inputs[selectorKey] = selectedInputs;
     }
 
@@ -66,10 +68,11 @@ export abstract class BaseCtrl<S extends InternalElementSpec> extends Runnable {
     return selectedInputs as unknown as SelectedInputsOf<S>;
   }
 
+  // TODO: Can be moved outside the class.
   private renderAll(): Observable<unknown> {
     const render$List: Array<Observable<unknown>> = [];
     for (const selectorKey of getOwnPropertyKeys(this.values)) {
-      const specs = this.internalElementSpec[selectorKey]['_'];
+      const specs = this.specs[selectorKey]['_'];
       for (const specKey of getOwnPropertyKeys(specs)) {
         const entry = specs[specKey];
         if (entry.type !== 'out') {
