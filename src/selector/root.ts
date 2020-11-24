@@ -10,7 +10,7 @@ import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 
 import {PropertySpecs, Resolved} from './property-spec';
 
-export class RootSelector<P extends PropertySpecs<ShadowRoot>> implements Selector<ShadowRoot> {
+export class RootSelector<P extends PropertySpecs<ShadowRoot>> implements Selector<ShadowRoot, P> {
   readonly _ = this.resolveProperties();
 
   constructor(

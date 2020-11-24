@@ -21,6 +21,7 @@ import {PropertyEmitter} from '../output/property-emitter';
 import {SetAttributeOutput} from '../output/set-attribute';
 import {SingleOutput} from '../output/single';
 import {StyleOutput} from '../output/style';
+import {PropertySpecs} from '../selector/property-spec';
 import {Resolver} from '../types/resolver';
 import {Selectable} from '../types/selectable';
 import {Selector} from '../types/selector';
@@ -43,7 +44,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
       readonly vine: Vine,
   ) { }
 
-  addSlotElement(input: Selector<HTMLSlotElement>, node: Node): void {
+  addSlotElement(input: Selector<HTMLSlotElement, PropertySpecs<HTMLSlotElement>>, node: Node): void {
     const slotEl = resolveSelectable(this.element, context => input.getSelectable(context));
     this.element.appendChild(node);
     slotEl.dispatchEvent(new CustomEvent('slotchange'));
@@ -93,7 +94,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     );
   }
 
-  getChildren(elementSelector: Selector<Element>): Observable<readonly Node[]> {
+  getChildren(elementSelector: Selector<Element, PropertySpecs<Element>>): Observable<readonly Node[]> {
     const el = resolveSelectable(this.element, context => elementSelector.getSelectable(context));
     return mutationObservable(el, {childList: true}).pipe(
         startWith({}),
@@ -112,7 +113,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     );
   }
 
-  getClassList(input: Selector<Element>): ReadonlySet<string> {
+  getClassList(input: Selector<Element, PropertySpecs<Element>>): ReadonlySet<string> {
     const el = resolveSelectable(this.element, context => input.getSelectable(context));
     const classList = el.classList;
     const classes = new Set<string>();
@@ -127,7 +128,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     return new Set(classes);
   }
 
-  getElement<E extends Element>(selector: Selector<E>): E {
+  getElement<E extends Element>(selector: Selector<E, any>): E {
     return resolveSelectable(this.element, context => selector.getSelectable(context));
   }
 
@@ -164,7 +165,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     return targetEl.style[output.styleKey];
   }
 
-  getTextContent(input: Selector<Element>): string {
+  getTextContent(input: Selector<Element, PropertySpecs<Element>>): string {
     const el = resolveSelectable(this.element, context => input.getSelectable(context));
     return el.textContent || '';
   }
@@ -213,13 +214,13 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     }
   }
 
-  setInputValue(selector: Selector<HTMLInputElement>, value: string): void {
+  setInputValue(selector: Selector<HTMLInputElement, PropertySpecs<HTMLInputElement>>, value: string): void {
     const targetEl = resolveSelectable(this.element, context => selector.getSelectable(context));
     targetEl.value = value;
     targetEl.dispatchEvent(new CustomEvent('input'));
   }
 
-  setText(selector: Selector<Element>, value: string): void {
+  setText(selector: Selector<Element, PropertySpecs<Element>>, value: string): void {
     const el = resolveSelectable(this.element, context => selector.getSelectable(context));
     el.textContent = value;
     el.dispatchEvent(
@@ -227,7 +228,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     );
   }
 
-  simulateKeypress(selector: Selector<Element>, keys: readonly Key[]): void {
+  simulateKeypress(selector: Selector<Element, PropertySpecs<Element>>, keys: readonly Key[]): void {
     const targetEl = resolveSelectable(this.element, context => selector.getSelectable(context));
     for (const {key, alt, ctrl, meta, shift} of keys) {
       const keydownEvent = new KeyboardEvent('keydown', {

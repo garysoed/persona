@@ -10,7 +10,7 @@ import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 
 import {PropertySpecs, Resolved} from './property-spec';
 
-export class HostSelector<P extends PropertySpecs<Element>> implements Selector<Element> {
+export class HostSelector<P extends PropertySpecs<Element>> implements Selector<Element, P> {
   readonly _ = this.resolveProperties();
 
   constructor(

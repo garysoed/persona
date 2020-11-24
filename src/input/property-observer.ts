@@ -12,8 +12,6 @@ type ObservableElement<T> = Element & {[key: string]: Observable<T>};
 export const CHECK_PERIOD_MS = 20;
 
 export class PropertyObserver<T> implements Input<T> {
-  readonly type = 'inp';
-
   constructor(
       readonly propertyName: string,
       readonly resolver: Resolver<Element>,

@@ -7,8 +7,6 @@ import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 
 
 export class OnDomInput<E extends Event> implements Input<E> {
-  readonly type = 'inp';
-
   constructor(
       readonly eventName: string,
       private readonly options: AddEventListenerOptions,

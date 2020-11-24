@@ -8,7 +8,7 @@ import {Selector} from '../types/selector';
 import {PropertySpecs, Resolved} from './property-spec';
 
 
-export class ElementSelector<E extends Element, P extends PropertySpecs<E>> implements Selector<E> {
+export class ElementSelector<E extends Element, P extends PropertySpecs<E>> implements Selector<E, P> {
   readonly _: Resolved<E, P>;
 
   constructor(

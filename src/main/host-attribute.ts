@@ -8,8 +8,6 @@ import {Input} from '../types/input';
 
 
 export class HostAttribute<T> extends AttributeInput<T> implements Input<T> {
-  readonly type = 'inp';
-
   constructor(
       readonly attrName: string,
       readonly parser: Converter<T, string>,

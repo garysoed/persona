@@ -9,8 +9,6 @@ import {mutationObservable} from '../util/mutation-observable';
 
 
 export class HasAttributeInput implements Input<boolean> {
-  readonly type = 'inp';
-
   constructor(
       readonly attrName: string,
       readonly resolver: Resolver<Element>,

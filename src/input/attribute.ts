@@ -11,8 +11,6 @@ import {attributeObservable} from '../util/attribute-observable';
 
 
 export class AttributeInput<T> implements Input<T> {
-  readonly type = 'inp';
-
   constructor(
       readonly attrName: string,
       readonly parser: Converter<T, string>,

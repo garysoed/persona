@@ -11,8 +11,6 @@ const __subject = Symbol('subject');
 type DecoratedElement = Element & Record<string, unknown>;
 
 export class HandlerInput implements Input<readonly unknown[]> {
-  readonly type = 'inp';
-
   constructor(
       readonly functionName: string,
       readonly resolver: Resolver<Element>,

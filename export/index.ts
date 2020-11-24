@@ -50,7 +50,6 @@ export {Selector} from '../src/types/selector';
 
 // Types
 export {CustomElementCtrl} from '../src/types/custom-element-ctrl';
-export {InternalElementSpec} from '../src/types/internal-element-spec';
 
 // Util
 export {mutationObservable} from '../src/util/mutation-observable';

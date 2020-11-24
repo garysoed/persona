@@ -8,8 +8,6 @@ import {UnresolvedInput} from '../types/unresolved-input';
 
 
 export class SlottedInput implements Input<readonly Node[]> {
-  readonly type = 'inp';
-
   constructor(readonly resolver: Resolver<HTMLSlotElement>) { }
 
   getValue(context: PersonaContext): Observable<readonly Node[]> {
