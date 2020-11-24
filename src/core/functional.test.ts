@@ -45,8 +45,8 @@ const $HANDLER = source('handler', () => () => undefined);
   shadowMode: 'open',
 })
 abstract class ParentTestClass<S extends typeof $p> extends BaseCtrl<S> {
-  constructor(context: PersonaContext) {
-    super(context);
+  constructor(context: PersonaContext, specs: S) {
+    super(context, specs);
   }
 
   protected overriddenRender(): Observable<string> {
@@ -65,7 +65,7 @@ class TestClass extends ParentTestClass<typeof $> {
   private readonly handlerSbj = $HANDLER.get(this.vine);
 
   constructor(context: PersonaContext) {
-    super(context);
+    super(context, $);
     this.addSetup(this.setupHandler());
   }
 
@@ -80,10 +80,6 @@ class TestClass extends ParentTestClass<typeof $> {
 
   private setupHandler(): Observable<unknown> {
     return this.handlerSbj.pipe(tap(handler => handler()));
-  }
-
-  protected get specs(): typeof $ {
-    return $;
   }
 
   get values(): ValuesOf<typeof $> {

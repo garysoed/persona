@@ -36,12 +36,11 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
 
   constructor(
       protected readonly context: PersonaContext,
+      protected readonly specs: S,
   ) {
     super();
     this.addSetup(this.renderAll());
   }
-
-  protected abstract get specs(): S;
 
   protected abstract get values(): ValuesOf<S>;
 
