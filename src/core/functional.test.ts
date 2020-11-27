@@ -9,7 +9,7 @@ import {attribute as attributeOut} from '../output/attribute';
 import {host} from '../selector/host';
 import {PersonaTesterFactory} from '../testing/persona-tester';
 
-import {BaseCtrl, ValuesOf} from './base-ctrl';
+import {BaseCtrl} from './base-ctrl';
 import {Builder as PersonaBuilder} from './builder';
 import {PersonaContext} from './persona-context';
 
@@ -82,13 +82,11 @@ class TestClass extends ParentTestClass<typeof $> {
     return this.handlerSbj.pipe(tap(handler => handler()));
   }
 
-  get values(): ValuesOf<typeof $> {
-    return {
-      host: {
-        attr1: this.overriddenRender(),
-        attr2: this.overriddenRender(),
-      },
-    };
+  get renders(): ReadonlyArray<Observable<unknown>> {
+    return [
+      this.renderers.host.attr1(this.overriddenRender()),
+      this.renderers.host.attr2(this.overriddenRender()),
+    ];
   }
 }
 

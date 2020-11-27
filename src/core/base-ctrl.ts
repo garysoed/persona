@@ -1,6 +1,6 @@
 import {Runnable} from 'gs-tools/export/rxjs';
 import {getOwnPropertyKeys} from 'gs-tools/export/typescript';
-import {merge, Observable} from 'rxjs';
+import {merge, Observable, OperatorFunction, pipe} from 'rxjs';
 
 import {PropertySpecs} from '../selector/property-spec';
 import {Input, INPUT_TYPE} from '../types/input';
@@ -15,17 +15,16 @@ type SelectedInputsOf<B extends Selectable, P extends PropertySpecs<B>, S extend
   readonly [K in keyof P]: S['_'][K] extends Input<infer T> ? Observable<T> : never;
 }
 
-type SelectedOutputsOf<B extends Selectable, P extends PropertySpecs<B>, S extends Selector<B, P>> = {
-  readonly [K in keyof P]?: S['_'][K] extends Output<infer T> ? Observable<T> : never;
-}
+type SelectedRenderersOf<B extends Selectable, P extends PropertySpecs<B>, S extends Selector<B, P>> = {
+  readonly [K in keyof P]: S['_'][K] extends Output<infer T> ? OperatorFunction<T, unknown> : never;
+};
 
 export type InputsOf<S extends {}> = {
   readonly [K in keyof S]: S[K] extends Selector<infer B, infer P> ? SelectedInputsOf<B, P, S[K]> : never;
 }
 
-// TODO: Make this exclude empty ones.
-export type ValuesOf<S extends {}> = {
-  readonly [K in keyof S]?: S[K] extends Selector<infer B, infer P> ? SelectedOutputsOf<B, P, S[K]> : never;
+type RenderersOf<S extends {}> = {
+  readonly [K in keyof S]: S[K] extends Selector<infer B, infer P> ? SelectedRenderersOf<B, P, S[K]> : never;
 }
 
 export type BaseCtrlCtor = new (context: PersonaContext) => BaseCtrl<any>;
@@ -42,10 +41,10 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
     this.addSetup(this.renderAll());
   }
 
-  protected abstract get values(): ValuesOf<S>;
+  protected abstract get renders(): ReadonlyArray<Observable<unknown>>;
 
   protected get inputs(): InputsOf<S> {
-    const inputs: Partial<{[K in keyof S]?: SelectedOutputsOf<Selectable, {}, Selector<Selectable, {}>>}> = {};
+    const inputs: Partial<{[K in keyof S]?: SelectedInputsOf<Selectable, {}, Selector<Selectable, {}>>}> = {};
     for (const selectorKey of getOwnPropertyKeys(this.specs)) {
       const maybeSelector = this.specs[selectorKey];
       if (!SELECTOR_TYPE.check(maybeSelector)) {
@@ -57,6 +56,21 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
 
     // TODO: Remove typecast.
     return inputs as InputsOf<S>;
+  }
+
+  protected get renderers(): RenderersOf<S> {
+    const inputs: Partial<{[K in keyof S]?: SelectedRenderersOf<Selectable, {}, Selector<Selectable, {}>>}> = {};
+    for (const selectorKey of getOwnPropertyKeys(this.specs)) {
+      const maybeSelector = this.specs[selectorKey];
+      if (!SELECTOR_TYPE.check(maybeSelector)) {
+        continue;
+      }
+      const selectedInputs = this.getRenderers(maybeSelector);
+      inputs[selectorKey] = selectedInputs;
+    }
+
+    // TODO: Remove typecast.
+    return inputs as RenderersOf<S>;
   }
 
   private getInputs<B extends Selectable, P extends PropertySpecs<B>, S extends Selector<B, P>>(
@@ -74,29 +88,23 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
     return selectedInputs as SelectedInputsOf<B, P, S>;
   }
 
-  // TODO: Can be moved outside the class.
-  private renderAll(): Observable<unknown> {
-    const render$List: Array<Observable<unknown>> = [];
-    for (const selectorKey of getOwnPropertyKeys(this.values)) {
-      const maybeSelector = this.specs[selectorKey];
-      if (!SELECTOR_TYPE.check(maybeSelector)) {
+  private getRenderers<B extends Selectable, P extends PropertySpecs<B>, S extends Selector<B, P>>(
+      selector: S,
+  ): SelectedRenderersOf<B, P, S> {
+    const selectedRenderers: {[K in keyof P]?: (value$: Observable<unknown>) => Observable<unknown>} = {};
+    for (const entryKey of getOwnPropertyKeys(selector._)) {
+      const entry = selector._[entryKey];
+      if (!OUTPUT_TYPE.check(entry)) {
         continue;
       }
-
-      for (const specKey of getOwnPropertyKeys(maybeSelector._)) {
-        const entry = maybeSelector._[specKey];
-        if (!OUTPUT_TYPE.check(entry)) {
-          continue;
-        }
-
-        const rawValue = this.values[selectorKey]?.[specKey];
-        if (!rawValue) {
-          continue;
-        }
-
-        render$List.push(rawValue.pipe(entry.output(this.context)));
-      }
+      selectedRenderers[entryKey] = pipe(entry.output(this.context));
     }
-    return merge(...render$List);
+    // TODO: Remove typecast.
+    return selectedRenderers as SelectedRenderersOf<B, P, S>;
+  }
+
+  // TODO: Can be moved outside the class.
+  private renderAll(): Observable<unknown> {
+    return merge(...this.renders);
   }
 }

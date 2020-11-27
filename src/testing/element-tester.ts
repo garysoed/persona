@@ -128,7 +128,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     return new Set(classes);
   }
 
-  getElement<E extends Element>(selector: Selector<E, any>): E {
+  getElement<E extends Selectable>(selector: Selector<E, any>): E {
     return resolveSelectable(this.element, context => selector.getSelectable(context));
   }
 
