@@ -1,10 +1,13 @@
-import {Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
 import {PersonaContext} from '../core/persona-context';
 
-import {$htmlParseService, ParseType} from './html-parse-service';
-import {NodeWithId, __id} from './node-with-id';
+import {$htmlParseService} from './html-parse-service';
+import {NodeWithId} from './node-with-id';
+import {setId} from './set-id';
+import {normalize} from './types/observable-or-value';
+import {RenderHtmlSpec} from './types/render-html-spec';
 
 
 /**
@@ -18,18 +21,20 @@ import {NodeWithId, __id} from './node-with-id';
  * @thModule render
  */
 export function renderHtml(
-    raw: string,
-    supportedType: ParseType,
-    id: unknown,
+    spec: RenderHtmlSpec,
     context: PersonaContext,
 ): Observable<NodeWithId<Element>|null> {
-  return $htmlParseService.get(context.vine).pipe(
-      switchMap(service => service.parse(raw, supportedType)),
-      map(el => {
-        if (!el) {
-          return null;
-        }
-        return Object.assign(el.cloneNode(true) as Element, {[__id]: id});
-      }),
-  );
+  return combineLatest([
+    $htmlParseService.get(context.vine),
+    normalize(spec.raw),
+  ])
+      .pipe(
+          switchMap(([service, raw]) => service.parse(raw, spec.parseType)),
+          map(el => {
+            if (!el) {
+              return null;
+            }
+            return setId(el.cloneNode(true) as Element, spec.id);
+          }),
+      );
 }

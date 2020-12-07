@@ -1,12 +1,16 @@
+import {$asArray, $filterNonNull, $pipe} from 'gs-tools/export/collect';
 import {diffArray} from 'gs-tools/export/rxjs';
-import {EMPTY, Observable, merge, of as observableOf} from 'rxjs';
-import {switchMap, switchMapTo, tap} from 'rxjs/operators';
+import {EMPTY, Observable, merge, of as observableOf, combineLatest} from 'rxjs';
+import {map, switchMap, switchMapTo, tap} from 'rxjs/operators';
 
 import {PersonaContext} from '../core/persona-context';
 import {ownerDocument} from '../input/owner-document';
 
 import {__id} from './node-with-id';
+import {render} from './render';
 import {setId} from './set-id';
+import {normalize, ObservableOrValue} from './types/observable-or-value';
+import {RenderElementSpec} from './types/render-element-spec';
 
 
 /**
@@ -40,21 +44,19 @@ export interface Values {
  * @thModule render.
  */
 export function renderElement(
-    tagName: string,
-    values: Values,
-    id: unknown,
+    spec: RenderElementSpec,
     context: PersonaContext,
 ): Observable<HTMLElement&{[__id]: unknown}> {
   return ownerDocument().getValue(context).pipe(
       switchMap(document => {
-        const el = document.createElement(tagName);
+        const el = document.createElement(spec.tag);
         const onChange$List = [];
 
-        const extraAttrs = values.attrs || new Map<string, Observable<string|null>>();
-        for (const [attrName, attrValue$] of extraAttrs) {
-          onChange$List.push(attrValue$.pipe(
+        const extraAttrs = spec.attrs ?? new Map<string, ObservableOrValue<string|undefined>>();
+        for (const [attrName, attrValue] of extraAttrs) {
+          onChange$List.push(normalize(attrValue).pipe(
               tap(value => {
-                if (value === null) {
+                if (value === undefined) {
                   el.removeAttribute(attrName);
                 } else {
                   el.setAttribute(attrName, value);
@@ -63,14 +65,26 @@ export function renderElement(
           ));
         }
 
-        const textContent$ = values.textContent ?? EMPTY;
-        onChange$List.push(textContent$.pipe(
+        const textContent = spec.textContent ?? EMPTY;
+        onChange$List.push(normalize(textContent).pipe(
             tap(text => {
               el.textContent = text;
             }),
         ));
 
-        const children$ = values.children ?? EMPTY;
+        // TODO: use multi.
+        const children$ = normalize(spec.children ?? observableOf([])).pipe(
+            switchMap(specs => {
+              const renderedNode$list = specs.map(spec => render(spec, context));
+              if (renderedNode$list.length <= 0) {
+                return observableOf([]);
+              }
+
+              return combineLatest(renderedNode$list).pipe(
+                  map(renderedNodes => $pipe(renderedNodes, $filterNonNull(), $asArray())),
+              );
+            }),
+        );
         onChange$List.push(children$.pipe(
             diffArray(),
             tap(diff => {
@@ -103,7 +117,7 @@ export function renderElement(
         ));
 
         return merge(
-            observableOf(setId(el, id)),
+            observableOf(setId(el, spec.id)),
             merge(...onChange$List).pipe(switchMapTo(EMPTY)),
         );
       }),

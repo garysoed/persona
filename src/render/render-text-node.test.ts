@@ -5,6 +5,7 @@ import {map, shareReplay} from 'rxjs/operators';
 import {createFakeContext} from '../testing/create-fake-context';
 
 import {renderTextNode} from './render-text-node';
+import {RenderSpecType} from './types/render-spec-type';
 
 test('@persona/render/render-text-node', init => {
   const _ = init(() => {
@@ -16,7 +17,7 @@ test('@persona/render/render-text-node', init => {
 
   should('emit the text node', () => {
     const text = 'text';
-    const node$ = renderTextNode(observableOf(text), text, _.context)
+    const node$ = renderTextNode({type: RenderSpecType.TEXT_NODE, text, id: text}, _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const text$ = createSpySubject(node$.pipe(map(n => n.textContent)));
@@ -29,7 +30,9 @@ test('@persona/render/render-text-node', init => {
   should('update the textContent without emitting the node', () => {
     const text1 = 'text1';
     const text2 = 'text2';
-    const node$ = renderTextNode(observableOf(text1, text2), {}, _.context)
+    const node$ = renderTextNode(
+        {type: RenderSpecType.TEXT_NODE, text: observableOf(text1, text2), id: {}},
+        _.context)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const text$ = createSpySubject(node$.pipe(map(n => n.textContent)));

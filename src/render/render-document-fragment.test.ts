@@ -4,6 +4,7 @@ import {map} from 'rxjs/operators';
 import {createFakeContext} from '../testing/create-fake-context';
 
 import {renderDocumentFragment} from './render-document-fragment';
+import {RenderSpecType} from './types/render-spec-type';
 
 
 test('@persona/render/render-document-fragment', init => {
@@ -16,7 +17,11 @@ test('@persona/render/render-document-fragment', init => {
 
   should('emit the document fragment', () => {
     const nodeType$ = createSpySubject(
-        renderDocumentFragment(_.context).pipe(map(node => node.nodeType)),
+        renderDocumentFragment(
+            {type: RenderSpecType.FRAGMENT, id: {}},
+            _.context,
+        )
+            .pipe(map(node => node.nodeType)),
     );
 
     assert(nodeType$).to.emitSequence([Node.DOCUMENT_FRAGMENT_NODE]);

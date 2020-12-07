@@ -1,28 +1,16 @@
-import {EMPTY, Observable, merge, of as observableOf} from 'rxjs';
+import {EMPTY, merge, Observable, of as observableOf} from 'rxjs';
 import {switchMap, switchMapTo} from 'rxjs/operators';
 
 import {PersonaContext} from '../core/persona-context';
-import {UnresolvedSpec, api} from '../main/api';
-import {ComponentSpec} from '../main/component-spec';
-import {UnresolvedInput} from '../types/unresolved-input';
+import {api, UnresolvedSpec} from '../main/api';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
 import {__id} from './node-with-id';
-import {Values as ElementValues, renderElement} from './render-element';
+import {renderElement, Values as ElementValues} from './render-element';
+import {normalize} from './types/observable-or-value';
+import {InputsOf, RenderCustomElementSpec} from './types/render-custom-element-spec';
+import {RenderSpecType} from './types/render-spec-type';
 
-
-/**
- * Values of the input for the given spec.
- *
- * @remarks
- * The values must be `Observable`. They must emit whenever the value changes to update the values
- * of the custom element.
- *
- * @thHidden
- */
-export type InputsOf<S extends UnresolvedSpec> = Partial<{
-  readonly [K in keyof S]: S[K] extends UnresolvedInput<infer T> ? Observable<T> : never;
-}>;
 
 /**
  * Values to use for rendering the custom element.
@@ -48,25 +36,28 @@ export interface Values<S extends UnresolvedSpec> extends ElementValues {
  * @thModule render
  */
 export function renderCustomElement<S extends UnresolvedSpec>(
-    spec: ComponentSpec<S>,
-    values: Values<S>,
-    id: unknown,
+    spec: RenderCustomElementSpec<S>,
     context: PersonaContext,
 ): Observable<HTMLElement&{[__id]: unknown}> {
-  return renderElement(spec.tag, values, id, context).pipe(
+  const elementSpec = {
+    ...spec,
+    tag: spec.spec.tag,
+    type: RenderSpecType.ELEMENT as const,
+  };
+  return renderElement(elementSpec, context).pipe(
       switchMap(el => {
         const resolver = (): HTMLElement => el;
         const onChange$List = [];
 
-        const convertedSpec = api(spec.api);
-        const inputs: InputsOf<S> = values.inputs || {};
+        const convertedSpec = api(spec.spec.api);
+        const inputs: InputsOf<S> = spec.inputs || {};
         for (const key in inputs) {
           if (!inputs.hasOwnProperty(key)) {
             continue;
           }
 
           const output = (convertedSpec[key] as UnresolvedOutput<any>).resolve(resolver);
-          onChange$List.push((inputs[key] as Observable<any>).pipe(output.output(context)));
+          onChange$List.push(normalize(inputs[key]).pipe(output.output(context)));
         }
 
         return merge(
