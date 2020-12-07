@@ -2,16 +2,17 @@ import {assert, run, should, test} from 'gs-testing';
 import {instanceofType} from 'gs-types';
 import {Subject} from 'rxjs';
 
-import {NodeWithId, __id} from '../render/node-with-id';
+import {RenderElementSpec} from '../render/types/render-element-spec';
+import {RenderSpec} from '../render/types/render-spec';
+import {RenderSpecType} from '../render/types/render-spec-type';
 import {element} from '../selector/element';
 import {createFakeContext} from '../testing/create-fake-context';
 
 import {single} from './single';
 
 
-function createNode(id: string): NodeWithId<Node> {
-  const node = document.createElement('div');
-  return Object.assign(node, {[__id]: id});
+function renderElementSpec(tag: string, id?: string): RenderElementSpec {
+  return {type: RenderSpecType.ELEMENT, tag, id: id ?? tag};
 }
 
 test('@persona/output/single', init => {
@@ -40,7 +41,7 @@ test('@persona/output/single', init => {
 
   test('output', _, init => {
     const _ = init(_ => {
-      const render$ = new Subject<NodeWithId<Node>|null>();
+      const render$ = new Subject<RenderSpec|null>();
 
       run(render$.pipe(_.output.output(_.context)));
 
@@ -48,49 +49,48 @@ test('@persona/output/single', init => {
     });
 
     should('process correctly for adding a node', () => {
-      const node = createNode('n');
-      _.render$.next(node);
+      _.render$.next(renderElementSpec('div'));
 
-      assert(_.slot.nextSibling).to.equal(node);
+      assert((_.slot.nextSibling as HTMLElement).tagName).to.equal('DIV');
       assert(_.slot.nextSibling?.nextSibling).to.beNull();
     });
 
     should('process correctly for replacing a node', () => {
-      const node1 = createNode('1');
+      const node1 = renderElementSpec('div');
       _.render$.next(node1);
 
-      const node2 = createNode('2');
+      const node2 = renderElementSpec('input');
       _.render$.next(node2);
 
-      assert(_.slot.nextSibling).to.equal(node2);
+      assert((_.slot.nextSibling as HTMLElement).tagName).to.equal('INPUT');
       assert(_.slot.nextSibling?.nextSibling).to.beNull();
     });
 
     should('not replace node if the new one has the same ID', () => {
-      const node1 = createNode('1');
+      const node1 = renderElementSpec('div');
       _.render$.next(node1);
 
-      const node2 = createNode('1');
+      const node2 = renderElementSpec('input', 'div');
       _.render$.next(node2);
 
-      assert(_.slot.nextSibling).to.equal(node1);
+      assert((_.slot.nextSibling as HTMLElement).tagName).to.equal('DIV');
       assert(_.slot.nextSibling?.nextSibling).to.beNull();
     });
 
     should('process correctly for deleting a node', () => {
-      _.render$.next(createNode('n'));
+      _.render$.next(renderElementSpec('n'));
       _.render$.next(null);
 
       assert(_.slot.nextSibling).to.beNull();
     });
 
     should('hide errors when deleting node', () => {
-      const node = createNode('n');
+      const node = renderElementSpec('div');
 
       _.render$.next(node);
 
-      const newParent = createNode('new');
-      newParent.appendChild(node);
+      const newParent = document.createElement('input');
+      newParent.appendChild(_.slot.nextSibling!);
 
       _.render$.next(null);
 

@@ -1,6 +1,6 @@
 persona
   v2.0
     ☐ Log the registration.
-    ☐ Change `single` and `multi` to take in render specs
+    ✔ Change `single` and `multi` to take in render specs
 
 

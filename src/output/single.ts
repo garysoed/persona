@@ -1,10 +1,12 @@
 import {filterNonNull} from 'gs-tools/export/rxjs';
-import {OperatorFunction, of as observableOf, pipe} from 'rxjs';
-import {distinctUntilChanged, pairwise, startWith, tap, withLatestFrom} from 'rxjs/operators';
+import {of as observableOf, OperatorFunction, pipe} from 'rxjs';
+import {distinctUntilChanged, pairwise, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 
 import {PersonaContext} from '../core/persona-context';
 import {createSlotObs} from '../main/create-slot-obs';
-import {NodeWithId, __id} from '../render/node-with-id';
+import {__id} from '../render/node-with-id';
+import {render} from '../render/render';
+import {RenderSpec} from '../render/types/render-spec';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
 import {Selectable} from '../types/selectable';
@@ -12,7 +14,7 @@ import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
 
-export class SingleOutput implements Output<NodeWithId<Node>|null> {
+export class SingleOutput implements Output<RenderSpec|null> {
   readonly type = 'out';
 
   constructor(
@@ -20,10 +22,16 @@ export class SingleOutput implements Output<NodeWithId<Node>|null> {
       readonly resolver: Resolver<Selectable>,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<NodeWithId<Node>|null, unknown> {
+  output(context: PersonaContext): OperatorFunction<RenderSpec|null, unknown> {
     const parent = this.resolver(context);
 
     return pipe(
+        switchMap(spec => {
+          if (!spec) {
+            return observableOf(null);
+          }
+          return render(spec, context);
+        }),
         startWith(null),
         distinctUntilChanged((a, b) => {
           if (a !== null && b !== null) {
@@ -55,7 +63,7 @@ export class SingleOutput implements Output<NodeWithId<Node>|null> {
 }
 
 class UnresolvedSingleOutput implements
-    UnresolvedElementProperty<Selectable, SingleOutput>, UnresolvedOutput<NodeWithId<Node>|null> {
+    UnresolvedElementProperty<Selectable, SingleOutput>, UnresolvedOutput<RenderSpec|null> {
   constructor(readonly slotName: string) { }
 
   resolve(resolver: Resolver<Selectable>): SingleOutput {

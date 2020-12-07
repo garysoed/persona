@@ -1,11 +1,14 @@
+import {$asArray, $filterNonNull, $pipe} from 'gs-tools/export/collect';
 import {diffArray} from 'gs-tools/export/rxjs';
 import {assertUnreachable} from 'gs-tools/export/typescript';
-import {NEVER, Observable, OperatorFunction, of as observableOf, pipe} from 'rxjs';
-import {tap, withLatestFrom} from 'rxjs/operators';
+import {combineLatest, NEVER, Observable, of as observableOf, OperatorFunction, pipe} from 'rxjs';
+import {map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 
 import {PersonaContext} from '../core/persona-context';
 import {createSlotObs} from '../main/create-slot-obs';
-import {NodeWithId, __id} from '../render/node-with-id';
+import {__id} from '../render/node-with-id';
+import {render} from '../render/render';
+import {RenderSpec} from '../render/types/render-spec';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
 import {Selectable} from '../types/selectable';
@@ -13,7 +16,7 @@ import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
 
-export class MultiOutput implements Output<ReadonlyArray<NodeWithId<Node>>> {
+export class MultiOutput implements Output<readonly RenderSpec[]> {
   readonly type = 'out';
 
   constructor(
@@ -21,10 +24,19 @@ export class MultiOutput implements Output<ReadonlyArray<NodeWithId<Node>>> {
       readonly resolver: Resolver<Selectable>,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<ReadonlyArray<NodeWithId<Node>>, unknown> {
+  output(context: PersonaContext): OperatorFunction<readonly RenderSpec[], unknown> {
     const parentEl = this.resolver(context);
 
     return pipe(
+        switchMap(specs => {
+          const node$list = specs.map(spec => render(spec, context));
+          if (node$list.length <= 0) {
+            return observableOf([]);
+          }
+
+          return combineLatest(node$list);
+        }),
+        map(nodes => $pipe(nodes, $filterNonNull(), $asArray())),
         diffArray((a, b) => a[__id] === b[__id]),
         withLatestFrom(
             createSlotObs(observableOf(parentEl), this.slotName),
@@ -98,7 +110,7 @@ export class MultiOutput implements Output<ReadonlyArray<NodeWithId<Node>>> {
 
 class UnresolvedMultiOutput implements
     UnresolvedElementProperty<Selectable, MultiOutput>,
-    UnresolvedOutput<ReadonlyArray<NodeWithId<Node>>> {
+    UnresolvedOutput<readonly RenderSpec[]> {
   constructor(
       private readonly slotName: string,
   ) { }
