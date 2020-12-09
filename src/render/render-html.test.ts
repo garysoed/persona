@@ -1,6 +1,6 @@
 import {assert, createSpyInstance, fake, should, test} from 'gs-testing';
 import {of as observableOf} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 
 import {createFakeContext} from '../testing/create-fake-context';
 
@@ -27,12 +27,25 @@ test('@persona/render/render-html', init => {
     fake(_.mockHtmlParseService.parse).always().return(observableOf(el));
 
     const tagName$ = renderHtml(
-        {type: RenderSpecType.HTML, raw: RAW, parseType: SUPPORTED_TYPE, id: 'id'},
+        {
+          type: RenderSpecType.HTML,
+          raw: RAW,
+          parseType: SUPPORTED_TYPE,
+          id: 'id',
+          decorator: el$ => el$.pipe(
+              tap(el => {
+                el.setAttribute('a', '1');
+              }),
+          ),
+        },
         _.context,
     )
-        .pipe(map(el => (el as unknown as HTMLElement).tagName));
+        .pipe(map(el => {
+          const html = (el as unknown as HTMLElement);
+          return html.tagName + html.getAttribute('a');
+        }));
 
-    assert(tagName$).to.emitWith('DIV');
+    assert(tagName$).to.emitWith('DIV1');
 
     // Should emit the copy, not the exact instance.
     assert(renderHtml(

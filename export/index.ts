@@ -62,12 +62,10 @@ export {fromPattern} from '../src/location/location-converter';
 // Render spec
 export {$htmlParseService as $innerHtmlParseService, ParseType} from '../src/render/html-parse-service';
 export {HtmlParseService as InnerHtmlParseService} from '../src/render/html-parse-service';
+export {RenderSpecType} from '../src/render/types/render-spec-type';
+export {RenderSpec} from '../src/render/types/render-spec';
+export {RenderTextNodeSpec} from '../src/render/types/render-text-node-spec';
 
-export {renderCustomElement} from '../src/render/render-custom-element';
-export {renderDocumentFragment} from '../src/render/render-document-fragment';
-export {renderElement} from '../src/render/render-element';
-export {renderHtml} from '../src/render/render-html';
-export {renderTextNode} from '../src/render/render-text-node';
 export {NodeWithId} from '../src/render/node-with-id';
 export {setId} from '../src/render/set-id';
 

@@ -1,4 +1,4 @@
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, of as observableOf} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
 import {PersonaContext} from '../core/persona-context';
@@ -34,7 +34,15 @@ export function renderHtml(
             if (!el) {
               return null;
             }
+
             return setId(el.cloneNode(true) as Element, spec.id);
+          }),
+          switchMap(node => {
+            if (!node || !spec.decorator) {
+              return observableOf(node);
+            }
+
+            return observableOf(node).pipe(spec.decorator);
           }),
       );
 }

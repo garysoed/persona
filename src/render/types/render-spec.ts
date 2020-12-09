@@ -4,4 +4,8 @@ import {RenderFragmentSpec} from './render-fragment-spec';
 import {RenderHtmlSpec} from './render-html-spec';
 import {RenderTextNodeSpec} from './render-text-node-spec';
 
-export type RenderSpec = RenderCustomElementSpec<any>|RenderElementSpec|RenderFragmentSpec|RenderHtmlSpec|RenderTextNodeSpec;
+export type RenderSpec = RenderCustomElementSpec<any>|
+    RenderElementSpec|
+    RenderFragmentSpec|
+    RenderHtmlSpec|
+    RenderTextNodeSpec;

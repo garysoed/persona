@@ -1,8 +1,13 @@
 import {Observable} from 'rxjs';
 
-import {PersonaContext, renderCustomElement, renderDocumentFragment, renderElement, renderHtml, renderTextNode} from '../../export';
+import {PersonaContext} from '../core/persona-context';
 
 import {NodeWithId} from './node-with-id';
+import {renderCustomElement} from './render-custom-element';
+import {renderDocumentFragment} from './render-document-fragment';
+import {renderElement} from './render-element';
+import {renderHtml} from './render-html';
+import {renderTextNode} from './render-text-node';
 import {RenderSpec} from './types/render-spec';
 import {RenderSpecType} from './types/render-spec-type';
 
