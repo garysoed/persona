@@ -10,5 +10,5 @@ export type RenderSpec = RenderCustomElementSpec<any>|
     RenderElementSpec|
     RenderFragmentSpec|
     RenderHtmlSpec|
-    RenderNodeSpec|
+    RenderNodeSpec<any>|
     RenderTextNodeSpec;

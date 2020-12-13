@@ -1,10 +1,12 @@
-import {defer, EMPTY, merge, Observable, of as observableOf} from 'rxjs';
+import {defer, EMPTY, merge, Observable} from 'rxjs';
 import {switchMapTo, tap} from 'rxjs/operators';
 
 import {PersonaContext} from '../core/persona-context';
 
-import {NodeWithId, __id} from './node-with-id';
+import {NodeWithId} from './node-with-id';
+import {renderNode} from './render-node';
 import {normalize} from './types/observable-or-value';
+import {RenderSpecType} from './types/render-spec-type';
 import {RenderTextNodeSpec} from './types/render-text-node-spec';
 
 
@@ -17,7 +19,7 @@ export function renderTextNode(
     if (!ownerDocument) {
       throw new Error('No owner documents found');
     }
-    const node = Object.assign(ownerDocument.createTextNode(''), {[__id]: spec.id});
+    const node = ownerDocument.createTextNode('');
 
     const onChange$ = normalize(spec.text).pipe(
         tap(text => {
@@ -26,6 +28,13 @@ export function renderTextNode(
         switchMapTo(EMPTY),
     );
 
-    return merge(onChange$, observableOf(node));
+    return merge(
+        onChange$,
+        renderNode({
+          type: RenderSpecType.NODE,
+          node,
+          id: spec.id,
+        }),
+    );
   });
 }

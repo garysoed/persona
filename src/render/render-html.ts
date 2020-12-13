@@ -1,13 +1,14 @@
 import {combineLatest, Observable, of as observableOf} from 'rxjs';
-import {map, switchMap} from 'rxjs/operators';
+import {switchMap} from 'rxjs/operators';
 
 import {PersonaContext} from '../core/persona-context';
 
 import {$htmlParseService} from './html-parse-service';
 import {NodeWithId} from './node-with-id';
-import {setId} from './set-id';
+import {renderNode} from './render-node';
 import {normalize} from './types/observable-or-value';
 import {RenderHtmlSpec} from './types/render-html-spec';
+import {RenderSpecType} from './types/render-spec-type';
 
 
 /**
@@ -30,12 +31,16 @@ export function renderHtml(
   ])
       .pipe(
           switchMap(([service, raw]) => service.parse(raw, spec.parseType)),
-          map(el => {
+          switchMap(el => {
             if (!el) {
-              return null;
+              return observableOf(null);
             }
 
-            return setId(el.cloneNode(true) as Element, spec.id);
+            return renderNode({
+              type: RenderSpecType.NODE,
+              node: el.cloneNode(true) as Element,
+              id: spec.id,
+            });
           }),
           switchMap(node => {
             if (!node || !spec.decorator) {

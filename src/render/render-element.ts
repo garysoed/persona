@@ -1,14 +1,15 @@
 import {$asArray, $filterNonNull, $pipe} from 'gs-tools/export/collect';
 import {diffArray} from 'gs-tools/export/rxjs';
-import {EMPTY, Observable, merge, of as observableOf, combineLatest} from 'rxjs';
+import {combineLatest, EMPTY, merge, Observable, of as observableOf} from 'rxjs';
 import {map, switchMap, switchMapTo, tap} from 'rxjs/operators';
 
+import {RenderSpecType} from '../../export';
 import {PersonaContext} from '../core/persona-context';
 import {ownerDocument} from '../input/owner-document';
 
 import {__id} from './node-with-id';
 import {render} from './render';
-import {setId} from './set-id';
+import {renderNode} from './render-node';
 import {normalize, ObservableOrValue} from './types/observable-or-value';
 import {RenderElementSpec} from './types/render-element-spec';
 
@@ -49,7 +50,13 @@ export function renderElement(
 ): Observable<HTMLElement&{[__id]: unknown}> {
   return ownerDocument().getValue(context).pipe(
       switchMap(document => {
-        const el = document.createElement(spec.tag);
+        return renderNode({
+          type: RenderSpecType.NODE,
+          node: document.createElement(spec.tag),
+          id: spec.id,
+        });
+      }),
+      switchMap(el => {
         const onChange$List = [];
 
         const extraAttrs = spec.attrs ?? new Map<string, ObservableOrValue<string|undefined>>();
@@ -117,7 +124,7 @@ export function renderElement(
         ));
 
         return merge(
-            observableOf(setId(el, spec.id)),
+            observableOf(el),
             merge(...onChange$List).pipe(switchMapTo(EMPTY)),
         );
       }),
