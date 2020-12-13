@@ -1,10 +1,11 @@
-import {assert, createSpyInstance, fake, should, test} from 'gs-testing';
-import {of as observableOf} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {assert, createSpy, createSpyInstance, fake, should, test} from 'gs-testing';
+import {EMPTY, Observable, of as observableOf} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 import {createFakeContext} from '../testing/create-fake-context';
 
 import {$htmlParseService, HtmlParseService} from './html-parse-service';
+import {NodeWithId} from './node-with-id';
 import {renderHtml} from './render-html';
 import {RenderSpecType} from './types/render-spec-type';
 
@@ -26,26 +27,26 @@ test('@persona/render/render-html', init => {
     const el = document.createElement('div');
     fake(_.mockHtmlParseService.parse).always().return(observableOf(el));
 
+    const spy = createSpy<Observable<unknown>, [NodeWithId<Node>]>('decorator');
+    fake(spy).always().return(EMPTY);
+
     const tagName$ = renderHtml(
         {
           type: RenderSpecType.HTML,
           raw: RAW,
           parseType: SUPPORTED_TYPE,
           id: 'id',
-          decorator: el$ => el$.pipe(
-              tap(el => {
-                el.setAttribute('a', '1');
-              }),
-          ),
+          decorator: spy,
         },
         _.context,
     )
         .pipe(map(el => {
           const html = (el as unknown as HTMLElement);
-          return html.tagName + html.getAttribute('a');
+          return html.tagName;
         }));
 
-    assert(tagName$).to.emitWith('DIV1');
+    assert(tagName$).to.emitWith('DIV');
+    assert(spy).to.haveBeenCalled();
 
     // Should emit the copy, not the exact instance.
     assert(renderHtml(

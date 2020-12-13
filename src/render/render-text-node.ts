@@ -1,8 +1,9 @@
-import {defer, EMPTY, merge, Observable} from 'rxjs';
+import {defer, EMPTY, Observable} from 'rxjs';
 import {switchMapTo, tap} from 'rxjs/operators';
 
 import {PersonaContext} from '../core/persona-context';
 
+import {applyDecorators, Decorator} from './apply-decorators';
 import {NodeWithId} from './node-with-id';
 import {renderNode} from './render-node';
 import {normalize} from './types/observable-or-value';
@@ -21,20 +22,25 @@ export function renderTextNode(
     }
     const node = ownerDocument.createTextNode('');
 
-    const onChange$ = normalize(spec.text).pipe(
-        tap(text => {
-          node.textContent = text;
-        }),
-        switchMapTo(EMPTY),
-    );
-
-    return merge(
-        onChange$,
-        renderNode({
-          ...spec,
-          type: RenderSpecType.NODE,
-          node,
-        }),
-    );
+    return renderNode({
+      ...spec,
+      type: RenderSpecType.NODE,
+      node,
+      decorator: node => {
+        const decorators: Array<Decorator<NodeWithId<Text>>> = [
+          // TODO: Dedupe this.
+          node => normalize(spec.text).pipe(
+              tap(text => {
+                node.textContent = text;
+              }),
+              switchMapTo(EMPTY),
+          ),
+        ];
+        if (spec.decorator) {
+          decorators.push(spec.decorator);
+        }
+        return applyDecorators(node, ...decorators);
+      },
+    });
   });
 }

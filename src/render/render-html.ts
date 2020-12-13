@@ -42,12 +42,5 @@ export function renderHtml(
               node: el.cloneNode(true) as Element,
             });
           }),
-          switchMap(node => {
-            if (!node || !spec.decorator) {
-              return observableOf(node);
-            }
-
-            return observableOf(node).pipe(spec.decorator);
-          }),
       );
 }

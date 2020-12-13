@@ -1,13 +1,14 @@
 import {$asArray, $filterNonNull, $pipe} from 'gs-tools/export/collect';
 import {diffArray} from 'gs-tools/export/rxjs';
-import {combineLatest, EMPTY, merge, Observable, of as observableOf} from 'rxjs';
-import {map, switchMap, switchMapTo, tap} from 'rxjs/operators';
+import {combineLatest, Observable, of as observableOf} from 'rxjs';
+import {map, switchMap, tap} from 'rxjs/operators';
 
 import {RenderSpecType} from '../../export';
 import {PersonaContext} from '../core/persona-context';
 import {ownerDocument} from '../input/owner-document';
 
-import {__id} from './node-with-id';
+import {applyDecorators, Decorator} from './apply-decorators';
+import {NodeWithId, __id} from './node-with-id';
 import {render} from './render';
 import {renderNode} from './render-node';
 import {normalize, ObservableOrValue} from './types/observable-or-value';
@@ -54,79 +55,78 @@ export function renderElement(
           ...spec,
           type: RenderSpecType.NODE,
           node: document.createElement(spec.tag),
+          decorator: el => {
+            const decorators: Array<Decorator<NodeWithId<HTMLElement>>> = [];
+
+            const extraAttrs = spec.attrs ?? new Map<string, ObservableOrValue<string|undefined>>();
+            for (const [attrName, attrValue] of extraAttrs) {
+              decorators.push(el => normalize(attrValue).pipe(
+                  tap(value => {
+                    if (value === undefined) {
+                      el.removeAttribute(attrName);
+                    } else {
+                      el.setAttribute(attrName, value);
+                    }
+                  }),
+              ));
+            }
+
+            const textContent = spec.textContent;
+            if (textContent) {
+              decorators.push(el => normalize(textContent).pipe(
+                  tap(text => {
+                    el.textContent = text;
+                  }),
+              ));
+            }
+
+            const children = spec.children;
+            if (children) {
+              decorators.push(() => normalize(children).pipe(
+                  switchMap(specs => {
+                    const renderedNode$list = specs.map(spec => render(spec, context));
+                    if (renderedNode$list.length <= 0) {
+                      return observableOf([]);
+                    }
+
+                    return combineLatest(renderedNode$list).pipe(
+                        map(renderedNodes => $pipe(renderedNodes, $filterNonNull(), $asArray())),
+                    );
+                  }),
+                  diffArray(),
+                  tap(diff => {
+                    switch (diff.type) {
+                      case 'delete':
+                        el.removeChild(diff.value);
+                        break;
+                      case 'init':
+                        el.innerHTML = '';
+                        for (const child of diff.value) {
+                          el.appendChild(child);
+                        }
+                        break;
+                      case 'insert':{
+                        const insertBefore = el.children.item(diff.index);
+                        el.insertBefore(diff.value, insertBefore);
+                        break;
+                      }
+                      case 'set':{
+                        const toDelete = el.children.item(diff.index);
+                        const setBefore = toDelete?.nextSibling || null;
+                        if (toDelete) {
+                          el.removeChild(toDelete);
+                        }
+                        el.insertBefore(diff.value, setBefore);
+                        break;
+                      }
+                    }
+                  }),
+              ));
+            }
+
+            return applyDecorators(el, ...decorators);
+          },
         });
-      }),
-      switchMap(el => {
-        const onChange$List = [];
-
-        const extraAttrs = spec.attrs ?? new Map<string, ObservableOrValue<string|undefined>>();
-        for (const [attrName, attrValue] of extraAttrs) {
-          onChange$List.push(normalize(attrValue).pipe(
-              tap(value => {
-                if (value === undefined) {
-                  el.removeAttribute(attrName);
-                } else {
-                  el.setAttribute(attrName, value);
-                }
-              }),
-          ));
-        }
-
-        const textContent = spec.textContent ?? EMPTY;
-        onChange$List.push(normalize(textContent).pipe(
-            tap(text => {
-              el.textContent = text;
-            }),
-        ));
-
-        // TODO: use multi.
-        const children$ = normalize(spec.children ?? observableOf([])).pipe(
-            switchMap(specs => {
-              const renderedNode$list = specs.map(spec => render(spec, context));
-              if (renderedNode$list.length <= 0) {
-                return observableOf([]);
-              }
-
-              return combineLatest(renderedNode$list).pipe(
-                  map(renderedNodes => $pipe(renderedNodes, $filterNonNull(), $asArray())),
-              );
-            }),
-        );
-        onChange$List.push(children$.pipe(
-            diffArray(),
-            tap(diff => {
-              switch (diff.type) {
-                case 'delete':
-                  el.removeChild(diff.value);
-                  break;
-                case 'init':
-                  el.innerHTML = '';
-                  for (const child of diff.value) {
-                    el.appendChild(child);
-                  }
-                  break;
-                case 'insert':{
-                  const insertBefore = el.children.item(diff.index);
-                  el.insertBefore(diff.value, insertBefore);
-                  break;
-                }
-                case 'set':{
-                  const toDelete = el.children.item(diff.index);
-                  const setBefore = toDelete?.nextSibling || null;
-                  if (toDelete) {
-                    el.removeChild(toDelete);
-                  }
-                  el.insertBefore(diff.value, setBefore);
-                  break;
-                }
-              }
-            }),
-        ));
-
-        return merge(
-            observableOf(el),
-            merge(...onChange$List).pipe(switchMapTo(EMPTY)),
-        );
       }),
   );
 }

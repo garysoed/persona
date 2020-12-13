@@ -1,8 +1,8 @@
-import {OperatorFunction} from 'rxjs';
-
+import {Decorator} from '../apply-decorators';
 import {NodeWithId} from '../node-with-id';
+
 
 export interface BaseRenderSpec<N extends Node> {
   readonly id: unknown;
-  readonly decorator?: OperatorFunction<NodeWithId<N>, NodeWithId<N>>;
+  readonly decorator?: Decorator<NodeWithId<N>>;
 }
