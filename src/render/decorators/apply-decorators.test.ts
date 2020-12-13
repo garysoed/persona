@@ -2,8 +2,9 @@ import {assert, should, test} from 'gs-testing';
 import {fromEvent, ReplaySubject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
+import {setId} from '../set-id';
+
 import {applyDecorators} from './apply-decorators';
-import {setId} from './set-id';
 
 
 test('@persona/render/apply-decorators', () => {

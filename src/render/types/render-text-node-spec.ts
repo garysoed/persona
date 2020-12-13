@@ -4,7 +4,7 @@ import {RenderSpecType} from './render-spec-type';
 
 
 interface Input extends BaseRenderSpec<Text> {
-  readonly text: ObservableOrValue<string>;
+  readonly textContent: ObservableOrValue<string>;
 }
 
 export interface RenderTextNodeSpec extends Input {

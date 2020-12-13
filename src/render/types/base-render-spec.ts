@@ -1,4 +1,4 @@
-import {Decorator} from '../apply-decorators';
+import {Decorator} from '../decorators/apply-decorators';
 import {NodeWithId} from '../node-with-id';
 
 

@@ -7,7 +7,8 @@ import {RenderSpecType} from '../../export';
 import {PersonaContext} from '../core/persona-context';
 import {ownerDocument} from '../input/owner-document';
 
-import {applyDecorators, Decorator} from './apply-decorators';
+import {applyDecorators, Decorator} from './decorators/apply-decorators';
+import {applyTextContent} from './decorators/apply-text-content';
 import {NodeWithId, __id} from './node-with-id';
 import {render} from './render';
 import {renderNode} from './render-node';
@@ -71,13 +72,8 @@ export function renderElement(
               ));
             }
 
-            const textContent = spec.textContent;
-            if (textContent) {
-              decorators.push(el => normalize(textContent).pipe(
-                  tap(text => {
-                    el.textContent = text;
-                  }),
-              ));
+            if (spec.textContent) {
+              decorators.push(applyTextContent(spec.textContent));
             }
 
             const children = spec.children;
