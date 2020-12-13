@@ -3,7 +3,14 @@ import {ObservableOrValue} from './observable-or-value';
 import {RenderSpecType} from './render-spec-type';
 
 
-export interface RenderTextNodeSpec extends BaseRenderSpec {
-  readonly type: RenderSpecType.TEXT_NODE;
+interface Input extends BaseRenderSpec {
   readonly text: ObservableOrValue<string>;
+}
+
+export interface RenderTextNodeSpec extends Input {
+  readonly type: RenderSpecType.TEXT_NODE;
+}
+
+export function renderTextNode(input: Input): RenderTextNodeSpec {
+  return {...input, type: RenderSpecType.TEXT_NODE};
 }

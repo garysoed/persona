@@ -64,7 +64,12 @@ export {$htmlParseService as $innerHtmlParseService, ParseType} from '../src/ren
 export {HtmlParseService as InnerHtmlParseService} from '../src/render/html-parse-service';
 export {RenderSpecType} from '../src/render/types/render-spec-type';
 export {RenderSpec} from '../src/render/types/render-spec';
-export {RenderTextNodeSpec} from '../src/render/types/render-text-node-spec';
+export {RenderTextNodeSpec, renderTextNode} from '../src/render/types/render-text-node-spec';
+export {renderCustomElement} from '../src/render/types/render-custom-element-spec';
+export {renderElement} from '../src/render/types/render-element-spec';
+export {renderHtml} from '../src/render/types/render-html-spec';
+export {renderNode} from '../src/render/types/render-node-spec';
+export {render} from '../src/render/render';
 
 export {NodeWithId} from '../src/render/node-with-id';
 export {setId} from '../src/render/set-id';

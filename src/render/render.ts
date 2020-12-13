@@ -7,6 +7,7 @@ import {renderCustomElement} from './render-custom-element';
 import {renderDocumentFragment} from './render-document-fragment';
 import {renderElement} from './render-element';
 import {renderHtml} from './render-html';
+import {renderNode} from './render-node';
 import {renderTextNode} from './render-text-node';
 import {RenderSpec} from './types/render-spec';
 import {RenderSpecType} from './types/render-spec-type';
@@ -25,6 +26,8 @@ export function render(
       return renderDocumentFragment(spec, context);
     case RenderSpecType.HTML:
       return renderHtml(spec, context);
+    case RenderSpecType.NODE:
+      return renderNode(spec);
     case RenderSpecType.TEXT_NODE:
       return renderTextNode(spec, context);
   }

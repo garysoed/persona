@@ -8,9 +8,16 @@ import {ObservableOrValue} from './observable-or-value';
 import {RenderSpecType} from './render-spec-type';
 
 
-export interface RenderHtmlSpec extends BaseRenderSpec {
-  readonly type: RenderSpecType.HTML;
+interface Input extends BaseRenderSpec {
   readonly raw: ObservableOrValue<string>;
   readonly parseType: ParseType;
   readonly decorator?: OperatorFunction<NodeWithId<Element>, NodeWithId<Element>>;
+}
+
+export interface RenderHtmlSpec extends Input {
+  readonly type: RenderSpecType.HTML;
+}
+
+export function renderHtml(input: Input): RenderHtmlSpec {
+  return {...input, type: RenderSpecType.HTML};
 }
