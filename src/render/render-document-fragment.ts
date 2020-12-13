@@ -13,8 +13,8 @@ export function renderDocumentFragment(
     context: PersonaContext,
 ): Observable<NodeWithId<DocumentFragment>> {
   return renderNode({
+    ...spec,
     type: RenderSpecType.NODE,
     node: context.shadowRoot.ownerDocument.createDocumentFragment(),
-    id: spec.id,
   });
 }

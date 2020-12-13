@@ -37,9 +37,9 @@ export function renderHtml(
             }
 
             return renderNode({
+              ...spec,
               type: RenderSpecType.NODE,
               node: el.cloneNode(true) as Element,
-              id: spec.id,
             });
           }),
           switchMap(node => {

@@ -51,9 +51,9 @@ export function renderElement(
   return ownerDocument().getValue(context).pipe(
       switchMap(document => {
         return renderNode({
+          ...spec,
           type: RenderSpecType.NODE,
           node: document.createElement(spec.tag),
-          id: spec.id,
         });
       }),
       switchMap(el => {

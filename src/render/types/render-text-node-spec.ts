@@ -3,7 +3,7 @@ import {ObservableOrValue} from './observable-or-value';
 import {RenderSpecType} from './render-spec-type';
 
 
-interface Input extends BaseRenderSpec {
+interface Input extends BaseRenderSpec<Text> {
   readonly text: ObservableOrValue<string>;
 }
 

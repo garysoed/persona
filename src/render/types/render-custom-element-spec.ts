@@ -21,7 +21,7 @@ export type InputsOf<S extends UnresolvedSpec> = Partial<{
   readonly [K in keyof S]: S[K] extends UnresolvedInput<infer T> ? ObservableOrValue<T> : never;
 }>;
 
-interface Input<S extends UnresolvedSpec> extends BaseRenderSpec {
+interface Input<S extends UnresolvedSpec> extends BaseRenderSpec<HTMLElement> {
   readonly spec: ComponentSpec<S>;
   readonly attrs?: ReadonlyMap<string, ObservableOrValue<string|undefined>>;
   readonly children?: ObservableOrValue<readonly RenderSpec[]>;

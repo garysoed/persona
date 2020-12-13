@@ -31,9 +31,9 @@ export function renderTextNode(
     return merge(
         onChange$,
         renderNode({
+          ...spec,
           type: RenderSpecType.NODE,
           node,
-          id: spec.id,
         }),
     );
   });

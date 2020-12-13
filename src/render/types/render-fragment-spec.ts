@@ -1,7 +1,7 @@
 import {BaseRenderSpec} from './base-render-spec';
 import {RenderSpecType} from './render-spec-type';
 
-type Input = BaseRenderSpec;
+type Input = BaseRenderSpec<DocumentFragment>;
 
 export interface RenderFragmentSpec extends Input {
   readonly type: RenderSpecType.FRAGMENT;
