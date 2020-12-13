@@ -7,7 +7,7 @@ import {setId} from '../set-id';
 import {applyDecorators} from './apply-decorators';
 
 
-test('@persona/render/apply-decorators', () => {
+test('@persona/render/decorators/apply-decorators', () => {
   should('attach the ID and decorator correctly', () => {
     const onEvent1$ = new ReplaySubject<EventTarget>();
     const onEvent2$ = new ReplaySubject<string>();
