@@ -78,6 +78,10 @@ export function renderElement(
               decorators.push(applyChildren(spec.children, context));
             }
 
+            if (spec.decorator) {
+              decorators.push(spec.decorator);
+            }
+
             return applyDecorators(el, ...decorators);
           },
         });

@@ -1,7 +1,7 @@
-import {arrayThat, assert, createSpySubject, should, test} from 'gs-testing';
+import {arrayThat, assert, createSpySubject, run, should, test} from 'gs-testing';
 import {arrayFrom} from 'gs-tools/export/collect';
-import {of as observableOf} from 'rxjs';
-import {map, shareReplay} from 'rxjs/operators';
+import {combineLatest, fromEvent, of as observableOf, ReplaySubject} from 'rxjs';
+import {map, shareReplay, take, tap} from 'rxjs/operators';
 
 import {createFakeContext} from '../testing/create-fake-context';
 
@@ -194,5 +194,25 @@ test('@persona/render/render-element', init => {
 
     assert(tag$).to.emitSequence([TAG.toUpperCase()]);
     assert(children$).to.emitSequence([arrayThat<string>().haveExactElements(['DIV'])]);
+  });
+
+  should('run the decorator correctly', () => {
+    const onEvent$ = new ReplaySubject<EventTarget>();
+
+    const el$ = renderElement(
+        {
+          type: RenderSpecType.ELEMENT,
+          tag: TAG,
+          id: 'id',
+          decorator: el => fromEvent(el, 'click').pipe(tap(e => onEvent$.next(e.target!))),
+        },
+        _.context,
+    )
+        .pipe(shareReplay({bufferSize: 1, refCount: false}));
+
+    // Click should be registered.
+    run(el$.pipe(take(1), tap(el => el.click())));
+    assert(combineLatest([onEvent$, el$]).pipe(map(([target, el]) => target === el)))
+        .to.emitSequence([true]);
   });
 });
