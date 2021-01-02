@@ -5,6 +5,7 @@ export {AriaRole} from '../src/a11y/aria-role';
 export {Builder as PersonaBuilder} from '../src/core/builder';
 export {AttributeChangedEvent, PersonaContext} from '../src/core/persona-context';
 export {BaseCtrl, InputsOf} from '../src/core/base-ctrl';
+export {applyDecorators, Decorator} from '../src/render/decorators/apply-decorators';
 
 // Inputs
 export {attribute as attributeIn} from '../src/input/attribute';

@@ -11,6 +11,9 @@ import {FakeCustomElementRegistry} from './fake-custom-element-registry';
 import {FakeMediaQuery, mockMatchMedia} from './mock-match-media';
 import {PersonaTesterEnvironment} from './persona-tester-environment';
 
+// TODO: Should only use the API, not the private $
+// TODO: Add snapshot getter
+
 /**
  * Used to test UI implemented using Persona.
  */

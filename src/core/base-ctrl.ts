@@ -59,7 +59,7 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
   }
 
   protected get renderers(): RenderersOf<S> {
-    const inputs: Partial<{[K in keyof S]?: SelectedRenderersOf<Selectable, {}, Selector<Selectable, {}>>}> = {};
+    const inputs: {[K in keyof S]?: SelectedRenderersOf<Selectable, {}, Selector<Selectable, {}>>} = {};
     for (const selectorKey of getOwnPropertyKeys(this.specs)) {
       const maybeSelector = this.specs[selectorKey];
       if (!SELECTOR_TYPE.check(maybeSelector)) {
@@ -103,7 +103,6 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
     return selectedRenderers as SelectedRenderersOf<B, P, S>;
   }
 
-  // TODO: Can be moved outside the class.
   private renderAll(): Observable<unknown> {
     return merge(...this.renders);
   }
