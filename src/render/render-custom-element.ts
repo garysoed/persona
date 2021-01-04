@@ -1,3 +1,4 @@
+import {getOwnPropertyKeys} from 'gs-tools/export/typescript';
 import {EMPTY, merge, Observable, of as observableOf} from 'rxjs';
 import {switchMap, switchMapTo} from 'rxjs/operators';
 
@@ -7,8 +8,7 @@ import {UnresolvedOutput} from '../types/unresolved-output';
 
 import {__id} from './node-with-id';
 import {renderElement, Values as ElementValues} from './render-element';
-import {normalize} from './types/observable-or-value';
-import {InputsOf, RenderCustomElementSpec} from './types/render-custom-element-spec';
+import {InputsOf, NormalizedInputsOf, RenderCustomElementSpec} from './types/render-custom-element-spec';
 import {RenderSpecType} from './types/render-spec-type';
 
 
@@ -50,14 +50,10 @@ export function renderCustomElement<S extends UnresolvedSpec>(
         const onChange$List = [];
 
         const convertedSpec = api(spec.spec.api);
-        const inputs: InputsOf<S> = spec.inputs || {};
-        for (const key in inputs) {
-          if (!inputs.hasOwnProperty(key)) {
-            continue;
-          }
-
-          const output = (convertedSpec[key] as UnresolvedOutput<any>).resolve(resolver);
-          onChange$List.push(normalize(inputs[key]).pipe(output.output(context)));
+        const inputs: NormalizedInputsOf<S> = spec.inputs || {};
+        for (const key of getOwnPropertyKeys(inputs)) {
+          const output = (convertedSpec[key as string] as UnresolvedOutput<any>).resolve(resolver);
+          onChange$List.push((inputs[key] as Observable<unknown>).pipe(output.output(context)));
         }
 
         return merge(

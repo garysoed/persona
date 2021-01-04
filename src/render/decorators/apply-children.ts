@@ -1,22 +1,21 @@
 import {$asArray, $filterNonNull, $pipe} from 'gs-tools/export/collect';
 import {diffArray} from 'gs-tools/export/rxjs';
-import {combineLatest, of as observableOf} from 'rxjs';
+import {combineLatest, Observable, of as observableOf} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
 
 import {PersonaContext} from '../../core/persona-context';
 import {NodeWithId} from '../node-with-id';
 import {render} from '../render';
-import {normalize, ObservableOrValue} from '../types/observable-or-value';
 import {RenderSpec} from '../types/render-spec';
 
 import {Decorator} from './apply-decorators';
 
 
 export function applyChildren(
-    children: ObservableOrValue<readonly RenderSpec[]>,
+    children: Observable<readonly RenderSpec[]>,
     context: PersonaContext,
 ): Decorator<NodeWithId<Element>> {
-  return el => normalize(children).pipe(
+  return el => children.pipe(
       switchMap(specs => {
         const renderedNode$list = specs.map(spec => render(spec, context));
         if (renderedNode$list.length <= 0) {

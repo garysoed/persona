@@ -33,7 +33,7 @@ test('@persona/render/render-html', init => {
     const tagName$ = renderHtml(
         {
           type: RenderSpecType.HTML,
-          raw: RAW,
+          raw: observableOf(RAW),
           parseType: SUPPORTED_TYPE,
           id: 'id',
           decorator: spy,
@@ -50,7 +50,12 @@ test('@persona/render/render-html', init => {
 
     // Should emit the copy, not the exact instance.
     assert(renderHtml(
-        {type: RenderSpecType.HTML, raw: RAW, parseType: SUPPORTED_TYPE, id: 'id'},
+        {
+          type: RenderSpecType.HTML,
+          raw: observableOf(RAW),
+          parseType: SUPPORTED_TYPE,
+          id: 'id',
+        },
         _.context,
     ))
         .toNot.emitWith(el as any);

@@ -17,7 +17,14 @@ test('@persona/render/render-text-node', init => {
 
   should('emit the text node', () => {
     const textContent = 'textContent';
-    const node$ = renderTextNode({type: RenderSpecType.TEXT_NODE, textContent, id: textContent}, _.context)
+    const node$ = renderTextNode(
+        {
+          type: RenderSpecType.TEXT_NODE,
+          textContent: observableOf(textContent),
+          id: textContent,
+        },
+        _.context,
+    )
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
     const text$ = createSpySubject(node$.pipe(map(n => n.textContent)));

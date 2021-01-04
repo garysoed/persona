@@ -66,10 +66,11 @@ export {HtmlParseService as InnerHtmlParseService} from '../src/render/html-pars
 export {RenderSpecType} from '../src/render/types/render-spec-type';
 export {RenderSpec} from '../src/render/types/render-spec';
 export {RenderTextNodeSpec, renderTextNode} from '../src/render/types/render-text-node-spec';
-export {renderCustomElement} from '../src/render/types/render-custom-element-spec';
-export {renderElement} from '../src/render/types/render-element-spec';
-export {renderHtml} from '../src/render/types/render-html-spec';
-export {renderNode} from '../src/render/types/render-node-spec';
+export {renderCustomElement, RenderCustomElementSpec} from '../src/render/types/render-custom-element-spec';
+export {renderElement, RenderElementSpec} from '../src/render/types/render-element-spec';
+export {renderFragment, RenderFragmentSpec} from '../src/render/types/render-fragment-spec';
+export {renderHtml, RenderHtmlSpec} from '../src/render/types/render-html-spec';
+export {renderNode, RenderNodeSpec} from '../src/render/types/render-node-spec';
 export {render} from '../src/render/render';
 
 export {NodeWithId} from '../src/render/node-with-id';

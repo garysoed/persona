@@ -25,7 +25,7 @@ test('@persona/render/render-element', init => {
         {
           type: RenderSpecType.ELEMENT,
           tag: TAG,
-          attrs: new Map([['a', a]]),
+          attrs: new Map([['a', observableOf(a)]]),
           id: 'id',
         },
         _.context,

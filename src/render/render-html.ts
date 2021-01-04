@@ -6,7 +6,6 @@ import {PersonaContext} from '../core/persona-context';
 import {$htmlParseService} from './html-parse-service';
 import {NodeWithId} from './node-with-id';
 import {renderNode} from './render-node';
-import {normalize} from './types/observable-or-value';
 import {RenderHtmlSpec} from './types/render-html-spec';
 import {RenderSpecType} from './types/render-spec-type';
 
@@ -27,7 +26,7 @@ export function renderHtml(
 ): Observable<NodeWithId<Element>|null> {
   return combineLatest([
     $htmlParseService.get(context.vine),
-    normalize(spec.raw),
+    spec.raw,
   ])
       .pipe(
           switchMap(([service, raw]) => service.parse(raw, spec.parseType)),

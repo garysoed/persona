@@ -10,7 +10,6 @@ import {applyDecorators, Decorator} from './decorators/apply-decorators';
 import {applyTextContent} from './decorators/apply-text-content';
 import {NodeWithId, __id} from './node-with-id';
 import {renderNode} from './render-node';
-import {normalize, ObservableOrValue} from './types/observable-or-value';
 import {RenderElementSpec} from './types/render-element-spec';
 
 
@@ -57,9 +56,9 @@ export function renderElement(
           decorator: el => {
             const decorators: Array<Decorator<NodeWithId<HTMLElement>>> = [];
 
-            const extraAttrs = spec.attrs ?? new Map<string, ObservableOrValue<string|undefined>>();
+            const extraAttrs = spec.attrs ?? new Map<string, Observable<string|undefined>>();
             for (const [attrName, attrValue] of extraAttrs) {
-              decorators.push(el => normalize(attrValue).pipe(
+              decorators.push(el => attrValue.pipe(
                   tap(value => {
                     if (value === undefined) {
                       el.removeAttribute(attrName);

@@ -1,9 +1,12 @@
+import {getOwnPropertyKeys} from 'gs-tools/export/typescript';
+import {Observable, of as observableOf} from 'rxjs';
+
 import {UnresolvedSpec} from '../../main/api';
 import {ComponentSpec} from '../../main/component-spec';
 import {UnresolvedInput} from '../../types/unresolved-input';
 
 import {BaseRenderSpec} from './base-render-spec';
-import {ObservableOrValue} from './observable-or-value';
+import {normalize, normalizeMap, ObservableOrValue} from './observable-or-value';
 import {RenderSpec} from './render-spec';
 import {RenderSpecType} from './render-spec-type';
 
@@ -21,6 +24,10 @@ export type InputsOf<S extends UnresolvedSpec> = Partial<{
   readonly [K in keyof S]: S[K] extends UnresolvedInput<infer T> ? ObservableOrValue<T> : never;
 }>;
 
+export type NormalizedInputsOf<S extends UnresolvedSpec> = {
+  readonly [K in keyof S]?: S[K] extends UnresolvedInput<infer T> ? Observable<T> : never;
+}
+
 interface Input<S extends UnresolvedSpec> extends BaseRenderSpec<HTMLElement> {
   readonly spec: ComponentSpec<S>;
   readonly attrs?: ReadonlyMap<string, ObservableOrValue<string|undefined>>;
@@ -31,8 +38,28 @@ interface Input<S extends UnresolvedSpec> extends BaseRenderSpec<HTMLElement> {
 
 export interface RenderCustomElementSpec<S extends UnresolvedSpec> extends Input<S> {
   readonly type: RenderSpecType.CUSTOM_ELEMENT;
+  readonly attrs?: ReadonlyMap<string, Observable<string|undefined>>;
+  readonly children?: Observable<readonly RenderSpec[]>;
+  readonly inputs?: NormalizedInputsOf<S>;
+  readonly textContent?: Observable<string>;
 }
 
 export function renderCustomElement<S extends UnresolvedSpec>(input: Input<S>): RenderCustomElementSpec<S> {
-  return {...input, type: RenderSpecType.CUSTOM_ELEMENT};
+  return {
+    ...input,
+    type: RenderSpecType.CUSTOM_ELEMENT,
+    attrs: input.attrs ? normalizeMap(input.attrs) : undefined,
+    children: input.children ? normalize(input.children) : undefined,
+    inputs: input.inputs ? normalizedInputs(input.inputs) : undefined,
+    textContent: input.textContent !== undefined ? normalize(input.textContent) : undefined,
+  };
+}
+
+function normalizedInputs<S extends UnresolvedSpec>(spec: InputsOf<S>): NormalizedInputsOf<S> {
+  const output: {[K in keyof S]?: Observable<unknown>} = {};
+  for (const key of getOwnPropertyKeys(spec)) {
+    const v: ObservableOrValue<unknown> = spec[key];
+    output[key] = v instanceof Observable ? v : observableOf(v);
+  }
+  return output as NormalizedInputsOf<S>;
 }

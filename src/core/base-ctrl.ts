@@ -44,7 +44,7 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
   protected abstract get renders(): ReadonlyArray<Observable<unknown>>;
 
   protected get inputs(): InputsOf<S> {
-    const inputs: Partial<{[K in keyof S]?: SelectedInputsOf<Selectable, {}, Selector<Selectable, {}>>}> = {};
+    const inputs: {[K in keyof S]?: SelectedInputsOf<Selectable, {}, Selector<Selectable, {}>>} = {};
     for (const selectorKey of getOwnPropertyKeys(this.specs)) {
       const maybeSelector = this.specs[selectorKey];
       if (!SELECTOR_TYPE.check(maybeSelector)) {

@@ -32,7 +32,12 @@ test('@persona/render/render-custom-element', init => {
     const id = 'id';
     const a = 'avalue';
     const element$ = renderCustomElement(
-        {type: RenderSpecType.CUSTOM_ELEMENT, spec: $spec, inputs: {a}, id},
+        {
+          type: RenderSpecType.CUSTOM_ELEMENT,
+          spec: $spec,
+          inputs: {a: observableOf(a)},
+          id,
+        },
         _.context,
     )
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
