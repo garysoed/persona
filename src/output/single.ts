@@ -1,4 +1,4 @@
-import {filterNonNull} from 'gs-tools/export/rxjs';
+import {filterNonNullable} from 'gs-tools/export/rxjs';
 import {of as observableOf, OperatorFunction, pipe} from 'rxjs';
 import {distinctUntilChanged, pairwise, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 
@@ -41,7 +41,7 @@ export class SingleOutput implements Output<RenderSpec|null|undefined> {
         }),
         pairwise(),
         withLatestFrom(
-            createSlotObs(observableOf(parent), this.slotName).pipe(filterNonNull()),
+            createSlotObs(observableOf(parent), this.slotName).pipe(filterNonNullable()),
         ),
         tap(([[previous, current], slotEl]) => {
           // Remove the previous node.
