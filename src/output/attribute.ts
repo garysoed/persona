@@ -61,6 +61,15 @@ export class UnresolvedAttributeOutput<T> implements
 export function attribute<T>(
     attrName: string,
     parser: Converter<T, string>,
+): UnresolvedAttributeOutput<T|undefined>;
+export function attribute<T>(
+    attrName: string,
+    parser: Converter<T, string>,
+    deleteValue: T,
+): UnresolvedAttributeOutput<T>;
+export function attribute<T>(
+    attrName: string,
+    parser: Converter<T, string>,
     deleteValue?: T,
 ): UnresolvedAttributeOutput<T> {
   return new UnresolvedAttributeOutput(attrName, parser, deleteValue);
