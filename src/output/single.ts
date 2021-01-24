@@ -14,7 +14,7 @@ import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
 
-export class SingleOutput implements Output<RenderSpec|null> {
+export class SingleOutput implements Output<RenderSpec|null|undefined> {
   readonly type = 'out';
 
   constructor(
@@ -22,7 +22,7 @@ export class SingleOutput implements Output<RenderSpec|null> {
       readonly resolver: Resolver<Selectable>,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<RenderSpec|null, unknown> {
+  output(context: PersonaContext): OperatorFunction<RenderSpec|null|undefined, unknown> {
     const parent = this.resolver(context);
 
     return pipe(
