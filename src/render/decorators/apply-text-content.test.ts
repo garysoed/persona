@@ -8,7 +8,6 @@ import {applyTextContent} from './apply-text-content';
 
 
 test('@persona/render/decorators/apply-text-content', () => {
-
   should('update the textContent', () => {
     const text1 = 'text1';
     const text2 = 'text2';

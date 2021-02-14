@@ -9,14 +9,14 @@ interface Input extends BaseRenderSpec<HTMLElement> {
   readonly tag: string;
   readonly attrs?: ReadonlyMap<string, ObservableOrValue<string|undefined>>;
   readonly children?: ObservableOrValue<readonly RenderSpec[]>;
-  readonly textContent?: ObservableOrValue<string>;
+  readonly textContent?: ObservableOrValue<string|undefined>;
 }
 
 export interface RenderElementSpec extends Input {
   readonly type: RenderSpecType.ELEMENT;
   readonly attrs?: ReadonlyMap<string, Observable<string|undefined>>;
   readonly children?: Observable<readonly RenderSpec[]>;
-  readonly textContent?: Observable<string>;
+  readonly textContent?: Observable<string|undefined>;
 }
 
 export function renderElement(input: Input): RenderElementSpec {

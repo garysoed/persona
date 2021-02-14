@@ -7,11 +7,11 @@ import {Decorator} from './apply-decorators';
 
 
 export function applyTextContent(
-    textContent: Observable<string>,
+    textContent: Observable<string|undefined>,
 ): Decorator<NodeWithId<Node>> {
   return node => textContent.pipe(
       tap(text => {
-        node.textContent = text;
+        node.textContent = text ?? '';
       }),
   );
 }
