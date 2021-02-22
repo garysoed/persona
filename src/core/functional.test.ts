@@ -1,8 +1,8 @@
-import {source, VineBuilder} from 'grapevine';
+import {source} from 'grapevine';
 import {assert, createSpy, should, test} from 'gs-testing';
 import {identity} from 'nabu';
 import {Observable, of as observableOf} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 
 import {attribute as attributeIn} from '../input/attribute';
 import {attribute as attributeOut} from '../output/attribute';
@@ -14,8 +14,7 @@ import {Builder as PersonaBuilder} from './builder';
 import {PersonaContext} from './persona-context';
 
 
-const _v = new VineBuilder();
-const _p = new PersonaBuilder(_v);
+const _p = new PersonaBuilder();
 
 const $$ = {
   tag: 'test-el',
@@ -62,11 +61,9 @@ abstract class ParentTestClass<S extends typeof $p> extends BaseCtrl<S> {
   template: '',
 })
 class TestClass extends ParentTestClass<typeof $> {
-  private readonly handlerSbj = $HANDLER.get(this.vine);
-
   constructor(context: PersonaContext) {
     super(context, $);
-    this.addSetup(this.setupHandler());
+    this.setupHandler();
   }
 
   protected overriddenRender(): Observable<string> {
@@ -78,8 +75,8 @@ class TestClass extends ParentTestClass<typeof $> {
     return this.inputs.host.attr3.pipe(map(v => `123-${v}`));
   }
 
-  private setupHandler(): Observable<unknown> {
-    return this.handlerSbj.pipe(tap(handler => handler()));
+  private setupHandler(): void {
+    $HANDLER.get(this.vine)();
   }
 
   get renders(): ReadonlyArray<Observable<unknown>> {
@@ -95,8 +92,13 @@ const testerFactory = new PersonaTesterFactory(_p);
 test('@persona/core/functional', init => {
   const _ = init(() => {
     const mockHandler = createSpy<undefined, []>('handler');
-    const tester = testerFactory.build([TestClass], document);
-    $HANDLER.set(tester.vine, () => mockHandler);
+    const tester = testerFactory.build({
+      overrides: [
+        {override: $HANDLER, withValue: mockHandler},
+      ],
+      rootCtrls: [TestClass],
+      rootDoc: document,
+    });
 
     const el = tester.createElement('test-el');
     return {el, tester, mockHandler};

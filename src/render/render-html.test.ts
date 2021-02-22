@@ -17,9 +17,13 @@ test('@persona/render/render-html', init => {
   const _ = init(() => {
     const el = document.createElement('div');
     const shadowRoot = el.attachShadow({mode: 'open'});
-    const context = createFakeContext({shadowRoot});
     const mockHtmlParseService = createSpyInstance(HtmlParseService);
-    $htmlParseService.set(context.vine, () => mockHtmlParseService);
+    const context = createFakeContext({
+      shadowRoot,
+      overrides: [
+        {override: $htmlParseService, withValue: mockHtmlParseService},
+      ],
+    });
     return {context, mockHtmlParseService};
   });
 

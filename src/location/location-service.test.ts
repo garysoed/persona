@@ -1,5 +1,4 @@
 import {assert, objectThat, run, should, spy, test} from 'gs-testing';
-import {of as observableOf} from 'rxjs';
 
 import {createFakeWindow} from '../testing/fake-window';
 import {integerParser} from '../util/parsers';
@@ -20,7 +19,7 @@ test('@persona/location/location-service', init => {
     const service = new LocationService(
         SPEC,
         {payload: {}, type: 'default'},
-        observableOf(fakeWindow),
+        fakeWindow,
     );
     run(service.run());
     return {service, fakeWindow};

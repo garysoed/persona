@@ -1,5 +1,5 @@
-import {Vine} from 'grapevine';
-import {FakeTime, fake, mockTime, runEnvironment, spy} from 'gs-testing';
+import {Vine, Config as VineConfig} from 'grapevine';
+import {fake, FakeTime, mockTime, runEnvironment, spy} from 'gs-testing';
 
 import {BaseCtrlCtor} from '../core/base-ctrl';
 import {Builder as PersonaBuilder} from '../core/builder';
@@ -11,9 +11,15 @@ import {FakeCustomElementRegistry} from './fake-custom-element-registry';
 import {FakeMediaQuery, mockMatchMedia} from './mock-match-media';
 import {PersonaTesterEnvironment} from './persona-tester-environment';
 
+interface Config {
+  readonly rootCtrls?: ReadonlyArray<CustomElementCtrlCtor|BaseCtrlCtor>;
+  readonly rootDoc: Document;
+  readonly overrides?: VineConfig['overrides'];
+}
+
+
 // TODO: Should only use the API, not the private $
 // TODO: Add snapshot getter
-
 /**
  * Used to test UI implemented using Persona.
  */
@@ -50,20 +56,21 @@ export class PersonaTesterFactory {
       private readonly personaBuilder: PersonaBuilder,
   ) { }
 
-  build(rootCtors: ReadonlyArray<CustomElementCtrlCtor|BaseCtrlCtor>, rootDoc: Document): PersonaTester {
+  build(config: Config): PersonaTester {
     const origCreateElement = document.createElement;
     function createElement(tag: string): HTMLElement {
       return origCreateElement.call(document, tag);
     }
     const fakeTime = mockTime(window);
     const customElementRegistry = new FakeCustomElementRegistry(createElement, fakeTime);
+    const vine = new Vine({appName: 'test', overrides: config.overrides});
 
-    const {vine} = this.personaBuilder.build(
-        'test',
-        rootCtors,
-        rootDoc,
-        customElementRegistry,
-    );
+    this.personaBuilder.build({
+      customElementRegistry,
+      rootCtrls: [],
+      vine,
+      ...config,
+    });
 
     const tester = new PersonaTester(fakeTime, vine, customElementRegistry);
     fake(spy(document, 'createElement'))

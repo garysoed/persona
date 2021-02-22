@@ -1,7 +1,7 @@
 import {Runnable} from 'gs-tools/export/rxjs';
 import {Result} from 'nabu';
-import {Observable, Subject, fromEvent, fromEventPattern, merge} from 'rxjs';
-import {map, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {fromEvent, fromEventPattern, merge, Observable, Subject} from 'rxjs';
+import {map, startWith, tap} from 'rxjs/operators';
 
 import {LocationConverter} from './location-converter';
 
@@ -26,34 +26,30 @@ export class LocationService<S extends RouteSpec> extends Runnable {
   constructor(
       private readonly specs: S,
       private readonly defaultRoute: Route<S, keyof S>,
-      private readonly window$: Observable<Window>,
+      private readonly windowObj: Window,
   ) {
     super();
     this.addSetup(this.setupGoToPath());
   }
 
   getLocation(): Observable<Route<S, keyof S>> {
-    return this.window$.pipe(
-        switchMap(windowObj => {
-          return merge(
-              fromEvent<PopStateEvent>(windowObj, 'popstate'),
-              this.onPushState$,
-          )
-              .pipe(
-                  map(() => windowObj.location.pathname),
-                  startWith(windowObj.location.pathname),
-                  map(location => this.parseLocation(location)),
-                  tap(route => {
-                    if (!route) {
-                      this.goToPath(this.defaultRoute.type, this.defaultRoute.payload);
-                    }
-                  }),
-                  map(route => {
-                    return route || this.defaultRoute;
-                  }),
-              );
-        }),
-    );
+    return merge(
+        fromEvent<PopStateEvent>(this.windowObj, 'popstate'),
+        this.onPushState$,
+    )
+        .pipe(
+            map(() => this.windowObj.location.pathname),
+            startWith(this.windowObj.location.pathname),
+            map(location => this.parseLocation(location)),
+            tap(route => {
+              if (!route) {
+                this.goToPath(this.defaultRoute.type, this.defaultRoute.payload);
+              }
+            }),
+            map(route => {
+              return route || this.defaultRoute;
+            }),
+        );
   }
 
   getLocationOfType<K extends keyof S>(type: K): Observable<Route<S, K>|null> {
@@ -138,9 +134,8 @@ export class LocationService<S extends RouteSpec> extends Runnable {
   private setupGoToPath(): Observable<unknown> {
     return this.onGoToUrl$
         .pipe(
-            withLatestFrom(this.window$),
-            tap(([url, windowObj]) => {
-              windowObj.history.pushState({}, 'unused', url);
+            tap(url => {
+              this.windowObj.history.pushState({}, 'unused', url);
               this.onPushState$.next({});
             }),
         );

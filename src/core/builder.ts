@@ -1,8 +1,8 @@
-import {Vine, VineBuilder} from 'grapevine';
+import {Vine} from 'grapevine';
 import {$asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pipe} from 'gs-tools/export/collect';
 import {ClassAnnotation, ClassAnnotator} from 'gs-tools/export/data';
 import {iterableOfType, unknownType} from 'gs-types';
-import {BehaviorSubject, EMPTY, Subject, combineLatest, merge, of as observableOf, timer} from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, merge, of as observableOf, Subject, timer} from 'rxjs';
 import {distinctUntilChanged, mapTo, shareReplay, switchMap, tap} from 'rxjs/operators';
 
 import {UnresolvedAttributeInput} from '../input/attribute';
@@ -18,6 +18,13 @@ import {TemplateService} from './template-service';
 
 
 const CLEANUP_DELAY_MS = 1000;
+
+export interface Config {
+  readonly customElementRegistry: CustomElementRegistry;
+  readonly rootCtrls: ReadonlyArray<CustomElementCtrlCtor|BaseCtrlCtor>;
+  readonly rootDoc: Document;
+  readonly vine: Vine;
+}
 
 export interface AttributeChangedEvent {
   readonly attrName: string;
@@ -57,20 +64,13 @@ export class Builder {
       }),
   );
 
-  constructor(private readonly vineBuilder: VineBuilder) { }
-
   baseCustomElement(spec: BaseCustomElementSpec): ClassDecorator {
     return this.baseCustomElementAnnotator.decorator(spec);
   }
 
-  build(
-      appName: string,
-      rootCtrls: ReadonlyArray<CustomElementCtrlCtor|BaseCtrlCtor>,
-      rootDoc: Document,
-      customElementRegistry: CustomElementRegistry,
-  ): {vine: Vine} {
+  build(config: Config): void {
     const customElementAnnotation = this.customElementAnnotator.data;
-    const ctrls = getAllCtrls(rootCtrls, customElementAnnotation);
+    const ctrls = getAllCtrls(config.rootCtrls, customElementAnnotation);
     const registeredComponentSpecs = this.register(new Set(ctrls));
 
     const templatesMap = $pipe(
@@ -80,11 +80,9 @@ export class Builder {
         }),
         $asMap(),
     );
-    const templateService = new TemplateService(templatesMap, rootDoc);
+    const templateService = new TemplateService(templatesMap, config.rootDoc);
 
-    const vine = this.vineBuilder.build(`${appName}-vine`);
-
-    runConfigures(customElementAnnotation, ctrls, vine);
+    runConfigures(customElementAnnotation, ctrls, config.vine);
 
     [...registeredComponentSpecs.values()]
         .map(async ({api, componentClass, tag}) => {
@@ -104,16 +102,14 @@ export class Builder {
               observedAttributes,
               tag,
               templateService,
-              vine,
+              config.vine,
           );
 
           return new Promise(resolve => {
-            customElementRegistry.define(tag, elementClass);
+            config.customElementRegistry.define(tag, elementClass);
             resolve();
           });
         });
-
-    return {vine};
   }
 
   customElement(spec: CustomElementSpec): ClassDecorator {

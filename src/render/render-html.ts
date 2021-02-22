@@ -1,4 +1,4 @@
-import {combineLatest, Observable, of as observableOf} from 'rxjs';
+import {Observable, of as observableOf} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
 import {PersonaContext} from '../core/persona-context';
@@ -24,12 +24,10 @@ export function renderHtml(
     spec: RenderHtmlSpec,
     context: PersonaContext,
 ): Observable<NodeWithId<Element>|null> {
-  return combineLatest([
-    $htmlParseService.get(context.vine),
-    spec.raw,
-  ])
+  const service = $htmlParseService.get(context.vine);
+  return spec.raw
       .pipe(
-          switchMap(([service, raw]) => service.parse(raw, spec.parseType)),
+          switchMap(raw => service.parse(raw, spec.parseType)),
           switchMap(el => {
             if (!el) {
               return observableOf(null);
