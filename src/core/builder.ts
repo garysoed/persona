@@ -105,7 +105,7 @@ export class Builder {
               config.vine,
           );
 
-          return new Promise(resolve => {
+          return new Promise<void>(resolve => {
             config.customElementRegistry.define(tag, elementClass);
             resolve();
           });

@@ -17,29 +17,29 @@
   },
   "homepage": "https://github.com/garysoed/persona#readme",
   "devDependencies": {
-    "@types/jasmine": "^2.8.16",
-    "@typescript-eslint/eslint-plugin": "^4.6.0",
-    "@typescript-eslint/parser": "^4.6.0",
-    "eslint": "^7.12.1",
+    "@types/jasmine": "^2.8.17",
+    "@typescript-eslint/eslint-plugin": "^4.17.0",
+    "@typescript-eslint/parser": "^4.17.0",
+    "eslint": "^7.22.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-sort-imports-es6-autofix": "^0.5.0",
     "html-loader": "^0.5.5",
-    "jasmine": "^3.1.0",
+    "jasmine": "^3.6.4",
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^3.3.1",
     "karma-source-map-support": "^1.4.0",
-    "karma-sourcemap-loader": "^0.3.7",
+    "karma-sourcemap-loader": "^0.3.8",
     "source-map-loader": "^0.2.4",
-    "ts-loader": "^7.0.0",
-    "typescript": "^3.9.7",
-    "webpack": "^4.44.1",
-    "webpack-notifier": "^1.7.0"
+    "ts-loader": "^7.0.5",
+    "typescript": "^4.2.3",
+    "webpack": "^4.46.0",
+    "webpack-notifier": "^1.13.0"
   },
   "peerDependencies": {
     "rxjs": "^6.3.3"
   },
   "dependencies": {
-    "rxjs": "^6.5.4",
-    "tslib": "^1.11.0"
+    "rxjs": "^6.6.6",
+    "tslib": "^1.14.1"
   }
 }
