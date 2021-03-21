@@ -9,7 +9,6 @@
       "es2015"
     ],
     "module": "commonjs",
-    // "moduleResolution": "node",
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -19,7 +18,7 @@
     "strict": true,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
-    "target": "es6"
+    "target": "es6",
   },
   "include": [
     "src/**/*.ts",
