@@ -2,7 +2,7 @@ import {defer, Observable} from 'rxjs';
 
 import {PersonaContext} from '../core/persona-context';
 
-import {applyDecorators, Decorator} from './decorators/apply-decorators';
+import {Decorator} from './decorators/apply-decorators';
 import {applyTextContent} from './decorators/apply-text-content';
 import {NodeWithId} from './node-with-id';
 import {renderNode} from './render-node';
@@ -21,17 +21,16 @@ export function renderTextNode(
     }
     const node = ownerDocument.createTextNode('');
 
+    const decorators: Array<Decorator<NodeWithId<Text>>> = [applyTextContent(spec.textContent)];
+    if (spec.decorators) {
+      decorators.push(...spec.decorators);
+    }
+
     return renderNode({
       ...spec,
       type: RenderSpecType.NODE,
       node,
-      decorator: node => {
-        const decorators: Array<Decorator<NodeWithId<Text>>> = [applyTextContent(spec.textContent)];
-        if (spec.decorator) {
-          decorators.push(spec.decorator);
-        }
-        return applyDecorators(node, ...decorators);
-      },
+      decorators,
     });
   });
 }

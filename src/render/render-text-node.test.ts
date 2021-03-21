@@ -1,4 +1,4 @@
-import {assert, createSpySubject, should, test} from 'gs-testing';
+import {assert, createSpySubject, run, should, test} from 'gs-testing';
 import {of as observableOf} from 'rxjs';
 import {map, shareReplay} from 'rxjs/operators';
 
@@ -25,7 +25,10 @@ test('@persona/render/render-text-node', init => {
         },
         _.context,
     )
-        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+        .pipe(shareReplay({bufferSize: 1, refCount: false}));
+
+    // Subscribes to start updating.
+    run(node$);
 
     const text$ = createSpySubject(node$.pipe(map(n => n.textContent)));
     const nodeType$ = createSpySubject(node$.pipe(map(n => n.nodeType)));
@@ -40,7 +43,10 @@ test('@persona/render/render-text-node', init => {
     const node$ = renderTextNode(
         {type: RenderSpecType.TEXT_NODE, textContent: observableOf(text1, text2), id: {}},
         _.context)
-        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+        .pipe(shareReplay({bufferSize: 1, refCount: false}));
+
+    // Subscribes to start updating.
+    run(node$);
 
     const text$ = createSpySubject(node$.pipe(map(n => n.textContent)));
     const nodeType$ = createSpySubject(node$.pipe(map(n => n.nodeType)));

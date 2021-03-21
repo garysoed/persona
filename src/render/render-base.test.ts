@@ -13,9 +13,9 @@ test('@persona/render/render-base', () => {
     const onEvent$ = new ReplaySubject<EventTarget>();
     const spec: BaseRenderSpec<Element> = {
       id,
-      decorator: el => fromEvent(el, 'click').pipe(
+      decorators: [el => fromEvent(el, 'click').pipe(
           tap(e => onEvent$.next(e.target!)),
-      ),
+      )],
     };
 
     const el = document.createElement('div');

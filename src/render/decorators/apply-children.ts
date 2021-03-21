@@ -12,10 +12,10 @@ import {Decorator} from './apply-decorators';
 
 
 export function applyChildren(
-    children: Observable<readonly RenderSpec[]>,
+    children$: Observable<readonly RenderSpec[]>,
     context: PersonaContext,
 ): Decorator<NodeWithId<Element>> {
-  return el => children.pipe(
+  return el => children$.pipe(
       switchMap(specs => {
         const renderedNode$list = specs.map(spec => render(spec, context));
         if (renderedNode$list.length <= 0) {

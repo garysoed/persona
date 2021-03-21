@@ -47,42 +47,39 @@ export function renderElement(
     spec: RenderElementSpec,
     context: PersonaContext,
 ): Observable<HTMLElement&{[__id]: unknown}> {
+  const decorators: Array<Decorator<NodeWithId<HTMLElement>>> = [];
+  const extraAttrs = spec.attrs ?? new Map<string, Observable<string|undefined>>();
+  for (const [attrName, attrValue] of extraAttrs) {
+    decorators.push(el => attrValue.pipe(
+        tap(value => {
+          if (value === undefined) {
+            el.removeAttribute(attrName);
+          } else {
+            el.setAttribute(attrName, value);
+          }
+        }),
+    ));
+  }
+
+  if (spec.textContent) {
+    decorators.push(applyTextContent(spec.textContent));
+  }
+
+  if (spec.children) {
+    decorators.push(applyChildren(spec.children, context));
+  }
+
+  if (spec.decorators) {
+    decorators.push(...spec.decorators);
+  }
+
   return ownerDocument().getValue(context).pipe(
       switchMap(document => {
         return renderNode({
           ...spec,
           type: RenderSpecType.NODE,
           node: document.createElement(spec.tag),
-          decorator: el => {
-            const decorators: Array<Decorator<NodeWithId<HTMLElement>>> = [];
-
-            const extraAttrs = spec.attrs ?? new Map<string, Observable<string|undefined>>();
-            for (const [attrName, attrValue] of extraAttrs) {
-              decorators.push(el => attrValue.pipe(
-                  tap(value => {
-                    if (value === undefined) {
-                      el.removeAttribute(attrName);
-                    } else {
-                      el.setAttribute(attrName, value);
-                    }
-                  }),
-              ));
-            }
-
-            if (spec.textContent) {
-              decorators.push(applyTextContent(spec.textContent));
-            }
-
-            if (spec.children) {
-              decorators.push(applyChildren(spec.children, context));
-            }
-
-            if (spec.decorator) {
-              decorators.push(spec.decorator);
-            }
-
-            return applyDecorators(el, ...decorators);
-          },
+          decorators,
         });
       }),
   );

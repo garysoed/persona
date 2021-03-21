@@ -204,11 +204,14 @@ test('@persona/render/render-element', init => {
           type: RenderSpecType.ELEMENT,
           tag: TAG,
           id: 'id',
-          decorator: el => fromEvent(el, 'click').pipe(tap(e => onEvent$.next(e.target!))),
+          decorators: [el => fromEvent(el, 'click').pipe(tap(e => onEvent$.next(e.target!)))],
         },
         _.context,
     )
         .pipe(shareReplay({bufferSize: 1, refCount: false}));
+
+    // Subscribes to start updating.
+    run(el$);
 
     // Click should be registered.
     run(el$.pipe(take(1), tap(el => el.click())));

@@ -32,8 +32,10 @@ test('@persona/render/decorators/apply-children', init => {
     const onUpdate$ = applyChildren(observableOf([child1, child2], [child1]), _.context)(_.el)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
-    const children$ = createSpySubject(onUpdate$.pipe(map(() => arrayFrom(_.el.children)))
-        .pipe(map(els => els.map(el => el.tagName))),
+    const children$ = createSpySubject(
+        onUpdate$.pipe(map(() => arrayFrom(_.el.children)))
+            .pipe(map(els => els.map(el => el.tagName))),
+        1,
     );
 
     assert(children$).to.emitSequence([arrayThat<string>().haveExactElements(['DIV'])]);
@@ -53,8 +55,10 @@ test('@persona/render/decorators/apply-children', init => {
     const onUpdate$ = applyChildren(observableOf([child2], [child1, child2]), _.context)(_.el)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
-    const children$ = createSpySubject(onUpdate$.pipe(map(() => arrayFrom(_.el.children)))
-        .pipe(map(els => els.map(el => el.tagName))),
+    const children$ = createSpySubject(
+        onUpdate$.pipe(map(() => arrayFrom(_.el.children)))
+            .pipe(map(els => els.map(el => el.tagName))),
+        1,
     );
 
     assert(children$).to.emitSequence([arrayThat<string>().haveExactElements(['DIV', 'INPUT'])]);
@@ -74,8 +78,10 @@ test('@persona/render/decorators/apply-children', init => {
     const onUpdate$ = applyChildren(observableOf([child2], [child1]), _.context)(_.el)
         .pipe(shareReplay({bufferSize: 1, refCount: true}));
 
-    const children$ = createSpySubject(onUpdate$.pipe(map(() => arrayFrom(_.el.children)))
-        .pipe(map(els => els.map(el => el.tagName))),
+    const children$ = createSpySubject(
+        onUpdate$.pipe(map(() => arrayFrom(_.el.children)))
+            .pipe(map(els => els.map(el => el.tagName))),
+        1,
     );
 
     assert(children$).to.emitSequence([arrayThat<string>().haveExactElements(['DIV'])]);

@@ -1,5 +1,5 @@
 import {assert, createSpy, createSpyInstance, fake, should, test} from 'gs-testing';
-import {EMPTY, Observable, of as observableOf} from 'rxjs';
+import {Observable, of as observableOf, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {createFakeContext} from '../testing/create-fake-context';
@@ -32,7 +32,7 @@ test('@persona/render/render-html', init => {
     fake(_.mockHtmlParseService.parse).always().return(observableOf(el));
 
     const spy = createSpy<Observable<unknown>, [NodeWithId<Node>]>('decorator');
-    fake(spy).always().return(EMPTY);
+    fake(spy).always().return(of({}));
 
     const tagName$ = renderHtml(
         {
@@ -40,7 +40,7 @@ test('@persona/render/render-html', init => {
           raw: observableOf(RAW),
           parseType: SUPPORTED_TYPE,
           id: 'id',
-          decorator: spy,
+          decorators: [spy],
         },
         _.context,
     )

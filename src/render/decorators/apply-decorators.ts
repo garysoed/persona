@@ -1,4 +1,4 @@
-import {EMPTY, merge, Observable, of as observableOf} from 'rxjs';
+import {EMPTY, merge, Observable, of} from 'rxjs';
 import {switchMapTo} from 'rxjs/operators';
 
 import {NodeWithId} from '../node-with-id';
@@ -13,5 +13,5 @@ export function applyDecorators<N extends NodeWithId<Node>>(
   const obs$list: ReadonlyArray<Observable<N>> = decorators.map(decorator => {
     return decorator(node).pipe(switchMapTo(EMPTY));
   });
-  return merge<N>(observableOf(node), ...obs$list);
+  return merge<N>(of(node), ...obs$list);
 }

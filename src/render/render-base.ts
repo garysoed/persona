@@ -11,9 +11,9 @@ export function renderBase<N extends Node>(
     node: N,
 ): Observable<NodeWithId<N>> {
   const nodeWithId = setId(node, spec.id);
-  if (!spec.decorator) {
+  if (!spec.decorators) {
     return observableOf(nodeWithId);
   } else {
-    return applyDecorators(nodeWithId, spec.decorator);
+    return applyDecorators(nodeWithId, ...spec.decorators);
   }
 }
