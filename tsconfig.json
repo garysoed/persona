@@ -13,6 +13,10 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "outDir": "out",
+    "paths": {
+      "rxjs": ["node_modules/rxjs"],
+      "rxjs/*": ["node_modules/rxjs/*"],
+    },
     "pretty": true,
     "sourceMap": true,
     "strict": true,

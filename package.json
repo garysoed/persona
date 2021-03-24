@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "rxjs": "^6.6.6",
+    "tsconfig-paths-webpack-plugin": "^3.5.1",
     "tslib": "^1.14.1"
   }
 }
