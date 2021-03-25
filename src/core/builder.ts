@@ -116,6 +116,10 @@ export class Builder {
     return this.customElementAnnotator.decorator(spec);
   }
 
+  getSpec(ctrl: BaseCtrlCtor): CustomElementSpec|null {
+    return getSpecFromClassAnnotation(this.customElementAnnotator, ctrl);
+  }
+
   private register(
       rootCtrls: Set<CustomElementCtrlCtor|BaseCtrlCtor>,
   ): Map<string, RegistrationSpec> {

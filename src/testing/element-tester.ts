@@ -1,5 +1,5 @@
 import {Vine} from 'grapevine';
-import {$filter, $first, $pipe, arrayFrom} from 'gs-tools/export/collect';
+import {$asArray, $asMap, $filter, $filterNonNull, $first, $map, $pipe, arrayFrom} from 'gs-tools/export/collect';
 import {Verbosity, stringify} from 'moirai';
 import {Observable, Subject, fromEvent} from 'rxjs';
 import {map, mapTo, startWith} from 'rxjs/operators';
@@ -70,6 +70,10 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     const normalizedEvent = event || new CustomEvent(eventName);
     const targetEl = resolveSelectable(this.element, context => spec.resolver(context));
     targetEl.dispatchEvent(normalizedEvent);
+  }
+
+  flattenContent(): Element {
+    return flattenShadowElement(this.element, new Map()) as Element;
   }
 
   getAttribute<T>(output: AttributeOutput<T>|AttributeInput<T>): Observable<T> {
@@ -282,6 +286,56 @@ function findCommentNode(
       }),
       $first(),
   ) || null;
+}
+
+function flattenShadowElement(origNode: Node, ancestorSlotMap: ReadonlyMap<string, Node>): Node {
+  if (origNode instanceof Element && origNode.tagName === 'SLOT') {
+    const slotName = origNode.getAttribute('name');
+    if (slotName) {
+      const slotEl = ancestorSlotMap.get(slotName);
+      if (slotEl) {
+        return slotEl;
+      }
+    }
+  }
+
+  const shadowRoot = origNode instanceof Element ? origNode.shadowRoot : null;
+  const rootEl = origNode.cloneNode();
+  if (shadowRoot === null) {
+    const children = $pipe(
+        arrayFrom(origNode.childNodes),
+        $map(child => flattenShadowElement(child, ancestorSlotMap)),
+        $asArray(),
+    );
+    for (const child of children) {
+      rootEl.appendChild(child);
+    }
+    return rootEl;
+  }
+
+  const slotMap = $pipe(
+      arrayFrom(origNode.childNodes),
+      $map(child => {
+        const slotName = child instanceof Element ? child.getAttribute('slot') : null;
+        if (slotName === null) {
+          return null;
+        }
+
+        return [slotName, flattenShadowElement(child, ancestorSlotMap)] as const;
+      }),
+      $filterNonNull(),
+      $asMap(),
+  );
+
+  const children = $pipe(
+      arrayFrom(shadowRoot.children),
+      $map(child => flattenShadowElement(child, slotMap)),
+      $asArray(),
+  );
+  for (const child of children) {
+    rootEl.appendChild(child);
+  }
+  return rootEl;
 }
 
 function resolveSelectable<S extends Selectable>(

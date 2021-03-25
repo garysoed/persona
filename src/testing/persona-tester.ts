@@ -1,4 +1,4 @@
-import {Vine, Config as VineConfig} from 'grapevine';
+import {Config as VineConfig, Vine} from 'grapevine';
 import {fake, FakeTime, mockTime, runEnvironment, spy} from 'gs-testing';
 
 import {BaseCtrlCtor} from '../core/base-ctrl';
@@ -10,6 +10,7 @@ import {ElementTester} from './element-tester';
 import {FakeCustomElementRegistry} from './fake-custom-element-registry';
 import {FakeMediaQuery, mockMatchMedia} from './mock-match-media';
 import {PersonaTesterEnvironment} from './persona-tester-environment';
+
 
 interface Config {
   readonly rootCtrls?: ReadonlyArray<CustomElementCtrlCtor|BaseCtrlCtor>;
@@ -30,8 +31,8 @@ export class PersonaTester {
       private readonly customElementRegistry: FakeCustomElementRegistry,
   ) { }
 
-  createElement<T extends HTMLElement>(tag: string): ElementTester<T> {
-    const element = this.customElementRegistry.create(tag) as T;
+  createElement<T extends HTMLElement>(tagOrCtrl: string|BaseCtrlCtor): ElementTester<HTMLElement> {
+    const element = this.customElementRegistry.create(tagOrCtrl) as T;
 
     return new ElementTester(element, this.vine);
   }
@@ -62,7 +63,7 @@ export class PersonaTesterFactory {
       return origCreateElement.call(document, tag);
     }
     const fakeTime = mockTime(window);
-    const customElementRegistry = new FakeCustomElementRegistry(createElement, fakeTime);
+    const customElementRegistry = new FakeCustomElementRegistry(createElement, fakeTime, this.personaBuilder);
     const vine = new Vine({appName: 'test', overrides: config.overrides});
 
     this.personaBuilder.build({

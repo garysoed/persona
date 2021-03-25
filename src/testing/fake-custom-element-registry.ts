@@ -2,6 +2,8 @@ import {FakeTime, run} from 'gs-testing';
 import {arrayFrom} from 'gs-tools/export/collect';
 import {tap} from 'rxjs/operators';
 
+import {BaseCtrlCtor} from '../core/base-ctrl';
+import {Builder} from '../core/builder';
 import {CustomElementClass, __customElementImplFactory} from '../core/custom-element-class';
 import {CHECK_PERIOD_MS} from '../input/property-observer';
 import {mutationObservable} from '../util/mutation-observable';
@@ -14,25 +16,39 @@ type UpgradedElement = HTMLElement & {[__upgraded]?: boolean};
 
 export class FakeCustomElementRegistry implements CustomElementRegistry {
   private readonly definedElements: Map<string, CustomElementClass> = new Map();
-  private readonly listeners_: Map<string, Listener[]> = new Map();
+  private readonly listeners: Map<string, Listener[]> = new Map();
 
   constructor(
-      private readonly createElement_: (tag: string) => HTMLElement,
+      private readonly createElement: (tag: string) => HTMLElement,
       private readonly fakeTime: FakeTime,
+      private readonly builder: Builder,
   ) { }
 
-  create(tag: string): HTMLElement {
-    const el = this.createElement_(tag);
-    this.upgradeElement_(el);
+  create(tagOrCtrl: string|BaseCtrlCtor): HTMLElement {
+    const el = typeof tagOrCtrl === 'string' ?
+      this.createElementByTag(tagOrCtrl) : this.createElementByCtrl(tagOrCtrl);
+    this.upgradeElement(el);
     this.fakeTime.tick(CHECK_PERIOD_MS);
-
     return el;
+  }
+
+  private createElementByCtrl(ctrl: BaseCtrlCtor): HTMLElement {
+    const tag = this.builder.getSpec(ctrl)?.tag;
+    if (!tag) {
+      throw new Error(`Element ${ctrl.name} not registered`);
+    }
+
+    return this.createElementByTag(tag);
+  }
+
+  private createElementByTag(tag: string): HTMLElement {
+    return this.createElement(tag);
   }
 
   define(tag: string, constructor: CustomElementClass): void {
     this.definedElements.set(tag, constructor);
 
-    const listeners = this.listeners_.get(tag) || [];
+    const listeners = this.listeners.get(tag) || [];
     for (const listener of listeners) {
       listener();
     }
@@ -55,13 +71,13 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
         return;
       }
 
-      const listeners = this.listeners_.get(tag) || [];
+      const listeners = this.listeners.get(tag) || [];
       listeners.push(resolve);
-      this.listeners_.set(tag, listeners);
+      this.listeners.set(tag, listeners);
     });
   }
 
-  private upgradeElement_(el: UpgradedElement): void {
+  private upgradeElement(el: UpgradedElement): void {
     if (el[__upgraded]) {
       // Already upgraded, so ignore it.
       return;
@@ -95,7 +111,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
       if (!(node instanceof HTMLElement)) {
         continue;
       }
-      this.upgradeElement_(node);
+      this.upgradeElement(node);
     }
   }
 }
