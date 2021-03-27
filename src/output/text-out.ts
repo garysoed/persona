@@ -21,6 +21,10 @@ export class TextOutput implements Output<string> {
             tap(value => {
               const el = this.resolver(context);
               el.textContent = value;
+
+              // TODO: Make this a fake.
+              const record = {};
+              el.dispatchEvent(new CustomEvent('pr-fake-mutation', {bubbles: true, detail: {record}}));
             }),
         );
   }

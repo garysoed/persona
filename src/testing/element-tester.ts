@@ -73,7 +73,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
   }
 
   flattenContent(): Element {
-    return flattenShadowElement(this.element, new Map()) as Element;
+    return flattenNodeWithShadow(this.element, new Map()) as Element;
   }
 
   getAttribute<T>(output: AttributeOutput<T>|AttributeInput<T>): Observable<T> {
@@ -288,7 +288,7 @@ function findCommentNode(
   ) || null;
 }
 
-function flattenShadowElement(origNode: Node, ancestorSlotMap: ReadonlyMap<string, Node>): Node {
+function flattenNodeWithShadow(origNode: Node, ancestorSlotMap: ReadonlyMap<string, Node>): Node {
   if (origNode instanceof Element && origNode.tagName === 'SLOT') {
     const slotName = origNode.getAttribute('name');
     if (slotName) {
@@ -304,7 +304,7 @@ function flattenShadowElement(origNode: Node, ancestorSlotMap: ReadonlyMap<strin
   if (shadowRoot === null) {
     const children = $pipe(
         arrayFrom(origNode.childNodes),
-        $map(child => flattenShadowElement(child, ancestorSlotMap)),
+        $map(child => flattenNodeWithShadow(child, ancestorSlotMap)),
         $asArray(),
     );
     for (const child of children) {
@@ -321,15 +321,16 @@ function flattenShadowElement(origNode: Node, ancestorSlotMap: ReadonlyMap<strin
           return null;
         }
 
-        return [slotName, flattenShadowElement(child, ancestorSlotMap)] as const;
+        return [slotName, flattenNodeWithShadow(child, ancestorSlotMap)] as const;
       }),
       $filterNonNull(),
       $asMap(),
   );
 
+  // Add shadowRoot's children
   const children = $pipe(
-      arrayFrom(shadowRoot.children),
-      $map(child => flattenShadowElement(child, slotMap)),
+      arrayFrom(shadowRoot.childNodes),
+      $map(child => flattenNodeWithShadow(child, slotMap)),
       $asArray(),
   );
   for (const child of children) {

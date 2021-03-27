@@ -16,7 +16,7 @@ export class TextInput implements Input<string> {
     return mutationObservable(el, {characterData: true, childList: true, subtree: true})
         .pipe(
             startWith({}),
-            map(() => el.textContent || ''),
+            map(() => el.textContent ?? ''),
         );
   }
 }
