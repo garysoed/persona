@@ -290,12 +290,10 @@ function findCommentNode(
 
 function flattenNodeWithShadow(origNode: Node, ancestorSlotMap: ReadonlyMap<string, Node>): Node {
   if (origNode instanceof Element && origNode.tagName === 'SLOT') {
-    const slotName = origNode.getAttribute('name');
-    if (slotName) {
-      const slotEl = ancestorSlotMap.get(slotName);
-      if (slotEl) {
-        return slotEl;
-      }
+    const slotName = origNode.getAttribute('name') ?? '';
+    const slotEl = ancestorSlotMap.get(slotName);
+    if (slotEl) {
+      return slotEl;
     }
   }
 
@@ -316,12 +314,12 @@ function flattenNodeWithShadow(origNode: Node, ancestorSlotMap: ReadonlyMap<stri
   const slotMap = $pipe(
       arrayFrom(origNode.childNodes),
       $map(child => {
-        const slotName = child instanceof Element ? child.getAttribute('slot') : null;
-        if (slotName === null) {
+        if (!(child instanceof Element)) {
           return null;
         }
 
-        return [slotName, flattenNodeWithShadow(child, ancestorSlotMap)] as const;
+        const slotName = child.getAttribute('slot') ?? '';
+        return [slotName ?? '', flattenNodeWithShadow(child, ancestorSlotMap)] as const;
       }),
       $filterNonNull(),
       $asMap(),
