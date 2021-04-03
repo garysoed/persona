@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
 import {UnresolvedElementProperty} from '../types/unresolved-element-property';
@@ -24,7 +24,7 @@ export class OnMutationInput implements Input<readonly MutationRecord[]> {
   /**
    * @internal
    */
-  getValue(context: PersonaContext): Observable<readonly MutationRecord[]> {
+  getValue(context: ShadowContext): Observable<readonly MutationRecord[]> {
     const el = this.resolver(context);
     return mutationObservable(el, this.config);
   }

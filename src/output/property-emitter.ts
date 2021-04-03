@@ -1,7 +1,7 @@
 import {OperatorFunction, ReplaySubject, Subject, pipe} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
 import {UnresolvedElementProperty} from '../types/unresolved-element-property';
@@ -18,7 +18,7 @@ export class PropertyEmitter<T> implements Output<T> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<T, unknown> {
+  output(context: ShadowContext): OperatorFunction<T, unknown> {
     return pipe(
         tap(value => {
           const element = this.resolver(context);

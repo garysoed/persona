@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs';
 import {filter, map, startWith} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {HasAttributeInput} from '../input/has-attribute';
 import {Input} from '../types/input';
 
@@ -13,7 +13,7 @@ export class HostHasAttribute extends HasAttributeInput implements Input<boolean
     super(attrName, ({shadowRoot}) => shadowRoot.host);
   }
 
-  getValue(context: PersonaContext): Observable<boolean> {
+  getValue(context: ShadowContext): Observable<boolean> {
     return context.onAttributeChanged$.pipe(
         filter(({attrName}) => attrName === this.attrName),
         startWith({}),

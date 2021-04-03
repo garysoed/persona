@@ -4,7 +4,7 @@ import {assertUnreachable} from 'gs-tools/export/typescript';
 import {combineLatest, NEVER, Observable, of as observableOf, OperatorFunction, pipe} from 'rxjs';
 import {map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {createSlotObs} from '../main/create-slot-obs';
 import {__id} from '../render/node-with-id';
 import {render} from '../render/render';
@@ -24,7 +24,7 @@ export class MultiOutput implements Output<readonly RenderSpec[]> {
       readonly resolver: Resolver<Selectable>,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<readonly RenderSpec[], unknown> {
+  output(context: ShadowContext): OperatorFunction<readonly RenderSpec[], unknown> {
     const parentEl = this.resolver(context);
 
     return pipe(

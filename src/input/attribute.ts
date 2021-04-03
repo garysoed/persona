@@ -2,7 +2,7 @@ import {Converter} from 'nabu';
 import {Observable} from 'rxjs';
 import {distinctUntilChanged, map} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
 import {UnresolvedElementProperty} from '../types/unresolved-element-property';
@@ -18,14 +18,14 @@ export class AttributeInput<T> implements Input<T> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  getValue(context: PersonaContext): Observable<T> {
+  getValue(context: ShadowContext): Observable<T> {
     return this.getAttributeValue(context).pipe(
         distinctUntilChanged(),
         map(unparsed => this.parseValue(unparsed)),
     );
   }
 
-  protected getAttributeValue(context: PersonaContext): Observable<string> {
+  protected getAttributeValue(context: ShadowContext): Observable<string> {
     return attributeObservable(
         this.resolver(context),
         this.attrName,

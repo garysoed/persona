@@ -2,7 +2,7 @@ import {booleanType} from 'gs-types';
 import {Observable} from 'rxjs';
 import {filter, tap} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {Resolver} from '../types/resolver';
 import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 
@@ -33,7 +33,7 @@ export class OnKeydownInput extends OnDomInput<KeyboardEvent> {
     super('keydown', options, resolver);
   }
 
-  getValue(context: PersonaContext): Observable<KeyboardEvent> {
+  getValue(context: ShadowContext): Observable<KeyboardEvent> {
     return super.getValue(context)
         .pipe(
             filter(event => {

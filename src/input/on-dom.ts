@@ -1,6 +1,6 @@
 import {Observable, fromEvent} from 'rxjs';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
 import {UnresolvedElementProperty} from '../types/unresolved-element-property';
@@ -13,7 +13,7 @@ export class OnDomInput<E extends Event> implements Input<E> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  getValue(context: PersonaContext): Observable<E> {
+  getValue(context: ShadowContext): Observable<E> {
     const el = this.resolver(context);
     return fromEvent<E>(el, this.eventName, this.options);
   }

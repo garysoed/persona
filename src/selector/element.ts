@@ -1,6 +1,6 @@
 import {Type, elementWithTagType} from 'gs-types';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {ResolvedSpec, UnresolvedSpec, api} from '../main/api';
 import {ComponentSpec} from '../main/component-spec';
 import {Selector} from '../types/selector';
@@ -19,7 +19,7 @@ export class ElementSelector<E extends Element, P extends PropertySpecs<E>> impl
     this._ = this.resolve(properties);
   }
 
-  getSelectable({shadowRoot}: PersonaContext): E {
+  getSelectable({shadowRoot}: ShadowContext): E {
     const el = shadowRoot.getElementById(this.elementId);
     if (!this.type.check(el)) {
       throw new Error(`Element of [${this.elementId}] should be a ${this.type} but was ${el}`);

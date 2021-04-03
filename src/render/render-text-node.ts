@@ -1,6 +1,6 @@
 import {defer, Observable} from 'rxjs';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 
 import {Decorator} from './decorators/apply-decorators';
 import {applyTextContent} from './decorators/apply-text-content';
@@ -12,7 +12,7 @@ import {RenderTextNodeSpec} from './types/render-text-node-spec';
 
 export function renderTextNode(
     spec: RenderTextNodeSpec,
-    context: PersonaContext,
+    context: ShadowContext,
 ): Observable<NodeWithId<Text>> {
   return defer(() => {
     const ownerDocument = context.shadowRoot.ownerDocument;

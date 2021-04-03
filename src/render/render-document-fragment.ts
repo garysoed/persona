@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs';
 
 import {RenderSpecType} from '../../export';
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 
 import {NodeWithId} from './node-with-id';
 import {renderNode} from './render-node';
@@ -10,7 +10,7 @@ import {RenderFragmentSpec} from './types/render-fragment-spec';
 
 export function renderDocumentFragment(
     spec: RenderFragmentSpec,
-    context: PersonaContext,
+    context: ShadowContext,
 ): Observable<NodeWithId<DocumentFragment>> {
   return renderNode({
     ...spec,

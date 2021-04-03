@@ -2,7 +2,7 @@ import {filterNonNullable} from 'gs-tools/export/rxjs';
 import {of as observableOf, OperatorFunction, pipe} from 'rxjs';
 import {distinctUntilChanged, pairwise, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {createSlotObs} from '../main/create-slot-obs';
 import {__id} from '../render/node-with-id';
 import {render} from '../render/render';
@@ -22,7 +22,7 @@ export class SingleOutput implements Output<RenderSpec|null|undefined> {
       readonly resolver: Resolver<Selectable>,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<RenderSpec|null|undefined, unknown> {
+  output(context: ShadowContext): OperatorFunction<RenderSpec|null|undefined, unknown> {
     const parent = this.resolver(context);
 
     return pipe(

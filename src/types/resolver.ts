@@ -1,6 +1,6 @@
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 
 import {Selectable} from './selectable';
 
 
-export type Resolver<S extends Selectable> = (context: PersonaContext) => S;
+export type Resolver<S extends Selectable> = (context: ShadowContext) => S;

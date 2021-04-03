@@ -1,7 +1,7 @@
 import {Observable, OperatorFunction, pipe} from 'rxjs';
 import {map, shareReplay, tap, withLatestFrom} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {ownerDocument} from '../input/owner-document';
 import {Output} from '../types/output';
 
@@ -22,7 +22,7 @@ export class Favicon implements Output<string> {
    * @param context - Context whose owner document's favicon should be set.
    * @returns Operator that takes in the favicon's href and sets the owner document's favicon.
    */
-  output(context: PersonaContext): OperatorFunction<string, unknown> {
+  output(context: ShadowContext): OperatorFunction<string, unknown> {
     const linkEl$: Observable<HTMLLinkElement> = ownerDocument().getValue(context).pipe(
         map(document => {
           const el: HTMLLinkElement = document.head.querySelector('link[rel="icon"]')

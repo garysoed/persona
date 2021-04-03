@@ -1,4 +1,4 @@
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {UnresolvedAttributeInput} from '../input/attribute';
 import {UnresolvedHasAttributeInput} from '../input/has-attribute';
 import {HostAttribute} from '../main/host-attribute';
@@ -17,7 +17,7 @@ export class RootSelector<P extends PropertySpecs<ShadowRoot>> implements Select
       private readonly properties: P,
   ) { }
 
-  getSelectable(context: PersonaContext): ShadowRoot {
+  getSelectable(context: ShadowContext): ShadowRoot {
     return context.shadowRoot;
   }
 

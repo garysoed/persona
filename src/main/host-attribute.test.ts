@@ -1,7 +1,7 @@
 import {assert, createSpySubject, should, test} from 'gs-testing';
 import {Subject} from 'rxjs';
 
-import {AttributeChangedEvent} from '../core/persona-context';
+import {AttributeChangedEvent} from '../core/shadow-context';
 import {createFakeContext} from '../testing/create-fake-context';
 import {integerParser} from '../util/parsers';
 

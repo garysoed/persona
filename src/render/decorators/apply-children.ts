@@ -3,7 +3,7 @@ import {diffArray} from 'gs-tools/export/rxjs';
 import {combineLatest, Observable, of as observableOf} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
 
-import {PersonaContext} from '../../core/persona-context';
+import {ShadowContext} from '../../core/shadow-context';
 import {NodeWithId} from '../node-with-id';
 import {render} from '../render';
 import {RenderSpec} from '../types/render-spec';
@@ -13,7 +13,7 @@ import {Decorator} from './apply-decorators';
 
 export function applyChildren(
     children$: Observable<readonly RenderSpec[]>,
-    context: PersonaContext,
+    context: ShadowContext,
 ): Decorator<NodeWithId<Element>> {
   return el => children$.pipe(
       switchMap(specs => {

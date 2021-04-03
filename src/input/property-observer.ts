@@ -1,7 +1,7 @@
 import {Observable, ReplaySubject, interval} from 'rxjs';
 import {map, startWith, switchMap, take} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
 import {UnresolvedElementProperty} from '../types/unresolved-element-property';
@@ -17,7 +17,7 @@ export class PropertyObserver<T> implements Input<T> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  getValue(context: PersonaContext): Observable<T> {
+  getValue(context: ShadowContext): Observable<T> {
     const element = this.resolver(context);
     return interval(CHECK_PERIOD_MS).pipe(
         startWith({}),

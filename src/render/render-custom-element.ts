@@ -2,7 +2,7 @@ import {getOwnPropertyKeys} from 'gs-tools/export/typescript';
 import {EMPTY, merge, Observable, of as observableOf} from 'rxjs';
 import {switchMap, switchMapTo} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {api, UnresolvedSpec} from '../main/api';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
@@ -37,7 +37,7 @@ export interface Values<S extends UnresolvedSpec> extends ElementValues {
  */
 export function renderCustomElement<S extends UnresolvedSpec>(
     spec: RenderCustomElementSpec<S>,
-    context: PersonaContext,
+    context: ShadowContext,
 ): Observable<HTMLElement&{[__id]: unknown}> {
   const elementSpec = {
     ...spec,

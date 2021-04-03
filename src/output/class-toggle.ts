@@ -1,7 +1,7 @@
 import {OperatorFunction, pipe} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
 import {UnresolvedElementProperty} from '../types/unresolved-element-property';
@@ -16,7 +16,7 @@ export class ClassToggleOutput implements Output<boolean> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<boolean, unknown> {
+  output(context: ShadowContext): OperatorFunction<boolean, unknown> {
     return pipe(
         tap(value => {
           const el = this.resolver(context);

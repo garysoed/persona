@@ -2,7 +2,7 @@ import {Observable} from 'rxjs';
 import {switchMap, tap} from 'rxjs/operators';
 
 import {RenderSpecType} from '../../export';
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {ownerDocument} from '../input/owner-document';
 
 import {applyChildren} from './decorators/apply-children';
@@ -45,7 +45,7 @@ export interface Values {
  */
 export function renderElement(
     spec: RenderElementSpec,
-    context: PersonaContext,
+    context: ShadowContext,
 ): Observable<HTMLElement&{[__id]: unknown}> {
   const decorators: Array<Decorator<NodeWithId<HTMLElement>>> = [];
   const extraAttrs = spec.attrs ?? new Map<string, Observable<string|undefined>>();

@@ -1,7 +1,7 @@
 import {Observable, fromEvent} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
 import {UnresolvedElementProperty} from '../types/unresolved-element-property';
@@ -13,7 +13,7 @@ export class OnInputInput implements Input<string> {
       readonly resolver: Resolver<HTMLInputElement>,
   ) { }
 
-  getValue(context: PersonaContext): Observable<string> {
+  getValue(context: ShadowContext): Observable<string> {
     const el = this.resolver(context);
     return fromEvent(el, 'input', this.options) .pipe(map(() => el.value));
   }

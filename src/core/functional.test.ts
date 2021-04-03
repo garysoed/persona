@@ -11,7 +11,7 @@ import {PersonaTesterFactory} from '../testing/persona-tester';
 
 import {BaseCtrl} from './base-ctrl';
 import {Builder as PersonaBuilder} from './builder';
-import {PersonaContext} from './persona-context';
+import {ShadowContext} from './shadow-context';
 
 
 const _p = new PersonaBuilder();
@@ -44,7 +44,7 @@ const $HANDLER = source('handler', () => () => undefined);
   shadowMode: 'open',
 })
 abstract class ParentTestClass<S extends typeof $p> extends BaseCtrl<S> {
-  constructor(context: PersonaContext, specs: S) {
+  constructor(context: ShadowContext, specs: S) {
     super(context, specs);
   }
 
@@ -61,7 +61,7 @@ abstract class ParentTestClass<S extends typeof $p> extends BaseCtrl<S> {
   template: '',
 })
 class TestClass extends ParentTestClass<typeof $> {
-  constructor(context: PersonaContext) {
+  constructor(context: ShadowContext) {
     super(context, $);
     this.setupHandler();
   }

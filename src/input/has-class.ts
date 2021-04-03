@@ -1,7 +1,7 @@
 import {Observable, defer} from 'rxjs';
 import {distinctUntilChanged, map, shareReplay, startWith} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
 import {UnresolvedElementProperty} from '../types/unresolved-element-property';
@@ -14,7 +14,7 @@ export class HasClassInput implements Input<boolean> {
       readonly resolver: Resolver<Element>,
   ) { }
 
-  getValue(context: PersonaContext): Observable<boolean> {
+  getValue(context: ShadowContext): Observable<boolean> {
     return defer(() => {
       const el = this.resolver(context);
       return mutationObservable(

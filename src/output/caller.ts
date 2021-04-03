@@ -1,7 +1,7 @@
 import {Observable, OperatorFunction, combineLatest, concat, interval} from 'rxjs';
 import {filter, map, shareReplay, startWith, take, tap, withLatestFrom} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
 import {UnresolvedElementProperty} from '../types/unresolved-element-property';
@@ -20,7 +20,7 @@ export class CallerOutput<T extends readonly any[]> implements Output<T> {
       readonly functionName: string,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<T, unknown> {
+  output(context: ShadowContext): OperatorFunction<T, unknown> {
     const fn$ = createFnObs<T>(this.resolver(context), this.functionName);
 
     return value$ => {

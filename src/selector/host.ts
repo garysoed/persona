@@ -1,4 +1,4 @@
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {UnresolvedAttributeInput} from '../input/attribute';
 import {UnresolvedHasAttributeInput} from '../input/has-attribute';
 import {HostAttribute} from '../main/host-attribute';
@@ -17,7 +17,7 @@ export class HostSelector<P extends PropertySpecs<Element>> implements Selector<
       private readonly properties: P,
   ) { }
 
-  getSelectable(context: PersonaContext): Element {
+  getSelectable(context: ShadowContext): Element {
     return context.shadowRoot.host;
   }
 

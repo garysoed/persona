@@ -1,13 +1,13 @@
 import {Runnable} from 'gs-tools/export/rxjs';
 import {Observable} from 'rxjs';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 
 import {Input} from './input';
 import {Output} from './output';
 
 
-export type CustomElementCtrlCtor = new (context: PersonaContext) => CustomElementCtrl;
+export type CustomElementCtrlCtor = new (context: ShadowContext) => CustomElementCtrl;
 
 /**
  * Base class of all custom elements.
@@ -17,7 +17,7 @@ export abstract class CustomElementCtrl extends Runnable {
   protected readonly vine = this.context.vine;
 
   constructor(
-      protected readonly context: PersonaContext,
+      protected readonly context: ShadowContext,
   ) {
     super();
   }

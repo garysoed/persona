@@ -1,7 +1,7 @@
 import {OperatorFunction, pipe} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
 import {UnresolvedElementProperty} from '../types/unresolved-element-property';
@@ -24,7 +24,7 @@ export class DispatcherOutput<E extends Event> implements Output<E> {
     this.caller = new CallerOutput(resolver, 'dispatchEvent');
   }
 
-  output(context: PersonaContext): OperatorFunction<E, unknown> {
+  output(context: ShadowContext): OperatorFunction<E, unknown> {
     return pipe(
         map(event => [event] as [E]),
         this.caller.output(context),

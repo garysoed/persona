@@ -1,6 +1,6 @@
 import {Observable, of as observableOf} from 'rxjs';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 
 /**
@@ -13,7 +13,7 @@ export class OwnerDocumentInput implements Input<Document> {
    * @param context - Context whose owner document will be emitted.
    * @returns Observable that emits the owner document in the given context.
    */
-  getValue(context: PersonaContext): Observable<Document> {
+  getValue(context: ShadowContext): Observable<Document> {
     return observableOf(context.shadowRoot.ownerDocument);
   }
 }

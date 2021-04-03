@@ -1,7 +1,7 @@
 import {OperatorFunction} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
 import {UnresolvedElementProperty} from '../types/unresolved-element-property';
@@ -15,7 +15,7 @@ export class TextOutput implements Output<string> {
       private readonly resolver: Resolver<Element>,
   ) { }
 
-  output(context: PersonaContext): OperatorFunction<string, unknown> {
+  output(context: ShadowContext): OperatorFunction<string, unknown> {
     return value$ => value$
         .pipe(
             tap(value => {

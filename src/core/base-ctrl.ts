@@ -8,7 +8,7 @@ import {Output, OUTPUT_TYPE} from '../types/output';
 import {Selectable} from '../types/selectable';
 import {Selector, SELECTOR_TYPE} from '../types/selector';
 
-import {PersonaContext} from './persona-context';
+import {ShadowContext} from './shadow-context';
 
 
 type SelectedInputsOf<B extends Selectable, P extends PropertySpecs<B>, S extends Selector<B, P>> = {
@@ -27,14 +27,14 @@ type RenderersOf<S extends {}> = {
   readonly [K in keyof S]: S[K] extends Selector<infer B, infer P> ? SelectedRenderersOf<B, P, S[K]> : never;
 }
 
-export type BaseCtrlCtor = new (context: PersonaContext) => BaseCtrl<any>;
+export type BaseCtrlCtor = new (context: ShadowContext) => BaseCtrl<any>;
 
 export abstract class BaseCtrl<S extends {}> extends Runnable {
   protected readonly shadowRoot = this.context.shadowRoot;
   protected readonly vine = this.context.vine;
 
   constructor(
-      protected readonly context: PersonaContext,
+      protected readonly context: ShadowContext,
       protected readonly specs: S,
   ) {
     super();

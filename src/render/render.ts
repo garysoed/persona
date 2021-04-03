@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 
 import {NodeWithId} from './node-with-id';
 import {renderCustomElement} from './render-custom-element';
@@ -15,7 +15,7 @@ import {RenderSpecType} from './types/render-spec-type';
 
 export function render(
     spec: RenderSpec,
-    context: PersonaContext,
+    context: ShadowContext,
 ): Observable<NodeWithId<Node>|null> {
   switch (spec.type) {
     case RenderSpecType.CUSTOM_ELEMENT:

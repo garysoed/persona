@@ -1,15 +1,15 @@
 import {Config, Vine} from 'grapevine';
 import {Subject} from 'rxjs';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 
 
-interface PartialPersonaContext extends Partial<PersonaContext> {
+interface PartialShadowContext extends Partial<ShadowContext> {
   readonly overrides?: Config['overrides'],
   readonly shadowRoot: ShadowRoot;
 }
 
-export function createFakeContext(partial: PartialPersonaContext): PersonaContext {
+export function createFakeContext(partial: PartialShadowContext): ShadowContext {
   return {
     onAttributeChanged$: new Subject(),
     vine: new Vine({appName: 'test', overrides: partial.overrides}),

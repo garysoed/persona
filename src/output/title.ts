@@ -1,7 +1,7 @@
 import {OperatorFunction, pipe} from 'rxjs';
 import {tap, withLatestFrom} from 'rxjs/operators';
 
-import {PersonaContext} from '../core/persona-context';
+import {ShadowContext} from '../core/shadow-context';
 import {ownerDocument} from '../input/owner-document';
 import {Output} from '../types/output';
 
@@ -18,7 +18,7 @@ export class Title implements Output<string> {
    * @param context - Context whose owner document's title should be set.
    * @returns Operator that takes in the title and sets the owner document's title.
    */
-  output(context: PersonaContext): OperatorFunction<string, unknown> {
+  output(context: ShadowContext): OperatorFunction<string, unknown> {
     return pipe(
         withLatestFrom(ownerDocument().getValue(context)),
         tap(([title, ownerDocument]) => {

@@ -5,14 +5,14 @@ import {Observable, Subject} from 'rxjs';
 import {CustomElementCtrlCtor} from '../types/custom-element-ctrl';
 
 import {BaseCtrlCtor} from './base-ctrl';
-import {AttributeChangedEvent, PersonaContext} from './persona-context';
+import {AttributeChangedEvent, ShadowContext} from './shadow-context';
 import {TemplateService} from './template-service';
 
 
 export const SHADOW_ROOT = Symbol('shadowRoot');
 export const __context = Symbol('context');
 
-export type DecoratedElement = HTMLElement & {[__context]?: PersonaContext|null};
+export type DecoratedElement = HTMLElement & {[__context]?: ShadowContext|null};
 
 /**
  * Main logic class of custom elements.
