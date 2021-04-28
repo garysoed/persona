@@ -1,16 +1,16 @@
 import {Observable} from 'rxjs';
 import {switchMap, tap} from 'rxjs/operators';
 
-import {RenderSpecType} from '../../export';
 import {ShadowContext} from '../core/shadow-context';
 import {ownerDocument} from '../input/owner-document';
 
 import {applyChildren} from './decorators/apply-children';
-import {applyDecorators, Decorator} from './decorators/apply-decorators';
+import {Decorator} from './decorators/apply-decorators';
 import {applyTextContent} from './decorators/apply-text-content';
 import {NodeWithId, __id} from './node-with-id';
 import {renderNode} from './render-node';
 import {RenderElementSpec} from './types/render-element-spec';
+import {RenderSpecType} from './types/render-spec-type';
 
 
 /**

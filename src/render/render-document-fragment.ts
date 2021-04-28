@@ -1,11 +1,11 @@
 import {Observable} from 'rxjs';
 
-import {RenderSpecType} from '../../export';
 import {ShadowContext} from '../core/shadow-context';
 
 import {NodeWithId} from './node-with-id';
 import {renderNode} from './render-node';
 import {RenderFragmentSpec} from './types/render-fragment-spec';
+import {RenderSpecType} from './types/render-spec-type';
 
 
 export function renderDocumentFragment(
