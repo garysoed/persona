@@ -25,11 +25,11 @@ test('@persona/location/location-service', init => {
     return {service, fakeWindow};
   });
 
-  test('getLocation', () => {
+  test('location$', () => {
     should('emit the first matching path', () => {
       _.fakeWindow.history.pushState({}, '', '/a/123');
 
-      assert(_.service.getLocation()).to.emitWith(
+      assert(_.service.location$).to.emitWith(
           objectThat<Route<typeof SPEC, 'pathA'>>().haveProperties({
             payload: objectThat<{a: number}>().haveProperties({a: 123}),
             type: 'pathA',
@@ -40,7 +40,7 @@ test('@persona/location/location-service', init => {
     should('emit and go to the default path if none of the specs match', () => {
       _.fakeWindow.history.pushState({}, '', '/un/match');
 
-      assert(_.service.getLocation()).to.emitWith(
+      assert(_.service.location$).to.emitWith(
           objectThat<Route<typeof SPEC, 'default'>>().haveProperties({
             payload: objectThat().haveProperties({}),
             type: 'default',
@@ -129,7 +129,7 @@ test('@persona/location/location-service', init => {
     should('return the first matching path', () => {
       _.fakeWindow.history.pushState({}, '', '/a/123');
 
-      assert(_.service.getLocation()).to.emitWith(
+      assert(_.service.location$).to.emitWith(
           objectThat<Route<typeof SPEC, 'pathA'>>().haveProperties({
             payload: objectThat<{a: number}>().haveProperties({a: 123}),
             type: 'pathA',
@@ -140,7 +140,7 @@ test('@persona/location/location-service', init => {
     should('return null if none of the specs match', () => {
       _.fakeWindow.history.pushState({}, '', '/un/match');
 
-      assert(_.service.getLocation()).to.emitWith(
+      assert(_.service.location$).to.emitWith(
           objectThat<Route<typeof SPEC, 'default'>>().haveProperties({
             payload: objectThat().haveProperties({}),
             type: 'default',

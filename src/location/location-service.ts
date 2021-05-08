@@ -1,3 +1,4 @@
+import {cache} from 'gs-tools/export/data';
 import {Runnable} from 'gs-tools/export/rxjs';
 import {Result} from 'nabu';
 import {fromEvent, fromEventPattern, merge, Observable, Subject} from 'rxjs';
@@ -20,7 +21,6 @@ export interface Route<S extends RouteSpec, K extends keyof S> {
 }
 
 export class LocationService<S extends RouteSpec> extends Runnable {
-  private readonly onGoToUrl$: Subject<string> = new Subject();
   private readonly onPushState$: Subject<unknown> = new Subject();
 
   constructor(
@@ -29,10 +29,10 @@ export class LocationService<S extends RouteSpec> extends Runnable {
       private readonly windowObj: Window,
   ) {
     super();
-    this.addSetup(this.setupGoToPath());
   }
 
-  getLocation(): Observable<Route<S, keyof S>> {
+  @cache()
+  get location$(): Observable<Route<S, keyof S>> {
     return merge(
         fromEvent<PopStateEvent>(this.windowObj, 'popstate'),
         this.onPushState$,
@@ -53,7 +53,7 @@ export class LocationService<S extends RouteSpec> extends Runnable {
   }
 
   getLocationOfType<K extends keyof S>(type: K): Observable<Route<S, K>|null> {
-    return this.getLocation()
+    return this.location$
         .pipe(
             map((location): Route<S, K>|null => {
               return location.type === type ? location as Route<S, K> : null;
@@ -68,7 +68,7 @@ export class LocationService<S extends RouteSpec> extends Runnable {
       throw new Error(`Invalid route: ${JSON.stringify({type, payload})}`);
     }
 
-    this.onGoToUrl$.next(url);
+    this.goToUrl(url);
   }
 
   interceptLinks(eventTarget: EventTarget): Observable<unknown> {
@@ -116,6 +116,11 @@ export class LocationService<S extends RouteSpec> extends Runnable {
     return result.result;
   }
 
+  private goToUrl(url: string): void {
+    this.windowObj.history.pushState({}, 'unused', url);
+    this.onPushState$.next({});
+  }
+
   private parseLocation(location: string): Route<S, keyof S>|null {
     for (const specKey of Object.keys(this.specs) as Array<keyof S>) {
       const spec = this.specs[specKey];
@@ -129,16 +134,6 @@ export class LocationService<S extends RouteSpec> extends Runnable {
     }
 
     return null;
-  }
-
-  private setupGoToPath(): Observable<unknown> {
-    return this.onGoToUrl$
-        .pipe(
-            tap(url => {
-              this.windowObj.history.pushState({}, 'unused', url);
-              this.onPushState$.next({});
-            }),
-        );
   }
 }
 
