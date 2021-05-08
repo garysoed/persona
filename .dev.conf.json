@@ -1,8 +1,0 @@
-{
-  "commands": [
-    {
-      "command": "link",
-      "actions": ["npm link gs-tools gs-testing gs-types grapevine dev devbase moirai nabu"]
-    }
-  ]
-}
