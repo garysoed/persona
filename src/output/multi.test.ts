@@ -1,7 +1,7 @@
 import {assert, run, should, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
 import {Subject} from 'rxjs';
 
+import {$div} from '../html/div';
 import {RenderSpec} from '../render/types/render-spec';
 import {RenderSpecType} from '../render/types/render-spec-type';
 import {element} from '../selector/element';
@@ -19,7 +19,7 @@ test('@persona/output/multi', init => {
   const SLOT_NAME = 'slotName';
 
   const _ = init(() => {
-    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, $div, {
       list: multi(SLOT_NAME),
     });
 

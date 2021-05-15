@@ -46,14 +46,14 @@ export function element<E extends Element, P extends PropertySpecs<E>>(
     type: Type<E>,
     properties: P,
 ): ElementSelector<E, P>;
-export function element<P extends UnresolvedSpec, PX extends PropertySpecs<Element>>(
+export function element<P extends UnresolvedSpec, E extends Element, PX extends PropertySpecs<E>>(
     id: string,
-    spec: ComponentSpec<P>,
+    spec: ComponentSpec<P, E>,
     properties: PX,
-): ElementSelector<HTMLElement, ResolvedSpec<P>&PX>;
+): ElementSelector<E, ResolvedSpec<P>&PX>;
 export function element(
     id: string,
-    typeOrSpec: Type<Element>|ComponentSpec<UnresolvedSpec>,
+    typeOrSpec: Type<Element>|ComponentSpec<UnresolvedSpec, Element>,
     properties: PropertySpecs<Element>,
 ): ElementSelector<Element, PropertySpecs<Element>> {
   if (typeOrSpec instanceof Type) {

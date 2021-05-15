@@ -1,7 +1,7 @@
 import {assert, run, should, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
 import {Subject} from 'rxjs';
 
+import {$div} from '../html/div';
 import {RenderElementSpec} from '../render/types/render-element-spec';
 import {RenderSpec} from '../render/types/render-spec';
 import {RenderSpecType} from '../render/types/render-spec-type';
@@ -20,7 +20,7 @@ test('@persona/output/single', init => {
   const SLOT_NAME = 'slotName';
 
   const _ = init(() => {
-    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, $div, {
       single: single(SLOT_NAME),
     });
 

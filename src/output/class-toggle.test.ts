@@ -1,7 +1,7 @@
 import {assert, run, should, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
 import {Subject} from 'rxjs';
 
+import {$div} from '../html/div';
 import {element} from '../selector/element';
 import {createFakeContext} from '../testing/create-fake-context';
 
@@ -13,7 +13,7 @@ test('persona.output.classToggle', init => {
   const CLASSNAME = 'classname';
 
   const _ = init(() => {
-    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, $div, {
       classname: classToggle(CLASSNAME),
     });
 

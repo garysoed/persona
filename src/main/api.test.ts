@@ -1,10 +1,10 @@
 import {assert, createSpy, createSpySubject, run, should, test} from 'gs-testing';
 import {integerConverter} from 'gs-tools/export/serializer';
-import {instanceofType} from 'gs-types';
 import {compose, human} from 'nabu';
 import {Subject, fromEvent, of as observableOf} from 'rxjs';
 import {map} from 'rxjs/operators';
 
+import {$div} from '../html/div';
 import {attribute as attributeIn} from '../input/attribute';
 import {handler} from '../input/handler';
 import {hasAttribute} from '../input/has-attribute';
@@ -48,7 +48,7 @@ test('@persona/main/api', init => {
   });
 
   should('handle attribute input correctly', () => {
-    const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.attrIn;
+    const output = element(ELEMENT_ID, $div, api($))._.attrIn;
     const value$ = new Subject<number>();
 
     run(value$.pipe(output.output(_.context)));
@@ -60,7 +60,7 @@ test('@persona/main/api', init => {
   });
 
   should('handle handlers correctly', () => {
-    const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.handler;
+    const output = element(ELEMENT_ID, $div, api($))._.handler;
 
     const spySubject = createSpy<void, [number]>('handler');
     (_.el as any)['handler'] = spySubject;
@@ -72,7 +72,7 @@ test('@persona/main/api', init => {
   });
 
   should('handle on dom correctly', () => {
-    const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.onDom;
+    const output = element(ELEMENT_ID, $div, api($))._.onDom;
 
     const calledSubject = createSpySubject(fromEvent(_.el, 'ondom'));
 
@@ -85,7 +85,7 @@ test('@persona/main/api', init => {
   });
 
   should('handle hasAttribute correctly', () => {
-    const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.hasAttr;
+    const output = element(ELEMENT_ID, $div, api($))._.hasAttr;
     const value$ = new Subject<boolean>();
 
     run(value$.pipe(output.output(_.context)));
@@ -97,7 +97,7 @@ test('@persona/main/api', init => {
   });
 
   should('handle hasClass correctly', () => {
-    const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.hasClass;
+    const output = element(ELEMENT_ID, $div, api($))._.hasClass;
 
     const value$ = new Subject<boolean>();
 
@@ -110,7 +110,7 @@ test('@persona/main/api', init => {
   });
 
   should('handle attribute output correctly', () => {
-    const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.attrOut;
+    const input = element(ELEMENT_ID, $div, api($))._.attrOut;
 
     _.el.setAttribute('attr-out', '456');
     assert(input.getValue(_.context)).to.emitWith(456);
@@ -123,8 +123,8 @@ test('@persona/main/api', init => {
   });
 
   should('handle callers correctly', () => {
-    const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.caller;
-    const output = element(ELEMENT_ID, instanceofType(HTMLDivElement), $)._.caller;
+    const input = element(ELEMENT_ID, $div, api($))._.caller;
+    const output = element(ELEMENT_ID, $div, $)._.caller;
 
     const value = 123;
 
@@ -135,7 +135,7 @@ test('@persona/main/api', init => {
   });
 
   should('handle dispatchers correctly', () => {
-    const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.dispatcher;
+    const input = element(ELEMENT_ID, $div, api($))._.dispatcher;
 
     const event = new CustomEvent('dispatch');
     const valueSpySubject = createSpySubject(input.getValue(_.context));
@@ -145,7 +145,7 @@ test('@persona/main/api', init => {
   });
 
   should('handle setAttribute correctly', () => {
-    const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.setAttr;
+    const input = element(ELEMENT_ID, $div, api($))._.setAttr;
 
     _.el.setAttribute('set-attr', '');
     assert(input.getValue(_.context)).to.emitWith(true);
@@ -155,7 +155,7 @@ test('@persona/main/api', init => {
   });
 
   should('handle classToggle correctly', () => {
-    const input = element(ELEMENT_ID, instanceofType(HTMLDivElement), api($))._.classToggle;
+    const input = element(ELEMENT_ID, $div, api($))._.classToggle;
 
     _.el.classList.add('classToggle');
 

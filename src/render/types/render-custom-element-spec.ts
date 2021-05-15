@@ -29,7 +29,7 @@ export type NormalizedInputsOf<S extends UnresolvedSpec> = {
 }
 
 interface Input<S extends UnresolvedSpec> extends BaseRenderSpec<HTMLElement> {
-  readonly spec: ComponentSpec<S>;
+  readonly spec: ComponentSpec<S, Element>;
   readonly attrs?: ReadonlyMap<string, ObservableOrValue<string|undefined>>;
   readonly children?: ObservableOrValue<readonly RenderSpec[]>;
   readonly inputs?: InputsOf<S>;

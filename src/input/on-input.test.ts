@@ -1,6 +1,6 @@
 import {assert, createSpySubject, should, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
 
+import {$input} from '../html/input';
 import {element} from '../selector/element';
 import {createFakeContext} from '../testing/create-fake-context';
 
@@ -11,7 +11,7 @@ test('@persona/input/on-input', init => {
   const ELEMENT_ID = 'test';
 
   const _ = init(() => {
-    const $ = element(ELEMENT_ID, instanceofType(HTMLInputElement), {
+    const $ = element(ELEMENT_ID, $input, {
       onInput: onInput(),
     });
 

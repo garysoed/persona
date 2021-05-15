@@ -77,3 +77,17 @@ export {NodeWithId} from '../src/render/node-with-id';
 export {setId} from '../src/render/set-id';
 
 export {booleanParser, enumParser, integerParser, listParser, mapParser, stringParser} from '../src/util/parsers';
+
+// HTML
+export {$div} from '../src/html/div';
+export {$h1, $h2, $h3, $h4, $h5, $h6} from '../src/html/heading';
+export {$input} from '../src/html/input';
+export {$label} from '../src/html/label';
+export {$p} from '../src/html/p';
+export {$pre} from '../src/html/pre';
+export {$section} from '../src/html/section';
+export {$slot} from '../src/html/slot';
+export {$span} from '../src/html/span';
+export {$style} from '../src/html/style';
+export {$table, $tbody, $thead} from '../src/html/table';
+export {$template} from '../src/html/template';

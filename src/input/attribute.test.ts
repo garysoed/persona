@@ -1,8 +1,8 @@
 import {assert, should, test} from 'gs-testing';
 import {integerConverter} from 'gs-tools/export/serializer';
-import {instanceofType} from 'gs-types';
 import {compose, human} from 'nabu';
 
+import {$div} from '../html/div';
 import {element} from '../selector/element';
 import {createFakeContext} from '../testing/create-fake-context';
 
@@ -16,7 +16,7 @@ test('input.attribute', () => {
   test('getValue - default value', init => {
     const DEFAULT_VALUE = 123;
     const _ = init(() => {
-      const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
+      const $ = element(ELEMENT_ID, $div, {
         attr: attribute(
             ATTR_NAME,
             compose(integerConverter(), human()),
@@ -51,7 +51,7 @@ test('input.attribute', () => {
 
   test('getValue - no default value', init => {
     const _ = init(() => {
-      const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
+      const $ = element(ELEMENT_ID, $div, {
         attr: attribute(
             ATTR_NAME,
             compose(integerConverter(), human()),

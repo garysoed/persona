@@ -1,7 +1,7 @@
 import {assert, run, should, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
 import {Subject} from 'rxjs';
 
+import {$div} from '../html/div';
 import {element} from '../selector/element';
 import {createFakeContext} from '../testing/create-fake-context';
 
@@ -12,7 +12,7 @@ test('output.style', init => {
   const ELEMENT_ID = 'test';
 
   const _ = init(() => {
-    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, $div, {
       style: style('height'),
     });
 

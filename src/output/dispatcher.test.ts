@@ -1,7 +1,7 @@
 import {assert, createSpySubject, run, should, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
-import {Subject, fromEvent} from 'rxjs';
+import {fromEvent, Subject} from 'rxjs';
 
+import {$div} from '../html/div';
 import {element} from '../selector/element';
 import {createFakeContext} from '../testing/create-fake-context';
 
@@ -13,7 +13,7 @@ test('output.dispatcher', init => {
   const ELEMENT_ID = 'test';
 
   const _ = init(() => {
-    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, $div, {
       dispatch: dispatcher('eventName'),
     });
 

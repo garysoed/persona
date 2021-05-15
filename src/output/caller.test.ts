@@ -1,7 +1,7 @@
 import {assert, createSpy, run, should, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
 import {of as observableOf} from 'rxjs';
 
+import {$div} from '../html/div';
 import {element} from '../selector/element';
 import {createFakeContext} from '../testing/create-fake-context';
 
@@ -13,7 +13,7 @@ test('input.caller', init => {
   const ELEMENT_ID = 'test';
 
   const _ = init(() => {
-    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, $div, {
       caller: caller<[number]>(FUNCTION_NAME),
     });
 

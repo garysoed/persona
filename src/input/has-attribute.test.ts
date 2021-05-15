@@ -1,6 +1,6 @@
 import {assert, should, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
 
+import {$div} from '../html/div';
 import {element} from '../selector/element';
 import {createFakeContext} from '../testing/create-fake-context';
 
@@ -12,7 +12,7 @@ test('persona.input.hasAttribute', init => {
   const ATTR_NAME = 'attr-name';
 
   const _ = init(() => {
-    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, $div, {
       hasAttr: hasAttribute(ATTR_NAME),
     });
 

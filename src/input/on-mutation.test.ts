@@ -1,7 +1,7 @@
 import {assert, createSpySubject, runEnvironment, should, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
 import {filter, map} from 'rxjs/operators';
 
+import {$input} from '../html/input';
 import {element} from '../selector/element';
 import {createFakeContext} from '../testing/create-fake-context';
 import {PersonaTesterEnvironment} from '../testing/persona-tester-environment';
@@ -15,7 +15,7 @@ test('@persona/input/on-mutation', init => {
   const _ = init(() => {
     runEnvironment(new PersonaTesterEnvironment());
 
-    const $ = element(ELEMENT_ID, instanceofType(HTMLInputElement), {
+    const $ = element(ELEMENT_ID, $input, {
       onMutation: onMutation({childList: true}),
     });
 

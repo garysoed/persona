@@ -1,8 +1,8 @@
 import {assert, createSpySubject, run, should, teardown, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
-import {ReplaySubject, of as observableOf} from 'rxjs';
+import {of as observableOf, ReplaySubject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
+import {$div} from '../html/div';
 import {caller} from '../output/caller';
 import {element} from '../selector/element';
 import {createFakeContext} from '../testing/create-fake-context';
@@ -16,7 +16,7 @@ test('@persona/input/handler', init => {
 
   const _ = init(() => {
     const onTestDone$ = new ReplaySubject(1);
-    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, $div, {
       caller: caller<[number]>(FUNCTION_NAME),
       handler: handler(FUNCTION_NAME),
     });

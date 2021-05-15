@@ -1,17 +1,18 @@
 import {assert, createSpySubject, should, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
 
+import {$input} from '../html/input';
 import {element} from '../selector/element';
 import {createFakeContext} from '../testing/create-fake-context';
 
-import {MatchOptions, OnKeydownInput, onKeydown} from './on-keydown';
+import {MatchOptions, onKeydown, OnKeydownInput} from './on-keydown';
+
 
 test('input.onKeydown', init => {
   const KEY = 'key';
   const ELEMENT_ID = 'test';
 
   function createInput(options: MatchOptions): OnKeydownInput {
-    const $ = element(ELEMENT_ID, instanceofType(HTMLInputElement), {
+    const $ = element(ELEMENT_ID, $input, {
       onKeydown: onKeydown(KEY, options),
     });
 

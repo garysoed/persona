@@ -1,6 +1,6 @@
 import {assert, should, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
 
+import {$div} from '../html/div';
 import {createFakeContext} from '../testing/create-fake-context';
 
 import {element} from './element';
@@ -10,7 +10,7 @@ test('@persona/selector/element', () => {
   test('getValue', () => {
     should('emit the element correctly', () => {
       const ID = 'id';
-      const input = element(ID, instanceofType(HTMLDivElement), {});
+      const input = element(ID, $div, {});
 
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});
@@ -39,7 +39,7 @@ test('@persona/selector/element', () => {
 
     should('throw error if the element is of the wrong type', () => {
       const ID = 'id';
-      const input = element(ID, instanceofType(HTMLDivElement), {});
+      const input = element(ID, $div, {});
 
       const root = document.createElement('div');
       const shadowRoot = root.attachShadow({mode: 'open'});

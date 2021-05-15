@@ -1,7 +1,7 @@
 import {assert, createSpySubject, should, teardown, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
 
 import {installFakeMutationObserver} from '../../export/testing';
+import {$input} from '../html/input';
 import {element} from '../selector/element';
 import {createFakeContext} from '../testing/create-fake-context';
 
@@ -13,7 +13,7 @@ test('@persona/input/text-input', init => {
 
   const _ = init(() => {
     const uninstallFakeMutationObserver = installFakeMutationObserver();
-    const $ = element(ELEMENT_ID, instanceofType(HTMLInputElement), {
+    const $ = element(ELEMENT_ID, $input, {
       textIn: textIn(),
     });
 

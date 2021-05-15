@@ -1,6 +1,6 @@
 import {assert, createSpySubject, should, test} from 'gs-testing';
-import {instanceofType} from 'gs-types';
 
+import {$div} from '../html/div';
 import {element} from '../selector/element';
 import {createFakeContext} from '../testing/create-fake-context';
 
@@ -12,7 +12,7 @@ test('input.onDom', init => {
   const EVENT_NAME = 'eventName';
 
   const _ = init(() => {
-    const $ = element(ELEMENT_ID, instanceofType(HTMLDivElement), {
+    const $ = element(ELEMENT_ID, $div, {
       onDom: onDom<CustomEvent>(EVENT_NAME),
     });
 
