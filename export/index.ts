@@ -9,6 +9,7 @@ export {applyDecorators, Decorator} from '../src/render/decorators/apply-decorat
 
 // Inputs
 export {attribute as attributeIn} from '../src/input/attribute';
+export {constant as constantIn} from '../src/input/constant';
 export {handler} from '../src/input/handler';
 export {hasAttribute} from '../src/input/has-attribute';
 export {hasClass} from '../src/input/has-class';
