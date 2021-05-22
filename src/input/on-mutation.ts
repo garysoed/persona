@@ -3,7 +3,7 @@ import {Observable} from 'rxjs';
 import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedInput} from '../types/unresolved-input';
 import {mutationObservable} from '../util/mutation-observable';
 
 
@@ -35,8 +35,7 @@ export class OnMutationInput implements Input<readonly MutationRecord[]> {
  *
  * @thHidden
  */
-export class UnresolvedOnMutationInput implements
-    UnresolvedElementProperty<Element, OnMutationInput> {
+export class UnresolvedOnMutationInput implements UnresolvedInput<Element, readonly MutationRecord[]> {
   /**
    * @internal
    */

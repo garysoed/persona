@@ -4,7 +4,7 @@ import {map} from 'rxjs/operators';
 import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedInput} from '../types/unresolved-input';
 
 
 export class OnInputInput implements Input<string> {
@@ -19,7 +19,7 @@ export class OnInputInput implements Input<string> {
   }
 }
 
-class UnresolvedOnInputInput implements UnresolvedElementProperty<HTMLInputElement, OnInputInput> {
+class UnresolvedOnInputInput implements UnresolvedInput<HTMLInputElement, string> {
   constructor(private readonly options: AddEventListenerOptions) { }
 
   resolve(resolver: Resolver<HTMLInputElement>): OnInputInput {

@@ -4,7 +4,7 @@ import {distinctUntilChanged, map, shareReplay, startWith} from 'rxjs/operators'
 import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedInput} from '../types/unresolved-input';
 import {mutationObservable} from '../util/mutation-observable';
 
 
@@ -34,8 +34,7 @@ export class HasAttributeInput implements Input<boolean> {
   }
 }
 
-export class UnresolvedHasAttributeInput implements
-    UnresolvedElementProperty<Element, HasAttributeInput> {
+export class UnresolvedHasAttributeInput implements UnresolvedInput<Element, boolean> {
   constructor(readonly attrName: string) { }
 
   resolve(resolver: Resolver<Element>): HasAttributeInput {

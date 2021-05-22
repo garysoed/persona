@@ -1,10 +1,10 @@
-import {Observable, fromEvent} from 'rxjs';
+import {fromEvent, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
 import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
-import {UnresolvedInput} from '../types/unresolved-input';
+import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 
 
 export class SlottedInput implements Input<readonly Node[]> {
@@ -19,7 +19,7 @@ export class SlottedInput implements Input<readonly Node[]> {
   }
 }
 
-export class UnresolvedSlottedInput implements UnresolvedInput<readonly Node[]> {
+export class UnresolvedSlottedInput implements UnresolvedElementProperty<Element, Input<readonly Node[]>> {
   resolve(resolver: Resolver<HTMLSlotElement>): SlottedInput {
     return new SlottedInput(resolver);
   }

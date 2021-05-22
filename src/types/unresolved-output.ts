@@ -1,7 +1,6 @@
 import {Output} from './output';
-import {Resolver} from './resolver';
+import {Selectable} from './selectable';
+import {UnresolvedElementProperty} from './unresolved-element-property';
 
 
-export interface UnresolvedOutput<T> {
-  resolve(resolver: Resolver<HTMLElement>): Output<T>;
-}
+export type UnresolvedOutput<S extends Selectable, T> = UnresolvedElementProperty<S, Output<T>>;

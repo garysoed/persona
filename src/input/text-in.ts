@@ -4,7 +4,7 @@ import {map, startWith} from 'rxjs/operators';
 import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedInput} from '../types/unresolved-input';
 import {mutationObservable} from '../util/mutation-observable';
 
 
@@ -21,7 +21,7 @@ export class TextInput implements Input<string> {
   }
 }
 
-export class UnresolvedTextInput implements UnresolvedElementProperty<Element, TextInput> {
+export class UnresolvedTextInput implements UnresolvedInput<Element, string> {
   resolve(resolver: Resolver<HTMLInputElement>): TextInput {
     return new TextInput(resolver);
   }

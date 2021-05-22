@@ -1,10 +1,9 @@
-import {Observable, OperatorFunction, combineLatest, concat, interval} from 'rxjs';
+import {combineLatest, concat, interval, Observable, OperatorFunction} from 'rxjs';
 import {filter, map, shareReplay, startWith, take, tap, withLatestFrom} from 'rxjs/operators';
 
 import {ShadowContext} from '../core/shadow-context';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
 
@@ -36,8 +35,7 @@ export class CallerOutput<T extends readonly any[]> implements Output<T> {
   }
 }
 
-export class UnresolvedCallerOutput<T extends readonly any[]> implements
-    UnresolvedElementProperty<Element, CallerOutput<T>>, UnresolvedOutput<T> {
+export class UnresolvedCallerOutput<T extends readonly any[]> implements UnresolvedOutput<Element, T> {
   constructor(readonly functionName: string) { }
 
   resolve(resolver: Resolver<Element>): CallerOutput<T> {

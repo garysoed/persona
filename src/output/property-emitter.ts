@@ -1,10 +1,9 @@
-import {OperatorFunction, ReplaySubject, Subject, pipe} from 'rxjs';
+import {OperatorFunction, pipe, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
 import {ShadowContext} from '../core/shadow-context';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
 
@@ -31,8 +30,7 @@ export class PropertyEmitter<T> implements Output<T> {
   }
 }
 
-export class UnresolvedPropertyEmitter<T> implements
-    UnresolvedElementProperty<Element, PropertyEmitter<T>>, UnresolvedOutput<T> {
+export class UnresolvedPropertyEmitter<T> implements UnresolvedOutput<Element, T> {
   constructor(
       readonly propertyName: string,
   ) { }

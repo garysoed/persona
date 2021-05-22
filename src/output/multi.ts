@@ -12,7 +12,6 @@ import {RenderSpec} from '../render/types/render-spec';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
 import {Selectable} from '../types/selectable';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
 
@@ -108,9 +107,7 @@ export class MultiOutput implements Output<readonly RenderSpec[]> {
   }
 }
 
-class UnresolvedMultiOutput implements
-    UnresolvedElementProperty<Selectable, MultiOutput>,
-    UnresolvedOutput<readonly RenderSpec[]> {
+class UnresolvedMultiOutput implements UnresolvedOutput<Selectable, readonly RenderSpec[]> {
   constructor(
       private readonly slotName: string,
   ) { }

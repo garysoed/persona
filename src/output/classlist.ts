@@ -5,7 +5,6 @@ import {pairwise, startWith, tap} from 'rxjs/operators';
 import {ShadowContext} from '../core/shadow-context';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
 
@@ -36,8 +35,7 @@ export class ClasslistOutput implements Output<ReadonlySet<string>> {
   }
 }
 
-class UnresolvedClasslistOutput implements
-    UnresolvedElementProperty<Element, ClasslistOutput>, UnresolvedOutput<ReadonlySet<string>> {
+class UnresolvedClasslistOutput implements UnresolvedOutput<Element, ReadonlySet<string>> {
   resolve(resolver: Resolver<Element>): ClasslistOutput {
     return new ClasslistOutput(resolver);
   }

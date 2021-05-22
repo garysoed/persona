@@ -1,7 +1,5 @@
 import {Input} from './input';
-import {Resolver} from './resolver';
+import {UnresolvedElementProperty} from './unresolved-element-property';
 
 
-export interface UnresolvedInput<T> {
-  resolve(resolver: Resolver<HTMLElement>): Input<T>;
-}
+export type UnresolvedInput<E extends Element, T> = UnresolvedElementProperty<E, Input<T>>;

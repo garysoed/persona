@@ -1,10 +1,10 @@
-import {Observable, ReplaySubject, interval} from 'rxjs';
+import {interval, Observable, ReplaySubject} from 'rxjs';
 import {map, startWith, switchMap, take} from 'rxjs/operators';
 
 import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedInput} from '../types/unresolved-input';
 
 
 type ObservableElement<T> = Element & {[key: string]: Observable<T>};
@@ -33,8 +33,7 @@ export class PropertyObserver<T> implements Input<T> {
   }
 }
 
-export class UnresolvedPropertyObserver<T> implements
-    UnresolvedElementProperty<Element, PropertyObserver<T>> {
+export class UnresolvedPropertyObserver<T> implements UnresolvedInput<Element, T> {
 
   constructor(
       readonly propertyName: string,

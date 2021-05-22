@@ -4,7 +4,6 @@ import {tap} from 'rxjs/operators';
 import {ShadowContext} from '../core/shadow-context';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
 
@@ -30,8 +29,7 @@ export class SetAttributeOutput implements Output<boolean> {
   }
 }
 
-export class UnresolvedSetAttributeOutput implements
-    UnresolvedElementProperty<Element, SetAttributeOutput>, UnresolvedOutput<boolean> {
+export class UnresolvedSetAttributeOutput implements UnresolvedOutput<Element, boolean> {
   constructor(
       readonly attrName: string,
   ) { }

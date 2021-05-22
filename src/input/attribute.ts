@@ -6,7 +6,6 @@ import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
 import {UnresolvedElementProperty} from '../types/unresolved-element-property';
-import {UnresolvedInput} from '../types/unresolved-input';
 import {attributeObservable} from '../util/attribute-observable';
 
 
@@ -43,7 +42,7 @@ export class AttributeInput<T> implements Input<T> {
 }
 
 export class UnresolvedAttributeInput<T> implements
-    UnresolvedElementProperty<Element, AttributeInput<T>>, UnresolvedInput<T> {
+    UnresolvedElementProperty<Element, AttributeInput<T>> {
   constructor(
       readonly attrName: string,
       readonly parser: Converter<T, string>,

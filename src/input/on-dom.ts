@@ -3,7 +3,7 @@ import {Observable, fromEvent} from 'rxjs';
 import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedInput} from '../types/unresolved-input';
 
 
 export class OnDomInput<E extends Event> implements Input<E> {
@@ -19,8 +19,7 @@ export class OnDomInput<E extends Event> implements Input<E> {
   }
 }
 
-export class UnresolvedOnDomInput<E extends Event>
-implements UnresolvedElementProperty<Element, OnDomInput<E>> {
+export class UnresolvedOnDomInput<E extends Event> implements UnresolvedInput<Element, E> {
   constructor(
       readonly eventName: string,
       private readonly options: AddEventListenerOptions,

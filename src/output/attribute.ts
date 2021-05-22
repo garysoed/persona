@@ -5,7 +5,6 @@ import {tap} from 'rxjs/operators';
 import {ShadowContext} from '../core/shadow-context';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
 
@@ -45,8 +44,7 @@ export class AttributeOutput<T> implements Output<T> {
   }
 }
 
-export class UnresolvedAttributeOutput<T> implements
-    UnresolvedElementProperty<HTMLElement, AttributeOutput<T>>, UnresolvedOutput<T> {
+export class UnresolvedAttributeOutput<T> implements UnresolvedOutput<Element, T> {
   constructor(
       readonly attrName: string,
       readonly parser: Converter<T, string>,

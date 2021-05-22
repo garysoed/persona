@@ -10,7 +10,6 @@ import {RenderSpec} from '../render/types/render-spec';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
 import {Selectable} from '../types/selectable';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
 
@@ -62,8 +61,7 @@ export class SingleOutput implements Output<RenderSpec|null|undefined> {
   }
 }
 
-class UnresolvedSingleOutput implements
-    UnresolvedElementProperty<Selectable, SingleOutput>, UnresolvedOutput<RenderSpec|null> {
+class UnresolvedSingleOutput implements UnresolvedOutput<Selectable, RenderSpec|null> {
   constructor(readonly slotName: string) { }
 
   resolve(resolver: Resolver<Selectable>): SingleOutput {

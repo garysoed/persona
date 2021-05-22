@@ -3,7 +3,8 @@ import {Observable, of as observableOf} from 'rxjs';
 
 import {UnresolvedSpec} from '../../main/api';
 import {ComponentSpec} from '../../main/component-spec';
-import {UnresolvedInput} from '../../types/unresolved-input';
+import {Input} from '../../types/input';
+import {UnresolvedElementProperty} from '../../types/unresolved-element-property';
 
 import {BaseRenderSpec} from './base-render-spec';
 import {normalize, normalizeMap, ObservableOrValue} from './observable-or-value';
@@ -21,14 +22,14 @@ import {RenderSpecType} from './render-spec-type';
  * @thHidden
  */
 export type InputsOf<S extends UnresolvedSpec> = Partial<{
-  readonly [K in keyof S]: S[K] extends UnresolvedInput<infer T> ? ObservableOrValue<T> : never;
+  readonly [K in keyof S]: S[K] extends UnresolvedElementProperty<Element, Input<infer T>> ? ObservableOrValue<T> : never;
 }>;
 
 export type NormalizedInputsOf<S extends UnresolvedSpec> = {
-  readonly [K in keyof S]?: S[K] extends UnresolvedInput<infer T> ? Observable<T> : never;
+  readonly [K in keyof S]?: S[K] extends UnresolvedElementProperty<Element, Input<infer T>> ? Observable<T> : never;
 }
 
-interface Input<S extends UnresolvedSpec> extends BaseRenderSpec<HTMLElement> {
+interface InputRenderSpec<S extends UnresolvedSpec> extends BaseRenderSpec<HTMLElement> {
   readonly spec: ComponentSpec<S, Element>;
   readonly attrs?: ReadonlyMap<string, ObservableOrValue<string|undefined>>;
   readonly children?: ObservableOrValue<readonly RenderSpec[]>;
@@ -36,7 +37,7 @@ interface Input<S extends UnresolvedSpec> extends BaseRenderSpec<HTMLElement> {
   readonly textContent?: ObservableOrValue<string>;
 }
 
-export interface RenderCustomElementSpec<S extends UnresolvedSpec> extends Input<S> {
+export interface RenderCustomElementSpec<S extends UnresolvedSpec> extends InputRenderSpec<S> {
   readonly type: RenderSpecType.CUSTOM_ELEMENT;
   readonly attrs?: ReadonlyMap<string, Observable<string|undefined>>;
   readonly children?: Observable<readonly RenderSpec[]>;
@@ -44,7 +45,7 @@ export interface RenderCustomElementSpec<S extends UnresolvedSpec> extends Input
   readonly textContent?: Observable<string>;
 }
 
-export function renderCustomElement<S extends UnresolvedSpec>(input: Input<S>): RenderCustomElementSpec<S> {
+export function renderCustomElement<S extends UnresolvedSpec>(input: InputRenderSpec<S>): RenderCustomElementSpec<S> {
   return {
     ...input,
     type: RenderSpecType.CUSTOM_ELEMENT,

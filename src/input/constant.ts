@@ -1,10 +1,9 @@
 import {Observable} from 'rxjs';
 
-import {Input} from '../types/input';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedInput} from '../types/unresolved-input';
 
 
-export type ConstantInput<T> = UnresolvedElementProperty<Element, Input<T>>;
+export type ConstantInput<T> = UnresolvedInput<Element, T>;
 
 export function constant<T>(value$: Observable<T>): ConstantInput<T> {
   return {

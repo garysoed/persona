@@ -4,7 +4,7 @@ import {filter, tap} from 'rxjs/operators';
 
 import {ShadowContext} from '../core/shadow-context';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedInput} from '../types/unresolved-input';
 
 import {OnDomInput} from './on-dom';
 
@@ -68,8 +68,7 @@ export class OnKeydownInput extends OnDomInput<KeyboardEvent> {
   }
 }
 
-export class UnresolvedOnKeydownInput implements
-    UnresolvedElementProperty<Element, OnKeydownInput> {
+export class UnresolvedOnKeydownInput implements UnresolvedInput<Element, KeyboardEvent> {
   constructor(
       private readonly key: string,
       private readonly matchOptions: MatchOptions,

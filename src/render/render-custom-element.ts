@@ -52,7 +52,7 @@ export function renderCustomElement<S extends UnresolvedSpec>(
         const convertedSpec = api(spec.spec.api);
         const inputs: NormalizedInputsOf<S> = spec.inputs || {};
         for (const key of getOwnPropertyKeys(inputs)) {
-          const output = (convertedSpec[key as string] as UnresolvedOutput<any>).resolve(resolver);
+          const output = (convertedSpec[key as string] as UnresolvedOutput<Element, any>).resolve(resolver);
           onChange$List.push((inputs[key] as Observable<unknown>).pipe(output.output(context)));
         }
 

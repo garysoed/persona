@@ -4,7 +4,6 @@ import {tap} from 'rxjs/operators';
 import {ShadowContext} from '../core/shadow-context';
 import {Output} from '../types/output';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
 
@@ -30,8 +29,7 @@ export class TextOutput implements Output<string> {
   }
 }
 
-export class UnresolvedTextOutput implements
-    UnresolvedElementProperty<Element, TextOutput>, UnresolvedOutput<string> {
+export class UnresolvedTextOutput implements UnresolvedOutput<Element, string> {
   resolve(resolver: Resolver<Element>): TextOutput {
     return new TextOutput(resolver);
   }

@@ -3,7 +3,7 @@ import {Observable, Subject, defer} from 'rxjs';
 import {ShadowContext} from '../core/shadow-context';
 import {Input} from '../types/input';
 import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedInput} from '../types/unresolved-input';
 
 
 const __subject = Symbol('subject');
@@ -36,8 +36,7 @@ export class HandlerInput implements Input<readonly unknown[]> {
   }
 }
 
-export class UnresolvedHandlerInput implements
-    UnresolvedElementProperty<Element, HandlerInput> {
+export class UnresolvedHandlerInput implements UnresolvedInput<Element, readonly unknown[]> {
   constructor(
       readonly functionName: string,
   ) { }
