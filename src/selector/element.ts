@@ -1,22 +1,23 @@
+import {mapObject} from 'gs-tools/export/typescript';
 import {Type, elementWithTagType} from 'gs-types';
 
 import {ShadowContext} from '../core/shadow-context';
 import {ResolvedSpec, UnresolvedSpec, api} from '../main/api';
 import {ComponentSpec} from '../main/component-spec';
 import {Selector} from '../types/selector';
+import {UNRESOLVED_ELEMENT_PROPERTY_TYPE} from '../types/unresolved-element-property';
 
 import {PropertySpecs, Resolved} from './property-spec';
 
 
 export class ElementSelector<E extends Element, P extends PropertySpecs<E>> implements Selector<E, P> {
-  readonly _: Resolved<E, P>;
+  readonly _ = this.resolveUnresolvedObject(this.properties);
 
   constructor(
       private readonly elementId: string,
-      properties: P,
+      private readonly properties: P,
       private readonly type: Type<E>,
   ) {
-    this._ = this.resolve(properties);
   }
 
   getSelectable({shadowRoot}: ShadowContext): E {
@@ -27,17 +28,17 @@ export class ElementSelector<E extends Element, P extends PropertySpecs<E>> impl
     return el;
   }
 
-  private resolve(properties: P): Resolved<E, P> {
-    const resolvedProperties: Resolved<any, any> = {};
-    for (const key in properties) {
-      if (!properties.hasOwnProperty(key)) {
-        continue;
-      }
+  private resolveUnresolvedObject<P extends PropertySpecs<E>>(unresolved: P): Resolved<E, P> {
+    return mapObject<P, Resolved<E, P>>(
+        unresolved,
+        <K extends Extract<keyof P, string>>(_: K, prop: P[K]) => {
+          if (UNRESOLVED_ELEMENT_PROPERTY_TYPE.check(prop)) {
+            return prop.resolve(context => this.getSelectable(context)) as Resolved<E, P>[K];
+          }
 
-      resolvedProperties[key] = properties[key].resolve(context => this.getSelectable(context));
-    }
-
-    return resolvedProperties;
+          return this.resolveUnresolvedObject(prop as PropertySpecs<E>) as Resolved<E, P>[K];
+        },
+    );
   }
 }
 

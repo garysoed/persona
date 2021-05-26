@@ -12,6 +12,6 @@ export interface Selector<S extends Selectable, P extends PropertySpecs<S>> {
 }
 
 export const SELECTOR_TYPE = hasPropertiesType<Selector<Selectable, PropertySpecs<Selectable>>>({
-  _: instanceofType(Object),
+  _: instanceofType<Resolved<Selectable, PropertySpecs<Selectable>>>(Object),
   getSelectable: instanceofType(Function),
 });

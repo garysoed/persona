@@ -14,6 +14,9 @@ test('@persona/selector/host', init => {
     const input = host({
       attrIn: attribute('attrName', integerParser(), 3),
       output: textOut(),
+      group: {
+        attrIn: attribute('attrName2', integerParser(), 5),
+      },
     });
 
     return {input};
@@ -28,6 +31,7 @@ test('@persona/selector/host', init => {
       assert(_.input.getSelectable(context)).to.equal(el);
       assert(_.input._.attrIn).to.beAnInstanceOf(HostAttribute);
       assert(_.input._.output).to.beAnInstanceOf(TextOutput);
+      assert(_.input._.group.attrIn).to.beAnInstanceOf(HostAttribute);
     });
   });
 });

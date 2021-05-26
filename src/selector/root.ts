@@ -1,3 +1,5 @@
+import {mapObject} from 'gs-tools/export/typescript';
+
 import {ShadowContext} from '../core/shadow-context';
 import {UnresolvedAttributeInput} from '../input/attribute';
 import {UnresolvedHasAttributeInput} from '../input/has-attribute';
@@ -6,12 +8,12 @@ import {HostHasAttribute} from '../main/host-has-attribute';
 import {Input} from '../types/input';
 import {Output} from '../types/output';
 import {Selector} from '../types/selector';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {UnresolvedElementProperty, UNRESOLVED_ELEMENT_PROPERTY_TYPE} from '../types/unresolved-element-property';
 
 import {PropertySpecs, Resolved} from './property-spec';
 
 export class RootSelector<P extends PropertySpecs<ShadowRoot>> implements Selector<ShadowRoot, P> {
-  readonly _ = this.resolveProperties();
+  readonly _ = this.resolveUnresolvedObject(this.properties);
 
   constructor(
       private readonly properties: P,
@@ -21,17 +23,17 @@ export class RootSelector<P extends PropertySpecs<ShadowRoot>> implements Select
     return context.shadowRoot;
   }
 
-  private resolveProperties(): Resolved<ShadowRoot, P> {
-    const resolvedProperties: Resolved<ShadowRoot, any> = {};
-    for (const key in this.properties) {
-      if (!this.properties.hasOwnProperty(key)) {
-        continue;
-      }
+  private resolveUnresolvedObject<P extends PropertySpecs<ShadowRoot>>(unresolved: P): Resolved<ShadowRoot, P> {
+    return mapObject<P, Resolved<ShadowRoot, P>>(
+        unresolved,
+        <K extends Extract<keyof P, string>>(_: K, prop: P[K]) => {
+          if (UNRESOLVED_ELEMENT_PROPERTY_TYPE.check(prop)) {
+            return this.resolveProperty(prop) as Resolved<ShadowRoot, P>[K];
+          }
 
-      resolvedProperties[key] = this.resolveProperty(this.properties[key]);
-    }
-
-    return resolvedProperties;
+          return this.resolveUnresolvedObject(prop as PropertySpecs<ShadowRoot>) as Resolved<ShadowRoot, P>[K];
+        },
+    );
   }
 
   private resolveProperty(

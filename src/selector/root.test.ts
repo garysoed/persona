@@ -4,6 +4,7 @@ import {createFakeContext} from '../testing/create-fake-context';
 
 import {root} from './root';
 
+
 test('@persona/selector/root', init => {
   const _ = init(() => {
     const input = root({});
