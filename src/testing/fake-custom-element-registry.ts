@@ -25,8 +25,8 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
   ) { }
 
   create(tagOrCtrl: string|BaseCtrlCtor): HTMLElement {
-    const el = typeof tagOrCtrl === 'string' ?
-      this.createElementByTag(tagOrCtrl) : this.createElementByCtrl(tagOrCtrl);
+    const el = typeof tagOrCtrl === 'string'
+      ? this.createElementByTag(tagOrCtrl) : this.createElementByCtrl(tagOrCtrl);
     this.upgradeElement(el);
     this.fakeTime.tick(CHECK_PERIOD_MS);
     return el;

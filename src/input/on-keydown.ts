@@ -41,23 +41,23 @@ export class OnKeydownInput extends OnDomInput<KeyboardEvent> {
                 return false;
               }
 
-              if (booleanType.check(this.matchOptions.alt) &&
-                  this.matchOptions.alt !== event.altKey) {
+              if (booleanType.check(this.matchOptions.alt)
+                  && this.matchOptions.alt !== event.altKey) {
                 return false;
               }
 
-              if (booleanType.check(this.matchOptions.ctrl) &&
-                  this.matchOptions.ctrl !== event.ctrlKey) {
+              if (booleanType.check(this.matchOptions.ctrl)
+                  && this.matchOptions.ctrl !== event.ctrlKey) {
                 return false;
               }
 
-              if (booleanType.check(this.matchOptions.meta) &&
-                  this.matchOptions.meta !== event.metaKey) {
+              if (booleanType.check(this.matchOptions.meta)
+                  && this.matchOptions.meta !== event.metaKey) {
                 return false;
               }
 
-              if (booleanType.check(this.matchOptions.shift) &&
-                  this.matchOptions.shift !== event.shiftKey) {
+              if (booleanType.check(this.matchOptions.shift)
+                  && this.matchOptions.shift !== event.shiftKey) {
                 return false;
               }
 

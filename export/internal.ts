@@ -3,6 +3,8 @@ export {Input} from '../src/types/input';
 export {Output} from '../src/types/output';
 export {ShadowRootLike} from '../src/types/shadow-root-like';
 export {BaseCtrlCtor} from '../src/core/base-ctrl';
+export {Resolved} from '../src/selector/property-spec';
+export {INPUT_TYPE} from '../src/types/input';
 export {UnresolvedElementProperty} from '../src/types/unresolved-element-property';
 
 // Inputs and Outputs

@@ -29,9 +29,9 @@ function findCommentNode(
   return $pipe(
       childNodes,
       $filter(node => {
-        return node.nodeName === '#comment' &&
-            !!node.nodeValue &&
-            node.nodeValue.trim() === commentContent;
+        return node.nodeName === '#comment'
+            && !!node.nodeValue
+            && node.nodeValue.trim() === commentContent;
       }),
       $first(),
   ) || null;

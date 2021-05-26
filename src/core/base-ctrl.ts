@@ -1,6 +1,6 @@
 import {Runnable} from 'gs-tools/export/rxjs';
 import {getOwnPropertyKeys} from 'gs-tools/export/typescript';
-import {merge, Observable, OperatorFunction, pipe} from 'rxjs';
+import {defer, merge, Observable, OperatorFunction, pipe} from 'rxjs';
 
 import {PropertySpecs} from '../selector/property-spec';
 import {Input, INPUT_TYPE} from '../types/input';
@@ -104,6 +104,6 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
   }
 
   private renderAll(): Observable<unknown> {
-    return merge(...this.renders);
+    return defer(() => merge(...this.renders));
   }
 }

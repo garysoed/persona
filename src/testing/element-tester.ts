@@ -88,8 +88,8 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
             }
 
             throw new Error(
-                `Value ${stringify(strValue, Verbosity.DEBUG)} is the wrong type for ` +
-                `${stringify(output, Verbosity.DEBUG)}`,
+                `Value ${stringify(strValue, Verbosity.DEBUG)} is the wrong type for `
+                + `${stringify(output, Verbosity.DEBUG)}`,
             );
           }
 
@@ -280,9 +280,9 @@ function findCommentNode(
   return $pipe(
       childNodes,
       $filter(node => {
-        return node.nodeName === '#comment' &&
-            !!node.nodeValue &&
-            node.nodeValue.trim() === commentContent;
+        return node.nodeName === '#comment'
+            && !!node.nodeValue
+            && node.nodeValue.trim() === commentContent;
       }),
       $first(),
   ) || null;

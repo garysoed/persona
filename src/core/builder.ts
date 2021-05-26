@@ -90,8 +90,8 @@ export class Builder {
               Object.keys(api),
               $map(key => api[key]),
               $filter((spec): spec is UnresolvedAttributeInput<unknown> => {
-                return spec instanceof UnresolvedAttributeInput ||
-                    spec instanceof UnresolvedHasAttributeInput;
+                return spec instanceof UnresolvedAttributeInput
+                    || spec instanceof UnresolvedHasAttributeInput;
               }),
               $map(({attrName}) => attrName),
               $asArray(),
@@ -283,8 +283,8 @@ export function getSpec_<T extends CustomElementSpec|BaseCustomElementSpec>(
       const existingValue = combinedSpec[key];
       // tslint:disable-next-line: strict-type-predicates
       const normalizedExistingValue = existingValue === undefined ? [] : existingValue;
-      if (!iterableOfType(unknownType).check(value) ||
-          !iterableOfType(unknownType).check(normalizedExistingValue)) {
+      if (!iterableOfType(unknownType).check(value)
+          || !iterableOfType(unknownType).check(normalizedExistingValue)) {
         // Ignore the new value, since it belongs to the ancestor class.
         continue;
       }

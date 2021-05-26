@@ -22,8 +22,8 @@ export class PropertyObserver<T> implements Input<T> {
     return interval(CHECK_PERIOD_MS).pipe(
         startWith({}),
         map(() => {
-          const subject = (element as ObservableElement<T>)[this.propertyName] ||
-              new ReplaySubject<T>(1);
+          const subject = (element as ObservableElement<T>)[this.propertyName]
+              || new ReplaySubject<T>(1);
           (element as ObservableElement<T>)[this.propertyName] = subject;
           return subject;
         }),

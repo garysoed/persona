@@ -18,8 +18,8 @@ class FakeMutationObserver extends MutationObserver {
           return;
         }
 
-        if (options.attributeFilter &&
-            !(new Set(options.attributeFilter)).has(record.attributeName)) {
+        if (options.attributeFilter
+            && !(new Set(options.attributeFilter)).has(record.attributeName)) {
           return;
         }
       }
