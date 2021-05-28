@@ -1,4 +1,8 @@
+import {$elementApi} from './element';
+
 export const $div = {
   tag: 'div',
-  api: {},
+  api: {
+    ...$elementApi,
+  },
 };

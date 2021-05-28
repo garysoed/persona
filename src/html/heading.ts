@@ -1,24 +1,38 @@
+import {$elementApi} from './element';
+
 export const $h1 = {
   tag: 'h1',
-  api: {},
+  api: {
+    ...$elementApi,
+  },
 };
 export const $h2 = {
   tag: 'h2',
-  api: {},
+  api: {
+    ...$elementApi,
+  },
 };
 export const $h3 = {
   tag: 'h3',
-  api: {},
+  api: {
+    ...$elementApi,
+  },
 };
 export const $h4 = {
   tag: 'h4',
-  api: {},
+  api: {
+    ...$elementApi,
+  },
 };
 export const $h5 = {
   tag: 'h5',
-  api: {},
+  api: {
+    ...$elementApi,
+  },
 };
 export const $h6 = {
   tag: 'h6',
-  api: {},
+  api: {
+    ...$elementApi,
+  },
 };

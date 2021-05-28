@@ -1,14 +1,22 @@
+import {$elementApi} from './element';
+
 export const $table = {
   tag: 'table',
-  api: {},
+  api: {
+    ...$elementApi,
+  },
 };
 
 export const $tbody = {
   tag: 'tbody',
-  api: {},
+  api: {
+    ...$elementApi,
+  },
 };
 
 export const $thead = {
   tag: 'thead',
-  api: {},
+  api: {
+    ...$elementApi,
+  },
 };

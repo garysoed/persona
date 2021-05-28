@@ -1,7 +1,11 @@
 import {instanceofType} from 'gs-types';
 
+import {$elementApi} from './element';
+
 export const $input = {
   tag: 'input',
-  api: {},
+  api: {
+    ...$elementApi,
+  },
   type: instanceofType(HTMLInputElement),
 };

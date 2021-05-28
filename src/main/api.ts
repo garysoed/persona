@@ -1,5 +1,3 @@
-import {assertUnreachable} from 'gs-tools/export/typescript';
-
 import {UnresolvedAttributeInput} from '../input/attribute';
 import {UnresolvedHandlerInput} from '../input/handler';
 import {UnresolvedHasAttributeInput} from '../input/has-attribute';
@@ -34,7 +32,7 @@ export type UnresolvedOutput =
     UnresolvedPropertyEmitter<any>|
     UnresolvedTextOutput;
 
-type ResolvableProperty = UnresolvedInput|UnresolvedOutput;
+type ResolvableProperty = UnresolvedInput|UnresolvedOutput|UnresolvedSpec;
 
 export interface UnresolvedSpec {
   readonly [key: string]: ResolvableProperty;
@@ -112,6 +110,6 @@ function convert(property: ResolvableProperty): ResolvableProperty {
   } else if (property instanceof UnresolvedTextOutput) {
     return new UnresolvedTextInput();
   } else {
-    throw assertUnreachable(property);
+    return api(property);
   }
 }
