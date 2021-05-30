@@ -291,8 +291,10 @@ function findCommentNode(
 function flattenNodeWithShadow(origNode: Node, ancestorSlotMap: ReadonlyMap<string, Node>): Node {
   if (origNode instanceof Element && origNode.tagName === 'SLOT') {
     const slotName = origNode.getAttribute('name') ?? '';
-    const slotEl = ancestorSlotMap.get(slotName);
-    if (slotEl) {
+    const slotEl = origNode.cloneNode();
+    const slotContentEl = ancestorSlotMap.get(slotName);
+    if (slotContentEl) {
+      slotEl.appendChild(slotContentEl);
       return slotEl;
     }
   }
