@@ -1,12 +1,11 @@
-import {Vine} from 'grapevine';
 import {$asArray, $asMap, $filter, $filterNonNull, $first, $map, $pipe, arrayFrom} from 'gs-tools/export/collect';
-import {Verbosity, stringify} from 'moirai';
-import {Observable, Subject, fromEvent} from 'rxjs';
+import {stringify, Verbosity} from 'moirai';
+import {fromEvent, Observable, Subject} from 'rxjs';
 import {map, mapTo, startWith} from 'rxjs/operators';
 
 import {DecoratedElement, __context} from '../core/custom-element-decorator';
 import {AttributeInput} from '../input/attribute';
-import {HandlerInput, getSubject} from '../input/handler';
+import {getSubject, HandlerInput} from '../input/handler';
 import {HasAttributeInput} from '../input/has-attribute';
 import {HasClassInput} from '../input/has-class';
 import {OnDomInput} from '../input/on-dom';
@@ -39,10 +38,7 @@ interface Key {
 
 
 export class ElementTester<T extends HTMLElement = HTMLElement> {
-  constructor(
-      readonly element: T,
-      readonly vine: Vine,
-  ) { }
+  constructor(readonly element: T) { }
 
   addSlotElement(input: Selector<HTMLSlotElement, PropertySpecs<HTMLSlotElement>>, node: Node): void {
     const slotEl = resolveSelectable(this.element, context => input.getSelectable(context));

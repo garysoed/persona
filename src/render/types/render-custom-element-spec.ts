@@ -34,6 +34,7 @@ interface InputRenderSpec<S extends UnresolvedSpec> extends BaseRenderSpec<HTMLE
   readonly attrs?: ReadonlyMap<string, ObservableOrValue<string|undefined>>;
   readonly children?: ObservableOrValue<readonly RenderSpec[]>;
   readonly inputs?: InputsOf<S>;
+  readonly styles?: ObservableOrValue<ReadonlyMap<string, string|null>>;
   readonly textContent?: ObservableOrValue<string>;
 }
 
@@ -42,6 +43,7 @@ export interface RenderCustomElementSpec<S extends UnresolvedSpec> extends Input
   readonly attrs?: ReadonlyMap<string, Observable<string|undefined>>;
   readonly children?: Observable<readonly RenderSpec[]>;
   readonly inputs?: NormalizedInputsOf<S>;
+  readonly styles?: Observable<ReadonlyMap<string, string|null>>;
   readonly textContent?: Observable<string>;
 }
 
@@ -52,6 +54,7 @@ export function renderCustomElement<S extends UnresolvedSpec>(input: InputRender
     attrs: input.attrs ? normalizeMap(input.attrs) : undefined,
     children: input.children ? normalize(input.children) : undefined,
     inputs: input.inputs ? normalizedInputs(input.inputs) : undefined,
+    styles: input.styles ? normalize(input.styles) : undefined,
     textContent: input.textContent !== undefined ? normalize(input.textContent) : undefined,
   };
 }

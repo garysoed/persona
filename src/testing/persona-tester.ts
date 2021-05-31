@@ -31,10 +31,10 @@ export class PersonaTester {
       private readonly customElementRegistry: FakeCustomElementRegistry,
   ) { }
 
-  createElement<T extends HTMLElement>(tagOrCtrl: string|BaseCtrlCtor): ElementTester<HTMLElement> {
+  createElement<T extends HTMLElement>(tagOrCtrl: string|BaseCtrlCtor): ElementTester<T> {
     const element = this.customElementRegistry.create(tagOrCtrl) as T;
 
-    return new ElementTester(element, this.vine);
+    return new ElementTester(element);
   }
 
   setMedia(input: MediaQueryInput, value: boolean): void {
@@ -44,6 +44,10 @@ export class PersonaTester {
     }
 
     (mediaQuery as FakeMediaQuery).matches = value;
+  }
+
+  testElement<T extends HTMLElement>(element: T): ElementTester<T> {
+    return new ElementTester(element);
   }
 }
 

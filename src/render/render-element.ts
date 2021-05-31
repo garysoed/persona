@@ -6,6 +6,7 @@ import {ownerDocument} from '../input/owner-document';
 
 import {applyChildren} from './decorators/apply-children';
 import {Decorator} from './decorators/apply-decorators';
+import {applyStyles} from './decorators/apply-styles';
 import {applyTextContent} from './decorators/apply-text-content';
 import {NodeWithId, __id} from './node-with-id';
 import {renderNode} from './render-node';
@@ -67,6 +68,10 @@ export function renderElement(
 
   if (spec.children) {
     decorators.push(applyChildren(spec.children, context));
+  }
+
+  if (spec.styles) {
+    decorators.push(applyStyles(spec.styles));
   }
 
   if (spec.decorators) {
