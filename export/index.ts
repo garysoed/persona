@@ -90,5 +90,6 @@ export {$section} from '../src/html/section';
 export {$slot} from '../src/html/slot';
 export {$span} from '../src/html/span';
 export {$style} from '../src/html/style';
+export {$svg} from '../src/html/svg';
 export {$table, $tbody, $thead} from '../src/html/table';
 export {$template} from '../src/html/template';
