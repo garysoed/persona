@@ -1,4 +1,4 @@
-import {diffMap, debug} from 'gs-tools/export/rxjs';
+import {diffMap} from 'gs-tools/export/rxjs';
 import {Observable} from 'rxjs';
 import {startWith, tap} from 'rxjs/operators';
 
@@ -12,9 +12,7 @@ export function applyStyles(
 ): Decorator<NodeWithId<HTMLElement>> {
   return el => styles$.pipe(
       startWith(new Map()),
-      debug(null, 'styles'),
       diffMap(),
-      debug(null, 'diff'),
       tap(diff => {
         const style = el.style;
         switch (diff.type) {
