@@ -1,4 +1,4 @@
-import {$asArray, $asMap, $filter, $filterNonNull, $first, $map, $pipe, arrayFrom} from 'gs-tools/export/collect';
+import {$asArray, $last, $asMap, $filter, $scan, $filterNonNull, $first, $map, $pipe, arrayFrom} from 'gs-tools/export/collect';
 import {stringify, Verbosity} from 'moirai';
 import {fromEvent, Observable, Subject} from 'rxjs';
 import {map, mapTo, startWith} from 'rxjs/operators';
@@ -309,9 +309,13 @@ function flattenNodeWithShadow(origNode: Node, ancestorSlotMap: ReadonlyMap<stri
     return rootEl;
   }
 
-  const slotMap = $pipe(
+  const slotMapRaw = $pipe(
       arrayFrom(origNode.childNodes),
       $map(child => {
+        if (child instanceof Text) {
+          return ['', child] as const;
+        }
+
         if (!(child instanceof Element)) {
           return null;
         }
@@ -320,6 +324,28 @@ function flattenNodeWithShadow(origNode: Node, ancestorSlotMap: ReadonlyMap<stri
         return [slotName ?? '', flattenNodeWithShadow(child, ancestorSlotMap)] as const;
       }),
       $filterNonNull(),
+      $scan((acc, [key, value]) => {
+        const existingNodes = acc.get(key);
+        if (existingNodes) {
+          return new Map([
+            ...acc,
+            [key, [...existingNodes, value]],
+          ]);
+        }
+
+        return new Map([...acc, [key, [value]]]);
+      }, new Map<string, readonly Node[]>()),
+      $asArray(),
+      $last(),
+  ) ?? new Map<string, readonly Node[]>();
+
+  const slotMap = $pipe(
+      slotMapRaw,
+      $map(([key, nodes]) => {
+        const fragment = document.createDocumentFragment();
+        fragment.append(...nodes);
+        return [key, fragment] as const;
+      }),
       $asMap(),
   );
 
