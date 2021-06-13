@@ -77,7 +77,7 @@ export {render} from '../src/render/render';
 export {NodeWithId} from '../src/render/node-with-id';
 export {setId} from '../src/render/set-id';
 
-export {booleanParser, enumParser, integerParser, listParser, mapParser, stringParser} from '../src/util/parsers';
+export {booleanParser, enumParser, floatParser, integerParser, listParser, mapParser, stringParser} from '../src/util/parsers';
 
 // HTML
 export {$div} from '../src/html/div';

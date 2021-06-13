@@ -1,4 +1,4 @@
-import {integerConverter, listConverter, mapConverter, typeBased} from 'gs-tools/export/serializer';
+import {integerConverter, listConverter, mapConverter, typeBased, floatConverter} from 'gs-tools/export/serializer';
 import {getAllValues} from 'gs-tools/export/typescript';
 import {booleanType} from 'gs-types';
 import {Converter, Result, compose, human, identity} from 'nabu';
@@ -23,6 +23,10 @@ export function enumParser<E extends string>(enumSet: unknown): Converter<E, str
       return {success: true, result: value};
     },
   };
+}
+
+export function floatParser(): Converter<number, string> {
+  return compose(floatConverter(), human());
 }
 
 export function integerParser(): Converter<number, string> {
