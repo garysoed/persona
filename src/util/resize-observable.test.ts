@@ -1,4 +1,4 @@
-import {assert, createSpySubject, runEnvironment, should, test} from 'gs-testing';
+import {arrayThat, assert, createSpySubject, objectThat, runEnvironment, should, test} from 'gs-testing';
 
 import {resizeObservable} from '../../export';
 import {dispatchResizeEvent} from '../testing/fake-resize-observer';
@@ -21,9 +21,12 @@ test('@persona/util/resize-observable', init => {
     assert(records$).toNot.emit();
 
     addedEl.style.height = '23px';
-    const records = [{contentRect: new DOMRect(1, 2, 3, 4)}];
+    const record = {contentRect: new DOMRect(1, 2, 3, 4)};
+    const records = [record];
     dispatchResizeEvent(addedEl, records);
 
-    assert(records$).to.emitWith(records);
+    assert(records$).to.emitWith(arrayThat<ResizeObserverEntry>().haveExactElements([
+      objectThat<ResizeObserverEntry>().haveProperties(record),
+    ]));
   });
 });

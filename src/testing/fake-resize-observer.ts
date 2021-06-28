@@ -1,9 +1,10 @@
-import {ResizeObserver, ResizeObserverEntry} from '../util/resize-observable';
-
 const EVENT = 'pr-fake-resize';
 
 class FakeResizeObserver implements ResizeObserver {
   constructor(private readonly callback: (entries: readonly ResizeObserverEntry[]) => void) { }
+  unobserve(): void {
+    // noop
+  }
 
   disconnect(): void {
     // noop
@@ -18,7 +19,7 @@ class FakeResizeObserver implements ResizeObserver {
 
 export function dispatchResizeEvent(
     target: Element,
-    entries: readonly ResizeObserverEntry[],
+    entries: ReadonlyArray<Partial<ResizeObserverEntry>>,
 ): void {
   target.dispatchEvent(new CustomEvent(EVENT, {detail: entries}));
 }
