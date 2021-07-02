@@ -2,7 +2,7 @@ import {Runnable} from 'gs-tools/export/rxjs';
 import {getOwnPropertyKeys} from 'gs-tools/export/typescript';
 import {defer, merge, Observable, OperatorFunction, pipe} from 'rxjs';
 
-import {PropertySpecs} from '../selector/property-spec';
+import {PropertySpecs, Resolved} from '../selector/property-spec';
 import {Input, INPUT_TYPE} from '../types/input';
 import {Output, OUTPUT_TYPE} from '../types/output';
 import {Selectable} from '../types/selectable';
@@ -11,23 +11,28 @@ import {Selector, SELECTOR_TYPE} from '../types/selector';
 import {ShadowContext} from './shadow-context';
 
 
-type SelectedInputsOf<B extends Selectable, P extends PropertySpecs<B>, S extends Selector<B, P>> = {
-  readonly [K in keyof P]: S['_'][K] extends Input<infer T> ? Observable<T> : never;
+type SelectedInputsOf<S1 extends Selectable, P1 extends PropertySpecs<S1>, R extends Resolved<S1, P1>> = {
+  readonly [K in keyof P1]: R[K] extends Input<infer T> ? Observable<T> :
+      R[K] extends Resolved<infer S2, infer P2> ? SelectedInputsOf<S2, P2, R[K]> :
+      never;
 }
 
-type SelectedRenderersOf<B extends Selectable, P extends PropertySpecs<B>, S extends Selector<B, P>> = {
-  readonly [K in keyof P]: S['_'][K] extends Output<infer T> ? OperatorFunction<T, unknown> : never;
+type SelectedRenderersOf<S1 extends Selectable, P1 extends PropertySpecs<S1>, R extends Resolved<S1, P1>> = {
+  readonly [K in keyof P1]: R[K] extends Output<infer T> ? OperatorFunction<T, unknown> :
+      R[K] extends Resolved<infer S2, infer P2> ? SelectedRenderersOf<S2, P2, R[K]> :
+      never;
 };
 
 export type InputsOf<S extends {}> = {
-  readonly [K in keyof S]: S[K] extends Selector<infer B, infer P> ? SelectedInputsOf<B, P, S[K]> : never;
+  readonly [K in keyof S]: S[K] extends Selector<infer B, infer P> ? SelectedInputsOf<B, P, S[K]['_']> : never;
 }
 
 type RenderersOf<S extends {}> = {
-  readonly [K in keyof S]: S[K] extends Selector<infer B, infer P> ? SelectedRenderersOf<B, P, S[K]> : never;
+  readonly [K in keyof S]: S[K] extends Selector<infer B, infer P> ? SelectedRenderersOf<B, P, S[K]['_']> : never;
 }
 
 export type BaseCtrlCtor = new (context: ShadowContext) => BaseCtrl<any>;
+
 
 export abstract class BaseCtrl<S extends {}> extends Runnable {
   protected readonly shadowRoot = this.context.shadowRoot;
@@ -50,7 +55,7 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
       if (!SELECTOR_TYPE.check(maybeSelector)) {
         continue;
       }
-      const selectedInputs = this.getInputs(maybeSelector);
+      const selectedInputs = this.getInputs(maybeSelector._);
       inputs[selectorKey] = selectedInputs;
     }
 
@@ -65,7 +70,7 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
       if (!SELECTOR_TYPE.check(maybeSelector)) {
         continue;
       }
-      const selectedInputs = this.getRenderers(maybeSelector);
+      const selectedInputs = this.getRenderers(maybeSelector._);
       inputs[selectorKey] = selectedInputs;
     }
 
@@ -73,37 +78,54 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
     return inputs as RenderersOf<S>;
   }
 
-  private getInputs<B extends Selectable, P extends PropertySpecs<B>, S extends Selector<B, P>>(
-      selector: S,
-  ): SelectedInputsOf<B, P, S> {
-    const selectedInputs: {[K in keyof P]?: Observable<unknown>} = {};
-    for (const entryKey of getOwnPropertyKeys(selector._)) {
-      const entry = selector._[entryKey];
-      if (!INPUT_TYPE.check(entry)) {
+  private getInputs<S extends Selectable, P extends PropertySpecs<S>, R extends Resolved<S, P>>(
+      selector: R,
+  ): SelectedInputsOf<S, P, R> {
+    const selectedInputs: {[K in keyof R]?: Observable<unknown>|SelectedInputsOf<any, any, any>} = {};
+    for (const entryKey of getOwnPropertyKeys(selector)) {
+      const entry = selector[entryKey];
+      if (INPUT_TYPE.check(entry)) {
+        selectedInputs[entryKey] = entry.getValue(this.context);
         continue;
       }
-      selectedInputs[entryKey] = entry.getValue(this.context);
+
+      if (isResolvedType(entry)) {
+        selectedInputs[entryKey] = this.getInputs(entry);
+        continue;
+      }
     }
     // TODO: Remove typecast.
-    return selectedInputs as SelectedInputsOf<B, P, S>;
+    return selectedInputs as SelectedInputsOf<S, P, R>;
   }
 
-  private getRenderers<B extends Selectable, P extends PropertySpecs<B>, S extends Selector<B, P>>(
-      selector: S,
-  ): SelectedRenderersOf<B, P, S> {
-    const selectedRenderers: {[K in keyof P]?: (value$: Observable<unknown>) => Observable<unknown>} = {};
-    for (const entryKey of getOwnPropertyKeys(selector._)) {
-      const entry = selector._[entryKey];
-      if (!OUTPUT_TYPE.check(entry)) {
+  private getRenderers<S extends Selectable, P extends PropertySpecs<S>, R extends Resolved<S, P>>(
+      selector: R,
+  ): SelectedRenderersOf<S, P, R> {
+    const selectedRenderers: {[K in keyof R]?: ((value$: Observable<unknown>) => Observable<unknown>)|SelectedRenderersOf<any, any, any>} = {};
+    for (const entryKey of getOwnPropertyKeys(selector)) {
+      const entry = selector[entryKey];
+      if (OUTPUT_TYPE.check(entry)) {
+        selectedRenderers[entryKey] = pipe(entry.output(this.context));
         continue;
       }
-      selectedRenderers[entryKey] = pipe(entry.output(this.context));
+
+      if (isResolvedType(entry)) {
+        selectedRenderers[entryKey] = this.getRenderers(entry);
+        continue;
+      }
     }
+
     // TODO: Remove typecast.
-    return selectedRenderers as SelectedRenderersOf<B, P, S>;
+    return selectedRenderers as SelectedRenderersOf<S, P, R>;
   }
 
   private renderAll(): Observable<unknown> {
     return defer(() => merge(...this.renders));
   }
+}
+
+function isResolvedType<S extends Selectable, P extends PropertySpecs<S>>(
+    target: unknown,
+): target is Resolved<S, P> {
+  return target instanceof Object;
 }

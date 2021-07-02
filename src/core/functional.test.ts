@@ -1,7 +1,7 @@
 import {source} from 'grapevine';
 import {assert, createSpy, should, test} from 'gs-testing';
 import {identity} from 'nabu';
-import {Observable, of as observableOf} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {attribute as attributeIn} from '../input/attribute';
@@ -20,6 +20,10 @@ const $$ = {
   tag: 'test-el',
   api: {
     attr3: attributeIn('attr3', identity(), ''),
+    grouped: {
+      attrIn: attributeIn('gin', identity(), ''),
+      attrOut: attributeOut('gout', identity(), ''),
+    },
   },
 };
 
@@ -49,7 +53,7 @@ abstract class ParentTestClass<S extends typeof $p> extends BaseCtrl<S> {
   }
 
   protected overriddenRender(): Observable<string> {
-    return observableOf('abc');
+    return of('abc');
   }
 }
 
@@ -67,8 +71,7 @@ class TestClass extends ParentTestClass<typeof $> {
   }
 
   protected overriddenRender(): Observable<string> {
-    return this.providesValue()
-        .pipe(map(value => `${value}abc`));
+    return this.providesValue().pipe(map(value => `${value}abc`));
   }
 
   private providesValue(): Observable<string> {
@@ -83,6 +86,7 @@ class TestClass extends ParentTestClass<typeof $> {
     return [
       this.renderers.host.attr1(this.overriddenRender()),
       this.renderers.host.attr2(this.overriddenRender()),
+      this.renderers.host.grouped.attrOut(this.inputs.host.grouped.attrIn),
     ];
   }
 }
@@ -105,8 +109,10 @@ test('@persona/core/functional', init => {
   });
 
   should('set up the component correctly', () => {
+    _.el.setAttribute($.host._.grouped.attrIn, 'value');
     assert(_.el.getAttribute($.host._.attr1)).to.emitWith('123-abc');
     assert(_.el.getAttribute($.host._.attr2)).to.emitWith('123-abc');
+    assert(_.el.getAttribute($.host._.grouped.attrOut)).to.emitWith('value');
 
     assert(_.el.element.shadowRoot?.mode).to.equal('open');
     assert(_.mockHandler).to.haveBeenCalledWith();
