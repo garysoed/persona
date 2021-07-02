@@ -11,24 +11,24 @@ import {Selector, SELECTOR_TYPE} from '../types/selector';
 import {ShadowContext} from './shadow-context';
 
 
-type SelectedInputsOf<S1 extends Selectable, P1 extends PropertySpecs<S1>, R extends Resolved<S1, P1>> = {
-  readonly [K in keyof P1]: R[K] extends Input<infer T> ? Observable<T> :
-      R[K] extends Resolved<infer S2, infer P2> ? SelectedInputsOf<S2, P2, R[K]> :
+type SelectedInputsOf<R extends Resolved<Selectable, PropertySpecs<Selectable>>> = {
+  readonly [K in keyof R]: R[K] extends Input<infer T> ? Observable<T> :
+      R[K] extends Resolved<any, any> ? SelectedInputsOf<R[K]> :
       never;
 }
 
-type SelectedRenderersOf<S1 extends Selectable, P1 extends PropertySpecs<S1>, R extends Resolved<S1, P1>> = {
-  readonly [K in keyof P1]: R[K] extends Output<infer T> ? OperatorFunction<T, unknown> :
-      R[K] extends Resolved<infer S2, infer P2> ? SelectedRenderersOf<S2, P2, R[K]> :
+type SelectedRenderersOf<R extends Resolved<Selectable, PropertySpecs<Selectable>>> = {
+  readonly [K in keyof R]: R[K] extends Output<infer T> ? OperatorFunction<T, unknown> :
+      R[K] extends Resolved<any, any> ? SelectedRenderersOf<R[K]> :
       never;
 };
 
 export type InputsOf<S extends {}> = {
-  readonly [K in keyof S]: S[K] extends Selector<infer B, infer P> ? SelectedInputsOf<B, P, S[K]['_']> : never;
+  readonly [K in keyof S]: S[K] extends Selector<any, any> ? SelectedInputsOf<S[K]['_']> : never;
 }
 
 type RenderersOf<S extends {}> = {
-  readonly [K in keyof S]: S[K] extends Selector<infer B, infer P> ? SelectedRenderersOf<B, P, S[K]['_']> : never;
+  readonly [K in keyof S]: S[K] extends Selector<any, any> ? SelectedRenderersOf<S[K]['_']> : never;
 }
 
 export type BaseCtrlCtor = new (context: ShadowContext) => BaseCtrl<any>;
@@ -40,7 +40,7 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
 
   constructor(
       protected readonly context: ShadowContext,
-      protected readonly specs: S,
+      readonly specs: S,
   ) {
     super();
     this.addSetup(this.renderAll());
@@ -49,7 +49,7 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
   protected abstract get renders(): ReadonlyArray<Observable<unknown>>;
 
   protected get inputs(): InputsOf<S> {
-    const inputs: {[K in keyof S]?: SelectedInputsOf<Selectable, {}, Selector<Selectable, {}>>} = {};
+    const inputs: {[K in keyof S]?: SelectedInputsOf<Resolved<Selectable, {}>>} = {};
     for (const selectorKey of getOwnPropertyKeys(this.specs)) {
       const maybeSelector = this.specs[selectorKey];
       if (!SELECTOR_TYPE.check(maybeSelector)) {
@@ -64,7 +64,7 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
   }
 
   protected get renderers(): RenderersOf<S> {
-    const inputs: {[K in keyof S]?: SelectedRenderersOf<Selectable, {}, Selector<Selectable, {}>>} = {};
+    const inputs: {[K in keyof S]?: SelectedRenderersOf<Resolved<Selectable, {}>>} = {};
     for (const selectorKey of getOwnPropertyKeys(this.specs)) {
       const maybeSelector = this.specs[selectorKey];
       if (!SELECTOR_TYPE.check(maybeSelector)) {
@@ -78,14 +78,14 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
     return inputs as RenderersOf<S>;
   }
 
-  private getInputs<S extends Selectable, P extends PropertySpecs<S>, R extends Resolved<S, P>>(
+  private getInputs<R extends Resolved<Selectable, PropertySpecs<Selectable>>>(
       selector: R,
-  ): SelectedInputsOf<S, P, R> {
-    const selectedInputs: {[K in keyof R]?: Observable<unknown>|SelectedInputsOf<any, any, any>} = {};
+  ): SelectedInputsOf<R> {
+    const selectedInputs: {[K in keyof R]?: Observable<unknown>|SelectedInputsOf<any>} = {};
     for (const entryKey of getOwnPropertyKeys(selector)) {
       const entry = selector[entryKey];
       if (INPUT_TYPE.check(entry)) {
-        selectedInputs[entryKey] = entry.getValue(this.context);
+        selectedInputs[entryKey] = (entry as Input<unknown>).getValue(this.context);
         continue;
       }
 
@@ -95,17 +95,17 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
       }
     }
     // TODO: Remove typecast.
-    return selectedInputs as SelectedInputsOf<S, P, R>;
+    return selectedInputs as SelectedInputsOf<R>;
   }
 
-  private getRenderers<S extends Selectable, P extends PropertySpecs<S>, R extends Resolved<S, P>>(
+  private getRenderers<R extends Resolved<Selectable, PropertySpecs<Selectable>>>(
       selector: R,
-  ): SelectedRenderersOf<S, P, R> {
-    const selectedRenderers: {[K in keyof R]?: ((value$: Observable<unknown>) => Observable<unknown>)|SelectedRenderersOf<any, any, any>} = {};
+  ): SelectedRenderersOf<R> {
+    const selectedRenderers: {[K in keyof R]?: OperatorFunction<unknown, unknown>|SelectedRenderersOf<any>} = {};
     for (const entryKey of getOwnPropertyKeys(selector)) {
       const entry = selector[entryKey];
       if (OUTPUT_TYPE.check(entry)) {
-        selectedRenderers[entryKey] = pipe(entry.output(this.context));
+        selectedRenderers[entryKey] = pipe((entry as Output<unknown>).output(this.context));
         continue;
       }
 
@@ -116,7 +116,7 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
     }
 
     // TODO: Remove typecast.
-    return selectedRenderers as SelectedRenderersOf<S, P, R>;
+    return selectedRenderers as SelectedRenderersOf<R>;
   }
 
   private renderAll(): Observable<unknown> {
