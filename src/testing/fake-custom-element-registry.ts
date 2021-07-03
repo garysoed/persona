@@ -24,7 +24,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
       private readonly builder: Builder,
   ) { }
 
-  create(tagOrCtrl: string|BaseCtrlCtor): HTMLElement {
+  create(tagOrCtrl: string|BaseCtrlCtor<{}>): HTMLElement {
     const el = typeof tagOrCtrl === 'string'
       ? this.createElementByTag(tagOrCtrl) : this.createElementByCtrl(tagOrCtrl);
     this.upgradeElement(el);
@@ -32,7 +32,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     return el;
   }
 
-  private createElementByCtrl(ctrl: BaseCtrlCtor): HTMLElement {
+  private createElementByCtrl(ctrl: BaseCtrlCtor<{}>): HTMLElement {
     const tag = this.builder.getSpec(ctrl)?.tag;
     if (!tag) {
       throw new Error(`Element ${ctrl.name} not registered`);

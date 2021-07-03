@@ -25,7 +25,7 @@ export class CustomElementDecorator {
   private readonly instance = new (this.componentClass)(this.context);
 
   constructor(
-      private readonly componentClass: BaseCtrlCtor,
+      private readonly componentClass: BaseCtrlCtor<{}>,
       private readonly element: DecoratedElement,
       private readonly tag: string,
       private readonly templateService: TemplateService,

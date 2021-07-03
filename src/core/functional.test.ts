@@ -104,17 +104,17 @@ test('@persona/core/functional', init => {
       rootDoc: document,
     });
 
-    const el = tester.createElement('test-el');
-    return {el, tester, mockHandler};
+    const {element, harness} = tester.createHarness(TestClass);
+    return {element, harness, tester, mockHandler};
   });
 
   should('set up the component correctly', () => {
-    _.el.setAttribute($.host._.grouped.attrIn, 'value');
-    assert(_.el.getAttribute($.host._.attr1)).to.emitWith('123-abc');
-    assert(_.el.getAttribute($.host._.attr2)).to.emitWith('123-abc');
-    assert(_.el.getAttribute($.host._.grouped.attrOut)).to.emitWith('value');
+    _.harness.host.grouped.attrIn('value');
+    assert(_.harness.host.attr1).to.emitWith('123-abc');
+    assert(_.harness.host.attr2).to.emitWith('123-abc');
+    assert(_.harness.host.grouped.attrOut).to.emitWith('value');
 
-    assert(_.el.element.shadowRoot?.mode).to.equal('open');
+    assert(_.element.shadowRoot?.mode).to.equal('open');
     assert(_.mockHandler).to.haveBeenCalledWith();
   });
 });

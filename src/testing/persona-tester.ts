@@ -1,20 +1,28 @@
 import {Config as VineConfig, Vine} from 'grapevine';
 import {fake, FakeTime, mockTime, runEnvironment, spy} from 'gs-testing';
+import {Subject} from 'rxjs';
 
+import {PersonaContext} from '../../export';
 import {BaseCtrlCtor} from '../core/base-ctrl';
 import {Builder as PersonaBuilder} from '../core/builder';
 import {MediaQueryInput} from '../input/media-query';
 
 import {ElementTester} from './element-tester';
 import {FakeCustomElementRegistry} from './fake-custom-element-registry';
+import {createHarness, Harness} from './harness';
 import {FakeMediaQuery, mockMatchMedia} from './mock-match-media';
 import {PersonaTesterEnvironment} from './persona-tester-environment';
 
 
 interface Config {
-  readonly rootCtrls?: readonly BaseCtrlCtor[];
+  readonly rootCtrls?: ReadonlyArray<BaseCtrlCtor<{}>>;
   readonly rootDoc: Document;
   readonly overrides?: VineConfig['overrides'];
+}
+
+interface ElementAndHarness<S> {
+  readonly element: Element;
+  readonly harness: Harness<S>;
 }
 
 
@@ -30,10 +38,27 @@ export class PersonaTester {
       private readonly customElementRegistry: FakeCustomElementRegistry,
   ) { }
 
-  createElement<T extends HTMLElement>(tagOrCtrl: string|BaseCtrlCtor): ElementTester<T> {
+  /**
+   * @deprecated Use #createHarness
+   */
+  createElement<T extends HTMLElement>(tagOrCtrl: BaseCtrlCtor<{}>): ElementTester<T> {
     const element = this.customElementRegistry.create(tagOrCtrl) as T;
 
     return new ElementTester(element);
+  }
+
+  createHarness<S>(ctrl: BaseCtrlCtor<S>): ElementAndHarness<S> {
+    const element = this.customElementRegistry.create(ctrl);
+    const context: PersonaContext = {
+      onAttributeChanged$: new Subject(),
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      shadowRoot: element.shadowRoot!,
+      vine: this.vine,
+    };
+
+    const tmp = new ctrl(context);
+    const harness = createHarness(tmp.specs, context);
+    return {element, harness};
   }
 
   setMedia(input: MediaQueryInput, value: boolean): void {
@@ -79,11 +104,9 @@ export class PersonaTesterFactory {
     const tester = new PersonaTester(fakeTime, vine, customElementRegistry);
     fake(spy(document, 'createElement'))
         .always().call(tag => {
-          if (customElementRegistry.get(tag)) {
-            const elTester = tester.createElement(tag);
-
-            return elTester.element;
-          } else {
+          try {
+            return customElementRegistry.create(tag);
+          } catch (e) {
             return createElement(tag);
           }
         });

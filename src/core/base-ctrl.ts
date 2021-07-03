@@ -31,7 +31,7 @@ type RenderersOf<S extends {}> = {
   readonly [K in keyof S]: S[K] extends Selector<any, any> ? SelectedRenderersOf<S[K]['_']> : never;
 }
 
-export type BaseCtrlCtor = new (context: ShadowContext) => BaseCtrl<any>;
+export type BaseCtrlCtor<S extends {}> = new (context: ShadowContext) => BaseCtrl<S>;
 
 
 export abstract class BaseCtrl<S extends {}> extends Runnable {
@@ -40,7 +40,7 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
 
   constructor(
       protected readonly context: ShadowContext,
-      protected readonly specs: S,
+      readonly specs: S,
   ) {
     super();
     this.addSetup(this.renderAll());

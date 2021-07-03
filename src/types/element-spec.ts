@@ -5,7 +5,7 @@ import {UnresolvedSpec} from '../main/api';
 
 
 export interface BaseCustomElementSpec {
-  readonly dependencies?: readonly BaseCtrlCtor[];
+  readonly dependencies?: ReadonlyArray<BaseCtrlCtor<{}>>;
   readonly shadowMode?: 'open'|'closed';
   configure?(vine: Vine): void;
 }
