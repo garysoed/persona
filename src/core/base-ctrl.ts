@@ -11,7 +11,7 @@ import {Selector, SELECTOR_TYPE} from '../types/selector';
 import {ShadowContext} from './shadow-context';
 
 
-type SelectedInputsOf<R extends Resolved<Selectable, PropertySpecs<Selectable>>> = {
+type SelectedInputsOf<R extends Resolved<Selectable,  PropertySpecs<Selectable>>> = {
   readonly [K in keyof R]: R[K] extends Input<infer T> ? Observable<T> :
       R[K] extends Resolved<any, any> ? SelectedInputsOf<R[K]> :
       never;
@@ -40,7 +40,7 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
 
   constructor(
       protected readonly context: ShadowContext,
-      readonly specs: S,
+      protected readonly specs: S,
   ) {
     super();
     this.addSetup(this.renderAll());
@@ -85,7 +85,8 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
     for (const entryKey of getOwnPropertyKeys(selector)) {
       const entry = selector[entryKey];
       if (INPUT_TYPE.check(entry)) {
-        selectedInputs[entryKey] = (entry as Input<unknown>).getValue(this.context);
+        const input: Input<unknown> = entry;
+        selectedInputs[entryKey] = input.getValue(this.context);
         continue;
       }
 
@@ -101,11 +102,12 @@ export abstract class BaseCtrl<S extends {}> extends Runnable {
   private getRenderers<R extends Resolved<Selectable, PropertySpecs<Selectable>>>(
       selector: R,
   ): SelectedRenderersOf<R> {
-    const selectedRenderers: {[K in keyof R]?: OperatorFunction<unknown, unknown>|SelectedRenderersOf<any>} = {};
+    const selectedRenderers: {[K in keyof R]?: ((value$: Observable<unknown>) => Observable<unknown>)|SelectedRenderersOf<any>} = {};
     for (const entryKey of getOwnPropertyKeys(selector)) {
       const entry = selector[entryKey];
       if (OUTPUT_TYPE.check(entry)) {
-        selectedRenderers[entryKey] = pipe((entry as Output<unknown>).output(this.context));
+        const output: Output<unknown> = entry;
+        selectedRenderers[entryKey] = pipe(output.output(this.context));
         continue;
       }
 
