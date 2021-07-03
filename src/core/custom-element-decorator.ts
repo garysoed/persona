@@ -2,8 +2,6 @@ import {Vine} from 'grapevine';
 import {cache} from 'gs-tools/export/data';
 import {Observable, Subject} from 'rxjs';
 
-import {CustomElementCtrlCtor} from '../types/custom-element-ctrl';
-
 import {BaseCtrlCtor} from './base-ctrl';
 import {AttributeChangedEvent, ShadowContext} from './shadow-context';
 import {TemplateService} from './template-service';
@@ -27,7 +25,7 @@ export class CustomElementDecorator {
   private readonly instance = new (this.componentClass)(this.context);
 
   constructor(
-      private readonly componentClass: CustomElementCtrlCtor|BaseCtrlCtor,
+      private readonly componentClass: BaseCtrlCtor,
       private readonly element: DecoratedElement,
       private readonly tag: string,
       private readonly templateService: TemplateService,

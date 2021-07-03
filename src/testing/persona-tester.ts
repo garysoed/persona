@@ -4,7 +4,6 @@ import {fake, FakeTime, mockTime, runEnvironment, spy} from 'gs-testing';
 import {BaseCtrlCtor} from '../core/base-ctrl';
 import {Builder as PersonaBuilder} from '../core/builder';
 import {MediaQueryInput} from '../input/media-query';
-import {CustomElementCtrlCtor} from '../types/custom-element-ctrl';
 
 import {ElementTester} from './element-tester';
 import {FakeCustomElementRegistry} from './fake-custom-element-registry';
@@ -13,7 +12,7 @@ import {PersonaTesterEnvironment} from './persona-tester-environment';
 
 
 interface Config {
-  readonly rootCtrls?: ReadonlyArray<CustomElementCtrlCtor|BaseCtrlCtor>;
+  readonly rootCtrls?: readonly BaseCtrlCtor[];
   readonly rootDoc: Document;
   readonly overrides?: VineConfig['overrides'];
 }

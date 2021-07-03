@@ -51,8 +51,6 @@ export {element} from '../src/selector/element';
 export {root} from '../src/selector/root';
 export {Selector} from '../src/types/selector';
 
-// Types
-export {CustomElementCtrl} from '../src/types/custom-element-ctrl';
 
 // Util
 export {mutationObservable} from '../src/util/mutation-observable';
