@@ -12,7 +12,7 @@ export class ClasslistOutput implements Output<ReadonlySet<string>> {
   readonly type = 'out';
 
   constructor(
-      private readonly resolver: Resolver<Element>,
+      readonly resolver: Resolver<Element>,
   ) { }
 
   output(context: ShadowContext): OperatorFunction<ReadonlySet<string>, unknown> {

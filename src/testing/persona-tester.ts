@@ -21,7 +21,7 @@ interface Config {
 }
 
 interface ElementAndHarness<S> {
-  readonly element: Element;
+  readonly element: HTMLElement;
   readonly harness: Harness<S>;
 }
 

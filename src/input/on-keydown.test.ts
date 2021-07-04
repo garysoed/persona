@@ -1,4 +1,6 @@
 import {assert, createSpySubject, should, test} from 'gs-testing';
+import {BehaviorSubject} from 'rxjs';
+import {switchMap} from 'rxjs/operators';
 
 import {$input} from '../html/input';
 import {element} from '../selector/element';
@@ -43,11 +45,15 @@ test('input.onKeydown', init => {
     });
 
     should('match the alt correctly', () => {
-      const matchOptions: MatchOptions = {};
-      const spySubject = createSpySubject(createInput(matchOptions).getValue(_.context));
+      const matchOptions$ = new BehaviorSubject<MatchOptions>({});
+      const spySubject = createSpySubject(
+          matchOptions$.pipe(
+              switchMap(matchOptions => createInput(matchOptions).getValue(_.context),
+              ),
+          ));
 
       // alt === true
-      matchOptions.alt = true;
+      matchOptions$.next({...matchOptions$.getValue(), alt: true});
       const altEvent = new KeyboardEvent('keydown', {key: KEY, altKey: true});
       _.el.dispatchEvent(altEvent);
       assert(spySubject).to.emitWith(altEvent);
@@ -56,7 +62,7 @@ test('input.onKeydown', init => {
       assert(spySubject).to.emitSequence([altEvent]);
 
       // alt === false
-      matchOptions.alt = false;
+      matchOptions$.next({...matchOptions$.getValue(), alt: false});
       const nonAltEvent = new KeyboardEvent('keydown', {key: KEY});
       _.el.dispatchEvent(nonAltEvent);
       assert(spySubject).to.emitWith(nonAltEvent);
@@ -64,8 +70,8 @@ test('input.onKeydown', init => {
       _.el.dispatchEvent(new KeyboardEvent('keydown', {key: 'other', altKey: true}));
       assert(spySubject).to.emitSequence([altEvent, nonAltEvent]);
 
-      // alt === null
-      matchOptions.alt = undefined;
+      // alt === undefined
+      matchOptions$.next({...matchOptions$.getValue(), alt: undefined});
       _.el.dispatchEvent(altEvent);
       assert(spySubject).to.emitWith(altEvent);
 
@@ -74,11 +80,15 @@ test('input.onKeydown', init => {
     });
 
     should('match the ctrl correctly', () => {
-      const matchOptions: MatchOptions = {};
-      const spySubject = createSpySubject(createInput(matchOptions).getValue(_.context));
+      const matchOptions$ = new BehaviorSubject<MatchOptions>({});
+      const spySubject = createSpySubject(
+          matchOptions$.pipe(
+              switchMap(matchOptions => createInput(matchOptions).getValue(_.context),
+              ),
+          ));
 
       // ctrl === true
-      matchOptions.ctrl = true;
+      matchOptions$.next({...matchOptions$.getValue(), ctrl: true});
       const ctrlEvent = new KeyboardEvent('keydown', {key: KEY, ctrlKey: true});
       _.el.dispatchEvent(ctrlEvent);
       assert(spySubject).to.emitWith(ctrlEvent);
@@ -87,7 +97,7 @@ test('input.onKeydown', init => {
       assert(spySubject).to.emitSequence([ctrlEvent]);
 
       // ctrl === false
-      matchOptions.ctrl = false;
+      matchOptions$.next({...matchOptions$.getValue(), ctrl: false});
       const nonCtrlEvent = new KeyboardEvent('keydown', {key: KEY});
       _.el.dispatchEvent(nonCtrlEvent);
       assert(spySubject).to.emitWith(nonCtrlEvent);
@@ -95,8 +105,8 @@ test('input.onKeydown', init => {
       _.el.dispatchEvent(new KeyboardEvent('keydown', {key: 'other', ctrlKey: true}));
       assert(spySubject).to.emitSequence([ctrlEvent, nonCtrlEvent]);
 
-      // ctrl === null
-      matchOptions.ctrl = undefined;
+      // ctrl === undefined
+      matchOptions$.next({...matchOptions$.getValue(), ctrl: undefined});
       _.el.dispatchEvent(ctrlEvent);
       assert(spySubject).to.emitWith(ctrlEvent);
 
@@ -105,11 +115,15 @@ test('input.onKeydown', init => {
     });
 
     should('match the meta correctly', () => {
-      const matchOptions: MatchOptions = {};
-      const spySubject = createSpySubject(createInput(matchOptions).getValue(_.context));
+      const matchOptions$ = new BehaviorSubject<MatchOptions>({});
+      const spySubject = createSpySubject(
+          matchOptions$.pipe(
+              switchMap(matchOptions => createInput(matchOptions).getValue(_.context),
+              ),
+          ));
 
       // meta === true
-      matchOptions.meta = true;
+      matchOptions$.next({...matchOptions$.getValue(), meta: true});
       const metaEvent = new KeyboardEvent('keydown', {key: KEY, metaKey: true});
       _.el.dispatchEvent(metaEvent);
       assert(spySubject).to.emitWith(metaEvent);
@@ -118,7 +132,7 @@ test('input.onKeydown', init => {
       assert(spySubject).to.emitSequence([metaEvent]);
 
       // meta === false
-      matchOptions.meta = false;
+      matchOptions$.next({...matchOptions$.getValue(), meta: false});
       const nonMetaEvent = new KeyboardEvent('keydown', {key: KEY});
       _.el.dispatchEvent(nonMetaEvent);
       assert(spySubject).to.emitWith(nonMetaEvent);
@@ -126,8 +140,8 @@ test('input.onKeydown', init => {
       _.el.dispatchEvent(new KeyboardEvent('keydown', {key: 'other', metaKey: true}));
       assert(spySubject).to.emitSequence([metaEvent, nonMetaEvent]);
 
-      // meta === null
-      matchOptions.meta = undefined;
+      // meta === undefined
+      matchOptions$.next({...matchOptions$.getValue(), meta: undefined});
       _.el.dispatchEvent(metaEvent);
       assert(spySubject).to.emitWith(metaEvent);
 
@@ -136,11 +150,15 @@ test('input.onKeydown', init => {
     });
 
     should('match the shift correctly', () => {
-      const matchOptions: MatchOptions = {};
-      const spySubject = createSpySubject(createInput(matchOptions).getValue(_.context));
+      const matchOptions$ = new BehaviorSubject<MatchOptions>({});
+      const spySubject = createSpySubject(
+          matchOptions$.pipe(
+              switchMap(matchOptions => createInput(matchOptions).getValue(_.context),
+              ),
+          ));
 
       // shift === true
-      matchOptions.shift = true;
+      matchOptions$.next({...matchOptions$.getValue(), shift: true});
       const shiftEvent = new KeyboardEvent('keydown', {key: KEY, shiftKey: true});
       _.el.dispatchEvent(shiftEvent);
       assert(spySubject).to.emitWith(shiftEvent);
@@ -149,7 +167,7 @@ test('input.onKeydown', init => {
       assert(spySubject).to.emitSequence([shiftEvent]);
 
       // shift === false
-      matchOptions.shift = false;
+      matchOptions$.next({...matchOptions$.getValue(), shift: false});
       const nonShiftEvent = new KeyboardEvent('keydown', {key: KEY});
       _.el.dispatchEvent(nonShiftEvent);
       assert(spySubject).to.emitWith(nonShiftEvent);
@@ -157,8 +175,8 @@ test('input.onKeydown', init => {
       _.el.dispatchEvent(new KeyboardEvent('keydown', {key: 'other', shiftKey: true}));
       assert(spySubject).to.emitSequence([shiftEvent, nonShiftEvent]);
 
-      // shift === null
-      matchOptions.shift = undefined;
+      // shift === undefined
+      matchOptions$.next({...matchOptions$.getValue(), shift: undefined});
       _.el.dispatchEvent(shiftEvent);
       assert(spySubject).to.emitWith(shiftEvent);
 

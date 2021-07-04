@@ -1,17 +1,14 @@
-import {$asArray, $last, $asMap, $filter, $scan, $filterNonNull, $first, $map, $pipe, arrayFrom} from 'gs-tools/export/collect';
-import {stringify, Verbosity} from 'moirai';
+import {$filter, $first, $pipe, arrayFrom} from 'gs-tools/export/collect';
 import {fromEvent, Observable, Subject} from 'rxjs';
 import {map, mapTo, startWith} from 'rxjs/operators';
 
 import {DecoratedElement, __context} from '../core/custom-element-decorator';
-import {AttributeInput} from '../input/attribute';
 import {getSubject, HandlerInput} from '../input/handler';
 import {HasAttributeInput} from '../input/has-attribute';
 import {HasClassInput} from '../input/has-class';
 import {OnDomInput} from '../input/on-dom';
 import {OnInputInput} from '../input/on-input';
 import {PropertyObserver} from '../input/property-observer';
-import {AttributeOutput} from '../output/attribute';
 import {CallerOutput} from '../output/caller';
 import {ClassToggleOutput} from '../output/class-toggle';
 import {DispatcherOutput} from '../output/dispatcher';
@@ -24,8 +21,9 @@ import {PropertySpecs} from '../selector/property-spec';
 import {Resolver} from '../types/resolver';
 import {Selectable} from '../types/selectable';
 import {Selector} from '../types/selector';
-import {attributeObservable} from '../util/attribute-observable';
 import {mutationObservable} from '../util/mutation-observable';
+
+import {flattenNode} from './flatten-node';
 
 
 interface Key {
@@ -69,29 +67,7 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
   }
 
   flattenContent(): Element {
-    return flattenNodeWithShadow(this.element, new Map()) as Element;
-  }
-
-  getAttribute<T>(output: AttributeOutput<T>|AttributeInput<T>): Observable<T> {
-    const targetEl = resolveSelectable(this.element, context => output.resolver(context));
-    return attributeObservable(targetEl, output.attrName).pipe(
-        map(() => {
-          const strValue = targetEl.getAttribute(output.attrName);
-          const value = output.parser.convertBackward(strValue || '');
-          if (!value.success) {
-            if (output.defaultValue !== undefined) {
-              return output.defaultValue;
-            }
-
-            throw new Error(
-                `Value ${stringify(strValue, Verbosity.DEBUG)} is the wrong type for `
-                + `${stringify(output, Verbosity.DEBUG)}`,
-            );
-          }
-
-          return value.result;
-        }),
-    );
+    return flattenNode(this.element);
   }
 
   getChildren(elementSelector: Selector<Element, PropertySpecs<Element>>): Observable<readonly Node[]> {
@@ -195,16 +171,6 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     subject.next(value);
   }
 
-  setAttribute<T>(input: AttributeInput<T>|AttributeOutput<T>, value: T): void {
-    const result = input.parser.convertForward(value);
-    if (!result.success) {
-      throw new Error(`Invalid value: ${value}`);
-    }
-
-    const targetEl = resolveSelectable(this.element, context => input.resolver(context));
-    targetEl.setAttribute(input.attrName, result.result);
-  }
-
   setHasAttribute(output: SetAttributeOutput|HasAttributeInput, value: boolean): void {
     const targetEl = resolveSelectable(this.element, context => output.resolver(context));
     if (value) {
@@ -282,83 +248,6 @@ function findCommentNode(
       }),
       $first(),
   ) || null;
-}
-
-function flattenNodeWithShadow(origNode: Node, ancestorSlotMap: ReadonlyMap<string, Node>): Node {
-  if (origNode instanceof Element && origNode.tagName === 'SLOT') {
-    const slotName = origNode.getAttribute('name') ?? '';
-    const slotEl = origNode.cloneNode();
-    const slotContentEl = ancestorSlotMap.get(slotName);
-    if (slotContentEl) {
-      slotEl.appendChild(slotContentEl);
-      return slotEl;
-    }
-  }
-
-  const shadowRoot = origNode instanceof Element ? origNode.shadowRoot : null;
-  const rootEl = origNode.cloneNode();
-  if (shadowRoot === null) {
-    const children = $pipe(
-        arrayFrom(origNode.childNodes),
-        $map(child => flattenNodeWithShadow(child, ancestorSlotMap)),
-        $asArray(),
-    );
-    for (const child of children) {
-      rootEl.appendChild(child);
-    }
-    return rootEl;
-  }
-
-  const slotMapRaw = $pipe(
-      arrayFrom(origNode.childNodes),
-      $map(child => {
-        if (child instanceof Text) {
-          return ['', child] as const;
-        }
-
-        if (!(child instanceof Element)) {
-          return null;
-        }
-
-        const slotName = child.getAttribute('slot') ?? '';
-        return [slotName ?? '', flattenNodeWithShadow(child, ancestorSlotMap)] as const;
-      }),
-      $filterNonNull(),
-      $scan((acc, [key, value]) => {
-        const existingNodes = acc.get(key);
-        if (existingNodes) {
-          return new Map([
-            ...acc,
-            [key, [...existingNodes, value]],
-          ]);
-        }
-
-        return new Map([...acc, [key, [value]]]);
-      }, new Map<string, readonly Node[]>()),
-      $asArray(),
-      $last(),
-  ) ?? new Map<string, readonly Node[]>();
-
-  const slotMap = $pipe(
-      slotMapRaw,
-      $map(([key, nodes]) => {
-        const fragment = document.createDocumentFragment();
-        fragment.append(...nodes);
-        return [key, fragment] as const;
-      }),
-      $asMap(),
-  );
-
-  // Add shadowRoot's children
-  const children = $pipe(
-      arrayFrom(shadowRoot.childNodes),
-      $map(child => flattenNodeWithShadow(child, slotMap)),
-      $asArray(),
-  );
-  for (const child of children) {
-    rootEl.appendChild(child);
-  }
-  return rootEl;
 }
 
 function resolveSelectable<S extends Selectable>(

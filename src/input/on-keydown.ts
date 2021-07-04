@@ -17,16 +17,16 @@ import {OnDomInput} from './on-dom';
  * -   `undefined`: Ignores this field when matching.
  */
 export interface MatchOptions {
-  alt?: boolean;
-  ctrl?: boolean;
-  meta?: boolean;
-  shift?: boolean;
+  readonly alt?: boolean;
+  readonly ctrl?: boolean;
+  readonly meta?: boolean;
+  readonly shift?: boolean;
 }
 
 export class OnKeydownInput extends OnDomInput<KeyboardEvent> {
   constructor(
-      private readonly key: string,
-      private readonly matchOptions: MatchOptions,
+      readonly key: string,
+      readonly matchOptions: MatchOptions,
       options: AddEventListenerOptions,
       readonly resolver: Resolver<Element>,
   ) {

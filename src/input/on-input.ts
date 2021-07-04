@@ -15,7 +15,7 @@ export class OnInputInput implements Input<string> {
 
   getValue(context: ShadowContext): Observable<string> {
     const el = this.resolver(context);
-    return fromEvent(el, 'input', this.options) .pipe(map(() => el.value));
+    return fromEvent(el, 'input', this.options).pipe(map(() => el.value));
   }
 }
 

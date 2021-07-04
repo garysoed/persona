@@ -7,8 +7,7 @@ import {Resolver} from '../types/resolver';
 import {UnresolvedOutput} from '../types/unresolved-output';
 
 
-export class StyleOutput<S extends keyof CSSStyleDeclaration>
-implements Output<CSSStyleDeclaration[S]> {
+export class StyleOutput<S extends keyof CSSStyleDeclaration> implements Output<CSSStyleDeclaration[S]> {
   readonly type = 'out';
 
   constructor(

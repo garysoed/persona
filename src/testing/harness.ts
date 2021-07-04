@@ -1,29 +1,48 @@
-import {stringify, Verbosity} from 'moirai';
-import {Observable, throwError, of} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {Observable, throwError} from 'rxjs';
 
 import {PersonaContext} from '../../export';
 import {AttributeInput} from '../input/attribute';
+import {HandlerInput} from '../input/handler';
+import {HasAttributeInput} from '../input/has-attribute';
+import {OnDomInput} from '../input/on-dom';
+import {OnInputInput} from '../input/on-input';
+import {OnKeydownInput} from '../input/on-keydown';
+import {SlottedInput} from '../input/slotted';
+import {TextInput} from '../input/text-in';
 import {AttributeOutput} from '../output/attribute';
+import {ClasslistOutput} from '../output/classlist';
+import {DispatcherOutput} from '../output/dispatcher';
+import {SetAttributeOutput} from '../output/set-attribute';
+import {StyleOutput} from '../output/style';
 import {PropertySpecs, Resolved} from '../selector/property-spec';
 import {Input, INPUT_TYPE} from '../types/input';
 import {Output, OUTPUT_TYPE} from '../types/output';
 import {Selectable} from '../types/selectable';
 import {Selector, SELECTOR_TYPE} from '../types/selector';
-import {attributeObservable} from '../util/attribute-observable';
+
+import {attributeInputHarness, handlerInputHarness, hasAttributeInputHarness, onDomInputHarness, onInputInputHarness, onKeydownInputHarness, slottedInputHarness, textInputHarness} from './input-harnesses';
+import {attributeOutputHarness, classlistOutputHarness, dispatcherOutputHarness, setAttributeOutputHarness, styleOutputHarness} from './output-harnesses';
 
 
+type GenericResolved = Resolved<Selectable, PropertySpecs<Selectable>>;
 type SetterFn<T> = (value: T) => void;
 
-type ResolvedHarness<R extends Resolved<Selectable, PropertySpecs<Selectable>>> = {
+type InputHarnessOf<I> =
+    I extends OnKeydownInput ? SetterFn<void> :
+    I extends SlottedInput ? SetterFn<Element|null> :
+    I extends OnDomInput<infer E> ? SetterFn<E|void> :
+    I extends Input<infer T> ? SetterFn<T> :
+    never;
+
+type ResolvedHarness<R extends GenericResolved> = {
   readonly [K in keyof R]: R[K] extends Resolved<any, any> ? ResolvedHarness<R[K]> :
-      R[K] extends Input<infer T> ? SetterFn<T> :
+      R[K] extends Input<any> ? InputHarnessOf<R[K]> :
       R[K] extends Output<infer T> ? Observable<T> :
       never;
 };
 
-type EditedResolvedHarness<R extends Resolved<Selectable, PropertySpecs<Selectable>>> = {
-  [K in keyof R]?: ResolvedHarness<Resolved<Selectable, PropertySpecs<Selectable>>>|SetterFn<unknown>|Observable<unknown>;
+type EditedResolvedHarness<R extends GenericResolved> = {
+  [K in keyof R]?: ResolvedHarness<GenericResolved>|SetterFn<unknown>|Observable<unknown>;
 };
 
 export type Harness<S extends {}> = {
@@ -31,21 +50,17 @@ export type Harness<S extends {}> = {
 }
 
 type EditedHarness<S extends {}> = {
-  [K in keyof S]?: Observable<Selectable>&{readonly _: ResolvedHarness<Resolved<Selectable, PropertySpecs<Selectable>>>};
+  [K in keyof S]?: SelectorHarness<Selectable, GenericResolved>;
 }
 
-class SelectorHarness<S extends Selectable, R extends Resolved<S, PropertySpecs<S>>> extends Observable<S> {
+class SelectorHarness<S extends Selectable, R extends Resolved<S, PropertySpecs<S>>> {
   readonly _: ResolvedHarness<R> = createResolvedHarness(this.resolved, this.context);
 
   constructor(
       private readonly resolved: R,
       private readonly context: PersonaContext,
-      selectable$: Observable<S>,
-  ) {
-    super(subscriber => {
-      return selectable$.subscribe(subscriber);
-    });
-  }
+      readonly selectable: S,
+  ) {}
 }
 
 export function createHarness<S extends {}>(specs: S, context: PersonaContext): Harness<S> {
@@ -56,15 +71,16 @@ export function createHarness<S extends {}>(specs: S, context: PersonaContext): 
       continue;
     }
 
-    partial[key] = Object.assign(
-        of(entry.getSelectable(context)),
-        {_: createResolvedHarness(entry._, context)},
+    partial[key] = new SelectorHarness(
+        entry._,
+        context,
+        entry.getSelectable(context),
     );
   }
   return partial as Harness<S>;
 }
 
-function createResolvedHarness<R extends Resolved<Selectable, PropertySpecs<Selectable>>>(
+function createResolvedHarness<R extends GenericResolved>(
     resolved: R,
     context: PersonaContext,
 ): ResolvedHarness<R> {
@@ -89,17 +105,24 @@ function createResolvedHarness<R extends Resolved<Selectable, PropertySpecs<Sele
   return partial as ResolvedHarness<R>;
 }
 
-function createInputHarness<T>(input: Input<T>, context: PersonaContext): SetterFn<T> {
+function createInputHarness<T>(input: Input<T>, context: PersonaContext): InputHarnessOf<T>;
+function createInputHarness(input: Input<unknown>, context: PersonaContext): SetterFn<any> {
   if (input instanceof AttributeInput) {
-    return value => {
-      const result = input.parser.convertForward(value);
-      if (!result.success) {
-        throw new Error(`Invalid value: ${value}`);
-      }
-
-      const targetEl = input.resolver(context);
-      targetEl.setAttribute(input.attrName, result.result);
-    };
+    return attributeInputHarness(input, context);
+  } else if (input instanceof HandlerInput) {
+    return handlerInputHarness(input, context);
+  } else if (input instanceof HasAttributeInput) {
+    return hasAttributeInputHarness(input, context);
+  } else if (input instanceof OnInputInput) {
+    return onInputInputHarness(input, context);
+  } else if (input instanceof OnKeydownInput) {
+    return onKeydownInputHarness(input, context);
+  } else if (input instanceof SlottedInput) {
+    return slottedInputHarness(input, context);
+  } else if (input instanceof TextInput) {
+    return textInputHarness(input, context);
+  } else if (input instanceof OnDomInput) {
+    return onDomInputHarness(input, context);
   } else {
     return value => {
       throw new Error(
@@ -109,27 +132,18 @@ function createInputHarness<T>(input: Input<T>, context: PersonaContext): Setter
   }
 }
 
-function createOutputHarness<T>(output: Output<T>, context: PersonaContext): Observable<T> {
+function createOutputHarness<T>(output: Output<T>, context: PersonaContext): Observable<T>;
+function createOutputHarness(output: Output<unknown>, context: PersonaContext): Observable<unknown> {
   if (output instanceof AttributeOutput) {
-    const targetEl = output.resolver(context);
-    return attributeObservable(targetEl, output.attrName).pipe(
-        map(() => {
-          const strValue = targetEl.getAttribute(output.attrName);
-          const value = output.parser.convertBackward(strValue || '');
-          if (!value.success) {
-            if (output.defaultValue !== undefined) {
-              return output.defaultValue;
-            }
-
-            throw new Error(
-                `Value ${stringify(strValue, Verbosity.DEBUG)} is the wrong type for `
-                + `${stringify(output, Verbosity.DEBUG)}`,
-            );
-          }
-
-          return value.result;
-        }),
-    );
+    return attributeOutputHarness(output, context);
+  } else if (output instanceof ClasslistOutput) {
+    return classlistOutputHarness(output, context);
+  } else if (output instanceof DispatcherOutput) {
+    return dispatcherOutputHarness(output, context);
+  } else if (output instanceof SetAttributeOutput) {
+    return setAttributeOutputHarness(output, context);
+  } else if (output instanceof StyleOutput) {
+    return styleOutputHarness(output, context);
   } else {
     return throwError(new Error(`Output type ${output} not supported for harness`));
   }
