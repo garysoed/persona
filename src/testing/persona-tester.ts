@@ -39,10 +39,13 @@ export class PersonaTester {
 
   createHarness<S>(ctrl: BaseCtrlCtor<S>): ElementAndHarness<S> {
     const element = this.customElementRegistry.create(ctrl);
+    const shadowRoot = element.shadowRoot;
+    if (!shadowRoot) {
+      throw new Error(`Element ${element.tagName} has no shadow roots. Is it registered as a Ctrl?`);
+    }
     const context: PersonaContext = {
       onAttributeChanged$: new Subject(),
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      shadowRoot: element.shadowRoot!,
+      shadowRoot,
       vine: this.vine,
     };
 
