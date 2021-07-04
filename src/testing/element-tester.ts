@@ -4,10 +4,8 @@ import {map, mapTo, startWith} from 'rxjs/operators';
 
 import {DecoratedElement, __context} from '../core/custom-element-decorator';
 import {getSubject, HandlerInput} from '../input/handler';
-import {HasClassInput} from '../input/has-class';
 import {PropertyObserver} from '../input/property-observer';
 import {CallerOutput} from '../output/caller';
-import {ClassToggleOutput} from '../output/class-toggle';
 import {MultiOutput} from '../output/multi';
 import {PropertyEmitter} from '../output/property-emitter';
 import {SingleOutput} from '../output/single';
@@ -17,15 +15,9 @@ import {Selectable} from '../types/selectable';
 import {Selector} from '../types/selector';
 import {mutationObservable} from '../util/mutation-observable';
 
-import {flattenNode} from './flatten-node';
-
 
 export class ElementTester<T extends HTMLElement = HTMLElement> {
   constructor(readonly element: T) { }
-
-  flattenContent(): Element {
-    return flattenNode(this.element);
-  }
 
   getChildren(elementSelector: Selector<Element, PropertySpecs<Element>>): Observable<readonly Node[]> {
     const el = resolveSelectable(this.element, context => elementSelector.getSelectable(context));
@@ -67,16 +59,6 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
   getObserver<T>(input: PropertyObserver<T>|PropertyEmitter<T>): Observable<T> {
     const el = resolveSelectable(this.element, context => input.resolver(context));
     return (el as any)[input.propertyName] as Observable<T>;
-  }
-
-  getTextContent(input: Selector<Element, PropertySpecs<Element>>): string {
-    const el = resolveSelectable(this.element, context => input.getSelectable(context));
-    return el.textContent || '';
-  }
-
-  hasClass(ioutput: ClassToggleOutput|HasClassInput): boolean {
-    const el = resolveSelectable(this.element, context => ioutput.resolver(context));
-    return el.classList.contains(ioutput.className);
   }
 
   nextValue<T>(
