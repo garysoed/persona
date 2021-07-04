@@ -7,7 +7,6 @@ import {BaseCtrlCtor} from '../core/base-ctrl';
 import {Builder as PersonaBuilder} from '../core/builder';
 import {MediaQueryInput} from '../input/media-query';
 
-import {ElementTester} from './element-tester';
 import {FakeCustomElementRegistry} from './fake-custom-element-registry';
 import {createHarness, Harness} from './harness';
 import {FakeMediaQuery, mockMatchMedia} from './mock-match-media';
@@ -38,15 +37,6 @@ export class PersonaTester {
       private readonly customElementRegistry: FakeCustomElementRegistry,
   ) { }
 
-  /**
-   * @deprecated Use #createHarness
-   */
-  createElement<T extends HTMLElement>(tagOrCtrl: BaseCtrlCtor<{}>): ElementTester<T> {
-    const element = this.customElementRegistry.create(tagOrCtrl) as T;
-
-    return new ElementTester(element);
-  }
-
   createHarness<S>(ctrl: BaseCtrlCtor<S>): ElementAndHarness<S> {
     const element = this.customElementRegistry.create(ctrl);
     const context: PersonaContext = {
@@ -68,10 +58,6 @@ export class PersonaTester {
     }
 
     (mediaQuery as FakeMediaQuery).matches = value;
-  }
-
-  testElement<T extends HTMLElement>(element: T): ElementTester<T> {
-    return new ElementTester(element);
   }
 }
 
