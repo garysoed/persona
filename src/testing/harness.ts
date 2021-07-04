@@ -1,5 +1,5 @@
 import {stringify, Verbosity} from 'moirai';
-import {Observable, throwError} from 'rxjs';
+import {Observable, throwError, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {PersonaContext} from '../../export';
@@ -27,11 +27,25 @@ type EditedResolvedHarness<R extends Resolved<Selectable, PropertySpecs<Selectab
 };
 
 export type Harness<S extends {}> = {
-  readonly [K in keyof S]: S[K] extends Selector<any, any> ? ResolvedHarness<S[K]['_']> : never;
+  readonly [K in keyof S]: S[K] extends Selector<infer E, any> ? SelectorHarness<E, S[K]['_']> : never;
 }
 
 type EditedHarness<S extends {}> = {
-  [K in keyof S]?: ResolvedHarness<Resolved<Selectable, PropertySpecs<Selectable>>>;
+  [K in keyof S]?: Observable<Selectable>&{readonly _: ResolvedHarness<Resolved<Selectable, PropertySpecs<Selectable>>>};
+}
+
+class SelectorHarness<S extends Selectable, R extends Resolved<S, PropertySpecs<S>>> extends Observable<S> {
+  readonly _: ResolvedHarness<R> = createResolvedHarness(this.resolved, this.context);
+
+  constructor(
+      private readonly resolved: R,
+      private readonly context: PersonaContext,
+      selectable$: Observable<S>,
+  ) {
+    super(subscriber => {
+      return selectable$.subscribe(subscriber);
+    });
+  }
 }
 
 export function createHarness<S extends {}>(specs: S, context: PersonaContext): Harness<S> {
@@ -42,7 +56,10 @@ export function createHarness<S extends {}>(specs: S, context: PersonaContext): 
       continue;
     }
 
-    partial[key] = createResolvedHarness(entry._, context);
+    partial[key] = Object.assign(
+        of(entry.getSelectable(context)),
+        {_: createResolvedHarness(entry._, context)},
+    );
   }
   return partial as Harness<S>;
 }

@@ -109,10 +109,10 @@ test('@persona/core/functional', init => {
   });
 
   should('set up the component correctly', () => {
-    _.harness.host.grouped.attrIn('value');
-    assert(_.harness.host.attr1).to.emitWith('123-abc');
-    assert(_.harness.host.attr2).to.emitWith('123-abc');
-    assert(_.harness.host.grouped.attrOut).to.emitWith('value');
+    _.harness.host._.grouped.attrIn('value');
+    assert(_.harness.host._.attr1).to.emitWith('123-abc');
+    assert(_.harness.host._.attr2).to.emitWith('123-abc');
+    assert(_.harness.host._.grouped.attrOut).to.emitWith('value');
 
     assert(_.element.shadowRoot?.mode).to.equal('open');
     assert(_.mockHandler).to.haveBeenCalledWith();
