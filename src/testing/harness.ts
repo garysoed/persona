@@ -1,6 +1,6 @@
 import {Observable, throwError} from 'rxjs';
 
-import {PersonaContext} from '../../export';
+import {ShadowContext} from '../core/shadow-context';
 import {AttributeInput} from '../input/attribute';
 import {HandlerInput} from '../input/handler';
 import {HasAttributeInput} from '../input/has-attribute';
@@ -10,10 +10,12 @@ import {OnKeydownInput} from '../input/on-keydown';
 import {SlottedInput} from '../input/slotted';
 import {TextInput} from '../input/text-in';
 import {AttributeOutput} from '../output/attribute';
+import {ClassToggleOutput} from '../output/class-toggle';
 import {ClasslistOutput} from '../output/classlist';
 import {DispatcherOutput} from '../output/dispatcher';
 import {SetAttributeOutput} from '../output/set-attribute';
 import {StyleOutput} from '../output/style';
+import {TextOutput} from '../output/text-out';
 import {PropertySpecs, Resolved} from '../selector/property-spec';
 import {Input, INPUT_TYPE} from '../types/input';
 import {Output, OUTPUT_TYPE} from '../types/output';
@@ -21,7 +23,7 @@ import {Selectable} from '../types/selectable';
 import {Selector, SELECTOR_TYPE} from '../types/selector';
 
 import {attributeInputHarness, handlerInputHarness, hasAttributeInputHarness, onDomInputHarness, onInputInputHarness, onKeydownInputHarness, slottedInputHarness, textInputHarness} from './input-harnesses';
-import {attributeOutputHarness, classlistOutputHarness, dispatcherOutputHarness, setAttributeOutputHarness, styleOutputHarness} from './output-harnesses';
+import {attributeOutputHarness, classlistOutputHarness, classToggleOutputHarness, dispatcherOutputHarness, setAttributeOutputHarness, styleOutputHarness, textOutputHarness} from './output-harnesses';
 
 
 type GenericResolved = Resolved<Selectable, PropertySpecs<Selectable>>;
@@ -58,12 +60,12 @@ class SelectorHarness<S extends Selectable, R extends Resolved<S, PropertySpecs<
 
   constructor(
       private readonly resolved: R,
-      private readonly context: PersonaContext,
+      private readonly context: ShadowContext,
       readonly selectable: S,
   ) {}
 }
 
-export function createHarness<S extends {}>(specs: S, context: PersonaContext): Harness<S> {
+export function createHarness<S extends {}>(specs: S, context: ShadowContext): Harness<S> {
   const partial: EditedHarness<S> = {};
   for (const key in specs) {
     const entry = specs[key];
@@ -82,7 +84,7 @@ export function createHarness<S extends {}>(specs: S, context: PersonaContext): 
 
 function createResolvedHarness<R extends GenericResolved>(
     resolved: R,
-    context: PersonaContext,
+    context: ShadowContext,
 ): ResolvedHarness<R> {
   const partial: EditedResolvedHarness<R> = {};
   for (const key in resolved) {
@@ -105,8 +107,8 @@ function createResolvedHarness<R extends GenericResolved>(
   return partial as ResolvedHarness<R>;
 }
 
-function createInputHarness<T>(input: Input<T>, context: PersonaContext): InputHarnessOf<T>;
-function createInputHarness(input: Input<unknown>, context: PersonaContext): SetterFn<any> {
+function createInputHarness<T>(input: Input<T>, context: ShadowContext): InputHarnessOf<T>;
+function createInputHarness(input: Input<unknown>, context: ShadowContext): SetterFn<any> {
   if (input instanceof AttributeInput) {
     return attributeInputHarness(input, context);
   } else if (input instanceof HandlerInput) {
@@ -132,10 +134,12 @@ function createInputHarness(input: Input<unknown>, context: PersonaContext): Set
   }
 }
 
-function createOutputHarness<T>(output: Output<T>, context: PersonaContext): Observable<T>;
-function createOutputHarness(output: Output<unknown>, context: PersonaContext): Observable<unknown> {
+function createOutputHarness<T>(output: Output<T>, context: ShadowContext): Observable<T>;
+function createOutputHarness(output: Output<unknown>, context: ShadowContext): Observable<unknown> {
   if (output instanceof AttributeOutput) {
     return attributeOutputHarness(output, context);
+  } else if (output instanceof ClassToggleOutput) {
+    return classToggleOutputHarness(output, context);
   } else if (output instanceof ClasslistOutput) {
     return classlistOutputHarness(output, context);
   } else if (output instanceof DispatcherOutput) {
@@ -144,6 +148,8 @@ function createOutputHarness(output: Output<unknown>, context: PersonaContext): 
     return setAttributeOutputHarness(output, context);
   } else if (output instanceof StyleOutput) {
     return styleOutputHarness(output, context);
+  } else if (output instanceof TextOutput) {
+    return textOutputHarness(output, context);
   } else {
     return throwError(new Error(`Output type ${output} not supported for harness`));
   }

@@ -11,7 +11,7 @@ export class TextOutput implements Output<string> {
   readonly type = 'out';
 
   constructor(
-      private readonly resolver: Resolver<Element>,
+      readonly resolver: Resolver<Element>,
   ) { }
 
   output(context: ShadowContext): OperatorFunction<string, unknown> {

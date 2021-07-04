@@ -1,22 +1,16 @@
 import {$filter, $first, $pipe, arrayFrom} from 'gs-tools/export/collect';
-import {fromEvent, Observable, Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {map, mapTo, startWith} from 'rxjs/operators';
 
 import {DecoratedElement, __context} from '../core/custom-element-decorator';
 import {getSubject, HandlerInput} from '../input/handler';
-import {HasAttributeInput} from '../input/has-attribute';
 import {HasClassInput} from '../input/has-class';
-import {OnDomInput} from '../input/on-dom';
-import {OnInputInput} from '../input/on-input';
 import {PropertyObserver} from '../input/property-observer';
 import {CallerOutput} from '../output/caller';
 import {ClassToggleOutput} from '../output/class-toggle';
-import {DispatcherOutput} from '../output/dispatcher';
 import {MultiOutput} from '../output/multi';
 import {PropertyEmitter} from '../output/property-emitter';
-import {SetAttributeOutput} from '../output/set-attribute';
 import {SingleOutput} from '../output/single';
-import {StyleOutput} from '../output/style';
 import {PropertySpecs} from '../selector/property-spec';
 import {Resolver} from '../types/resolver';
 import {Selectable} from '../types/selectable';
@@ -26,45 +20,8 @@ import {mutationObservable} from '../util/mutation-observable';
 import {flattenNode} from './flatten-node';
 
 
-interface Key {
-  readonly alt?: boolean;
-  readonly ctrl?: boolean;
-  readonly key: string;
-  readonly meta?: boolean;
-  readonly shift?: boolean;
-}
-
-
 export class ElementTester<T extends HTMLElement = HTMLElement> {
   constructor(readonly element: T) { }
-
-  addSlotElement(input: Selector<HTMLSlotElement, PropertySpecs<HTMLSlotElement>>, node: Node): void {
-    const slotEl = resolveSelectable(this.element, context => input.getSelectable(context));
-    this.element.appendChild(node);
-    slotEl.dispatchEvent(new CustomEvent('slotchange'));
-  }
-
-  callFunction(input: HandlerInput, args: readonly unknown[]): void {
-    const el = resolveSelectable(this.element, context => input.resolver(context));
-    (el as any)[input.functionName](...args);
-  }
-
-  dispatchEvent<E extends Event>(
-      spec: OnDomInput<E>|DispatcherOutput<E>|OnInputInput,
-      event: E,
-  ): void;
-  dispatchEvent(
-      spec: OnDomInput<Event>|DispatcherOutput<Event>|OnInputInput,
-  ): void;
-  dispatchEvent(
-      spec: OnDomInput<Event>|OnInputInput,
-      event?: Event,
-  ): void {
-    const eventName = spec instanceof OnInputInput ? 'input' : spec.eventName;
-    const normalizedEvent = event || new CustomEvent(eventName);
-    const targetEl = resolveSelectable(this.element, context => spec.resolver(context));
-    targetEl.dispatchEvent(normalizedEvent);
-  }
 
   flattenContent(): Element {
     return flattenNode(this.element);
@@ -87,30 +44,6 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
           return children;
         }),
     );
-  }
-
-  getClassList(input: Selector<Element, PropertySpecs<Element>>): ReadonlySet<string> {
-    const el = resolveSelectable(this.element, context => input.getSelectable(context));
-    const classList = el.classList;
-    const classes = new Set<string>();
-    for (let i = 0; i < classList.length; i++) {
-      const classItem = classList.item(i);
-      if (!classItem) {
-        continue;
-      }
-      classes.add(classItem);
-    }
-
-    return new Set(classes);
-  }
-
-  getElement<E extends Selectable>(selector: Selector<E, any>): E {
-    return resolveSelectable(this.element, context => selector.getSelectable(context));
-  }
-
-  getEvents<E extends Event>(dispatcher: DispatcherOutput<E>): Observable<E> {
-    const element = resolveSelectable(this.element, context => dispatcher.resolver(context));
-    return fromEvent<E>(element, dispatcher.eventName);
   }
 
   getNodesAfter(
@@ -136,21 +69,9 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     return (el as any)[input.propertyName] as Observable<T>;
   }
 
-  getStyle<S extends keyof CSSStyleDeclaration>(output: StyleOutput<S>): CSSStyleDeclaration[S] {
-    const targetEl = resolveSelectable(this.element, context => output.resolver(context));
-    return targetEl.style[output.styleKey];
-  }
-
   getTextContent(input: Selector<Element, PropertySpecs<Element>>): string {
     const el = resolveSelectable(this.element, context => input.getSelectable(context));
     return el.textContent || '';
-  }
-
-  hasAttribute(
-      spec: SetAttributeOutput|HasAttributeInput,
-  ): boolean {
-    const el = resolveSelectable(this.element, context => spec.resolver(context));
-    return el.hasAttribute(spec.attrName);
   }
 
   hasClass(ioutput: ClassToggleOutput|HasClassInput): boolean {
@@ -169,52 +90,6 @@ export class ElementTester<T extends HTMLElement = HTMLElement> {
     }
 
     subject.next(value);
-  }
-
-  setHasAttribute(output: SetAttributeOutput|HasAttributeInput, value: boolean): void {
-    const targetEl = resolveSelectable(this.element, context => output.resolver(context));
-    if (value) {
-      targetEl.setAttribute(output.attrName, '');
-    } else {
-      targetEl.removeAttribute(output.attrName);
-    }
-  }
-
-  setInputValue(selector: Selector<HTMLInputElement, PropertySpecs<HTMLInputElement>>, value: string): void {
-    const targetEl = resolveSelectable(this.element, context => selector.getSelectable(context));
-    targetEl.value = value;
-    targetEl.dispatchEvent(new CustomEvent('input'));
-  }
-
-  setText(selector: Selector<Element, PropertySpecs<Element>>, value: string): void {
-    const el = resolveSelectable(this.element, context => selector.getSelectable(context));
-    el.textContent = value;
-    el.dispatchEvent(
-        new CustomEvent('pr-fake-mutation', {bubbles: true, detail: {record: []}}),
-    );
-  }
-
-  simulateKeypress(selector: Selector<Element, PropertySpecs<Element>>, keys: readonly Key[]): void {
-    const targetEl = resolveSelectable(this.element, context => selector.getSelectable(context));
-    for (const {key, alt, ctrl, meta, shift} of keys) {
-      const keydownEvent = new KeyboardEvent('keydown', {
-        altKey: alt,
-        ctrlKey: ctrl,
-        key,
-        metaKey: meta,
-        shiftKey: shift,
-      });
-      targetEl.dispatchEvent(keydownEvent);
-
-      const keyupEvent = new KeyboardEvent('keyup', {
-        altKey: alt,
-        ctrlKey: ctrl,
-        key,
-        metaKey: meta,
-        shiftKey: shift,
-      });
-      targetEl.dispatchEvent(keyupEvent);
-    }
   }
 
   spyOnFunction(

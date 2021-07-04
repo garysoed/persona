@@ -1,6 +1,6 @@
 import {arrayFrom} from 'gs-tools/export/collect';
 
-import {PersonaContext} from '../../export';
+import {ShadowContext} from '../core/shadow-context';
 import {AttributeInput} from '../input/attribute';
 import {HandlerInput} from '../input/handler';
 import {HasAttributeInput} from '../input/has-attribute';
@@ -14,7 +14,7 @@ type SetterFn<T> = (value: T) => void;
 
 export function attributeInputHarness<T>(
     input: AttributeInput<T>,
-    context: PersonaContext,
+    context: ShadowContext,
 ): SetterFn<T|undefined> {
   return value => {
     const targetEl = input.resolver(context);
@@ -33,7 +33,7 @@ export function attributeInputHarness<T>(
 
 export function handlerInputHarness(
     input: HandlerInput,
-    context: PersonaContext,
+    context: ShadowContext,
 ): SetterFn<readonly unknown[]> {
   return args => {
     if (!(args instanceof Array)) {
@@ -46,7 +46,7 @@ export function handlerInputHarness(
 
 export function hasAttributeInputHarness(
     input: HasAttributeInput,
-    context: PersonaContext,
+    context: ShadowContext,
 ): SetterFn<boolean> {
   return value => {
     const targetEl = input.resolver(context);
@@ -60,7 +60,7 @@ export function hasAttributeInputHarness(
 
 export function onDomInputHarness<E extends Event>(
     input: OnDomInput<E>,
-    context: PersonaContext,
+    context: ShadowContext,
 ): SetterFn<E|void> {
   return event => {
     const normalizedEvent = event instanceof Event ? event : new CustomEvent(input.eventName);
@@ -71,7 +71,7 @@ export function onDomInputHarness<E extends Event>(
 
 export function onInputInputHarness(
     input: OnInputInput,
-    context: PersonaContext,
+    context: ShadowContext,
 ): SetterFn<string> {
   return value => {
     const normalizedEvent = new CustomEvent('input');
@@ -83,7 +83,7 @@ export function onInputInputHarness(
 
 export function onKeydownInputHarness(
     input: OnKeydownInput,
-    context: PersonaContext,
+    context: ShadowContext,
 ): SetterFn<void> {
   return () => {
     const targetEl = input.resolver(context);
@@ -102,7 +102,7 @@ export function onKeydownInputHarness(
 
 export function slottedInputHarness(
     input: SlottedInput,
-    context: PersonaContext,
+    context: ShadowContext,
 ): SetterFn<Element|null> {
   return el => {
     const rootEl = context.shadowRoot.host;
@@ -126,7 +126,7 @@ export function slottedInputHarness(
 
 export function textInputHarness(
     input: TextInput,
-    context: PersonaContext,
+    context: ShadowContext,
 ): SetterFn<string> {
   return value => {
     const el = input.resolver(context);

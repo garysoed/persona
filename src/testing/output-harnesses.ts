@@ -1,18 +1,22 @@
 import {stringify, Verbosity} from 'moirai';
 import {fromEvent, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {map, startWith} from 'rxjs/operators';
 
-import {PersonaContext} from '../../export';
+import {ShadowContext} from '../core/shadow-context';
 import {AttributeOutput} from '../output/attribute';
-import {ClasslistOutput} from '../output/classlist';
+import {ClassToggleOutput} from '../output/class-toggle';
 import {DispatcherOutput} from '../output/dispatcher';
 import {SetAttributeOutput} from '../output/set-attribute';
 import {StyleOutput} from '../output/style';
+import {TextOutput} from '../output/text-out';
+import {Resolver} from '../types/resolver';
 import {attributeObservable} from '../util/attribute-observable';
+import {mutationObservable} from '../util/mutation-observable';
+
 
 export function attributeOutputHarness<T>(
     output: AttributeOutput<T>,
-    context: PersonaContext,
+    context: ShadowContext,
 ): Observable<T> {
   const targetEl = output.resolver(context);
   return attributeObservable(targetEl, output.attrName).pipe(
@@ -35,9 +39,22 @@ export function attributeOutputHarness<T>(
   );
 }
 
+export function classToggleOutputHarness(
+    output: ClassToggleOutput,
+    context: ShadowContext,
+): Observable<boolean> {
+  return classlistOutputHarness(output, context).pipe(
+      map(classes => classes.has(output.className)),
+  );
+}
+
+interface ClasslistOutputLite {
+  readonly resolver: Resolver<Element>;
+}
+
 export function classlistOutputHarness(
-    output: ClasslistOutput,
-    context: PersonaContext,
+    output: ClasslistOutputLite,
+    context: ShadowContext,
 ): Observable<ReadonlySet<string>> {
   const el = output.resolver(context);
   return attributeObservable(el, 'class').pipe(
@@ -58,7 +75,7 @@ export function classlistOutputHarness(
 
 export function dispatcherOutputHarness<E extends Event>(
     output: DispatcherOutput<E>,
-    context: PersonaContext,
+    context: ShadowContext,
 ): Observable<E> {
   const element = output.resolver(context);
   return fromEvent<E>(element, output.eventName);
@@ -66,7 +83,7 @@ export function dispatcherOutputHarness<E extends Event>(
 
 export function setAttributeOutputHarness(
     output: SetAttributeOutput,
-    context: PersonaContext,
+    context: ShadowContext,
 ): Observable<boolean> {
   const targetEl = output.resolver(context);
   return attributeObservable(targetEl, output.attrName).pipe(
@@ -76,10 +93,21 @@ export function setAttributeOutputHarness(
 
 export function styleOutputHarness<K extends keyof CSSStyleDeclaration>(
     output: StyleOutput<K>,
-    context: PersonaContext,
+    context: ShadowContext,
 ): Observable<CSSStyleDeclaration[K]> {
   const el = output.resolver(context);
   return attributeObservable(el, 'style').pipe(
       map(() => el.style[output.styleKey]),
+  );
+}
+
+export function textOutputHarness(
+    output: TextOutput,
+    context: ShadowContext,
+): Observable<string> {
+  const el = output.resolver(context);
+  return mutationObservable(el, {characterData: true}).pipe(
+      startWith({}),
+      map(() => el.textContent ?? ''),
   );
 }
