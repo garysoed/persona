@@ -42,7 +42,7 @@ const $ = {
   }),
 };
 
-const $HANDLER = source('handler', () => () => undefined);
+const $HANDLER = source(() => () => undefined);
 
 @_p.baseCustomElement({
   shadowMode: 'open',
