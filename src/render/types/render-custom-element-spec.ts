@@ -26,14 +26,14 @@ export type InputsOf<S extends UnresolvedSpec> = Partial<{
 }>;
 
 export type NormalizedInputsOf<S extends UnresolvedSpec> = {
-  readonly [K in keyof S]?: S[K] extends UnresolvedElementProperty<Element, Input<infer T>> ? Observable<T> : never;
+  readonly [K in keyof S]: S[K] extends UnresolvedElementProperty<Element, Input<infer T>> ? Observable<T> : never;
 }
 
 interface InputRenderSpec<S extends UnresolvedSpec> extends BaseRenderSpec<HTMLElement> {
   readonly spec: ComponentSpec<S, Element>;
   readonly attrs?: ReadonlyMap<string, ObservableOrValue<string|undefined>>;
   readonly children?: ObservableOrValue<readonly RenderSpec[]>;
-  readonly inputs?: InputsOf<S>;
+  readonly inputs: InputsOf<S>;
   readonly styles?: ObservableOrValue<ReadonlyMap<string, string|null>>;
   readonly textContent?: ObservableOrValue<string>;
 }
@@ -42,7 +42,7 @@ export interface RenderCustomElementSpec<S extends UnresolvedSpec> extends Input
   readonly type: RenderSpecType.CUSTOM_ELEMENT;
   readonly attrs?: ReadonlyMap<string, Observable<string|undefined>>;
   readonly children?: Observable<readonly RenderSpec[]>;
-  readonly inputs?: NormalizedInputsOf<S>;
+  readonly inputs: NormalizedInputsOf<S>;
   readonly styles?: Observable<ReadonlyMap<string, string|null>>;
   readonly textContent?: Observable<string>;
 }
@@ -53,7 +53,7 @@ export function renderCustomElement<S extends UnresolvedSpec>(input: InputRender
     type: RenderSpecType.CUSTOM_ELEMENT,
     attrs: input.attrs ? normalizeMap(input.attrs) : undefined,
     children: input.children ? normalize(input.children) : undefined,
-    inputs: input.inputs ? normalizedInputs(input.inputs) : undefined,
+    inputs: normalizedInputs(input.inputs),
     styles: input.styles ? normalize(input.styles) : undefined,
     textContent: input.textContent !== undefined ? normalize(input.textContent) : undefined,
   };
