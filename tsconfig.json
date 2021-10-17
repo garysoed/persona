@@ -26,6 +26,7 @@
     "target": "es6",
   },
   "include": [
+    "src-next/**/*.ts",
     "src/**/*.ts",
     "export/*.ts",
   ]
