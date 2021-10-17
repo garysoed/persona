@@ -2,7 +2,7 @@ import {source} from 'grapevine';
 import {BehaviorSubject, combineLatest, EMPTY, of, Subject, timer} from 'rxjs';
 import {distinctUntilChanged, map, mapTo, shareReplay, switchMap} from 'rxjs/operators';
 
-import {AttributeChangedEvent} from '../../src/core/shadow-context';
+import {AttributeChangedEvent} from '../types/event';
 import {IVariable, OVariable} from '../types/io';
 import {Registration, RegistrationSpec} from '../types/registration';
 import {HostInnerSpec, InternalInnerSpec, Spec} from '../types/spec';

@@ -1,13 +1,13 @@
 import {Config as VineConfig, Vine} from 'grapevine';
 import {fake, FakeTime, mockTime, runEnvironment, spy} from 'gs-testing';
 
-import {mockMatchMedia} from '../../src/testing/mock-match-media';
-import {PersonaTesterEnvironment} from '../../src/testing/persona-tester-environment';
 import {installCustomElements} from '../core/install-custom-elements';
 import {Context} from '../types/ctrl';
 import {Registration} from '../types/registration';
 
 import {FakeCustomElementRegistry} from './fake-custom-element-registry';
+import {mockMatchMedia} from './mock-match-media';
+import {PersonaTesterEnvironment} from './persona-tester-environment';
 
 
 interface TestSpec {
@@ -39,7 +39,6 @@ export function setupTest(spec: TestSpec): Tester {
   const registrationMap = new Map<string, Registration>();
   const customElementRegistry = new FakeCustomElementRegistry(
       createElement,
-      fakeTime,
       registrationMap,
       vine,
   );

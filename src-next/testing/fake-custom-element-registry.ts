@@ -1,12 +1,11 @@
 import {Vine} from 'grapevine';
-import {FakeTime, run} from 'gs-testing';
+import {run} from 'gs-testing';
 import {arrayFrom} from 'gs-tools/export/collect';
 import {tap} from 'rxjs/operators';
 
-import {CHECK_PERIOD_MS} from '../../src/input/property-observer';
-import {mutationObservable} from '../../src/util/mutation-observable';
 import {upgradeElement} from '../core/upgrade-element';
 import {Registration} from '../types/registration';
+import {mutationObservable} from '../util/mutation-observable';
 
 
 type Listener = () => void;
@@ -24,7 +23,6 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
   constructor(
       // Do not use document.createElement since it will be faked.
       private readonly createElement: (tag: string) => HTMLElement,
-      private readonly fakeTime: FakeTime,
       private readonly registrationMap: ReadonlyMap<string, Registration>,
       private readonly vine: Vine,
   ) { }
@@ -32,7 +30,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
   create(tag: string): HTMLElement {
     const el = this.createElement(tag);
     this.upgradeElement(el);
-    this.fakeTime.tick(CHECK_PERIOD_MS);
+    // this.fakeTime.tick(CHECK_PERIOD_MS);
     return el;
   }
 

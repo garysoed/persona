@@ -1,9 +1,8 @@
-import {Vine} from 'grapevine';
-import {assert, createSpyObject, should, test} from 'gs-testing';
+import {assert, should, test} from 'gs-testing';
 
+import {setupTest} from '../testing/setup-test';
 import {Ctrl} from '../types/ctrl';
 
-import {installCustomElements} from './install-custom-elements';
 import {registerCustomElement} from './register-custom-element';
 
 
@@ -28,20 +27,20 @@ const TEST_CLASS = registerCustomElement({
   template: '',
 });
 
-test('@persona/src/core/install-custom-elements', () => {
-  should('install all components including the dependencies', () => {
-    const vine = new Vine({appName: 'test'});
-    const mockCustomElementRegistry = createSpyObject<CustomElementRegistry>('CustomElementRegistry', ['define']);
-    const registrations = installCustomElements({
-      customElementRegistry: mockCustomElementRegistry,
+test('@persona/src/core/install-custom-elements', init => {
+  const _ = init(() => {
+    const tester = setupTest({
       roots: [TEST_CLASS],
-      rootDoc: document,
-      vine,
     });
 
-    assert(registrations).to.haveExactElements([
-      TEST_CLASS,
-      DEPS_CLASS,
-    ]);
+    return {tester};
+  });
+
+  should('install all components including the dependencies', () => {
+    const {element} = _.tester.createElement(TEST_CLASS);
+    const {element: depsEl} = _.tester.createElement(DEPS_CLASS);
+
+    assert(element).to.beAnInstanceOf(TEST_CLASS.get(_.tester.vine));
+    assert(depsEl).to.beAnInstanceOf(DEPS_CLASS.get(_.tester.vine));
   });
 });
