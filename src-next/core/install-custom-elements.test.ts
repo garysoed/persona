@@ -14,6 +14,7 @@ const DEPS_CLASS = registerCustomElement({
   tag: 'deps-el',
   ctrl: DepsClass,
   template: '',
+  spec: {host: {}},
 });
 
 class TestClass implements Ctrl {
@@ -24,6 +25,7 @@ const TEST_CLASS = registerCustomElement({
   tag: 'test-el',
   ctrl: TestClass,
   deps: [DEPS_CLASS],
+  spec: {host: {}},
   template: '',
 });
 
@@ -37,8 +39,8 @@ test('@persona/src/core/install-custom-elements', init => {
   });
 
   should('install all components including the dependencies', () => {
-    const {element} = _.tester.createElement(TEST_CLASS);
-    const {element: depsEl} = _.tester.createElement(DEPS_CLASS);
+    const element = _.tester.createElement(TEST_CLASS);
+    const depsEl = _.tester.createElement(DEPS_CLASS);
 
     assert(element).to.beAnInstanceOf(TEST_CLASS.get(_.tester.vine));
     assert(depsEl).to.beAnInstanceOf(DEPS_CLASS.get(_.tester.vine));

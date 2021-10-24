@@ -1,15 +1,18 @@
 import {Vine} from 'grapevine';
 
+import {Spec} from '../types/ctrl';
 import {Registration} from '../types/registration';
+
+type GenericRegistration = Registration<HTMLElement, Spec>;
 
 export interface InstallSpec {
   readonly customElementRegistry: CustomElementRegistry;
-  readonly roots: readonly Registration[];
+  readonly roots: readonly GenericRegistration[];
   readonly rootDoc: Document;
   readonly vine: Vine;
 }
 
-export function installCustomElements(spec: InstallSpec): readonly Registration[] {
+export function installCustomElements(spec: InstallSpec): readonly GenericRegistration[] {
   const registrations = getAllRegistrations(spec.roots);
   for (const registration of registrations) {
     registration.configure(spec.vine);
@@ -20,8 +23,8 @@ export function installCustomElements(spec: InstallSpec): readonly Registration[
 }
 
 function getAllRegistrations(
-    rootRegistrations: readonly Registration[],
-): readonly Registration[] {
+    rootRegistrations: readonly GenericRegistration[],
+): readonly GenericRegistration[] {
   const registrations = [];
   for (const registration of rootRegistrations) {
     registrations.push(

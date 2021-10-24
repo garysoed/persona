@@ -6,22 +6,22 @@ export enum IOType {
 }
 
 export enum ApiType {
-  VARIABLE,
+  VALUE,
 }
 
-
-export interface IVariable<T> {
-  readonly apiType: ApiType.VARIABLE;
+export interface IValue<T> {
+  readonly apiType: ApiType.VALUE;
   readonly ioType: IOType.INPUT;
-  readonly valueType: Type<T>;
   readonly defaultValue: T;
+  readonly key: string;
+  readonly valueType: Type<T>;
 }
 
-export interface OVariable<T> {
-  readonly apiType: ApiType.VARIABLE;
+export interface OValue<T> {
+  readonly apiType: ApiType.VALUE;
   readonly ioType: IOType.OUTPUT;
   readonly valueType: Type<T>;
   readonly defaultValue: T;
 }
 
-export type InputOutput = IVariable<unknown>|OVariable<unknown>;
+export type InputOutput = IValue<unknown>|OValue<unknown>;

@@ -4,6 +4,7 @@ import {arrayFrom} from 'gs-tools/export/collect';
 import {tap} from 'rxjs/operators';
 
 import {upgradeElement} from '../core/upgrade-element';
+import {Spec} from '../types/ctrl';
 import {Registration} from '../types/registration';
 import {mutationObservable} from '../util/mutation-observable';
 
@@ -23,7 +24,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
   constructor(
       // Do not use document.createElement since it will be faked.
       private readonly createElement: (tag: string) => HTMLElement,
-      private readonly registrationMap: ReadonlyMap<string, Registration>,
+      private readonly registrationMap: ReadonlyMap<string, Registration<HTMLElement, Spec>>,
       private readonly vine: Vine,
   ) { }
 
@@ -79,7 +80,8 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
       return;
     }
 
-    upgradeElement(registration, el);
+    const upgradedEl = upgradeElement(registration, el, this.vine);
+    upgradedEl.connectedCallback();
     Object.setPrototypeOf(el, registration.get(this.vine).prototype);
 
     run(mutationObservable(el, {attributes: true}).pipe(

@@ -16,6 +16,9 @@ const TEST_CLASS_SPEC = registerCustomElement({
   tag: 'test-el',
   ctrl: TestClassCtrl,
   template: '',
+  spec: {
+    host: {},
+  },
 });
 
 test('@persona/src/core/functional', init => {
@@ -28,7 +31,7 @@ test('@persona/src/core/functional', init => {
   });
 
   should('set up the component correctly', () => {
-    const {element} = _.tester.createElement(TEST_CLASS_SPEC);
+    const element = _.tester.createElement(TEST_CLASS_SPEC);
     assert(element).to.beAnInstanceOf(TEST_CLASS_SPEC.get(_.tester.vine));
   });
 });

@@ -2,7 +2,7 @@ import {Config as VineConfig, Vine} from 'grapevine';
 import {fake, FakeTime, mockTime, runEnvironment, spy} from 'gs-testing';
 
 import {installCustomElements} from '../core/install-custom-elements';
-import {Context} from '../types/ctrl';
+import {Spec} from '../types/ctrl';
 import {Registration} from '../types/registration';
 
 import {FakeCustomElementRegistry} from './fake-custom-element-registry';
@@ -11,7 +11,7 @@ import {PersonaTesterEnvironment} from './persona-tester-environment';
 
 
 interface TestSpec {
-  readonly roots?: readonly Registration[];
+  readonly roots?: ReadonlyArray<Registration<HTMLElement, any>>;
   readonly overrides?: VineConfig['overrides'];
 }
 
@@ -22,9 +22,8 @@ export class Tester {
       private readonly customElementRegistry: FakeCustomElementRegistry,
   ) { }
 
-  createElement<T extends CustomElementConstructor>(spec: Registration<T>): Context<T> {
-    const element = this.customElementRegistry.create(spec.tag);
-    return {element, vine: this.vine};
+  createElement<E extends HTMLElement, S extends Spec>(spec: Registration<E, S>): E {
+    return this.customElementRegistry.create(spec.tag) as E;
   }
 }
 
@@ -36,7 +35,7 @@ export function setupTest(spec: TestSpec): Tester {
     return origCreateElement.call(document, tag);
   }
   const fakeTime = mockTime(window);
-  const registrationMap = new Map<string, Registration>();
+  const registrationMap = new Map<string, Registration<HTMLElement, Spec>>();
   const customElementRegistry = new FakeCustomElementRegistry(
       createElement,
       registrationMap,

@@ -5,7 +5,7 @@ import {mutationObservable} from '../../src/util/mutation-observable';
 import {PersonaTesterEnvironment} from '../testing/persona-tester-environment';
 
 
-test('@persona/util/mutation-observable', init => {
+test('@persona/src/util/mutation-observable', init => {
   init(() => {
     runEnvironment(new PersonaTesterEnvironment());
     return {};
