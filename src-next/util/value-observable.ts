@@ -1,27 +1,25 @@
-import {Observable} from 'rxjs';
+import {Subject} from 'rxjs';
 
 const __value$ = Symbol('value$');
 
 
 interface HtmlElementWithValue<K extends string> extends HTMLElement {
-  readonly [__value$]?: {readonly [key in K]?: Observable<unknown>};
+  readonly [__value$]?: {readonly [key in K]?: Subject<unknown>};
 }
 
 export function getValueObservable<K extends string>(
     element: HtmlElementWithValue<K>,
     key: K,
-): Observable<unknown>|null {
+): Subject<unknown>|null {
   return element[__value$]?.[key] ?? null;
 }
 
 export function setValueObservable<K extends string>(
     element: HtmlElementWithValue<K>,
     key: K,
-    obs: Observable<unknown>,
+    obs: Subject<any>,
 ): void {
-  const map: Partial<Record<string, Observable<unknown>>> = element[__value$] ?? {};
+  const map: Partial<Record<string, Subject<unknown>>> = element[__value$] ?? {};
   map[key] = obs;
-  Object.assign(element, {
-    [__value$]: map,
-  });
+  Object.assign(element, {[__value$]: map});
 }

@@ -3,7 +3,7 @@ import {$map, $pipe} from 'gs-tools/export/collect';
 import {BehaviorSubject, combineLatest, defer, EMPTY, merge, Observable, of, Subject, timer} from 'rxjs';
 import {catchError, distinctUntilChanged, mapTo, shareReplay, switchMap} from 'rxjs/operators';
 
-import {Bindings, BindingSpec, Resolved, ResolvedBinding, Spec, UnresolvedBindingSpec} from '../types/ctrl';
+import {Bindings, BindingSpec, Resolved, ResolvedBinding, ResolvedI, ResolvedO, Spec, UnresolvedBindingSpec} from '../types/ctrl';
 import {ApiType, InputOutput, IOType, IValue, OValue} from '../types/io';
 import {RegistrationSpec} from '../types/registration';
 import {setValueObservable} from '../util/value-observable';
@@ -62,6 +62,7 @@ function createCtrl(
             const runs = $pipe(
                 ctrl.runs,
                 $map(run => run.pipe(
+                    // TODO: Log error
                     catchError(() => EMPTY),
                 )),
             );
@@ -159,10 +160,7 @@ function resolveForHost<S extends UnresolvedBindingSpec>(
       continue;
     }
 
-    switch (io.ioType) {
-      case IOType.INPUT:
-        bindings[key] = io.resolve(target);
-    }
+    bindings[key] = io.resolve(target);
   }
   return bindings as ResolvedBinding<S>;
 }
@@ -176,8 +174,12 @@ function createBindings<S extends UnresolvedBindingSpec>(spec: ResolvedBinding<S
     }
 
     switch (io.ioType) {
+      // TODO(#8): Remove casts, only breaks outside VSCode
       case IOType.INPUT:
-        bindings[key] = io.value$;
+        bindings[key] = (io as ResolvedI<unknown>).value$;
+        break;
+      case IOType.OUTPUT:
+        bindings[key] = () => (io as ResolvedO<unknown>).update();
         break;
     }
   }

@@ -21,6 +21,7 @@ export interface OValue<T> {
   readonly apiType: ApiType.VALUE;
   readonly ioType: IOType.OUTPUT;
   readonly valueType: Type<T>;
+  readonly key: string;
   readonly defaultValue: T;
 }
 

@@ -1,5 +1,6 @@
 import {source} from 'grapevine';
 import {assert, should, test} from 'gs-testing';
+import {cache} from 'gs-tools/export/data';
 import {numberType} from 'gs-types';
 import {Observable, ReplaySubject} from 'rxjs';
 import {tap} from 'rxjs/operators';
@@ -28,6 +29,7 @@ class TestCtrl implements Ctrl {
       private readonly context: Context<typeof $>,
   ) {}
 
+  @cache()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       this.context.host.value.pipe(
@@ -43,7 +45,6 @@ class TestCtrl implements Ctrl {
 const TEST = registerCustomElement({
   tag: 'test-el',
   ctrl: TestCtrl,
-  deps: [],
   spec: $,
   template: '',
 });
@@ -60,17 +61,17 @@ test('@persona/src/input/value', init => {
   should('emit values on sets when default values are given', () => {
     const value = 2;
     const element = _.tester.createElement(TEST);
-    element.value = value;
-    element.value = undefined;
+    element.valueWithDefault = value;
 
-    assert($value$.get(_.tester.vine)).to.emitSequence([undefined, value, undefined]);
+    assert($valueWithDefault$.get(_.tester.vine)).to.emitSequence([DEFAULT_VALUE, value]);
   });
 
   should('emit values on sets when default values aren\'t given', () => {
     const value = 2;
     const element = _.tester.createElement(TEST);
-    element.valueWithDefault = value;
+    element.value = value;
+    element.value = undefined;
 
-    assert($valueWithDefault$.get(_.tester.vine)).to.emitSequence([DEFAULT_VALUE, value]);
+    assert($value$.get(_.tester.vine)).to.emitSequence([undefined, value, undefined]);
   });
 });

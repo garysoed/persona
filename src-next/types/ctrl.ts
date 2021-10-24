@@ -1,5 +1,5 @@
 import {Vine} from 'grapevine';
-import {Observable} from 'rxjs';
+import {Observable, OperatorFunction} from 'rxjs';
 
 import {InputOutput, IValue, OValue} from './io';
 
@@ -42,13 +42,18 @@ export interface Ctrl {
 //   readonly internal: InternalInputBinding<T>;
 // }
 
-
-type ResolvedI<T> = IValue<T> & {
+// TODO(#8): Remove exports of ResolvedI and ResolvedO
+export type ResolvedI<T> = IValue<T> & {
   readonly value$: Observable<T>;
 };
 
+export type ResolvedO<T> = OValue<T> & {
+  update: () => OperatorFunction<T, unknown>;
+};
+
 export type Resolved<V, T extends IValue<V>|OValue<V>> =
-    T extends IValue<infer V> ? ResolvedI<V> : never;
+    T extends IValue<infer V> ? ResolvedI<V> :
+    T extends OValue<infer V> ? ResolvedO<V> : never;
 
 export type UnresolvedIO<T, B extends IValue<T>|OValue<T>> = B & {
   resolve(target: HTMLElement): Resolved<T, B>;
@@ -59,13 +64,13 @@ export type BindingSpec = {
 }
 
 export type UnresolvedBindingSpec = {
-  readonly [key: string]: UnresolvedIO<unknown, InputOutput>;
+  readonly [key: string]: UnresolvedIO<unknown, IValue<unknown>>|UnresolvedIO<any, OValue<any>>;
 }
 
 export type ResolvedBinding<S extends UnresolvedBindingSpec> = {
   readonly [K in keyof S]:
-      S[K] extends IValue<infer T> ? Resolved<T, S[K]> :
-      S[K] extends OValue<infer T> ? Resolved<T, S[K]> :
+      S[K] extends IValue<infer T> ? Resolved<T, IValue<T>> :
+      S[K] extends OValue<infer T> ? Resolved<T, OValue<T>> :
       never;
 };
 
@@ -75,6 +80,7 @@ export type Spec = {
 
 type Binding<T extends InputOutput> =
     T extends IValue<infer V> ? Observable<V> :
+    T extends OValue<infer V> ? () => OperatorFunction<V, unknown> :
     never;
 
 export type Bindings<S extends BindingSpec> = {
@@ -85,8 +91,6 @@ export interface Context<S extends Spec> {
   readonly host: Bindings<S['host']>;
   readonly element: HTMLElement;
   readonly vine: Vine;
-  // readonly outputs: OutputBinding<T>;
-  // readonly inputs: InputBinding<T>;
 }
 
 export type CtrlCtor<H extends Spec> = new (context: Context<H>) => Ctrl;
