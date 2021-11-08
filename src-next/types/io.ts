@@ -25,4 +25,6 @@ export interface OValue<T> {
   readonly defaultValue: T;
 }
 
+export type Resolver = (host: HTMLElement) => HTMLElement;
+
 export type InputOutput = IValue<unknown>|OValue<unknown>;

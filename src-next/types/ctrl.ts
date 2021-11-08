@@ -55,6 +55,9 @@ export type Resolved<V, T extends IValue<V>|OValue<V>> =
     T extends IValue<infer V> ? ResolvedI<V> :
     T extends OValue<infer V> ? ResolvedO<V> : never;
 
+export type ResolvedProvider<V, T extends IValue<V>|OValue<V>> =
+    (root: ShadowRoot) => Resolved<V, T>;
+
 export type UnresolvedIO<T, B extends IValue<T>|OValue<T>> = B & {
   resolve(target: HTMLElement): Resolved<T, B>;
 };
@@ -67,15 +70,23 @@ export type UnresolvedBindingSpec = {
   readonly [key: string]: UnresolvedIO<unknown, IValue<unknown>>|UnresolvedIO<any, OValue<any>>;
 }
 
-export type ResolvedBinding<S extends UnresolvedBindingSpec> = {
+export type ResolvedBindingSpec<S extends UnresolvedBindingSpec> = {
   readonly [K in keyof S]:
       S[K] extends IValue<infer T> ? Resolved<T, IValue<T>> :
       S[K] extends OValue<infer T> ? Resolved<T, OValue<T>> :
       never;
 };
 
+export type ResolvedBindingSpecProvider<S extends UnresolvedBindingSpec> = {
+  readonly [K in keyof S]:
+      S[K] extends IValue<infer T> ? ResolvedProvider<T, S[K]> :
+      S[K] extends OValue<infer T> ? ResolvedProvider<T, S[K]> :
+      never;
+}
+
 export type Spec = {
   readonly host: UnresolvedBindingSpec;
+  readonly shadow: Record<string, ResolvedBindingSpecProvider<UnresolvedBindingSpec>>;
 };
 
 type Binding<T extends InputOutput> =
@@ -87,8 +98,13 @@ export type Bindings<S extends BindingSpec> = {
   readonly [K in keyof S]: Binding<S[K]>;
 };
 
+export type ShadowBindings<O> = {
+  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<infer S> ? Bindings<S> : never;
+};
+
 export interface Context<S extends Spec> {
   readonly host: Bindings<S['host']>;
+  readonly shadow: ShadowBindings<S['shadow']>;
   readonly element: HTMLElement;
   readonly vine: Vine;
 }

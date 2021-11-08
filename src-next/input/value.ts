@@ -1,5 +1,5 @@
 import {Type, undefinedType, unionType} from 'gs-types';
-import {Observable, throwError} from 'rxjs';
+import {Observable, throwError, defer} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {Resolved, UnresolvedIO} from '../types/ctrl';
@@ -18,21 +18,25 @@ class ResolvedIValue<T> implements Resolved<T, UnresolvedIValue<T>> {
   ) {}
 
   get value$(): Observable<T> {
-    const value$ = getValueObservable(this.target, this.key);
-    if (!value$) {
-      return throwError(new Error(`Target ${this.target} has no observable value ${this.key}`));
-    }
+    // Defer so we have time to upgrade the dependencies
+    return defer(() => {
+      const value$ = getValueObservable(this.target, this.key);
+      if (!value$) {
+        return throwError(new Error(`Target ${this.target} has no observable value ${this.key}`));
+      }
 
-    return value$.pipe(
-        map(value => value ?? this.defaultValue),
-        map(value => {
-          if (!this.valueType.check(value)) {
-            throw new Error(`Value of key ${this.key} is not of type ${this.valueType}`);
-          }
+      return value$;
+    })
+        .pipe(
+            map(value => value ?? this.defaultValue),
+            map(value => {
+              if (!this.valueType.check(value)) {
+                throw new Error(`Value of key ${this.key} is not of type ${this.valueType}`);
+              }
 
-          return value;
-        }),
-    );
+              return value;
+            }),
+        );
   }
 }
 

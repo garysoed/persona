@@ -18,6 +18,7 @@ const TEST_CLASS_SPEC = registerCustomElement({
   template: '',
   spec: {
     host: {},
+    shadow: {},
   },
 });
 

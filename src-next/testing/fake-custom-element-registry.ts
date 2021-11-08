@@ -81,8 +81,6 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     }
 
     const upgradedEl = upgradeElement(registration, el, this.vine);
-    upgradedEl.connectedCallback();
-    Object.setPrototypeOf(el, registration.get(this.vine).prototype);
 
     run(mutationObservable(el, {attributes: true}).pipe(
         tap(records => {
@@ -105,5 +103,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
       }
       this.upgradeElement(node);
     }
+
+    upgradedEl.connectedCallback();
   }
 }

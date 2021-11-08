@@ -26,7 +26,7 @@ type ApiReadonlyKeys<A> = {
 
 type ApiReadonly<A> = Readonly<ApiReadable<Pick<A, ApiReadonlyKeys<A>>>>;
 
-type ApiAsProperties<S extends Spec> = ApiReadable<S['host']>&ApiReadonly<S['host']>;
+export type ApiAsProperties<S extends Spec> = ApiReadable<S['host']>&ApiReadonly<S['host']>;
 
 export function registerCustomElement<S extends Spec>(
     spec: RegistrationSpec<S>,
@@ -37,7 +37,7 @@ export function registerCustomElement<S extends Spec>(
 
       constructor() {
         super();
-        upgradeElement(spec, this, vine);
+        upgradeElement(registration, this, vine);
       }
 
       attributeChangedCallback(attrName: string): void {
@@ -53,9 +53,11 @@ export function registerCustomElement<S extends Spec>(
     return elementClass as unknown as Typeof<ApiAsProperties<S>&HTMLElement>;
   });
 
-  return Object.assign(base,
+  const registration = Object.assign(base,
       {
         ...spec,
         configure: spec.configure ?? (() => undefined),
       });
+
+  return registration;
 }
