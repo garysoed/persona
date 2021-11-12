@@ -14,10 +14,7 @@ const DEPS_CLASS = registerCustomElement({
   tag: 'deps-el',
   ctrl: DepsClass,
   template: '',
-  spec: {
-    host: {},
-    shadow: {},
-  },
+  spec: {},
 });
 
 class TestClass implements Ctrl {
@@ -28,10 +25,7 @@ const TEST_CLASS = registerCustomElement({
   tag: 'test-el',
   ctrl: TestClass,
   deps: [DEPS_CLASS],
-  spec: {
-    host: {},
-    shadow: {},
-  },
+  spec: {},
   template: '',
 });
 

@@ -85,8 +85,8 @@ export type ResolvedBindingSpecProvider<S extends UnresolvedBindingSpec> = {
 }
 
 export type Spec = {
-  readonly host: UnresolvedBindingSpec;
-  readonly shadow: Record<string, ResolvedBindingSpecProvider<UnresolvedBindingSpec>>;
+  readonly host?: UnresolvedBindingSpec;
+  readonly shadow?: Record<string, ResolvedBindingSpecProvider<UnresolvedBindingSpec>>;
 };
 
 type Binding<T extends InputOutput> =
@@ -103,8 +103,8 @@ export type ShadowBindings<O> = {
 };
 
 export interface Context<S extends Spec> {
-  readonly host: Bindings<S['host']>;
-  readonly shadow: ShadowBindings<S['shadow']>;
+  readonly host: Bindings<S['host']&{}>;
+  readonly shadow: ShadowBindings<S['shadow']&{}>;
   readonly element: HTMLElement;
   readonly vine: Vine;
 }

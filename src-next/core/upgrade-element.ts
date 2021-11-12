@@ -44,9 +44,9 @@ function createCtrl(
     return of(new registrationSpec.ctrl({
       element,
       host: createBindings(
-          resolveForHost(registrationSpec.spec.host, element),
+          resolveForHost(registrationSpec.spec.host ?? {}, element),
       ),
-      shadow: createShadowBindingObjects(registrationSpec.spec.shadow, shadowRoot),
+      shadow: createShadowBindingObjects(registrationSpec.spec.shadow ?? {}, shadowRoot),
       vine,
     }));
   })

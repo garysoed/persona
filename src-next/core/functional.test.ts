@@ -16,10 +16,7 @@ const TEST_CLASS_SPEC = registerCustomElement({
   tag: 'test-el',
   ctrl: TestClassCtrl,
   template: '',
-  spec: {
-    host: {},
-    shadow: {},
-  },
+  spec: {},
 });
 
 test('@persona/src/core/functional', init => {

@@ -25,7 +25,6 @@ const $host = {
     value: ivalue('value', numberType),
     valueWithDefault: ivalue('valueWithDefault', numberType, DEFAULT_VALUE),
   },
-  shadow: {},
 };
 
 class HostCtrl implements Ctrl {
@@ -54,7 +53,6 @@ const HOST = registerCustomElement<typeof $host>({
 });
 
 const $shadow = {
-  host: {},
   shadow: {
     deps: id('deps', HOST),
   },

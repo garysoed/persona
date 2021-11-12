@@ -19,13 +19,13 @@ type ReversableIO = IValue<any>|OValue<any>;
 export function id<S extends Spec>(
     id: string,
     registration: RegistrationWithSpec<S>,
-): ResolvedBindingSpecProvider<ReversedSpec<S['host']>> {
-  const reversed = reverse(registration.spec.host);
+): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>> {
+  const reversed = reverse(registration.spec.host ?? {});
   const providers: Partial<Record<keyof S['host'], ResolvedProvider<any, ReversableIO>>> = {};
   for (const key in reversed) {
     providers[key as keyof S['host']] = (root: ShadowRoot) => reversed[key].resolve(getElement(root, id));
   }
-  return providers as ResolvedBindingSpecProvider<ReversedSpec<S['host']>>;
+  return providers as ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>>;
 }
 
 function getElement(root: ShadowRoot, id: string): HTMLElement {

@@ -25,7 +25,6 @@ const $host = {
     value: ovalue('value', numberType),
     valueWithDefault: ovalue('valueWithDefault', numberType, DEFAULT_VALUE),
   },
-  shadow: {},
 };
 
 class HostCtrl implements Ctrl {
@@ -47,7 +46,6 @@ const HOST = registerCustomElement({
 });
 
 const $shadow = {
-  host: {},
   shadow: {
     deps: id('deps', HOST),
   },
