@@ -11,17 +11,12 @@ import {oattr} from './attr';
 
 
 const $hostValue$ = source(() => new Subject<string|null>());
-const $hostValueWithDefault$ = source(() => new Subject<string|null>());
 // const $shadowValue$ = source(() => new ReplaySubject<string|null>());
-// const $shadowValueWithDefault$ = source(() => new ReplaySubject<string|null>());
 
-
-const DEFAULT_VALUE = 'DEFAULT_VALUE';
 
 const $host = {
   host: {
     value: oattr('attr'),
-    valueWithDefault: oattr('attr-default', DEFAULT_VALUE),
   },
 };
 
@@ -32,7 +27,6 @@ class HostCtrl implements Ctrl {
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $hostValue$.get(this.context.vine).pipe(this.context.host.value()),
-      $hostValueWithDefault$.get(this.context.vine).pipe(this.context.host.valueWithDefault()),
     ];
   }
 }
@@ -82,19 +76,6 @@ test('@persona/src/output/attr', init => {
   });
 
   test('host', () => {
-    should('update values correctly if default value is given', () => {
-      const value = 'value';
-      const element = _.tester.createElement(HOST);
-
-      assert(element.getAttribute('attr-default')).to.equal(DEFAULT_VALUE);
-
-      $hostValueWithDefault$.get(_.tester.vine).next(value);
-      assert(element.getAttribute('attr-default')).to.equal(value);
-
-      $hostValueWithDefault$.get(_.tester.vine).next(null);
-      assert(element.hasAttribute('attr-default')).to.beFalse();
-    });
-
     should('update values correctly if default value is not given', () => {
       const value = 'value';
       const element = _.tester.createElement(HOST);
@@ -111,14 +92,6 @@ test('@persona/src/output/attr', init => {
 
 
   // test('shadow', () => {
-  //   should.only('update values correctly if default value is given', () => {
-  //     const value = 'value';
-  //     _.tester.createElement(SHADOW);
-
-  //     $hostValueWithDefault$.get(_.tester.vine).next(value);
-  //     assert($shadowValueWithDefault$.get(_.tester.vine)).to.emitSequence([DEFAULT_VALUE, value]);
-  //   });
-
   //   should.only('update values correctly if default value is not given', () => {
   //     const value = 'value';
   //     _.tester.createElement(SHADOW);

@@ -54,7 +54,7 @@ function reverseIO(io: ReversableIO): ReversableIO {
     case ApiType.ATTR:
       switch (io.ioType) {
         case IOType.INPUT:
-          return new UnresolvedOAttr(io.attrName, io.defaultValue) as OAttr;
+          return new UnresolvedOAttr(io.attrName) as OAttr;
         case IOType.OUTPUT:
           throw new Error('unimplemented');
       }

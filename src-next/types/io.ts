@@ -14,14 +14,12 @@ export interface IAttr {
   readonly apiType: ApiType.ATTR;
   readonly ioType: IOType.INPUT;
   readonly attrName: string;
-  readonly defaultValue: string|null;
 }
 
 export interface OAttr {
   readonly apiType: ApiType.ATTR;
   readonly ioType: IOType.OUTPUT;
   readonly attrName: string;
-  readonly defaultValue: string|null;
 }
 
 export interface IValue<T> {
