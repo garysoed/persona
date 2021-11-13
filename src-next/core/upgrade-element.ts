@@ -172,10 +172,6 @@ function resolveForHost<S extends UnresolvedBindingSpec>(
   const bindings: Partial<Record<keyof S, Resolved<InputOutput>>> = {};
   for (const key in spec) {
     const io = spec[key];
-    if (io.apiType !== ApiType.VALUE) {
-      continue;
-    }
-
     bindings[key] = io.resolve(target);
   }
   return bindings as ResolvedBindingSpec<S>;
@@ -190,11 +186,17 @@ function createBindings<S extends UnresolvedBindingSpec>(spec: ResolvedBindingSp
   return bindings as Bindings<S>;
 }
 
-function createBinding<T>(io: ResolvedI<T>): Observable<T>;
-function createBinding<T>(io: ResolvedO<T>): () => OperatorFunction<T, unknown>;
-function createBinding(io: ResolvedI<unknown>|ResolvedO<unknown>): Observable<unknown>|(() => OperatorFunction<unknown, unknown>);
-function createBinding(io: ResolvedI<unknown>|ResolvedO<unknown>): Observable<unknown>|(() => OperatorFunction<unknown, unknown>) {
+function createBinding(io: InputOutput&(ResolvedI<unknown>|ResolvedO<any>)): Observable<unknown>|(() => OperatorFunction<unknown, unknown>) {
   switch (io.apiType) {
+    case ApiType.ATTR:
+      switch (io.ioType) {
+        // TODO(#8): Remove casts, only breaks outside VSCode
+        case IOType.INPUT:
+          return (io as ResolvedI<unknown>).value$;
+        case IOType.OUTPUT:
+          return () => (io as ResolvedO<unknown>).update();
+      }
+      break;
     case ApiType.VALUE:
       switch (io.ioType) {
         // TODO(#8): Remove casts, only breaks outside VSCode

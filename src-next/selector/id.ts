@@ -1,10 +1,13 @@
 import {UnresolvedIValue} from '../input/value';
+import {UnresolvedOAttr} from '../output/attr';
 import {UnresolvedOValue} from '../output/value';
 import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedBindingSpec} from '../types/ctrl';
-import {ApiType, IOType, IValue, OValue} from '../types/io';
+import {ApiType, IAttr, IOType, IValue, OAttr, OValue} from '../types/io';
 import {Registration} from '../types/registration';
 
 type ReversedIO<T> =
+    T extends IAttr ? OValue<string|null> :
+    T extends OAttr ? IValue<string|null> :
     T extends IValue<infer V> ? OValue<V> :
     T extends OValue<infer V> ? IValue<V> :
     never;
@@ -15,7 +18,7 @@ type ReversedSpec<U extends UnresolvedBindingSpec> = UnresolvedBindingSpec & {
 
 type RegistrationWithSpec<S extends Spec> = Pick<Registration<HTMLElement, S>, 'spec'>;
 
-type ReversableIO = IValue<any>|OValue<any>;
+type ReversableIO = IAttr|OAttr|IValue<any>|OValue<any>;
 export function id<S extends Spec>(
     id: string,
     registration: RegistrationWithSpec<S>,
@@ -48,6 +51,14 @@ function reverse<U extends UnresolvedBindingSpec>(spec: U): ReversedSpec<U> {
 function reverseIO<T extends ReversableIO>(io: T): ReversedIO<T>;
 function reverseIO(io: ReversableIO): ReversableIO {
   switch (io.apiType) {
+    case ApiType.ATTR:
+      switch (io.ioType) {
+        case IOType.INPUT:
+          return new UnresolvedOAttr(io.attrName, io.defaultValue) as OAttr;
+        case IOType.OUTPUT:
+          throw new Error('unimplemented');
+      }
+      break;
     case ApiType.VALUE:
       switch (io.ioType) {
         case IOType.INPUT:

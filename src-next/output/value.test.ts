@@ -30,6 +30,7 @@ const $host = {
 class HostCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $host>) {}
 
+  @cache()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $hostValue$.get(this.context.vine).pipe(this.context.host.value()),

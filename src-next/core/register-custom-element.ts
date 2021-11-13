@@ -1,8 +1,6 @@
 import {source} from 'grapevine';
-import {Subject} from 'rxjs';
 
 import {Spec} from '../types/ctrl';
-import {AttributeChangedEvent} from '../types/event';
 import {IValue, OValue} from '../types/io';
 import {Registration, RegistrationSpec} from '../types/registration';
 
@@ -33,16 +31,16 @@ export function registerCustomElement<S extends Spec>(
 ): Registration<ApiAsProperties<S>&HTMLElement, S> {
   const base = source(vine => {
     const elementClass = class extends HTMLElement {
-      private readonly onAttributeChanged$ = new Subject<AttributeChangedEvent>();
+      // private readonly onAttributeChanged$ = new Subject<AttributeChangedEvent>();
 
       constructor() {
         super();
         upgradeElement(registration, this, vine);
       }
 
-      attributeChangedCallback(attrName: string): void {
-        this.onAttributeChanged$.next({attrName});
-      }
+      // attributeChangedCallback(attrName: string): void {
+      // this.onAttributeChanged$.next({attrName});
+      // }
 
       static get observedAttributes(): readonly string[] {
         // TODO

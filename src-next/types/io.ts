@@ -6,7 +6,22 @@ export enum IOType {
 }
 
 export enum ApiType {
+  ATTR,
   VALUE,
+}
+
+export interface IAttr {
+  readonly apiType: ApiType.ATTR;
+  readonly ioType: IOType.INPUT;
+  readonly attrName: string;
+  readonly defaultValue: string|null;
+}
+
+export interface OAttr {
+  readonly apiType: ApiType.ATTR;
+  readonly ioType: IOType.OUTPUT;
+  readonly attrName: string;
+  readonly defaultValue: string|null;
 }
 
 export interface IValue<T> {
@@ -27,4 +42,6 @@ export interface OValue<T> {
 
 export type Resolver = (host: HTMLElement) => HTMLElement;
 
-export type InputOutput = IValue<unknown>|OValue<unknown>;
+export type InputOutput =
+    IAttr|OAttr|
+    IValue<unknown>|OValue<unknown>;
