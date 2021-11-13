@@ -6,7 +6,7 @@ import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IOType, IValue} from '../types/io';
 import {getValueObservable} from '../util/value-observable';
 
-class ResolvedIValue<T> implements Resolved<T, UnresolvedIValue<T>> {
+class ResolvedIValue<T> implements Resolved<UnresolvedIValue<T>> {
   readonly apiType = ApiType.VALUE;
   readonly ioType = IOType.INPUT;
 
@@ -40,7 +40,7 @@ class ResolvedIValue<T> implements Resolved<T, UnresolvedIValue<T>> {
   }
 }
 
-export class UnresolvedIValue<T> implements UnresolvedIO<T, IValue<T>> {
+export class UnresolvedIValue<T> implements UnresolvedIO<IValue<T>> {
   readonly apiType = ApiType.VALUE;
   readonly ioType = IOType.INPUT;
 

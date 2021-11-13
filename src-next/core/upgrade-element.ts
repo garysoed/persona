@@ -169,7 +169,7 @@ function resolveForHost<S extends UnresolvedBindingSpec>(
     spec: S,
     target: HTMLElement,
 ): ResolvedBindingSpec<S> {
-  const bindings: Partial<Record<keyof S, Resolved<unknown, InputOutput>>> = {};
+  const bindings: Partial<Record<keyof S, Resolved<InputOutput>>> = {};
   for (const key in spec) {
     const io = spec[key];
     if (io.apiType !== ApiType.VALUE) {

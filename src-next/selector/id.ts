@@ -21,7 +21,7 @@ export function id<S extends Spec>(
     registration: RegistrationWithSpec<S>,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>> {
   const reversed = reverse(registration.spec.host ?? {});
-  const providers: Partial<Record<keyof S['host'], ResolvedProvider<any, ReversableIO>>> = {};
+  const providers: Partial<Record<keyof S['host'], ResolvedProvider<ReversableIO>>> = {};
   for (const key in reversed) {
     providers[key as keyof S['host']] = (root: ShadowRoot) => reversed[key].resolve(getElement(root, id));
   }
