@@ -1,22 +1,25 @@
 import {source} from 'grapevine';
 import {assert, should, test} from 'gs-testing';
 import {cache} from 'gs-tools/export/data';
-import {Observable, Subject} from 'rxjs';
+import {Observable, ReplaySubject} from 'rxjs';
+import {tap} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
-import {oattr} from './attr';
+import {iattr} from './attr';
 
 
-const $hostValue$ = source(() => new Subject<string|null>());
-// const $shadowValue$ = source(() => new ReplaySubject<string|null>());
+const $hostValue$ = source(() => new ReplaySubject<string|null>());
+// const $shadowValue$ = source(() => new Subject<string|null>());
+// const $shadowValueWithDefault$ = source(() => new Subject<string|null>());
 
 
 const $host = {
   host: {
-    value: oattr('attr'),
+    value: iattr('attr'),
+    valueWithDefault: iattr('attr-default'),
   },
 };
 
@@ -26,7 +29,9 @@ class HostCtrl implements Ctrl {
   @cache()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
-      $hostValue$.get(this.context.vine).pipe(this.context.host.value()),
+      this.context.host.value.pipe(
+          tap(value => $hostValue$.get(this.context.vine).next(value)),
+      ),
     ];
   }
 }
@@ -69,29 +74,33 @@ const HOST = registerCustomElement({
 // });
 
 
-test('@persona/src/output/attr', init => {
+test('@persona/src/input/attr', init => {
   const _ = init(() => {
     const tester = setupTest({roots: [HOST]});
     return {tester};
   });
 
   test('host', () => {
-    should('update values correctly', () => {
+    should('emit values on sets', () => {
       const value = 'value';
       const element = _.tester.createElement(HOST);
+      element.setAttribute('attr', value);
+      element.removeAttribute('attr');
 
-      assert(element.getAttribute('attr')).to.beNull();
-
-      $hostValue$.get(_.tester.vine).next(value);
-      assert(element.getAttribute('attr')).to.equal(value);
-
-      $hostValue$.get(_.tester.vine).next(null);
-      assert(element.hasAttribute('attr')).to.beFalse();
+      assert($hostValue$.get(_.tester.vine)).to.emitSequence([null, value, null]);
     });
   });
 
 
   // test('shadow', () => {
+  //   should.only('update values correctly if default value is given', () => {
+  //     const value = 'value';
+  //     _.tester.createElement(SHADOW);
+
+  //     $hostValueWithDefault$.get(_.tester.vine).next(value);
+  //     assert($shadowValueWithDefault$.get(_.tester.vine)).to.emitSequence([DEFAULT_VALUE, value]);
+  //   });
+
   //   should.only('update values correctly if default value is not given', () => {
   //     const value = 'value';
   //     _.tester.createElement(SHADOW);

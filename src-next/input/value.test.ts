@@ -8,7 +8,7 @@ import {tap} from 'rxjs/operators';
 import {registerCustomElement} from '../core/register-custom-element';
 import {id} from '../selector/id';
 import {setupTest} from '../testing/setup-test';
-import {Context, Ctrl, CtrlCtor} from '../types/ctrl';
+import {Context, Ctrl} from '../types/ctrl';
 
 import {ivalue} from './value';
 
@@ -47,7 +47,7 @@ class HostCtrl implements Ctrl {
 
 const HOST = registerCustomElement<typeof $host>({
   tag: 'test-host',
-  ctrl: HostCtrl as CtrlCtor<typeof $host>,
+  ctrl: HostCtrl,
   spec: $host,
   template: '',
 });

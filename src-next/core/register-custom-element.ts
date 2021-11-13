@@ -1,7 +1,7 @@
 import {source} from 'grapevine';
 
 import {Spec} from '../types/ctrl';
-import {IValue, OValue} from '../types/io';
+import {ApiType, IValue, OValue} from '../types/io';
 import {Registration, RegistrationSpec} from '../types/registration';
 
 import {upgradeElement} from './upgrade-element';
@@ -31,20 +31,25 @@ export function registerCustomElement<S extends Spec>(
 ): Registration<ApiAsProperties<S>&HTMLElement, S> {
   const base = source(vine => {
     const elementClass = class extends HTMLElement {
-      // private readonly onAttributeChanged$ = new Subject<AttributeChangedEvent>();
 
       constructor() {
         super();
         upgradeElement(registration, this, vine);
       }
 
-      // attributeChangedCallback(attrName: string): void {
-      // this.onAttributeChanged$.next({attrName});
-      // }
-
       static get observedAttributes(): readonly string[] {
-        // TODO
-        return [];
+        const attributes = [];
+        const hostSpecs = spec.spec.host ?? {};
+        for (const key in hostSpecs) {
+          const spec = hostSpecs[key];
+          if (spec.apiType !== ApiType.ATTR) {
+            continue;
+          }
+
+          attributes.push(spec.attrName);
+        }
+
+        return attributes;
       }
     };
 

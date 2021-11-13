@@ -4,8 +4,10 @@ import {BehaviorSubject, combineLatest, defer, EMPTY, merge, Observable, of, Ope
 import {catchError, distinctUntilChanged, mapTo, shareReplay, switchMap} from 'rxjs/operators';
 
 import {Bindings, BindingSpec, Resolved, ResolvedBindingSpec, ResolvedBindingSpecProvider, ResolvedI, ResolvedO, ShadowBindings, Spec, UnresolvedBindingSpec} from '../types/ctrl';
+import {AttributeChangedEvent} from '../types/event';
 import {ApiType, InputOutput, IOType, IValue, OValue} from '../types/io';
 import {Registration, RegistrationSpec} from '../types/registration';
+import {setAttributeChangeObservable} from '../util/attribute-change-observable';
 import {setValueObservable} from '../util/value-observable';
 
 import {$getTemplate} from './templates-cache';
@@ -25,6 +27,7 @@ export function upgradeElement(
 ): DecoratedHtmlElement {
   const isConnected$ = new BehaviorSubject(false);
   const decoratedEl = setupConnection(element, isConnected$);
+  setupAttributeChange(element);
   const shadowRoot = createShadow(registration, element, vine);
   createProperties(registration, element);
   createCtrl(registration, element, shadowRoot, vine, isConnected$);
@@ -75,13 +78,6 @@ function createCtrl(
             );
 
             return merge(...runs);
-            // const onAttributeChanged$ = this.onAttributeChanged$.pipe(
-            //     tap(({attrName}) => {
-            //       ctrl.attributeChangedCallback(attrName);
-            //     }),
-            // );
-
-          // return merge(onRun$, onAttributeChanged$);
           }),
       )
       .subscribe();
@@ -144,6 +140,19 @@ function createShadow(
   const root = element.attachShadow({mode: 'open'});
   root.appendChild($getTemplate.get(vine)(registrationSpec).content.cloneNode(true));
   return root;
+}
+
+function setupAttributeChange(element: HTMLElement): void {
+  const attributeChange$ = new Subject<AttributeChangedEvent>();
+  setAttributeChangeObservable(element, attributeChange$);
+  Object.assign(
+      element,
+      {
+        attributeChangedCallback(attrName: string): void {
+          attributeChange$.next({attrName});
+        },
+      },
+  );
 }
 
 function setupConnection(
