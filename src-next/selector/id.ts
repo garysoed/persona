@@ -1,3 +1,4 @@
+import {UnresolvedIAttr} from '../input/attr';
 import {UnresolvedIValue} from '../input/value';
 import {UnresolvedOAttr} from '../output/attr';
 import {UnresolvedOValue} from '../output/value';
@@ -54,15 +55,15 @@ function reverseIO(io: ReversableIO): ReversableIO {
     case ApiType.ATTR:
       switch (io.ioType) {
         case IOType.INPUT:
-          return new UnresolvedOAttr(io.attrName) as OAttr;
+          return new UnresolvedOAttr(io.attrName);
         case IOType.OUTPUT:
-          throw new Error('unimplemented');
+          return new UnresolvedIAttr(io.attrName);
       }
       break;
     case ApiType.VALUE:
       switch (io.ioType) {
         case IOType.INPUT:
-          return new UnresolvedOValue(io.defaultValue, io.key, io.valueType) as OValue<any>;
+          return new UnresolvedOValue(io.defaultValue, io.key, io.valueType);
         case IOType.OUTPUT:
           return new UnresolvedIValue(io.defaultValue, io.key, io.valueType);
       }

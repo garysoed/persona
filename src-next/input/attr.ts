@@ -1,5 +1,5 @@
 import {cache} from 'gs-tools/export/data';
-import {Observable, throwError} from 'rxjs';
+import {defer, Observable, throwError} from 'rxjs';
 import {filter, map, startWith} from 'rxjs/operators';
 
 import {Resolved, UnresolvedIO} from '../types/ctrl';
@@ -18,16 +18,20 @@ class ResolvedIAttr implements Resolved<UnresolvedIAttr> {
 
   @cache()
   get value$(): Observable<string|null> {
-    const obs$ = getAttributeChangeObservable(this.target);
-    if (!obs$) {
-      return throwError(new Error(`No attribute change observable found for ${this.target.tagName}`));
-    }
+    // Only start checking on subscription.
+    return defer(() => {
+      const obs$ = getAttributeChangeObservable(this.target);
+      if (!obs$) {
+        return throwError(new Error(`No attribute change observable found for ${this.target.tagName}`));
+      }
 
-    return obs$.pipe(
-        startWith({attrName: this.attrName}),
-        filter(event => event.attrName === this.attrName),
-        map(() => this.target.getAttribute(this.attrName)),
-    );
+      return obs$;
+    })
+        .pipe(
+            startWith({attrName: this.attrName}),
+            filter(event => event.attrName === this.attrName),
+            map(() => this.target.getAttribute(this.attrName)),
+        );
   }
 }
 

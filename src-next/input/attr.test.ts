@@ -1,10 +1,11 @@
 import {source} from 'grapevine';
 import {assert, should, test} from 'gs-testing';
 import {cache} from 'gs-tools/export/data';
-import {Observable, ReplaySubject} from 'rxjs';
+import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
+import {id} from '../selector/id';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -12,8 +13,7 @@ import {iattr} from './attr';
 
 
 const $hostValue$ = source(() => new ReplaySubject<string|null>());
-// const $shadowValue$ = source(() => new Subject<string|null>());
-// const $shadowValueWithDefault$ = source(() => new Subject<string|null>());
+const $shadowValue$ = source(() => new Subject<string|null>());
 
 
 const $host = {
@@ -43,40 +43,35 @@ const HOST = registerCustomElement({
   template: '',
 });
 
-// const $shadow = {
-//   shadow: {
-//     deps: id('deps', HOST),
-//   },
-// };
+const $shadow = {
+  shadow: {
+    deps: id('deps', HOST),
+  },
+};
 
-// class ShadowCtrl implements Ctrl {
-//   constructor(private readonly context: Context<typeof $shadow>) {}
+class ShadowCtrl implements Ctrl {
+  constructor(private readonly context: Context<typeof $shadow>) {}
 
-//   @cache()
-//   get runs(): ReadonlyArray<Observable<unknown>> {
-//     return [
-//       this.context.shadow.deps.value.pipe(
-//           tap(value => $shadowValue$.get(this.context.vine).next(value)),
-//       ),
-//       this.context.shadow.deps.valueWithDefault.pipe(
-//           tap(value => $shadowValueWithDefault$.get(this.context.vine).next(value)),
-//       ),
-//     ];
-//   }
-// }
+  @cache()
+  get runs(): ReadonlyArray<Observable<unknown>> {
+    return [
+      $shadowValue$.get(this.context.vine).pipe(this.context.shadow.deps.value()),
+    ];
+  }
+}
 
-// const SHADOW = registerCustomElement({
-//   tag: 'test-shadow',
-//   ctrl: ShadowCtrl,
-//   spec: $shadow,
-//   template: '<test-host id="deps"></test-host>',
-//   deps: [HOST],
-// });
+const SHADOW = registerCustomElement({
+  tag: 'test-shadow',
+  ctrl: ShadowCtrl,
+  spec: $shadow,
+  template: '<test-host id="deps"></test-host>',
+  deps: [HOST],
+});
 
 
 test('@persona/src/input/attr', init => {
   const _ = init(() => {
-    const tester = setupTest({roots: [HOST]});
+    const tester = setupTest({roots: [SHADOW]});
     return {tester};
   });
 
@@ -91,22 +86,14 @@ test('@persona/src/input/attr', init => {
     });
   });
 
+  test('shadow', () => {
+    should('emit values on set', () => {
+      const value = 'value';
+      _.tester.createElement(SHADOW);
 
-  // test('shadow', () => {
-  //   should.only('update values correctly if default value is given', () => {
-  //     const value = 'value';
-  //     _.tester.createElement(SHADOW);
-
-  //     $hostValueWithDefault$.get(_.tester.vine).next(value);
-  //     assert($shadowValueWithDefault$.get(_.tester.vine)).to.emitSequence([DEFAULT_VALUE, value]);
-  //   });
-
-  //   should.only('update values correctly if default value is not given', () => {
-  //     const value = 'value';
-  //     _.tester.createElement(SHADOW);
-
-  //     $hostValue$.get(_.tester.vine).next(value);
-  //     assert($shadowValue$.get(_.tester.vine)).to.emitSequence([null, value]);
-  //   });
-  // });
+      $shadowValue$.get(_.tester.vine).next(value);
+      $shadowValue$.get(_.tester.vine).next(null);
+      assert($hostValue$.get(_.tester.vine)).to.emitSequence([null, value, null]);
+    });
+  });
 });
