@@ -1,10 +1,11 @@
 import {cache} from 'gs-tools/export/data';
-import {defer, Observable, throwError} from 'rxjs';
+import {defer, Observable} from 'rxjs';
 import {filter, map, startWith} from 'rxjs/operators';
 
 import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IAttr, IOType} from '../types/io';
 import {getAttributeChangeObservable} from '../util/attribute-change-observable';
+import {mutationObservable} from '../util/mutation-observable';
 
 
 class ResolvedIAttr implements Resolved<UnresolvedIAttr> {
@@ -22,14 +23,18 @@ class ResolvedIAttr implements Resolved<UnresolvedIAttr> {
     return defer(() => {
       const obs$ = getAttributeChangeObservable(this.target);
       if (!obs$) {
-        return throwError(new Error(`No attribute change observable found for ${this.target.tagName}`));
+        return mutationObservable(
+            this.target,
+            {attributes: true, attributeFilter: [this.attrName]},
+        );
       }
 
-      return obs$;
+      return obs$.pipe(
+          filter(event => event.attrName === this.attrName),
+      );
     })
         .pipe(
-            startWith({attrName: this.attrName}),
-            filter(event => event.attrName === this.attrName),
+            startWith({}),
             map(() => this.target.getAttribute(this.attrName)),
         );
   }

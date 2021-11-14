@@ -1,6 +1,7 @@
 import {Vine} from 'grapevine';
 import {$asArray, $asMap, $asSet, $filter, $filterDefined, $flat, $map, $pipe} from 'gs-tools/export/collect';
 import {ClassAnnotation, ClassAnnotator} from 'gs-tools/export/data';
+import {AnyTodo} from 'gs-tools/export/typescript';
 import {iterableOfType, unknownType} from 'gs-types';
 import {BehaviorSubject, combineLatest, EMPTY, merge, of as observableOf, Subject, timer} from 'rxjs';
 import {distinctUntilChanged, mapTo, shareReplay, switchMap, tap} from 'rxjs/operators';
@@ -279,7 +280,7 @@ export function getSpec_<T extends CustomElementSpec|BaseCustomElementSpec>(
 
     for (const key of Object.keys(spec) as Array<keyof T>) {
       const value = spec[key];
-      const existingValue = combinedSpec[key];
+      const existingValue = (combinedSpec as AnyTodo)[key];
       // tslint:disable-next-line: strict-type-predicates
       const normalizedExistingValue = existingValue === undefined ? [] : existingValue;
       if (!iterableOfType(unknownType).check(value)
@@ -288,7 +289,7 @@ export function getSpec_<T extends CustomElementSpec|BaseCustomElementSpec>(
         continue;
       }
 
-      combinedSpec[key] = [...normalizedExistingValue, ...value] as unknown as T[keyof T];
+      (combinedSpec as AnyTodo)[key] = [...normalizedExistingValue, ...value] as unknown as T[keyof T];
     }
   }
 

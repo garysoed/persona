@@ -9,7 +9,7 @@ import {Registration} from '../types/registration';
 import {mutationObservable} from '../util/mutation-observable';
 
 
-type Listener = () => void;
+type Listener = (value: CustomElementConstructor) => void;
 const __upgraded = Symbol('upgraded');
 
 type UpgradedElement = HTMLElement & {
@@ -39,30 +39,35 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
 
     const listeners = this.listeners.get(tag) || [];
     for (const listener of listeners) {
-      listener();
+      listener(constructor);
     }
   }
 
-  get(tag: string): CustomElementConstructor|null {
-    return this.definedElements.get(tag) || null;
+  get(tag: string): CustomElementConstructor {
+    const el = this.definedElements.get(tag);
+    if (!el) {
+      throw new Error(`Element with tag ${tag} is not registered`);
+    }
+
+    return el;
   }
 
   upgrade(): void {
     throw new Error('Method not implemented.');
   }
 
-  async whenDefined(tag: string): Promise<void> {
+  async whenDefined(tag: string): Promise<CustomElementConstructor> {
     return new Promise(resolve => {
       // Already defined.
-      if (this.get(tag)) {
-        resolve();
-
+      try {
+        const el = this.get(tag);
+        resolve(el);
         return;
+      } catch (e) {
+        const listeners = this.listeners.get(tag) || [];
+        listeners.push(resolve);
+        this.listeners.set(tag, listeners);
       }
-
-      const listeners = this.listeners.get(tag) || [];
-      listeners.push(resolve);
-      this.listeners.set(tag, listeners);
     });
   }
 

@@ -1,5 +1,6 @@
 import {FakeTime, run} from 'gs-testing';
 import {arrayFrom} from 'gs-tools/export/collect';
+import {AnyTodo} from 'gs-tools/export/typescript';
 import {tap} from 'rxjs/operators';
 
 import {BaseCtrlCtor} from '../core/base-ctrl';
@@ -54,7 +55,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     }
   }
 
-  get(tag: string): CustomElementClass|null {
+  get(tag: string): AnyTodo|CustomElementClass|null {
     return this.definedElements.get(tag) || null;
   }
 
@@ -62,17 +63,17 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     throw new Error('Method not implemented.');
   }
 
-  async whenDefined(tag: string): Promise<void> {
+  async whenDefined(tag: string): Promise<AnyTodo|void> {
     return new Promise(resolve => {
       // Already defined.
       if (this.get(tag)) {
-        resolve();
+        resolve({} as AnyTodo);
 
         return;
       }
 
       const listeners = this.listeners.get(tag) || [];
-      listeners.push(resolve);
+      listeners.push(resolve as AnyTodo);
       this.listeners.set(tag, listeners);
     });
   }
