@@ -2,7 +2,7 @@ import {UnresolvedIAttr} from '../input/attr';
 import {UnresolvedIValue} from '../input/value';
 import {UnresolvedOAttr} from '../output/attr';
 import {UnresolvedOValue} from '../output/value';
-import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedBindingSpec} from '../types/ctrl';
+import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedBindingSpec, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IAttr, IOType, IValue, OAttr, OValue} from '../types/io';
 import {Registration} from '../types/registration';
 
@@ -20,17 +20,6 @@ type ReversedSpec<U extends UnresolvedBindingSpec> = UnresolvedBindingSpec & {
 type RegistrationWithSpec<S extends Spec> = Pick<Registration<HTMLElement, S>, 'spec'>;
 
 type ReversableIO = IAttr|OAttr|IValue<any>|OValue<any>;
-export function id<S extends Spec>(
-    id: string,
-    registration: RegistrationWithSpec<S>,
-): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>> {
-  const reversed = reverse(registration.spec.host ?? {});
-  const providers: Partial<Record<keyof S['host'], ResolvedProvider<ReversableIO>>> = {};
-  for (const key in reversed) {
-    providers[key as keyof S['host']] = (root: ShadowRoot) => reversed[key].resolve(getElement(root, id));
-  }
-  return providers as ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>>;
-}
 
 function getElement(root: ShadowRoot, id: string): HTMLElement {
   const el = root.getElementById(id);
@@ -68,4 +57,34 @@ function reverseIO(io: ReversableIO): ReversableIO {
           return new UnresolvedIValue(io.defaultValue, io.key, io.valueType);
       }
   }
+}
+
+
+export type ExtraUnresolvedBindingSpec = Record<string, UnresolvedIO<IAttr>|UnresolvedIO<OAttr>>;
+
+export function id<S extends Spec>(
+    id: string,
+    registration: RegistrationWithSpec<S>,
+): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>>;
+export function id<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
+    id: string,
+    registration: RegistrationWithSpec<S>,
+    extra: X,
+): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>
+export function id<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
+    id: string,
+    registration: RegistrationWithSpec<S>,
+    extra?: X,
+): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X> {
+  const providers: Partial<Record<string, ResolvedProvider<ReversableIO>>> = {};
+  const reversed = reverse(registration.spec.host ?? {});
+  for (const key in reversed) {
+    providers[key] = (root: ShadowRoot) => reversed[key].resolve(getElement(root, id));
+  }
+
+  const normalizedExtra: ExtraUnresolvedBindingSpec = extra ?? {};
+  for (const key in normalizedExtra) {
+    providers[key] = (root: ShadowRoot) => normalizedExtra[key].resolve(getElement(root, id));
+  }
+  return providers as unknown as ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>;
 }

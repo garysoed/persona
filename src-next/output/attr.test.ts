@@ -1,24 +1,36 @@
 import {source} from 'grapevine';
-import {assert, should, test} from 'gs-testing';
+import {assert, runEnvironment, should, test} from 'gs-testing';
+import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
+import {flattenNode} from '../../src/testing/flatten-node';
 import {registerCustomElement} from '../core/register-custom-element';
+import {DIV} from '../html/div';
 import {id} from '../selector/id';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import {oattr} from './attr';
+import elEmptyGolden from './goldens/attr__el_empty.html';
+import elResetGolden from './goldens/attr__el_reset.html';
+import elValueGolden from './goldens/attr__el_value.html';
 
 
 const $hostValue$ = source(() => new Subject<string|null>());
+const $elValue$ = source(() => new Subject<string|null>());
 const $shadowValue$ = source(() => new ReplaySubject<string|null>());
 
 
 const $host = {
   host: {
     value: oattr('attr'),
+  },
+  shadow: {
+    el: id('el', DIV, {
+      value: oattr('attr'),
+    }),
   },
 };
 
@@ -29,6 +41,7 @@ class HostCtrl implements Ctrl {
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $hostValue$.get(this.context.vine).pipe(this.context.host.value()),
+      $elValue$.get(this.context.vine).pipe(this.context.shadow.el.value()),
     ];
   }
 }
@@ -37,7 +50,7 @@ const HOST = registerCustomElement({
   tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
-  template: '',
+  template: '<div id="el"></div>',
 });
 
 const $shadow = {
@@ -70,6 +83,14 @@ const SHADOW = registerCustomElement({
 
 test('@persona/src/output/attr', init => {
   const _ = init(() => {
+    runEnvironment(new BrowserSnapshotsEnv(
+        'src-next/output/goldens',
+        {
+          'attr__el_empty.html': elEmptyGolden,
+          'attr__el_reset.html': elResetGolden,
+          'attr__el_value.html': elValueGolden,
+        },
+    ));
     const tester = setupTest({roots: [SHADOW]});
     return {tester};
   });
@@ -86,6 +107,21 @@ test('@persona/src/output/attr', init => {
 
       $hostValue$.get(_.tester.vine).next(null);
       assert(element.hasAttribute('attr')).to.beFalse();
+    });
+  });
+
+  test('el', () => {
+    should('update values correctly', () => {
+      const value = 'value';
+      const element = _.tester.createElement(HOST);
+
+      assert(flattenNode(element)).to.matchSnapshot('attr__el_empty.html');
+
+      $elValue$.get(_.tester.vine).next(value);
+      assert(flattenNode(element)).to.matchSnapshot('attr__el_value.html');
+
+      $elValue$.get(_.tester.vine).next(null);
+      assert(flattenNode(element)).to.matchSnapshot('attr__el_reset.html');
     });
   });
 

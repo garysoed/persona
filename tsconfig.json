@@ -3,6 +3,7 @@
     "alwaysStrict": true,
     "assumeChangesOnlyAffectDirectDependencies": true,
     "baseUrl": ".",
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "lib": [
       "dom",
@@ -28,6 +29,7 @@
   "include": [
     "src-next/**/*.ts",
     "src/**/*.ts",
+    "node_modules/devbase/ts/typings/*.d.ts",
     "export/*.ts",
   ]
 }
