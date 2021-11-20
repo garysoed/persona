@@ -196,24 +196,12 @@ function createBindings<S extends UnresolvedBindingSpec>(spec: ResolvedBindingSp
 }
 
 function createBinding(io: InputOutput&(ResolvedI<unknown>|ResolvedO<any>)): Observable<unknown>|(() => OperatorFunction<unknown, unknown>) {
-  switch (io.apiType) {
-    case ApiType.ATTR:
-      switch (io.ioType) {
-        // TODO(#8): Remove casts, only breaks outside VSCode
-        case IOType.INPUT:
-          return (io as ResolvedI<unknown>).value$;
-        case IOType.OUTPUT:
-          return () => (io as ResolvedO<unknown>).update();
-      }
-      break;
-    case ApiType.VALUE:
-      switch (io.ioType) {
-        // TODO(#8): Remove casts, only breaks outside VSCode
-        case IOType.INPUT:
-          return (io as ResolvedI<unknown>).value$;
-        case IOType.OUTPUT:
-          return () => (io as ResolvedO<unknown>).update();
-      }
+  switch (io.ioType) {
+    // TODO(#8): Remove casts, only breaks outside VSCode
+    case IOType.INPUT:
+      return (io as ResolvedI<unknown>).value$;
+    case IOType.OUTPUT:
+      return () => (io as ResolvedO<unknown>).update();
   }
 }
 

@@ -1,7 +1,7 @@
 import {Vine} from 'grapevine';
 import {Observable, OperatorFunction} from 'rxjs';
 
-import {IAttr, InputOutput, IValue, OAttr, OValue} from './io';
+import {IAttr, IFlag, InputOutput, IValue, OAttr, OFlag, OValue} from './io';
 
 
 export interface Ctrl {
@@ -20,6 +20,8 @@ export type ResolvedO<T> = {
 export type Resolved<T extends InputOutput> =
     T extends IAttr ? IAttr&ResolvedI<string|null> :
     T extends OAttr ? OAttr&ResolvedO<string|null> :
+    T extends IFlag ? IFlag&ResolvedI<boolean> :
+    T extends OFlag ? OFlag&ResolvedO<boolean> :
     T extends IValue<infer V> ? IValue<V>&ResolvedI<V> :
     T extends OValue<infer V> ? OValue<V>&ResolvedO<V> : never;
 
@@ -37,6 +39,7 @@ export type BindingSpec = {
 export type UnresolvedBindingSpec = {
   readonly [key: string]:
       UnresolvedIO<IAttr>|UnresolvedIO<OAttr>|
+      UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|
       UnresolvedIO<IValue<unknown>>|UnresolvedIO<OValue<any>>;
 }
 
@@ -44,6 +47,8 @@ export type ResolvedBindingSpec<S extends UnresolvedBindingSpec> = {
   readonly [K in keyof S]:
       S[K] extends IAttr ? Resolved<IAttr> :
       S[K] extends OAttr ? Resolved<OAttr> :
+      S[K] extends IFlag ? Resolved<IFlag> :
+      S[K] extends OFlag ? Resolved<OFlag> :
       S[K] extends IValue<infer T> ? Resolved<IValue<T>> :
       S[K] extends OValue<infer T> ? Resolved<OValue<T>> :
       never;
@@ -53,6 +58,8 @@ export type ResolvedBindingSpecProvider<S extends UnresolvedBindingSpec> = {
   readonly [K in keyof S]:
       S[K] extends IAttr ? ResolvedProvider<S[K]> :
       S[K] extends OAttr ? ResolvedProvider<S[K]> :
+      S[K] extends IFlag ? ResolvedProvider<S[K]> :
+      S[K] extends OFlag ? ResolvedProvider<S[K]> :
       S[K] extends IValue<unknown> ? ResolvedProvider<S[K]> :
       S[K] extends OValue<unknown> ? ResolvedProvider<S[K]> :
       never;
@@ -66,6 +73,8 @@ export type Spec = {
 type Binding<T extends InputOutput> =
     T extends IAttr ? Observable<string|null> :
     T extends OAttr ? () => OperatorFunction<string|null, unknown> :
+    T extends IFlag ? Observable<boolean> :
+    T extends OFlag ? () => OperatorFunction<boolean, unknown> :
     T extends IValue<infer V> ? Observable<V> :
     T extends OValue<infer V> ? () => OperatorFunction<V, unknown> :
     never;

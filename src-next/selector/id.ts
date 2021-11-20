@@ -1,14 +1,18 @@
 import {UnresolvedIAttr} from '../input/attr';
+import {UnresolvedIFlag} from '../input/flag';
 import {UnresolvedIValue} from '../input/value';
 import {UnresolvedOAttr} from '../output/attr';
+import {UnresolvedOFlag} from '../output/flag';
 import {UnresolvedOValue} from '../output/value';
 import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedBindingSpec, UnresolvedIO} from '../types/ctrl';
-import {ApiType, IAttr, IOType, IValue, OAttr, OValue} from '../types/io';
+import {ApiType, IAttr, IFlag, IOType, IValue, OAttr, OFlag, OValue} from '../types/io';
 import {Registration} from '../types/registration';
 
 type ReversedIO<T> =
-    T extends IAttr ? OValue<string|null> :
-    T extends OAttr ? IValue<string|null> :
+    T extends IAttr ? OAttr :
+    T extends OAttr ? IAttr :
+    T extends IFlag ? OFlag :
+    T extends OFlag ? IFlag :
     T extends IValue<infer V> ? OValue<V> :
     T extends OValue<infer V> ? IValue<V> :
     never;
@@ -19,7 +23,7 @@ type ReversedSpec<U extends UnresolvedBindingSpec> = UnresolvedBindingSpec & {
 
 type RegistrationWithSpec<S extends Spec> = Pick<Registration<HTMLElement, S>, 'spec'>;
 
-type ReversableIO = IAttr|OAttr|IValue<any>|OValue<any>;
+type ReversableIO = IAttr|OAttr|IFlag|OFlag|IValue<any>|OValue<any>;
 
 function getElement(root: ShadowRoot, id: string): HTMLElement {
   const el = root.getElementById(id);
@@ -49,6 +53,14 @@ function reverseIO(io: ReversableIO): ReversableIO {
           return new UnresolvedIAttr(io.attrName);
       }
       break;
+    case ApiType.FLAG:
+      switch (io.ioType) {
+        case IOType.INPUT:
+          return new UnresolvedOFlag(io.attrName);
+        case IOType.OUTPUT:
+          return new UnresolvedIFlag(io.attrName);
+      }
+      break;
     case ApiType.VALUE:
       switch (io.ioType) {
         case IOType.INPUT:
@@ -60,7 +72,11 @@ function reverseIO(io: ReversableIO): ReversableIO {
 }
 
 
-export type ExtraUnresolvedBindingSpec = Record<string, UnresolvedIO<IAttr>|UnresolvedIO<OAttr>>;
+export type ExtraUnresolvedBindingSpec = Record<
+    string,
+    UnresolvedIO<IAttr>|UnresolvedIO<OAttr>|
+    UnresolvedIO<IFlag>|UnresolvedIO<OFlag>
+>;
 
 export function id<S extends Spec>(
     id: string,
