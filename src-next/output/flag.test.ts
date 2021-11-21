@@ -13,9 +13,7 @@ import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import {oflag} from './flag';
-import elEmptyGolden from './goldens/flag__el_empty.html';
-import elResetGolden from './goldens/flag__el_reset.html';
-import elValueGolden from './goldens/flag__el_value.html';
+import goldens from './goldens/goldens.json';
 
 
 const $hostValue$ = source(() => new Subject<boolean>());
@@ -81,16 +79,9 @@ const SHADOW = registerCustomElement({
 });
 
 
-test('@persona/src/output/attr', init => {
+test('@persona/src/output/flag', init => {
   const _ = init(() => {
-    runEnvironment(new BrowserSnapshotsEnv(
-        'src-next/output/goldens',
-        {
-          'flag__el_empty.html': elEmptyGolden,
-          'flag__el_reset.html': elResetGolden,
-          'flag__el_value.html': elValueGolden,
-        },
-    ));
+    runEnvironment(new BrowserSnapshotsEnv('src-next/output/goldens', goldens));
     const tester = setupTest({roots: [SHADOW]});
     return {tester};
   });
@@ -113,13 +104,13 @@ test('@persona/src/output/attr', init => {
     should('update values correctly', () => {
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('flag__el_empty.html');
+      assert(flattenNode(element)).to.matchSnapshot('flag__el_empty');
 
       $elValue$.get(_.tester.vine).next(true);
-      assert(flattenNode(element)).to.matchSnapshot('flag__el_value.html');
+      assert(flattenNode(element)).to.matchSnapshot('flag__el_value');
 
       $elValue$.get(_.tester.vine).next(false);
-      assert(flattenNode(element)).to.matchSnapshot('flag__el_reset.html');
+      assert(flattenNode(element)).to.matchSnapshot('flag__el_reset');
     });
   });
 

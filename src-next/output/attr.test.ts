@@ -106,13 +106,13 @@ test('@persona/src/output/attr', init => {
       const value = 'value';
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('attr__el_empty.html');
+      assert(flattenNode(element)).to.matchSnapshot('attr__el_empty');
 
       $elValue$.get(_.tester.vine).next(value);
-      assert(flattenNode(element)).to.matchSnapshot('attr__el_value.html');
+      assert(flattenNode(element)).to.matchSnapshot('attr__el_value');
 
       $elValue$.get(_.tester.vine).next(null);
-      assert(flattenNode(element)).to.matchSnapshot('attr__el_reset.html');
+      assert(flattenNode(element)).to.matchSnapshot('attr__el_reset');
     });
   });
 
