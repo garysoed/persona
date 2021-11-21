@@ -20,6 +20,7 @@
       "rxjs/*": ["node_modules/rxjs/*"],
     },
     "pretty": true,
+    "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
     "strictBindCallApply": true,
@@ -27,6 +28,7 @@
     "target": "es6",
   },
   "include": [
+    "src-next/**/*.json",
     "src-next/**/*.ts",
     "src/**/*.ts",
     "node_modules/devbase/ts/typings/*.d.ts",

@@ -13,9 +13,7 @@ import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import {oattr} from './attr';
-import elEmptyGolden from './goldens/attr__el_empty.html';
-import elResetGolden from './goldens/attr__el_reset.html';
-import elValueGolden from './goldens/attr__el_value.html';
+import goldens from './goldens/goldens.json';
 
 
 const $hostValue$ = source(() => new Subject<string|null>());
@@ -83,14 +81,7 @@ const SHADOW = registerCustomElement({
 
 test('@persona/src/output/attr', init => {
   const _ = init(() => {
-    runEnvironment(new BrowserSnapshotsEnv(
-        'src-next/output/goldens',
-        {
-          'attr__el_empty.html': elEmptyGolden,
-          'attr__el_reset.html': elResetGolden,
-          'attr__el_value.html': elValueGolden,
-        },
-    ));
+    runEnvironment(new BrowserSnapshotsEnv('src-next/output/goldens', goldens));
     const tester = setupTest({roots: [SHADOW]});
     return {tester};
   });

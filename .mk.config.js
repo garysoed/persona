@@ -1,3 +1,11 @@
+set_vars({
+  vars: {
+    goldens: [
+      'src-next/output/goldens',
+    ],
+  },
+});
+
 declare({
   name: 'link',
   as: shell({

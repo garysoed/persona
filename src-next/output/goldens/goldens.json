@@ -1,0 +1,8 @@
+{
+  "attr__el_empty.html": "<test-host><div id=\"el\"></div></test-host>",
+  "attr__el_reset.html": "<test-host><div id=\"el\"></div></test-host>",
+  "attr__el_value.html": "<test-host><div id=\"el\" attr=\"value\"></div></test-host>",
+  "flag__el_empty.html": "<test-host><div id=\"el\"></div></test-host>",
+  "flag__el_reset.html": "<test-host><div id=\"el\"></div></test-host>",
+  "flag__el_value.html": "<test-host><div id=\"el\" has-attr=\"\"></div></test-host>"
+}
