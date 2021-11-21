@@ -7,6 +7,7 @@ export enum IOType {
 
 export enum ApiType {
   ATTR,
+  CLASS,
   FLAG,
   VALUE,
 }
@@ -21,6 +22,18 @@ export interface OAttr {
   readonly apiType: ApiType.ATTR;
   readonly ioType: IOType.OUTPUT;
   readonly attrName: string;
+}
+
+export interface IClass {
+  readonly apiType: ApiType.CLASS;
+  readonly ioType: IOType.INPUT;
+  readonly className: string;
+}
+
+export interface OClass {
+  readonly apiType: ApiType.CLASS;
+  readonly ioType: IOType.OUTPUT;
+  readonly className: string;
 }
 
 export interface IFlag {
@@ -55,5 +68,6 @@ export type Resolver = (host: HTMLElement) => HTMLElement;
 
 export type InputOutput =
     IAttr|OAttr|
+    IClass|OClass|
     IFlag|OFlag|
     IValue<unknown>|OValue<unknown>;

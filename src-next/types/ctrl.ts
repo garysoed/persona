@@ -1,7 +1,7 @@
 import {Vine} from 'grapevine';
 import {Observable, OperatorFunction} from 'rxjs';
 
-import {IAttr, IFlag, InputOutput, IValue, OAttr, OFlag, OValue} from './io';
+import {IAttr, IClass, IFlag, InputOutput, IValue, OAttr, OClass, OFlag, OValue} from './io';
 
 
 export interface Ctrl {
@@ -20,6 +20,8 @@ export type ResolvedO<T> = {
 export type Resolved<T extends InputOutput> =
     T extends IAttr ? IAttr&ResolvedI<string|null> :
     T extends OAttr ? OAttr&ResolvedO<string|null> :
+    T extends IClass ? IClass&ResolvedI<boolean> :
+    T extends OClass ? OClass&ResolvedO<boolean> :
     T extends IFlag ? IFlag&ResolvedI<boolean> :
     T extends OFlag ? OFlag&ResolvedO<boolean> :
     T extends IValue<infer V> ? IValue<V>&ResolvedI<V> :
@@ -39,6 +41,7 @@ export type BindingSpec = {
 export type UnresolvedBindingSpec = {
   readonly [key: string]:
       UnresolvedIO<IAttr>|UnresolvedIO<OAttr>|
+      UnresolvedIO<IClass>|UnresolvedIO<OClass>|
       UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|
       UnresolvedIO<IValue<unknown>>|UnresolvedIO<OValue<any>>;
 }
@@ -47,6 +50,8 @@ export type ResolvedBindingSpec<S extends UnresolvedBindingSpec> = {
   readonly [K in keyof S]:
       S[K] extends IAttr ? Resolved<IAttr> :
       S[K] extends OAttr ? Resolved<OAttr> :
+      S[K] extends IClass ? Resolved<IClass> :
+      S[K] extends OClass ? Resolved<OClass> :
       S[K] extends IFlag ? Resolved<IFlag> :
       S[K] extends OFlag ? Resolved<OFlag> :
       S[K] extends IValue<infer T> ? Resolved<IValue<T>> :
@@ -58,6 +63,8 @@ export type ResolvedBindingSpecProvider<S extends UnresolvedBindingSpec> = {
   readonly [K in keyof S]:
       S[K] extends IAttr ? ResolvedProvider<S[K]> :
       S[K] extends OAttr ? ResolvedProvider<S[K]> :
+      S[K] extends IClass ? ResolvedProvider<S[K]> :
+      S[K] extends OClass ? ResolvedProvider<S[K]> :
       S[K] extends IFlag ? ResolvedProvider<S[K]> :
       S[K] extends OFlag ? ResolvedProvider<S[K]> :
       S[K] extends IValue<unknown> ? ResolvedProvider<S[K]> :
@@ -73,6 +80,8 @@ export type Spec = {
 type Binding<T extends InputOutput> =
     T extends IAttr ? Observable<string|null> :
     T extends OAttr ? () => OperatorFunction<string|null, unknown> :
+    T extends IClass ? Observable<boolean> :
+    T extends OClass ? () => OperatorFunction<boolean, unknown> :
     T extends IFlag ? Observable<boolean> :
     T extends OFlag ? () => OperatorFunction<boolean, unknown> :
     T extends IValue<infer V> ? Observable<V> :

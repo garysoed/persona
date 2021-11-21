@@ -2,6 +2,9 @@
   "attr__el_empty.html": "<test-host><div id=\"el\"></div></test-host>",
   "attr__el_reset.html": "<test-host><div id=\"el\"></div></test-host>",
   "attr__el_value.html": "<test-host><div id=\"el\" attr=\"value\"></div></test-host>",
+  "class__el_empty.html": "<test-host><div id=\"el\"></div></test-host>",
+  "class__el_reset.html": "<test-host><div id=\"el\" class=\"\"></div></test-host>",
+  "class__el_value.html": "<test-host><div id=\"el\" class=\"class-name\"></div></test-host>",
   "flag__el_empty.html": "<test-host><div id=\"el\"></div></test-host>",
   "flag__el_reset.html": "<test-host><div id=\"el\"></div></test-host>",
   "flag__el_value.html": "<test-host><div id=\"el\" has-attr=\"\"></div></test-host>"
