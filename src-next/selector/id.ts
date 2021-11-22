@@ -9,7 +9,7 @@ import {oevent} from '../output/event';
 import {oflag} from '../output/flag';
 import {ovalue} from '../output/value';
 import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedBindingSpec, UnresolvedIO} from '../types/ctrl';
-import {ApiType, IAttr, IClass, IEvent, IFlag, InputOutput, IOType, IValue, OAttr, OClass, OEvent, OFlag, OValue} from '../types/io';
+import {ApiType, IAttr, IClass, IEvent, IFlag, InputOutput, IOType, IValue, OAttr, OClass, OEvent, OFlag, OSingle, OValue} from '../types/io';
 import {Registration} from '../types/registration';
 
 type ReversedIO<T> =
@@ -105,7 +105,8 @@ export type ExtraUnresolvedBindingSpec = Record<
     UnresolvedIO<IAttr>|UnresolvedIO<OAttr>|
     UnresolvedIO<IClass>|UnresolvedIO<OClass>|
     UnresolvedIO<IEvent>|
-    UnresolvedIO<IFlag>|UnresolvedIO<OFlag>
+    UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|
+    UnresolvedIO<OSingle>
 >;
 
 export function id<S extends Spec>(
@@ -122,7 +123,7 @@ export function id<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
     registration: RegistrationWithSpec<S>,
     extra?: X,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X> {
-  const providers: Partial<Record<string, ResolvedProvider<ReversableIO>>> = {};
+  const providers: Partial<Record<string, ResolvedProvider<InputOutput>>> = {};
   const reversed = reverse(registration.spec.host ?? {});
   for (const key in reversed) {
     providers[key] = (root: ShadowRoot) => reversed[key].resolve(getElement(root, id));

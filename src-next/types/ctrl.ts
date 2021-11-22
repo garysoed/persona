@@ -1,7 +1,9 @@
 import {Vine} from 'grapevine';
 import {Observable, OperatorFunction} from 'rxjs';
 
-import {IAttr, IClass, IEvent, IFlag, InputOutput, IValue, OAttr, OClass, OEvent, OFlag, OValue} from './io';
+import {RenderSpec} from '../render/types/render-spec';
+
+import {IAttr, IClass, IEvent, IFlag, InputOutput, IValue, OAttr, OClass, OEvent, OFlag, OSingle, OValue} from './io';
 
 
 export interface Ctrl {
@@ -26,6 +28,7 @@ export type Resolved<T extends InputOutput> =
     T extends OEvent ? OEvent&ResolvedO<Event> :
     T extends IFlag ? IFlag&ResolvedI<boolean> :
     T extends OFlag ? OFlag&ResolvedO<boolean> :
+    T extends OSingle ? OSingle&ResolvedO<RenderSpec|null> :
     T extends IValue<infer V> ? IValue<V>&ResolvedI<V> :
     T extends OValue<infer V> ? OValue<V>&ResolvedO<V> : never;
 
