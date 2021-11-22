@@ -51,31 +51,13 @@ export type UnresolvedBindingSpec = {
 
 export type ResolvedBindingSpec<S extends UnresolvedBindingSpec> = {
   readonly [K in keyof S]:
-      S[K] extends IAttr ? Resolved<IAttr> :
-      S[K] extends OAttr ? Resolved<OAttr> :
-      S[K] extends IClass ? Resolved<IClass> :
-      S[K] extends OClass ? Resolved<OClass> :
-      S[K] extends IEvent ? Resolved<IEvent> :
-      S[K] extends OEvent ? Resolved<OEvent> :
-      S[K] extends IFlag ? Resolved<IFlag> :
-      S[K] extends OFlag ? Resolved<OFlag> :
-      S[K] extends IValue<infer T> ? Resolved<IValue<T>> :
-      S[K] extends OValue<infer T> ? Resolved<OValue<T>> :
+      S[K] extends InputOutput ? Resolved<S[K]> :
       never;
 };
 
 export type ResolvedBindingSpecProvider<S extends UnresolvedBindingSpec> = {
   readonly [K in keyof S]:
-      S[K] extends IAttr ? ResolvedProvider<S[K]> :
-      S[K] extends OAttr ? ResolvedProvider<S[K]> :
-      S[K] extends IClass ? ResolvedProvider<S[K]> :
-      S[K] extends OClass ? ResolvedProvider<S[K]> :
-      S[K] extends IEvent ? ResolvedProvider<S[K]> :
-      S[K] extends OEvent ? ResolvedProvider<S[K]> :
-      S[K] extends IFlag ? ResolvedProvider<S[K]> :
-      S[K] extends OFlag ? ResolvedProvider<S[K]> :
-      S[K] extends IValue<unknown> ? ResolvedProvider<S[K]> :
-      S[K] extends OValue<unknown> ? ResolvedProvider<S[K]> :
+      S[K] extends InputOutput ? ResolvedProvider<S[K]> :
       never;
 }
 
@@ -85,16 +67,8 @@ export type Spec = {
 };
 
 type Binding<T extends InputOutput> =
-    T extends IAttr ? Observable<string|null> :
-    T extends OAttr ? () => OperatorFunction<string|null, unknown> :
-    T extends IClass ? Observable<boolean> :
-    T extends OClass ? () => OperatorFunction<boolean, unknown> :
-    T extends IEvent ? Observable<Event> :
-    T extends OEvent ? () => OperatorFunction<Event, unknown> :
-    T extends IFlag ? Observable<boolean> :
-    T extends OFlag ? () => OperatorFunction<boolean, unknown> :
-    T extends IValue<infer V> ? Observable<V> :
-    T extends OValue<infer V> ? () => OperatorFunction<V, unknown> :
+    Resolved<T> extends ResolvedI<infer V> ? Observable<V> :
+    Resolved<T> extends ResolvedO<infer V> ? () => OperatorFunction<V, unknown> :
     never;
 
 export type Bindings<S extends BindingSpec> = {

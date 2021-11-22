@@ -187,7 +187,7 @@ function resolveForHost<S extends UnresolvedBindingSpec>(
 }
 
 function createBindings<S extends UnresolvedBindingSpec>(spec: ResolvedBindingSpec<S>): Bindings<S> {
-  const bindings: Partial<Bindings<BindingSpec>> = {};
+  const bindings: Partial<Record<string, Observable<unknown>|(() => OperatorFunction<unknown, unknown>)>> = {};
   for (const key in spec) {
     const io = spec[key];
     bindings[key] = createBinding(io);
@@ -221,7 +221,7 @@ function createShadowBindings<S extends UnresolvedBindingSpec>(
     spec: ResolvedBindingSpecProvider<S>,
     shadowRoot: ShadowRoot,
 ): Bindings<S> {
-  const partial: Partial<Bindings<BindingSpec>> = {};
+  const partial: Partial<Record<string, Observable<unknown>|(() => OperatorFunction<unknown, unknown>)>> = {};
   for (const key in spec) {
     partial[key] = createBinding(spec[key](shadowRoot));
   }
