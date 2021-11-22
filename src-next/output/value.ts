@@ -26,7 +26,7 @@ class ResolvedOValue<T> implements Resolved<UnresolvedOValue<T>> {
   }
 }
 
-export class UnresolvedOValue<T> implements UnresolvedIO<OValue<T>> {
+class UnresolvedOValue<T> implements UnresolvedIO<OValue<T>> {
   readonly apiType = ApiType.VALUE;
   readonly ioType = IOType.OUTPUT;
 

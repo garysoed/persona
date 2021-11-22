@@ -27,7 +27,7 @@ class ResolvedOClass implements Resolved<UnresolvedOClass> {
   }
 }
 
-export class UnresolvedOClass implements UnresolvedIO<OClass> {
+class UnresolvedOClass implements UnresolvedIO<OClass> {
   readonly apiType = ApiType.CLASS;
   readonly ioType = IOType.OUTPUT;
 

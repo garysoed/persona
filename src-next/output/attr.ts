@@ -27,7 +27,7 @@ class ResolvedOAttr implements Resolved<UnresolvedOAttr> {
   }
 }
 
-export class UnresolvedOAttr implements UnresolvedIO<OAttr> {
+class UnresolvedOAttr implements UnresolvedIO<OAttr> {
   readonly apiType = ApiType.ATTR;
   readonly ioType = IOType.OUTPUT;
 

@@ -40,7 +40,7 @@ class ResolvedIFlag implements Resolved<UnresolvedIFlag> {
   }
 }
 
-export class UnresolvedIFlag implements UnresolvedIO<IFlag> {
+class UnresolvedIFlag implements UnresolvedIO<IFlag> {
   readonly apiType = ApiType.FLAG;
   readonly ioType = IOType.INPUT;
 

@@ -28,7 +28,7 @@ class ResolvedIClass implements Resolved<UnresolvedIClass> {
   }
 }
 
-export class UnresolvedIClass implements UnresolvedIO<IClass> {
+class UnresolvedIClass implements UnresolvedIO<IClass> {
   readonly apiType = ApiType.CLASS;
   readonly ioType = IOType.INPUT;
 

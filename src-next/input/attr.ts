@@ -40,7 +40,7 @@ class ResolvedIAttr implements Resolved<UnresolvedIAttr> {
   }
 }
 
-export class UnresolvedIAttr implements UnresolvedIO<IAttr> {
+class UnresolvedIAttr implements UnresolvedIO<IAttr> {
   readonly apiType = ApiType.ATTR;
   readonly ioType = IOType.INPUT;
 

@@ -29,7 +29,7 @@
   },
   "include": [
     "src-next/**/*.json",
-    "src-next/**/*.test.ts",
+    "src-next/**/*.ts",
     "src/**/*.ts",
     "node_modules/devbase/ts/typings/*.d.ts",
     "export/*.ts",

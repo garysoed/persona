@@ -1,11 +1,11 @@
-import {UnresolvedIAttr} from '../input/attr';
-import {UnresolvedIClass} from '../input/class';
-import {UnresolvedIFlag} from '../input/flag';
-import {UnresolvedIValue} from '../input/value';
-import {UnresolvedOAttr} from '../output/attr';
-import {UnresolvedOClass} from '../output/class';
-import {UnresolvedOFlag} from '../output/flag';
-import {UnresolvedOValue} from '../output/value';
+import {iattr} from '../input/attr';
+import {iclass} from '../input/class';
+import {iflag} from '../input/flag';
+import {ivalue} from '../input/value';
+import {oattr} from '../output/attr';
+import {oclass} from '../output/class';
+import {oflag} from '../output/flag';
+import {ovalue} from '../output/value';
 import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedBindingSpec, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IAttr, IClass, IFlag, IOType, IValue, OAttr, OClass, OFlag, OValue} from '../types/io';
 import {Registration} from '../types/registration';
@@ -56,33 +56,33 @@ function reverseIO(io: ReversableIO): ReversableIO {
     case ApiType.ATTR:
       switch (io.ioType) {
         case IOType.INPUT:
-          return new UnresolvedOAttr(io.attrName);
+          return oattr(io.attrName);
         case IOType.OUTPUT:
-          return new UnresolvedIAttr(io.attrName);
+          return iattr(io.attrName);
       }
       break;
     case ApiType.CLASS:
       switch (io.ioType) {
         case IOType.INPUT:
-          return new UnresolvedOClass(io.className);
+          return oclass(io.className);
         case IOType.OUTPUT:
-          return new UnresolvedIClass(io.className);
+          return iclass(io.className);
       }
       break;
     case ApiType.FLAG:
       switch (io.ioType) {
         case IOType.INPUT:
-          return new UnresolvedOFlag(io.attrName);
+          return oflag(io.attrName);
         case IOType.OUTPUT:
-          return new UnresolvedIFlag(io.attrName);
+          return iflag(io.attrName);
       }
       break;
     case ApiType.VALUE:
       switch (io.ioType) {
         case IOType.INPUT:
-          return new UnresolvedOValue(io.defaultValue, io.key, io.valueType);
+          return ovalue(io.key, io.valueType, io.defaultValue);
         case IOType.OUTPUT:
-          return new UnresolvedIValue(io.defaultValue, io.key, io.valueType);
+          return ivalue(io.key, io.valueType, io.defaultValue);
       }
   }
 }
