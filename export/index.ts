@@ -1,3 +1,11 @@
+export {Context, Ctrl, Spec as ElementSpec} from '../src-next/types/ctrl';
+export {installCustomElements} from '../src-next/core/install-custom-elements';
+export {registerCustomElement} from '../src-next/core/register-custom-element';
+export {Registration} from '../src-next/types/registration';
+
+
+// DEPRECATED
+
 // a11y
 export {AriaRole} from '../src/a11y/aria-role';
 
