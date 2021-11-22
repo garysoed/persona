@@ -1,13 +1,15 @@
 import {iattr} from '../input/attr';
 import {iclass} from '../input/class';
+import {ievent} from '../input/event';
 import {iflag} from '../input/flag';
 import {ivalue} from '../input/value';
 import {oattr} from '../output/attr';
 import {oclass} from '../output/class';
+import {oevent} from '../output/event';
 import {oflag} from '../output/flag';
 import {ovalue} from '../output/value';
 import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedBindingSpec, UnresolvedIO} from '../types/ctrl';
-import {ApiType, IAttr, IClass, IFlag, IOType, IValue, OAttr, OClass, OFlag, OValue} from '../types/io';
+import {ApiType, IAttr, IClass, IEvent, IFlag, InputOutput, IOType, IValue, OAttr, OClass, OEvent, OFlag, OValue} from '../types/io';
 import {Registration} from '../types/registration';
 
 type ReversedIO<T> =
@@ -15,6 +17,7 @@ type ReversedIO<T> =
     T extends OAttr ? IAttr :
     T extends IClass ? OClass :
     T extends OClass ? IClass :
+    T extends OEvent ? IEvent :
     T extends IFlag ? OFlag :
     T extends OFlag ? IFlag :
     T extends IValue<infer V> ? OValue<V> :
@@ -30,6 +33,7 @@ type RegistrationWithSpec<S extends Spec> = Pick<Registration<HTMLElement, S>, '
 type ReversableIO =
     IAttr|OAttr|
     IClass|OClass|
+    OEvent|IEvent|
     IFlag|OFlag|
     IValue<any>|OValue<any>;
 
@@ -51,7 +55,7 @@ function reverse<U extends UnresolvedBindingSpec>(spec: U): ReversedSpec<U> {
 }
 
 function reverseIO<T extends ReversableIO>(io: T): ReversedIO<T>;
-function reverseIO(io: ReversableIO): ReversableIO {
+function reverseIO(io: ReversableIO): InputOutput {
   switch (io.apiType) {
     case ApiType.ATTR:
       switch (io.ioType) {
@@ -67,6 +71,14 @@ function reverseIO(io: ReversableIO): ReversableIO {
           return oclass(io.className);
         case IOType.OUTPUT:
           return iclass(io.className);
+      }
+      break;
+    case ApiType.EVENT:
+      switch (io.ioType) {
+        case IOType.INPUT:
+          return oevent(io.eventName);
+        case IOType.OUTPUT:
+          return ievent(io.eventName);
       }
       break;
     case ApiType.FLAG:
@@ -92,6 +104,7 @@ export type ExtraUnresolvedBindingSpec = Record<
     string,
     UnresolvedIO<IAttr>|UnresolvedIO<OAttr>|
     UnresolvedIO<IClass>|UnresolvedIO<OClass>|
+    UnresolvedIO<IEvent>|
     UnresolvedIO<IFlag>|UnresolvedIO<OFlag>
 >;
 
