@@ -7,6 +7,7 @@ import {__id} from '../render/types/node-with-id';
 import {RenderSpec} from '../render/types/render-spec';
 import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IOType, OSingle} from '../types/io';
+import {Target} from '../types/target';
 import {initSlot} from '../util/init-slot';
 
 
@@ -16,7 +17,7 @@ class ResolvedOSingle implements Resolved<UnresolvedOSingle> {
 
   constructor(
       readonly slotName: string,
-      readonly target: HTMLElement,
+      readonly target: Target,
   ) {}
 
   update(): OperatorFunction<RenderSpec|null, unknown> {
@@ -67,7 +68,7 @@ class UnresolvedOSingle implements UnresolvedIO<OSingle> {
       readonly slotName: string,
   ) {}
 
-  resolve(target: HTMLElement): ResolvedOSingle {
+  resolve(target: Target): ResolvedOSingle {
     return new ResolvedOSingle(this.slotName, target);
   }
 }

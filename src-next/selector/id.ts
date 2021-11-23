@@ -35,6 +35,7 @@ type ReversableIO =
     IClass|OClass|
     OEvent|IEvent|
     IFlag|OFlag|
+    OSingle|
     IValue<any>|OValue<any>;
 
 function getElement(root: ShadowRoot, id: string): HTMLElement {
@@ -89,6 +90,8 @@ function reverseIO(io: ReversableIO): InputOutput {
           return iflag(io.attrName);
       }
       break;
+    case ApiType.SINGLE:
+      throw new Error(`Unsupported reversal for ${io.apiType}`);
     case ApiType.VALUE:
       switch (io.ioType) {
         case IOType.INPUT:

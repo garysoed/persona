@@ -6,7 +6,6 @@ module.exports = webpackBuilder(__dirname)
         .addEntry(
             'entry',
             [
-              ...glob.sync('./src/**/*.test.ts'),
               ...glob.sync('./src-next/**/*.test.ts'),
             ],
         )

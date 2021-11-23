@@ -8,7 +8,10 @@
   "flag__el_empty": "<test-host><div id=\"el\"></div></test-host>",
   "flag__el_reset": "<test-host><div id=\"el\"></div></test-host>",
   "flag__el_value": "<test-host><div id=\"el\" has-attr=\"\"></div></test-host>",
-  "single__el_empty": "<test-host><div id=\"el\"><!-- #ref --></div></test-host>",
-  "single__el_reset": "<test-host><div id=\"el\"><!-- #ref --></div></test-host>",
-  "single__el_value": "<test-host><div id=\"el\"><!-- #ref -->text</div></test-host>"
+  "single__el_empty": "<test-host><!-- #root --><div id=\"el\"><!-- #ref --></div></test-host>",
+  "single__el_reset": "<test-host><!-- #root --><div id=\"el\"><!-- #ref --></div></test-host>",
+  "single__el_value": "<test-host><!-- #root --><div id=\"el\"><!-- #ref -->text</div></test-host>",
+  "single__root_empty": "<test-host><!-- #root --><div id=\"el\"><!-- #ref --></div></test-host>",
+  "single__root_reset": "<test-host><!-- #root --><div id=\"el\"><!-- #ref --></div></test-host>",
+  "single__root_value": "<test-host><!-- #root -->text<div id=\"el\"><!-- #ref --></div></test-host>"
 }

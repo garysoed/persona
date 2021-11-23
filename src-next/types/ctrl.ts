@@ -4,6 +4,7 @@ import {Observable, OperatorFunction} from 'rxjs';
 import {RenderSpec} from '../render/types/render-spec';
 
 import {IAttr, IClass, IEvent, IFlag, InputOutput, IValue, OAttr, OClass, OEvent, OFlag, OSingle, OValue} from './io';
+import {Target} from './target';
 
 
 export interface Ctrl {
@@ -36,7 +37,7 @@ export type ResolvedProvider<T extends InputOutput> =
     (root: ShadowRoot) => Resolved<T>;
 
 export type UnresolvedIO<B extends InputOutput> = B & {
-  resolve(target: HTMLElement): Resolved<B>;
+  resolve(target: Target): Resolved<B>;
 };
 
 export type BindingSpec = {
@@ -49,6 +50,7 @@ export type UnresolvedBindingSpec = {
       UnresolvedIO<IClass>|UnresolvedIO<OClass>|
       UnresolvedIO<IEvent>|UnresolvedIO<OEvent>|
       UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|
+      UnresolvedIO<OSingle>|
       UnresolvedIO<IValue<unknown>>|UnresolvedIO<OValue<any>>;
 }
 

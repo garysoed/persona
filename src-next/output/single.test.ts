@@ -10,6 +10,7 @@ import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {renderNode} from '../render/types/render-node-spec';
 import {id} from '../selector/id';
+import {root} from '../selector/root';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -18,10 +19,14 @@ import {osingle} from './single';
 
 
 const $elValue$ = source(() => new Subject<Node|null>());
+const $rootValue$ = source(() => new Subject<Node|null>());
 
 
 const $host = {
   shadow: {
+    root: root({
+      value: osingle('#root'),
+    }),
     el: id('el', DIV, {
       value: osingle('#ref'),
     }),
@@ -38,6 +43,10 @@ class HostCtrl implements Ctrl {
           map(node => !node ? null : renderNode({id: node, node})),
           this.$.shadow.el.value(),
       ),
+      $rootValue$.get(this.$.vine).pipe(
+          map(node => !node ? null : renderNode({id: node, node})),
+          this.$.shadow.root.value(),
+      ),
     ];
   }
 }
@@ -46,7 +55,7 @@ const HOST = registerCustomElement({
   tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
-  template: '<div id="el"><!-- #ref --></div>',
+  template: '<!-- #root --><div id="el"><!-- #ref --></div>',
 });
 
 
@@ -69,6 +78,21 @@ test('@persona/src/output/single', init => {
 
       $elValue$.get(_.tester.vine).next(null);
       assert(flattenNode(element)).to.matchSnapshot('single__el_reset');
+    });
+  });
+
+  test('root', () => {
+    should('update values correctly', () => {
+      const element = _.tester.createElement(HOST);
+
+      assert(flattenNode(element)).to.matchSnapshot('single__root_empty');
+
+      const node = document.createTextNode('text');
+      $rootValue$.get(_.tester.vine).next(node);
+      assert(flattenNode(element)).to.matchSnapshot('single__root_value');
+
+      $rootValue$.get(_.tester.vine).next(null);
+      assert(flattenNode(element)).to.matchSnapshot('single__root_reset');
     });
   });
 });
