@@ -1,9 +1,9 @@
 import {RenderNodeSpec} from './render-node-spec';
+import {RenderTextNodeSpec} from './render-text-node-spec';
 
 
 export type RenderSpec = //RenderCustomElementSpec<any>|
     // RenderElementSpec|
-    // RenderFragmentSpec|
     // RenderHtmlSpec|
-    RenderNodeSpec<any>;//|
-    // RenderTextNodeSpec;
+    RenderNodeSpec<any>|
+    RenderTextNodeSpec;

@@ -1,9 +1,8 @@
-// import {Decorator} from '../decorators/apply-decorators';
+import {Decorator} from '../decorators/apply-decorators';
 
-// import {NodeWithId} from './node-with-id';
+import {NodeWithId} from './node-with-id';
 
-
-export interface BaseRenderSpec {
+export interface BaseRenderSpec<N extends Node> {
   readonly id: unknown;
-  // readonly decorators?: ReadonlyArray<Decorator<NodeWithId<N>>>;
+  readonly decorators?: ReadonlyArray<Decorator<NodeWithId<N>>>;
 }

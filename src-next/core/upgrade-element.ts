@@ -73,7 +73,11 @@ function createCtrl(
                 ctrl.runs,
                 $map(run => run.pipe(
                     // TODO: Log error
-                    catchError(() => EMPTY),
+                    catchError(err => {
+                      // eslint-disable-next-line no-console
+                      console.warn(err);
+                      return EMPTY;
+                    }),
                 )),
             );
 

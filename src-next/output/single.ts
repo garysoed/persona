@@ -30,7 +30,7 @@ class ResolvedOSingle implements Resolved<UnresolvedOSingle> {
           if (!spec) {
             return of(null);
           }
-          return render(spec);
+          return render(spec, this.target.ownerDocument);
         }),
         startWith(null),
         distinctUntilChanged((a, b) => {

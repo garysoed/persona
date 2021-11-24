@@ -1,0 +1,8 @@
+{
+  "apply-children__delete.html": "<test-host><!-- #ref --><a>child1</a></test-host>",
+  "apply-children__insert.html": "<test-host><!-- #ref --><a>child1child2</a></test-host>",
+  "apply-children__set.html": "<test-host><!-- #ref --><a>child1</a></test-host>",
+  "apply-styles__add.html": "<test-host><!-- #ref --><a style=\"height: 1px; width: 2px;\"></a></test-host>",
+  "apply-styles__delete.html": "<test-host><!-- #ref --><a style=\"height: 1px;\"></a></test-host>",
+  "apply-text-content__update.html": "<test-host><!-- #ref --><a>text2</a></test-host>"
+}

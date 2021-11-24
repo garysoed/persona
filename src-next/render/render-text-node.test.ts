@@ -5,18 +5,18 @@ import {cache} from 'gs-tools/export/data';
 import {Observable, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {flattenNode} from '../../src/testing/flatten-node';
 import {registerCustomElement} from '../core/register-custom-element';
 import {osingle} from '../output/single';
 import {root} from '../selector/root';
+import {flattenNode} from '../testing/flatten-node';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import goldens from './goldens/goldens.json';
-import {renderNode} from './types/render-node-spec';
+import {renderTextNode} from './types/render-text-node-spec';
 
 
-const $elValue = source(() => new Subject<Node|null>());
+const $text = source(() => new Subject<string>());
 
 const $host = {
   shadow: {
@@ -32,8 +32,8 @@ class HostCtrl implements Ctrl {
   @cache()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
-      $elValue.get(this.$.vine).pipe(
-          map(node => !node ? null : renderNode({id: node, node})),
+      $text.get(this.$.vine).pipe(
+          map(textContent => renderTextNode({id: {}, textContent})),
           this.$.shadow.el.value(),
       ),
     ];
@@ -47,26 +47,19 @@ const HOST = registerCustomElement({
   template: '<!-- #ref -->',
 });
 
-
-test('@persona/src/output/render-node', init => {
+test('@persona/render/render-text-node', init => {
   const _ = init(() => {
     runEnvironment(new BrowserSnapshotsEnv('src-next/render/goldens', goldens));
     const tester = setupTest({roots: [HOST]});
     return {tester};
   });
 
-  test('el', () => {
-    should('update values correctly', () => {
-      const element = _.tester.createElement(HOST);
+  should('emit the text node', () => {
+    const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('render-node__el_empty.html');
+    const textContent = 'textContent';
+    $text.get(_.tester.vine).next(textContent);
 
-      const node = document.createTextNode('text');
-      $elValue.get(_.tester.vine).next(node);
-      assert(flattenNode(element)).to.matchSnapshot('render-node__el_value.html');
-
-      $elValue.get(_.tester.vine).next(null);
-      assert(flattenNode(element)).to.matchSnapshot('render-node__el_reset.html');
-    });
+    assert(flattenNode(element)).to.matchSnapshot('render-text-node.html');
   });
 });
