@@ -108,13 +108,13 @@ test('@persona/src/output/class', init => {
     should('update values correctly', () => {
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('class__el_empty');
+      assert(flattenNode(element)).to.matchSnapshot('class__el_empty.html');
 
       $elValue$.get(_.tester.vine).next(true);
-      assert(flattenNode(element)).to.matchSnapshot('class__el_value');
+      assert(flattenNode(element)).to.matchSnapshot('class__el_value.html');
 
       $elValue$.get(_.tester.vine).next(false);
-      assert(flattenNode(element)).to.matchSnapshot('class__el_reset');
+      assert(flattenNode(element)).to.matchSnapshot('class__el_reset.html');
     });
   });
 

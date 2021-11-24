@@ -1,5 +1,5 @@
 {
-  "render-node__el_empty": "<test-host><div id=\"el\"><!-- #ref --></div></test-host>",
-  "render-node__el_reset": "<test-host><div id=\"el\"><!-- #ref --></div></test-host>",
-  "render-node__el_value": "<test-host><div id=\"el\"><!-- #ref -->text</div></test-host>"
+  "render-node__el_empty.html": "<test-host><div id=\"el\"><!-- #ref --></div></test-host>",
+  "render-node__el_reset.html": "<test-host><div id=\"el\"><!-- #ref --></div></test-host>",
+  "render-node__el_value.html": "<test-host><div id=\"el\"><!-- #ref -->text</div></test-host>"
 }

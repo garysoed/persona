@@ -61,14 +61,14 @@ test('@persona/src/output/render-node', init => {
     should('update values correctly', () => {
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('render-node__el_empty');
+      assert(flattenNode(element)).to.matchSnapshot('render-node__el_empty.html');
 
       const node = document.createTextNode('text');
       $elValue$.get(_.tester.vine).next(node);
-      assert(flattenNode(element)).to.matchSnapshot('render-node__el_value');
+      assert(flattenNode(element)).to.matchSnapshot('render-node__el_value.html');
 
       $elValue$.get(_.tester.vine).next(null);
-      assert(flattenNode(element)).to.matchSnapshot('render-node__el_reset');
+      assert(flattenNode(element)).to.matchSnapshot('render-node__el_reset.html');
     });
   });
 });

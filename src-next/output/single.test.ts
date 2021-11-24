@@ -70,14 +70,14 @@ test('@persona/src/output/single', init => {
     should('update values correctly', () => {
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('single__el_empty');
+      assert(flattenNode(element)).to.matchSnapshot('single__el_empty.html');
 
       const node = document.createTextNode('text');
       $elValue$.get(_.tester.vine).next(node);
-      assert(flattenNode(element)).to.matchSnapshot('single__el_value');
+      assert(flattenNode(element)).to.matchSnapshot('single__el_value.html');
 
       $elValue$.get(_.tester.vine).next(null);
-      assert(flattenNode(element)).to.matchSnapshot('single__el_reset');
+      assert(flattenNode(element)).to.matchSnapshot('single__el_reset.html');
     });
   });
 
@@ -85,14 +85,14 @@ test('@persona/src/output/single', init => {
     should('update values correctly', () => {
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('single__root_empty');
+      assert(flattenNode(element)).to.matchSnapshot('single__root_empty.html');
 
       const node = document.createTextNode('text');
       $rootValue$.get(_.tester.vine).next(node);
-      assert(flattenNode(element)).to.matchSnapshot('single__root_value');
+      assert(flattenNode(element)).to.matchSnapshot('single__root_value.html');
 
       $rootValue$.get(_.tester.vine).next(null);
-      assert(flattenNode(element)).to.matchSnapshot('single__root_reset');
+      assert(flattenNode(element)).to.matchSnapshot('single__root_reset.html');
     });
   });
 });
