@@ -1,4 +1,8 @@
 {
+  "render-custom-element__emit.html": "<test-host><!-- #ref --><pr-test a=\"avalue\" b=\"\"><div>child<slot></slot></div></pr-test></test-host>",
+  "render-custom-element__extra_attr.html": "<test-host><!-- #ref --><pr-test a=\"a\" b=\"\" c=\"c2\"><div>child<slot></slot></div></pr-test></test-host>",
+  "render-custom-element__text.html": "<test-host><!-- #ref --><pr-test a=\"a\" b=\"\"><div>child<slot>text2</slot></div></pr-test></test-host>",
+  "render-custom-element__update.html": "<test-host><!-- #ref --><pr-test a=\"a2\"><div>child<slot></slot></div></pr-test></test-host>",
   "render-element__attribute_undefined.html": "<test-host><!-- #ref --><pr-test></pr-test></test-host>",
   "render-element__attribute_update.html": "<test-host><!-- #ref --><pr-test b=\"b2\"></pr-test></test-host>",
   "render-element__delete_children.html": "<test-host><!-- #ref --><pr-test><div></div></pr-test></test-host>",

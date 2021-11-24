@@ -1,5 +1,6 @@
 import {Observable} from 'rxjs';
 
+import {renderCustomElement} from './render-custom-element';
 import {renderElement} from './render-element';
 import {renderHtml} from './render-html';
 import {renderNode} from './render-node';
@@ -22,8 +23,8 @@ export function render(spec: RenderTextNodeSpec, context: RenderContext): Observ
 export function render(spec: RenderSpec, context: RenderContext): Observable<NodeWithId<Node>|null>;
 export function render(spec: RenderSpec, context: RenderContext): Observable<NodeWithId<Node>|null> {
   switch (spec.type) {
-    // case RenderSpecType.CUSTOM_ELEMENT:
-    //   return renderCustomElement(spec, context);
+    case RenderSpecType.CUSTOM_ELEMENT:
+      return renderCustomElement(spec, context);
     case RenderSpecType.ELEMENT:
       return renderElement(spec, context);
     case RenderSpecType.HTML:

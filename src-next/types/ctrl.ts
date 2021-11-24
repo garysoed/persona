@@ -72,7 +72,7 @@ export type Spec = {
   readonly shadow?: Record<string, ResolvedBindingSpecProvider<UnresolvedBindingSpec>>;
 };
 
-type Binding<T extends InputOutput> =
+export type Binding<T extends InputOutput> =
     Resolved<T> extends ResolvedI<infer V> ? Observable<V> :
     Resolved<T> extends ResolvedO<infer V> ? () => OperatorFunction<V, unknown> :
     never;
@@ -88,6 +88,7 @@ export type ShadowBindings<O> = {
 export interface Context<S extends Spec> {
   readonly host: Bindings<S['host']&{}>;
   readonly shadow: ShadowBindings<S['shadow']&{}>;
+  readonly shadowRoot: ShadowRoot;
   readonly element: HTMLElement;
   readonly vine: Vine;
 }

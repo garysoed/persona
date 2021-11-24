@@ -59,6 +59,7 @@ function createCtrl(
           shadowRoot,
           renderContext,
       ),
+      shadowRoot,
       vine,
     }));
   })
