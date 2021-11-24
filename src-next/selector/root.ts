@@ -1,3 +1,4 @@
+import {RenderContext} from '../render/types/render-context';
 import {ResolvedBindingSpecProvider, ResolvedProvider, UnresolvedBindingSpec, UnresolvedIO} from '../types/ctrl';
 import {InputOutput, OSingle} from '../types/io';
 
@@ -14,7 +15,10 @@ export function root<X extends ExtraUnresolvedBindingSpec&UnresolvedBindingSpec>
 
   const normalizedSpecs: ExtraUnresolvedBindingSpec = specs ?? {};
   for (const key in normalizedSpecs) {
-    providers[key] = (root: ShadowRoot) => normalizedSpecs[key].resolve(root);
+    providers[key] = (root: ShadowRoot, context: RenderContext) => normalizedSpecs[key].resolve(
+        root,
+        context,
+    );
   }
   return providers as unknown as ResolvedBindingSpecProvider<X>;
 }

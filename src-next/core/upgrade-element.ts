@@ -3,6 +3,7 @@ import {$map, $pipe} from 'gs-tools/export/collect';
 import {BehaviorSubject, combineLatest, defer, EMPTY, merge, Observable, of, OperatorFunction, Subject, timer} from 'rxjs';
 import {catchError, distinctUntilChanged, mapTo, shareReplay, switchMap} from 'rxjs/operators';
 
+import {RenderContext} from '../render/types/render-context';
 import {Bindings, BindingSpec, Resolved, ResolvedBindingSpec, ResolvedBindingSpecProvider, ResolvedI, ResolvedO, ShadowBindings, Spec, UnresolvedBindingSpec} from '../types/ctrl';
 import {AttributeChangedEvent} from '../types/event';
 import {ApiType, InputOutput, IOType, IValue, OValue} from '../types/io';
@@ -43,13 +44,21 @@ function createCtrl(
     vine: Vine,
     isConnected$: Observable<boolean>,
 ): void {
+  const renderContext = {
+    document: element.ownerDocument,
+    vine,
+  };
   const ctrl$ = defer(() => {
     return of(new registrationSpec.ctrl({
       element,
       host: createBindings(
-          resolveForHost(registrationSpec.spec.host ?? {}, element),
+          resolveForHost(registrationSpec.spec.host ?? {}, element, renderContext),
       ),
-      shadow: createShadowBindingObjects(registrationSpec.spec.shadow ?? {}, shadowRoot),
+      shadow: createShadowBindingObjects(
+          registrationSpec.spec.shadow ?? {},
+          shadowRoot,
+          renderContext,
+      ),
       vine,
     }));
   })
@@ -181,11 +190,15 @@ function setupConnection(
 function resolveForHost<S extends UnresolvedBindingSpec>(
     spec: S,
     target: HTMLElement,
+    context: RenderContext,
 ): ResolvedBindingSpec<S> {
   const bindings: Partial<Record<keyof S, Resolved<InputOutput>>> = {};
   for (const key in spec) {
     const io = spec[key];
-    bindings[key] = io.resolve(target);
+    bindings[key] = io.resolve(
+        target,
+        context,
+    );
   }
   return bindings as ResolvedBindingSpec<S>;
 }
@@ -213,10 +226,11 @@ type ShadowBindingRecord = Record<string, ResolvedBindingSpecProvider<Unresolved
 function createShadowBindingObjects<O extends ShadowBindingRecord>(
     spec: O,
     shadowRoot: ShadowRoot,
+    context: RenderContext,
 ): ShadowBindings<O> {
   const partial: Record<string, Bindings<BindingSpec>> = {};
   for (const key in spec) {
-    partial[key] = createShadowBindings(spec[key], shadowRoot);
+    partial[key] = createShadowBindings(spec[key], shadowRoot, context);
   }
   return partial as ShadowBindings<O>;
 }
@@ -224,10 +238,11 @@ function createShadowBindingObjects<O extends ShadowBindingRecord>(
 function createShadowBindings<S extends UnresolvedBindingSpec>(
     spec: ResolvedBindingSpecProvider<S>,
     shadowRoot: ShadowRoot,
+    context: RenderContext,
 ): Bindings<S> {
   const partial: Partial<Record<string, Observable<unknown>|(() => OperatorFunction<unknown, unknown>)>> = {};
   for (const key in spec) {
-    partial[key] = createBinding(spec[key](shadowRoot));
+    partial[key] = createBinding(spec[key](shadowRoot, context));
   }
   return partial as Bindings<S>;
 }

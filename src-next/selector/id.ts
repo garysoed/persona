@@ -8,6 +8,7 @@ import {oclass} from '../output/class';
 import {oevent} from '../output/event';
 import {oflag} from '../output/flag';
 import {ovalue} from '../output/value';
+import {RenderContext} from '../render/types/render-context';
 import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedBindingSpec, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IAttr, IClass, IEvent, IFlag, InputOutput, IOType, IValue, OAttr, OClass, OEvent, OFlag, OSingle, OValue} from '../types/io';
 import {Registration} from '../types/registration';
@@ -129,12 +130,18 @@ export function id<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
   const providers: Partial<Record<string, ResolvedProvider<InputOutput>>> = {};
   const reversed = reverse(registration.spec.host ?? {});
   for (const key in reversed) {
-    providers[key] = (root: ShadowRoot) => reversed[key].resolve(getElement(root, id));
+    providers[key] = (root: ShadowRoot, context: RenderContext) => reversed[key].resolve(
+        getElement(root, id),
+        context,
+    );
   }
 
   const normalizedExtra: ExtraUnresolvedBindingSpec = extra ?? {};
   for (const key in normalizedExtra) {
-    providers[key] = (root: ShadowRoot) => normalizedExtra[key].resolve(getElement(root, id));
+    providers[key] = (root: ShadowRoot, context: RenderContext) => normalizedExtra[key].resolve(
+        getElement(root, id),
+        context,
+    );
   }
   return providers as unknown as ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>;
 }

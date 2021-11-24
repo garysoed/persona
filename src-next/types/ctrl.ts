@@ -1,6 +1,7 @@
 import {Vine} from 'grapevine';
 import {Observable, OperatorFunction} from 'rxjs';
 
+import {RenderContext} from '../render/types/render-context';
 import {RenderSpec} from '../render/types/render-spec';
 
 import {IAttr, IClass, IEvent, IFlag, InputOutput, IValue, OAttr, OClass, OEvent, OFlag, OSingle, OValue} from './io';
@@ -34,10 +35,10 @@ export type Resolved<T extends InputOutput> =
     T extends OValue<infer V> ? OValue<V>&ResolvedO<V> : never;
 
 export type ResolvedProvider<T extends InputOutput> =
-    (root: ShadowRoot) => Resolved<T>;
+    (root: ShadowRoot, context: RenderContext) => Resolved<T>;
 
 export type UnresolvedIO<B extends InputOutput> = B & {
-  resolve(target: Target): Resolved<B>;
+  resolve(target: Target, context: RenderContext): Resolved<B>;
 };
 
 export type BindingSpec = {
