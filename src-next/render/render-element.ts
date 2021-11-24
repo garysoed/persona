@@ -7,6 +7,7 @@ import {applyStyles} from './decorators/apply-styles';
 import {applyTextContent} from './decorators/apply-text-content';
 import {renderNode} from './render-node';
 import {NodeWithId, __id} from './types/node-with-id';
+import {RenderContext} from './types/render-context';
 import {RenderElementSpec} from './types/render-element-spec';
 import {RenderSpecType} from './types/render-spec-type';
 
@@ -43,7 +44,7 @@ export interface Values {
  */
 export function renderElement(
     spec: RenderElementSpec,
-    document: Document,
+    context: RenderContext,
 ): Observable<HTMLElement&{[__id]: unknown}> {
   const decorators: Array<Decorator<NodeWithId<HTMLElement>>> = [];
   const extraAttrs = spec.attrs ?? new Map<string, Observable<string|undefined>>();
@@ -64,7 +65,7 @@ export function renderElement(
   }
 
   if (spec.children) {
-    decorators.push(applyChildren(spec.children, document));
+    decorators.push(applyChildren(spec.children, context));
   }
 
   if (spec.styles) {
@@ -78,7 +79,7 @@ export function renderElement(
   return renderNode({
     ...spec,
     type: RenderSpecType.NODE,
-    node: document.createElement(spec.tag),
+    node: context.document.createElement(spec.tag),
     decorators,
   });
 }

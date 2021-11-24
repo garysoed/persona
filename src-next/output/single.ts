@@ -4,6 +4,7 @@ import {distinctUntilChanged, pairwise, startWith, switchMap, tap, withLatestFro
 
 import {render} from '../render/render';
 import {__id} from '../render/types/node-with-id';
+import {RenderContext} from '../render/types/render-context';
 import {RenderSpec} from '../render/types/render-spec';
 import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IOType, OSingle} from '../types/io';
@@ -18,6 +19,7 @@ class ResolvedOSingle implements Resolved<UnresolvedOSingle> {
   constructor(
       readonly slotName: string,
       readonly target: Target,
+      private readonly context: RenderContext,
   ) {}
 
   update(): OperatorFunction<RenderSpec|null, unknown> {
@@ -30,7 +32,7 @@ class ResolvedOSingle implements Resolved<UnresolvedOSingle> {
           if (!spec) {
             return of(null);
           }
-          return render(spec, this.target.ownerDocument);
+          return render(spec, this.context);
         }),
         startWith(null),
         distinctUntilChanged((a, b) => {
@@ -68,8 +70,8 @@ class UnresolvedOSingle implements UnresolvedIO<OSingle> {
       readonly slotName: string,
   ) {}
 
-  resolve(target: Target): ResolvedOSingle {
-    return new ResolvedOSingle(this.slotName, target);
+  resolve(target: Target, context: RenderContext): ResolvedOSingle {
+    return new ResolvedOSingle(this.slotName, target, context);
   }
 }
 

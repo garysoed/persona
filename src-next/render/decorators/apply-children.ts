@@ -5,6 +5,7 @@ import {map, switchMap, tap} from 'rxjs/operators';
 
 import {render} from '../render';
 import {NodeWithId} from '../types/node-with-id';
+import {RenderContext} from '../types/render-context';
 import {RenderSpec} from '../types/render-spec';
 
 import {Decorator} from './apply-decorators';
@@ -12,11 +13,11 @@ import {Decorator} from './apply-decorators';
 
 export function applyChildren(
     children$: Observable<readonly RenderSpec[]>,
-    document: Document,
+    context: RenderContext,
 ): Decorator<NodeWithId<Element|DocumentFragment>> {
   return el => children$.pipe(
       switchMap(specs => {
-        const renderedNode$list = specs.map(spec => render(spec, document));
+        const renderedNode$list = specs.map(spec => render(spec, context));
         if (renderedNode$list.length <= 0) {
           return observableOf([]);
         }

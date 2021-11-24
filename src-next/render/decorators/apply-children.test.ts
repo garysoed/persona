@@ -69,7 +69,7 @@ test('@persona/render/decorators/apply-children', init => {
       id: {},
       node: document.createElement('a'),
       decorators: [
-        applyChildren(of([child1, child2], [child1]), document),
+        applyChildren(of([child1, child2], [child1]), {document, vine: _.tester.vine}),
       ],
     }));
 
@@ -92,7 +92,7 @@ test('@persona/render/decorators/apply-children', init => {
       id: {},
       node: document.createElement('a'),
       decorators: [
-        applyChildren(of([child2], [child1, child2]), document),
+        applyChildren(of([child2], [child1, child2]), {document, vine: _.tester.vine}),
       ],
     }));
 
@@ -115,7 +115,7 @@ test('@persona/render/decorators/apply-children', init => {
       id: {},
       node: document.createElement('a'),
       decorators: [
-        applyChildren(of([child2], [child1]), document),
+        applyChildren(of([child2], [child1]), {document, vine: _.tester.vine}),
       ],
     }));
 

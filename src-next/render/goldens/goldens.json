@@ -6,6 +6,7 @@
   "render-element__insert_children.html": "<test-host><!-- #ref --><pr-test><div></div><input></pr-test></test-host>",
   "render-element__set_children.html": "<test-host><!-- #ref --><pr-test><div></div></pr-test></test-host>",
   "render-element__text_content.html": "<test-host><!-- #ref --><pr-test>text2</pr-test></test-host>",
+  "render-html.html": "<test-host><!-- #ref --><div></div></test-host>",
   "render-node__el_empty.html": "<test-host><!-- #ref --></test-host>",
   "render-node__el_reset.html": "<test-host><!-- #ref --></test-host>",
   "render-node__el_value.html": "<test-host><!-- #ref -->text</test-host>",
