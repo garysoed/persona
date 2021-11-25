@@ -1,11 +1,11 @@
 import {RenderContext} from '../render/types/render-context';
 import {ResolvedBindingSpecProvider, ResolvedProvider, UnresolvedBindingSpec, UnresolvedIO} from '../types/ctrl';
-import {InputOutput, OSingle} from '../types/io';
+import {InputOutput, OMulti, OSingle} from '../types/io';
 
 
 export type ExtraUnresolvedBindingSpec = Record<
     string,
-    UnresolvedIO<OSingle>
+    UnresolvedIO<OMulti>|UnresolvedIO<OSingle>
 >;
 
 export function root<X extends ExtraUnresolvedBindingSpec&UnresolvedBindingSpec>(

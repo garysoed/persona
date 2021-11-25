@@ -10,6 +10,7 @@ export enum ApiType {
   CLASS,
   EVENT,
   FLAG,
+  MULTI,
   SINGLE,
   VALUE,
 }
@@ -62,6 +63,12 @@ export interface OFlag {
   readonly attrName: string;
 }
 
+export interface OMulti {
+  readonly apiType: ApiType.MULTI;
+  readonly ioType: IOType.OUTPUT;
+  readonly slotName: string;
+}
+
 export interface OSingle {
   readonly apiType: ApiType.SINGLE;
   readonly ioType: IOType.OUTPUT;
@@ -91,5 +98,6 @@ export type InputOutput =
     IClass|OClass|
     IEvent|OEvent|
     IFlag|OFlag|
+    OMulti|
     OSingle|
     IValue<unknown>|OValue<unknown>;
