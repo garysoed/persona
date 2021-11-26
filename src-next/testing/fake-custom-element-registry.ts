@@ -1,11 +1,14 @@
 import {Vine} from 'grapevine';
 import {run} from 'gs-testing';
 import {arrayFrom} from 'gs-tools/export/collect';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
+import {AttributeChangedEvent} from '../../export';
 import {upgradeElement} from '../core/upgrade-element';
 import {Spec} from '../types/ctrl';
 import {Registration} from '../types/registration';
+import {setAttributeChangeObservable} from '../util/attribute-change-observable';
 import {mutationObservable} from '../util/mutation-observable';
 
 
@@ -84,7 +87,27 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
       return;
     }
 
-    const upgradedEl = upgradeElement(registration, el, this.vine);
+    const isConnected$ = new BehaviorSubject(false);
+    const onAttributeChanged$ = new Subject<AttributeChangedEvent>();
+    setAttributeChangeObservable(el, onAttributeChanged$);
+    const decoratedEl = Object.assign(
+        el,
+        {
+          attributeChangedCallback(attrName: string): void {
+            onAttributeChanged$.next({attrName});
+          },
+
+          connectedCallback(): void {
+            isConnected$.next(true);
+          },
+
+          disconnectedCallback(): void {
+            isConnected$.next(false);
+          },
+        },
+    );
+
+    upgradeElement(registration, decoratedEl, isConnected$, this.vine);
 
     run(mutationObservable(el, {attributes: true}).pipe(
         tap(records => {
@@ -108,6 +131,6 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
       this.upgradeElement(node);
     }
 
-    upgradedEl.connectedCallback();
+    decoratedEl.connectedCallback();
   }
 }

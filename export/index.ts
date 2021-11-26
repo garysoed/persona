@@ -3,6 +3,17 @@ export {installCustomElements} from '../src-next/core/install-custom-elements';
 export {registerCustomElement} from '../src-next/core/register-custom-element';
 export {Registration} from '../src-next/types/registration';
 
+export {id} from '../src-next/selector/id';
+
+export {ievent} from '../src-next/input/event';
+
+export {omulti} from '../src-next/output/multi';
+
+export {DIV} from '../src-next/html/div';
+
+export {RenderSpec} from '../src-next/render/types/render-spec';
+export {renderElement, RenderElementSpec} from '../src-next/render/types/render-element-spec';
+
 
 // DEPRECATED
 
@@ -72,10 +83,8 @@ export {fromPattern} from '../src/location/location-converter';
 export {$htmlParseService as $innerHtmlParseService, ParseType} from '../src/render/html-parse-service';
 export {HtmlParseService as InnerHtmlParseService} from '../src/render/html-parse-service';
 export {RenderSpecType} from '../src/render/types/render-spec-type';
-export {RenderSpec} from '../src/render/types/render-spec';
 export {RenderTextNodeSpec, renderTextNode} from '../src/render/types/render-text-node-spec';
 export {renderCustomElement, RenderCustomElementSpec} from '../src/render/types/render-custom-element-spec';
-export {renderElement, RenderElementSpec} from '../src/render/types/render-element-spec';
 export {renderFragment, RenderFragmentSpec} from '../src/render/types/render-fragment-spec';
 export {renderHtml, RenderHtmlSpec} from '../src/render/types/render-html-spec';
 export {renderNode, RenderNodeSpec} from '../src/render/types/render-node-spec';

@@ -5,10 +5,8 @@ import {catchError, distinctUntilChanged, mapTo, shareReplay, switchMap} from 'r
 
 import {RenderContext} from '../render/types/render-context';
 import {Bindings, BindingSpec, Resolved, ResolvedBindingSpec, ResolvedBindingSpecProvider, ResolvedI, ResolvedO, ShadowBindings, Spec, UnresolvedBindingSpec} from '../types/ctrl';
-import {AttributeChangedEvent} from '../types/event';
 import {ApiType, InputOutput, IOType, IValue, OValue} from '../types/io';
 import {Registration, RegistrationSpec} from '../types/registration';
-import {setAttributeChangeObservable} from '../util/attribute-change-observable';
 import {setValueObservable} from '../util/value-observable';
 
 import {$getTemplate} from './templates-cache';
@@ -23,18 +21,14 @@ type DecoratedHtmlElement = HTMLElement & {
 
 export function upgradeElement(
     registration: Registration<HTMLElement, Spec>,
-    element: HTMLElement,
+    element: DecoratedHtmlElement,
+    isConnected$: Subject<boolean>,
     vine: Vine,
-): DecoratedHtmlElement {
-  const isConnected$ = new BehaviorSubject(false);
-  const decoratedEl = setupConnection(element, isConnected$);
-  setupAttributeChange(element);
+): void {
   const shadowRoot = createShadow(registration, element, vine);
   createProperties(registration, element);
   createCtrl(registration, element, shadowRoot, vine, isConnected$);
   Object.setPrototypeOf(element, registration.get(vine).prototype);
-
-  return decoratedEl;
 }
 
 function createCtrl(
@@ -155,38 +149,6 @@ function createShadow(
   root.appendChild($getTemplate.get(vine)(registrationSpec).content.cloneNode(true));
   return root;
 }
-
-function setupAttributeChange(element: HTMLElement): void {
-  const attributeChange$ = new Subject<AttributeChangedEvent>();
-  setAttributeChangeObservable(element, attributeChange$);
-  Object.assign(
-      element,
-      {
-        attributeChangedCallback(attrName: string): void {
-          attributeChange$.next({attrName});
-        },
-      },
-  );
-}
-
-function setupConnection(
-    element: HTMLElement,
-    isConnected$: Subject<boolean>,
-): DecoratedHtmlElement {
-  return Object.assign(
-      element,
-      {
-        connectedCallback(): void {
-          isConnected$.next(true);
-        },
-
-        disconnectedCallback(): void {
-          isConnected$.next(false);
-        },
-      },
-  );
-}
-
 
 function resolveForHost<S extends UnresolvedBindingSpec>(
     spec: S,
