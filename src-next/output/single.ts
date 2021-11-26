@@ -17,16 +17,18 @@ class ResolvedOSingle implements Resolved<UnresolvedOSingle> {
   readonly ioType = IOType.OUTPUT;
 
   constructor(
-      readonly slotName: string,
+      readonly slotName: string|null,
       readonly target: Target,
       private readonly context: RenderContext,
   ) {}
 
   update(): OperatorFunction<RenderSpec|null, unknown> {
-    const slotEl$ = of(this.target).pipe(
-        initSlot(this.slotName),
-        filterNonNullable(),
-    );
+    const slotEl$ = this.slotName
+      ? of(this.target).pipe(
+          initSlot(this.slotName),
+          filterNonNullable(),
+      )
+      : of(null);
     return pipe(
         switchMap(spec => {
           if (!spec) {
@@ -44,7 +46,7 @@ class ResolvedOSingle implements Resolved<UnresolvedOSingle> {
         pairwise(),
         withLatestFrom(slotEl$),
         tap(([[previous, current], slotEl]) => {
-        // Remove the previous node.
+          // Remove the previous node.
           if (previous) {
             try {
               this.target.removeChild(previous);
@@ -55,7 +57,7 @@ class ResolvedOSingle implements Resolved<UnresolvedOSingle> {
 
           // Add the new node.
           if (current) {
-            this.target.insertBefore(current, slotEl.nextSibling);
+            this.target.insertBefore(current, slotEl?.nextSibling ?? null);
           }
         }),
     );
@@ -67,7 +69,7 @@ class UnresolvedOSingle implements UnresolvedIO<OSingle> {
   readonly ioType = IOType.OUTPUT;
 
   constructor(
-      readonly slotName: string,
+      readonly slotName: string|null,
   ) {}
 
   resolve(target: Target, context: RenderContext): ResolvedOSingle {
@@ -75,6 +77,6 @@ class UnresolvedOSingle implements UnresolvedIO<OSingle> {
   }
 }
 
-export function osingle(refName: string): UnresolvedOSingle {
+export function osingle(refName: string|null = null): UnresolvedOSingle {
   return new UnresolvedOSingle(refName);
 }

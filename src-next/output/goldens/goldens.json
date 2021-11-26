@@ -24,10 +24,16 @@
   "multi__root_insert_start.html": "<test-host><!-- #root --><div0></div0><div1></div1><div2></div2><div3></div3><div id=\"el\"><!-- #ref --></div></test-host>",
   "multi__root_same_id.html": "<test-host><!-- #root --><div1></div1><div id=\"el\"><!-- #ref --></div></test-host>",
   "multi__root_set.html": "<test-host><!-- #root --><div0></div0><div2></div2><div3></div3></test-host>",
-  "single__el_empty.html": "<test-host><!-- #root --><div id=\"el\"><!-- #ref --></div></test-host>",
-  "single__el_reset.html": "<test-host><!-- #root --><div id=\"el\"><!-- #ref --></div></test-host>",
-  "single__el_value.html": "<test-host><!-- #root --><div id=\"el\"><!-- #ref -->text</div></test-host>",
-  "single__root_empty.html": "<test-host><!-- #root --><div id=\"el\"><!-- #ref --></div></test-host>",
-  "single__root_reset.html": "<test-host><!-- #root --><div id=\"el\"><!-- #ref --></div></test-host>",
-  "single__root_value.html": "<test-host><!-- #root -->text<div id=\"el\"><!-- #ref --></div></test-host>"
+  "single__el_empty.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div></test-host>",
+  "single__el_reset.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div></test-host>",
+  "single__el_slotted_empty.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div></test-host>",
+  "single__el_slotted_reset.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div></test-host>",
+  "single__el_slotted_value.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->text\n    other\n  </div></test-host>",
+  "single__el_value.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  text</div></test-host>",
+  "single__root_empty.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div></test-host>",
+  "single__root_reset.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div></test-host>",
+  "single__root_slotted_empty.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div></test-host>",
+  "single__root_slotted_reset.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div></test-host>",
+  "single__root_slotted_value.html": "<test-host>\n  <!-- #root -->text\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div></test-host>",
+  "single__root_value.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div>text</test-host>"
 }

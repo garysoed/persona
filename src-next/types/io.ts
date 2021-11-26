@@ -72,7 +72,7 @@ export interface OMulti {
 export interface OSingle {
   readonly apiType: ApiType.SINGLE;
   readonly ioType: IOType.OUTPUT;
-  readonly slotName: string;
+  readonly slotName: string|null;
 }
 
 export interface IValue<T> {

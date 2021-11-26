@@ -19,16 +19,20 @@ import {osingle} from './single';
 
 
 const $elValue$ = source(() => new Subject<Node|null>());
+const $elSlottedValue$ = source(() => new Subject<Node|null>());
 const $rootValue$ = source(() => new Subject<Node|null>());
+const $rootSlottedValue$ = source(() => new Subject<Node|null>());
 
 
 const $host = {
   shadow: {
     root: root({
-      value: osingle('#root'),
+      slotted: osingle('#root'),
+      value: osingle(),
     }),
     el: id('el', DIV, {
-      value: osingle('#ref'),
+      slotted: osingle('#ref'),
+      value: osingle(),
     }),
   },
 };
@@ -39,9 +43,17 @@ class HostCtrl implements Ctrl {
   @cache()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
+      $elSlottedValue$.get(this.$.vine).pipe(
+          map(node => !node ? null : renderNode({id: node, node})),
+          this.$.shadow.el.slotted(),
+      ),
       $elValue$.get(this.$.vine).pipe(
           map(node => !node ? null : renderNode({id: node, node})),
           this.$.shadow.el.value(),
+      ),
+      $rootSlottedValue$.get(this.$.vine).pipe(
+          map(node => !node ? null : renderNode({id: node, node})),
+          this.$.shadow.root.slotted(),
       ),
       $rootValue$.get(this.$.vine).pipe(
           map(node => !node ? null : renderNode({id: node, node})),
@@ -55,7 +67,12 @@ const HOST = registerCustomElement({
   tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
-  template: '<!-- #root --><div id="el"><!-- #ref --></div>',
+  template: `
+  <!-- #root -->
+  <div id="el">
+    <!-- #ref -->
+    other
+  </div>`,
 });
 
 
@@ -67,7 +84,7 @@ test('@persona/src/output/single', init => {
   });
 
   test('el', () => {
-    should('update values correctly', () => {
+    should('update values correctly if unslotted', () => {
       const element = _.tester.createElement(HOST);
 
       assert(flattenNode(element)).to.matchSnapshot('single__el_empty.html');
@@ -79,10 +96,23 @@ test('@persona/src/output/single', init => {
       $elValue$.get(_.tester.vine).next(null);
       assert(flattenNode(element)).to.matchSnapshot('single__el_reset.html');
     });
+
+    should('update values correctly if slotted', () => {
+      const element = _.tester.createElement(HOST);
+
+      assert(flattenNode(element)).to.matchSnapshot('single__el_slotted_empty.html');
+
+      const node = document.createTextNode('text');
+      $elSlottedValue$.get(_.tester.vine).next(node);
+      assert(flattenNode(element)).to.matchSnapshot('single__el_slotted_value.html');
+
+      $elSlottedValue$.get(_.tester.vine).next(null);
+      assert(flattenNode(element)).to.matchSnapshot('single__el_slotted_reset.html');
+    });
   });
 
   test('root', () => {
-    should('update values correctly', () => {
+    should('update values correctly if unslotted', () => {
       const element = _.tester.createElement(HOST);
 
       assert(flattenNode(element)).to.matchSnapshot('single__root_empty.html');
@@ -93,6 +123,19 @@ test('@persona/src/output/single', init => {
 
       $rootValue$.get(_.tester.vine).next(null);
       assert(flattenNode(element)).to.matchSnapshot('single__root_reset.html');
+    });
+
+    should('update values correctly if slotted', () => {
+      const element = _.tester.createElement(HOST);
+
+      assert(flattenNode(element)).to.matchSnapshot('single__root_slotted_empty.html');
+
+      const node = document.createTextNode('text');
+      $rootSlottedValue$.get(_.tester.vine).next(node);
+      assert(flattenNode(element)).to.matchSnapshot('single__root_slotted_value.html');
+
+      $rootSlottedValue$.get(_.tester.vine).next(null);
+      assert(flattenNode(element)).to.matchSnapshot('single__root_slotted_reset.html');
     });
   });
 });
