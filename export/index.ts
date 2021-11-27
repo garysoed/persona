@@ -16,6 +16,7 @@ export {oevent} from '../src-next/output/event';
 export {omulti} from '../src-next/output/multi';
 export {osingle} from '../src-next/output/single';
 export {ostyle} from '../src-next/output/style';
+export {otext} from '../src-next/output/text';
 
 export {BUTTON} from '../src-next/html/button';
 export {DIV} from '../src-next/html/div';
