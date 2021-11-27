@@ -6,6 +6,7 @@ export {Registration} from '../src-next/types/registration';
 export {id} from '../src-next/selector/id';
 export {root} from '../src-next/selector/root';
 
+export {iattr} from '../src-next/input/attr';
 export {ievent} from '../src-next/input/event';
 export {iflag} from '../src-next/input/flag';
 export {ikeydown} from '../src-next/input/keydown';
@@ -14,12 +15,15 @@ export {oattr} from '../src-next/output/attr';
 export {oevent} from '../src-next/output/event';
 export {omulti} from '../src-next/output/multi';
 export {osingle} from '../src-next/output/single';
+export {ostyle} from '../src-next/output/style';
 
 export {BUTTON} from '../src-next/html/button';
 export {DIV} from '../src-next/html/div';
+export {SPAN} from '../src-next/html/span';
 
 export {RenderSpec} from '../src-next/render/types/render-spec';
 export {renderElement, RenderElementSpec} from '../src-next/render/types/render-element-spec';
+export {renderHtml, RenderHtmlSpec} from '../src-next/render/types/render-html-spec';
 export {renderNode, RenderNodeSpec} from '../src-next/render/types/render-node-spec';
 
 
@@ -93,7 +97,6 @@ export {RenderSpecType} from '../src/render/types/render-spec-type';
 export {RenderTextNodeSpec, renderTextNode} from '../src/render/types/render-text-node-spec';
 export {renderCustomElement, RenderCustomElementSpec} from '../src/render/types/render-custom-element-spec';
 export {renderFragment, RenderFragmentSpec} from '../src/render/types/render-fragment-spec';
-export {renderHtml, RenderHtmlSpec} from '../src/render/types/render-html-spec';
 export {render} from '../src/render/render';
 
 export {NodeWithId} from '../src/render/node-with-id';
