@@ -19,6 +19,7 @@ export {ostyle} from '../src-next/output/style';
 
 export {BUTTON} from '../src-next/html/button';
 export {DIV} from '../src-next/html/div';
+export {P} from '../src-next/html/p';
 export {SPAN} from '../src-next/html/span';
 
 export {RenderSpec} from '../src-next/render/types/render-spec';

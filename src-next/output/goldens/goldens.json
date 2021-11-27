@@ -37,5 +37,7 @@
   "single__root_slotted_value.html": "<test-host>\n  <!-- #root -->text\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div></test-host>",
   "single__root_value.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div>text</test-host>",
   "style__el_empty.html": "<test-host><div id=\"el\"></div></test-host>",
-  "style__el_value.html": "<test-host><div id=\"el\" style=\"height: 123px;\"></div></test-host>"
+  "style__el_value.html": "<test-host><div id=\"el\" style=\"height: 123px;\"></div></test-host>",
+  "text__el.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  text</div></test-host>",
+  "text__root.html": "<test-host>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div>text</test-host>"
 }

@@ -17,6 +17,7 @@ export enum ApiType {
   MULTI,
   SINGLE,
   STYLE,
+  TEXT,
   VALUE,
 }
 
@@ -99,6 +100,11 @@ export interface OStyle<S extends keyof CSSStyleDeclaration> {
   readonly propertyName: S;
 }
 
+export interface OText {
+  readonly apiType: ApiType.TEXT;
+  readonly ioType: IOType.OUTPUT;
+}
+
 export interface IValue<T> {
   readonly apiType: ApiType.VALUE;
   readonly ioType: IOType.INPUT;
@@ -127,4 +133,5 @@ export type InputOutput =
     OMulti|
     OSingle|
     OStyle<keyof CSSStyleDeclaration>|
+    OText|
     IValue<unknown>|OValue<unknown>;

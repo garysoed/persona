@@ -9,7 +9,7 @@ import {oevent} from '../output/event';
 import {oflag} from '../output/flag';
 import {ovalue} from '../output/value';
 import {UnresolvedBindingSpec} from '../types/ctrl';
-import {ApiType, IAttr, IClass, IEvent, IFlag, InputOutput, IOType, IValue, OAttr, OClass, OEvent, OFlag, OMulti, OSingle, OValue} from '../types/io';
+import {ApiType, IAttr, IClass, IEvent, IFlag, InputOutput, IOType, IValue, OAttr, OClass, OEvent, OFlag, OMulti, OSingle, OText, OValue} from '../types/io';
 
 
 type ReversedIO<T> =
@@ -35,6 +35,7 @@ type ReversableIO =
     IFlag|OFlag|
     OMulti|
     OSingle|
+    OText|
     IValue<any>|OValue<any>;
 
 export function reverseSpec<U extends UnresolvedBindingSpec>(spec: U): ReversedSpec<U> {
@@ -84,6 +85,8 @@ function reverseIO(io: ReversableIO): InputOutput {
     case ApiType.MULTI:
       throw new Error(`Unsupported reversal for ${io.apiType}`);
     case ApiType.SINGLE:
+      throw new Error(`Unsupported reversal for ${io.apiType}`);
+    case ApiType.TEXT:
       throw new Error(`Unsupported reversal for ${io.apiType}`);
     case ApiType.VALUE:
       switch (io.ioType) {
