@@ -1,3 +1,4 @@
+export {getEl} from '../src-next/testing/get-el';
 export {setupTest} from '../src-next/testing/setup-test';
 
 

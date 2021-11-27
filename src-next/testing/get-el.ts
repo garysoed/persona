@@ -6,7 +6,8 @@ interface Options {
 }
 
 type Harness = HTMLElement & {
-  simulateKeydown(key: string, options?: Options): KeyboardEvent
+  simulateClick(): MouseEvent;
+  simulateKeydown(key: string, options?: Options): KeyboardEvent;
 };
 
 export function getEl(el: HTMLElement, id: string): Harness|null {
@@ -16,6 +17,12 @@ export function getEl(el: HTMLElement, id: string): Harness|null {
   }
 
   return Object.assign(element, {
+    simulateClick(): MouseEvent {
+      const event = new MouseEvent('click');
+      element.dispatchEvent(event);
+      return event;
+    },
+
     simulateKeydown(key: string, options: Options = {}): KeyboardEvent {
       const event = new KeyboardEvent('keydown', {key, ...options});
       element.dispatchEvent(event);
