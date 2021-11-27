@@ -14,6 +14,7 @@ export {oevent} from '../src-next/output/event';
 export {omulti} from '../src-next/output/multi';
 export {osingle} from '../src-next/output/single';
 
+export {BUTTON} from '../src-next/html/button';
 export {DIV} from '../src-next/html/div';
 
 export {RenderSpec} from '../src-next/render/types/render-spec';
