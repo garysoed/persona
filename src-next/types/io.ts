@@ -15,6 +15,7 @@ export enum ApiType {
   KEYDOWN,
   MULTI,
   SINGLE,
+  STYLE,
   VALUE,
 }
 
@@ -85,6 +86,12 @@ export interface OSingle {
   readonly slotName: string|null;
 }
 
+export interface OStyle<S extends keyof CSSStyleDeclaration> {
+  readonly apiType: ApiType.STYLE;
+  readonly ioType: IOType.OUTPUT;
+  readonly propertyName: S;
+}
+
 export interface IValue<T> {
   readonly apiType: ApiType.VALUE;
   readonly ioType: IOType.INPUT;
@@ -111,4 +118,5 @@ export type InputOutput =
     IKeydown|
     OMulti|
     OSingle|
+    OStyle<keyof CSSStyleDeclaration>|
     IValue<unknown>|OValue<unknown>;

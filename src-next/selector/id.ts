@@ -1,6 +1,6 @@
 import {RenderContext} from '../render/types/render-context';
 import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedIO} from '../types/ctrl';
-import {IAttr, IClass, IEvent, IFlag, IKeydown, InputOutput, OAttr, OClass, OFlag, OMulti, OSingle} from '../types/io';
+import {IAttr, IClass, IEvent, IFlag, IKeydown, InputOutput, OAttr, OClass, OFlag, OMulti, OSingle, OStyle} from '../types/io';
 import {Registration} from '../types/registration';
 import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
 
@@ -25,7 +25,8 @@ export type ExtraUnresolvedBindingSpec = Record<
     UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|
     UnresolvedIO<IKeydown>|
     UnresolvedIO<OMulti>|
-    UnresolvedIO<OSingle>
+    UnresolvedIO<OSingle>|
+    UnresolvedIO<OStyle<any>>
 >;
 
 export function id<S extends Spec>(
@@ -51,7 +52,7 @@ export function id<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
     );
   }
 
-  const normalizedExtra: ExtraUnresolvedBindingSpec = extra ?? {};
+  const normalizedExtra: Record<string, UnresolvedIO<any>> = extra ?? {};
   for (const key in normalizedExtra) {
     providers[key] = (root: ShadowRoot, context: RenderContext) => normalizedExtra[key].resolve(
         getElement(root, id),
