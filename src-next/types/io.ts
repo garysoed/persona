@@ -1,5 +1,7 @@
 import {Type} from 'gs-types';
 
+import {KeyMatchOptions} from './key-match-options';
+
 export enum IOType {
   INPUT,
   OUTPUT,
@@ -10,6 +12,7 @@ export enum ApiType {
   CLASS,
   EVENT,
   FLAG,
+  KEYDOWN,
   MULTI,
   SINGLE,
   VALUE,
@@ -63,6 +66,13 @@ export interface OFlag {
   readonly attrName: string;
 }
 
+export interface IKeydown {
+  readonly apiType: ApiType.KEYDOWN;
+  readonly ioType: IOType.INPUT;
+  readonly key: string;
+  readonly matchOptions: KeyMatchOptions;
+}
+
 export interface OMulti {
   readonly apiType: ApiType.MULTI;
   readonly ioType: IOType.OUTPUT;
@@ -98,6 +108,7 @@ export type InputOutput =
     IClass|OClass|
     IEvent|OEvent|
     IFlag|OFlag|
+    IKeydown|
     OMulti|
     OSingle|
     IValue<unknown>|OValue<unknown>;
