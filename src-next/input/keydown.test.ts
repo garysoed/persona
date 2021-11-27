@@ -98,9 +98,8 @@ test('@persona/src/input/keydown', init => {
       const element = _.tester.createElement(HOST);
       const root = getEl(element, 'el')!;
 
-      const event = new KeyboardEvent('keydown', {key: KEY});
-      root.dispatchEvent(event);
-      root.dispatchEvent(new KeyboardEvent('keydown', {key: 'other'}));
+      const event = root.simulateKeydown(KEY);
+      root.simulateKeydown('other');
 
       assert($noOption$.get(_.tester.vine)).to.emitSequence([event]);
     });
@@ -110,15 +109,13 @@ test('@persona/src/input/keydown', init => {
       const root = getEl(element, 'el')!;
 
       // alt === true
-      const altEvent = new KeyboardEvent('keydown', {key: KEY, altKey: true});
-      root.dispatchEvent(altEvent);
-      root.dispatchEvent(new KeyboardEvent('keydown', {key: 'other'}));
+      const altEvent = root.simulateKeydown(KEY, {altKey: true});
+      root.simulateKeydown('other');
       assert($altTrue$.get(_.tester.vine)).to.emitSequence([altEvent]);
 
       // alt === false
-      const nonAltEvent = new KeyboardEvent('keydown', {key: KEY});
-      root.dispatchEvent(nonAltEvent);
-      root.dispatchEvent(new KeyboardEvent('keydown', {key: 'other', altKey: true}));
+      const nonAltEvent = root.simulateKeydown(KEY);
+      root.simulateKeydown('other', {altKey: true});
       assert($altFalse$.get(_.tester.vine)).to.emitSequence([nonAltEvent]);
 
       // alt === undefined
@@ -130,15 +127,13 @@ test('@persona/src/input/keydown', init => {
       const root = getEl(element, 'el')!;
 
       // ctrl === true
-      const ctrlEvent = new KeyboardEvent('keydown', {key: KEY, ctrlKey: true});
-      root.dispatchEvent(ctrlEvent);
-      root.dispatchEvent(new KeyboardEvent('keydown', {key: 'other'}));
+      const ctrlEvent = root.simulateKeydown(KEY, {ctrlKey: true});
+      root.simulateKeydown('other');
       assert($ctrlTrue$.get(_.tester.vine)).to.emitSequence([ctrlEvent]);
 
       // ctrl === false
-      const nonCtrlEvent = new KeyboardEvent('keydown', {key: KEY});
-      root.dispatchEvent(nonCtrlEvent);
-      root.dispatchEvent(new KeyboardEvent('keydown', {key: 'other', ctrlKey: true}));
+      const nonCtrlEvent = root.simulateKeydown(KEY);
+      root.simulateKeydown('other', {ctrlKey: true});
       assert($ctrlFalse$.get(_.tester.vine)).to.emitSequence([nonCtrlEvent]);
 
       // ctrl === undefined
@@ -150,15 +145,13 @@ test('@persona/src/input/keydown', init => {
       const root = getEl(element, 'el')!;
 
       // meta === true
-      const metaEvent = new KeyboardEvent('keydown', {key: KEY, metaKey: true});
-      root.dispatchEvent(metaEvent);
-      root.dispatchEvent(new KeyboardEvent('keydown', {key: 'other'}));
+      const metaEvent = root.simulateKeydown(KEY, {metaKey: true});
+      root.simulateKeydown('other');
       assert($metaTrue$.get(_.tester.vine)).to.emitSequence([metaEvent]);
 
       // meta === false
-      const nonMetaEvent = new KeyboardEvent('keydown', {key: KEY});
-      root.dispatchEvent(nonMetaEvent);
-      root.dispatchEvent(new KeyboardEvent('keydown', {key: 'other', metaKey: true}));
+      const nonMetaEvent = root.simulateKeydown(KEY);
+      root.simulateKeydown('other', {metaKey: true});
       assert($metaFalse$.get(_.tester.vine)).to.emitSequence([nonMetaEvent]);
 
       // meta === undefined
@@ -170,15 +163,13 @@ test('@persona/src/input/keydown', init => {
       const root = getEl(element, 'el')!;
 
       // shift === true
-      const shiftEvent = new KeyboardEvent('keydown', {key: KEY, shiftKey: true});
-      root.dispatchEvent(shiftEvent);
-      root.dispatchEvent(new KeyboardEvent('keydown', {key: 'other'}));
+      const shiftEvent = root.simulateKeydown(KEY, {shiftKey: true});
+      root.simulateKeydown('other');
       assert($shiftTrue$.get(_.tester.vine)).to.emitSequence([shiftEvent]);
 
       // shift === false
-      const nonShiftEvent = new KeyboardEvent('keydown', {key: KEY});
-      root.dispatchEvent(nonShiftEvent);
-      root.dispatchEvent(new KeyboardEvent('keydown', {key: 'other', shiftKey: true}));
+      const nonShiftEvent = root.simulateKeydown(KEY);
+      root.simulateKeydown('other', {shiftKey: true});
       assert($shiftFalse$.get(_.tester.vine)).to.emitSequence([nonShiftEvent]);
 
       // shift === undefined

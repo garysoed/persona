@@ -1,3 +1,6 @@
+export {setupTest} from '../src-next/testing/setup-test';
+
+
 export {createFakeWindow} from '../src/testing/fake-window';
 export {FakeCustomElementRegistry} from '../src/testing/fake-custom-element-registry';
 export {PersonaTesterFactory} from '../src/testing/persona-tester';
