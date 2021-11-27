@@ -1,18 +1,24 @@
-export {Context, Ctrl, Spec as ElementSpec} from '../src-next/types/ctrl';
+export {Bindings, Context, Ctrl, Spec as ElementSpec} from '../src-next/types/ctrl';
 export {installCustomElements} from '../src-next/core/install-custom-elements';
 export {registerCustomElement} from '../src-next/core/register-custom-element';
 export {Registration} from '../src-next/types/registration';
 
 export {id} from '../src-next/selector/id';
+export {root} from '../src-next/selector/root';
 
 export {ievent} from '../src-next/input/event';
+export {iflag} from '../src-next/input/flag';
 
+export {oattr} from '../src-next/output/attr';
+export {oevent} from '../src-next/output/event';
 export {omulti} from '../src-next/output/multi';
+export {osingle} from '../src-next/output/single';
 
 export {DIV} from '../src-next/html/div';
 
 export {RenderSpec} from '../src-next/render/types/render-spec';
 export {renderElement, RenderElementSpec} from '../src-next/render/types/render-element-spec';
+export {renderNode, RenderNodeSpec} from '../src-next/render/types/render-node-spec';
 
 
 // DEPRECATED
@@ -67,7 +73,6 @@ export {textOut} from '../src/output/text-out';
 // Selectors
 export {host} from '../src/selector/host';
 export {element} from '../src/selector/element';
-export {root} from '../src/selector/root';
 export {Selector} from '../src/types/selector';
 
 
@@ -87,7 +92,6 @@ export {RenderTextNodeSpec, renderTextNode} from '../src/render/types/render-tex
 export {renderCustomElement, RenderCustomElementSpec} from '../src/render/types/render-custom-element-spec';
 export {renderFragment, RenderFragmentSpec} from '../src/render/types/render-fragment-spec';
 export {renderHtml, RenderHtmlSpec} from '../src/render/types/render-html-spec';
-export {renderNode, RenderNodeSpec} from '../src/render/types/render-node-spec';
 export {render} from '../src/render/render';
 
 export {NodeWithId} from '../src/render/node-with-id';
