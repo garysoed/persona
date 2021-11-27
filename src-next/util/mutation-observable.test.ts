@@ -1,8 +1,9 @@
 import {assert, createSpySubject, runEnvironment, should, test} from 'gs-testing';
 import {filter, map} from 'rxjs/operators';
 
-import {mutationObservable} from '../../src/util/mutation-observable';
 import {PersonaTesterEnvironment} from '../testing/persona-tester-environment';
+
+import {mutationObservable} from './mutation-observable';
 
 
 test('@persona/src/util/mutation-observable', init => {

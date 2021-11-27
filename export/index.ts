@@ -26,6 +26,8 @@ export {renderElement, RenderElementSpec} from '../src-next/render/types/render-
 export {renderHtml, RenderHtmlSpec} from '../src-next/render/types/render-html-spec';
 export {renderNode, RenderNodeSpec} from '../src-next/render/types/render-node-spec';
 
+export {mediaQueryObservable} from '../src-next/util/media-query-observable';
+
 
 // DEPRECATED
 

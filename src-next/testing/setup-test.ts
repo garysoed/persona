@@ -6,7 +6,7 @@ import {Spec} from '../types/ctrl';
 import {Registration} from '../types/registration';
 
 import {FakeCustomElementRegistry} from './fake-custom-element-registry';
-import {mockMatchMedia} from './mock-match-media';
+import {FakeMediaQuery, mockMatchMedia} from './mock-match-media';
 import {PersonaTesterEnvironment} from './persona-tester-environment';
 
 
@@ -24,6 +24,15 @@ export class Tester {
 
   createElement<E extends HTMLElement, S extends Spec>(spec: Registration<E, S>): E {
     return this.customElementRegistry.create(spec.tag) as E;
+  }
+
+  setMedia(query: string, value: boolean): void {
+    const mediaQuery = window.matchMedia(query);
+    if (!(mediaQuery instanceof FakeMediaQuery)) {
+      throw new Error(`mediaQuery should be a ${FakeMediaQuery} but was ${mediaQuery}`);
+    }
+
+    (mediaQuery as FakeMediaQuery).matches = value;
   }
 }
 

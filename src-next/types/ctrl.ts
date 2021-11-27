@@ -4,7 +4,7 @@ import {Observable, OperatorFunction} from 'rxjs';
 import {RenderContext} from '../render/types/render-context';
 import {RenderSpec} from '../render/types/render-spec';
 
-import {IAttr, IClass, IEvent, IFlag, IKeydown, InputOutput, IValue, OAttr, OClass, OEvent, OFlag, OMulti, OSingle, OStyle, OValue} from './io';
+import {IAttr, IClass, IEvent, IFlag, IKeydown, IMedia, InputOutput, IValue, OAttr, OClass, OEvent, OFlag, OMulti, OSingle, OStyle, OValue} from './io';
 import {Target} from './target';
 
 
@@ -31,6 +31,7 @@ export type Resolved<T extends InputOutput> =
     T extends IFlag ? IFlag&ResolvedI<boolean> :
     T extends OFlag ? OFlag&ResolvedO<boolean> :
     T extends IKeydown ? IKeydown&ResolvedI<KeyboardEvent> :
+    T extends IMedia ? IMedia&ResolvedI<boolean> :
     T extends OMulti ? OMulti&ResolvedO<readonly RenderSpec[]> :
     T extends OSingle ? OSingle&ResolvedO<RenderSpec|null> :
     T extends OStyle<infer S> ? OStyle<S>&ResolvedO<CSSStyleDeclaration[S]> :

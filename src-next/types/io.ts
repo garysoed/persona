@@ -13,6 +13,7 @@ export enum ApiType {
   EVENT,
   FLAG,
   KEYDOWN,
+  MEDIA,
   MULTI,
   SINGLE,
   STYLE,
@@ -74,6 +75,12 @@ export interface IKeydown {
   readonly matchOptions: KeyMatchOptions;
 }
 
+export interface IMedia {
+  readonly apiType: ApiType.MEDIA;
+  readonly ioType: IOType.INPUT;
+  readonly query: string;
+}
+
 export interface OMulti {
   readonly apiType: ApiType.MULTI;
   readonly ioType: IOType.OUTPUT;
@@ -116,6 +123,7 @@ export type InputOutput =
     IEvent|OEvent|
     IFlag|OFlag|
     IKeydown|
+    IMedia|
     OMulti|
     OSingle|
     OStyle<keyof CSSStyleDeclaration>|
