@@ -1,6 +1,6 @@
 import {iflag} from '../input/flag';
 
-import {HtmlRegistration} from './html-spec';
+import {HtmlRegistration} from './html-registration';
 
 
 export const BUTTON: HtmlRegistration = {
