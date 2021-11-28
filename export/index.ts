@@ -10,7 +10,7 @@ export {iattr} from '../src-next/input/attr';
 export {ievent} from '../src-next/input/event';
 export {iflag} from '../src-next/input/flag';
 export {ikeydown} from '../src-next/input/keydown';
-export {iresize} from '../src-next/input/resize';
+export {irect} from '../src-next/input/rect';
 
 export {oattr} from '../src-next/output/attr';
 export {oevent} from '../src-next/output/event';

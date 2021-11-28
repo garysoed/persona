@@ -1,3 +1,4 @@
+import {setBoundingClientRect} from './fake-rect';
 import {dispatchResizeEvent} from './fake-resize-observer';
 
 interface Options {
@@ -28,7 +29,7 @@ type Harness = HTMLElement & {
   simulateKeydown(key: string, options?: Options): KeyboardEvent;
   simulateMouseOut(): MouseOutEvents;
   simulateMouseOver(): MouseOverEvents;
-  simulateResize(entries: ReadonlyArray<Partial<ResizeObserverEntry>>): Event;
+  simulateResize(newRect: DOMRect): Event;
 };
 
 export function getEl(el: HTMLElement, id: string): Harness|null {
@@ -86,8 +87,9 @@ export function getEl(el: HTMLElement, id: string): Harness|null {
       return event;
     },
 
-    simulateResize(entries: ReadonlyArray<Partial<ResizeObserverEntry>>): Event {
-      return dispatchResizeEvent(element, entries);
+    simulateResize(newRect: DOMRect): Event {
+      setBoundingClientRect(element, newRect);
+      return dispatchResizeEvent(element, [{contentRect: newRect}]);
     },
   });
 }
