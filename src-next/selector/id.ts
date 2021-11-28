@@ -1,6 +1,6 @@
 import {RenderContext} from '../render/types/render-context';
 import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedIO} from '../types/ctrl';
-import {IAttr, IClass, IEvent, IFlag, IKeydown, InputOutput, IRect, OAttr, OClass, OFlag, OMulti, OSingle, OStyle, OText} from '../types/io';
+import {IAttr, IClass, IEvent, IFlag, IKeydown, InputOutput, IRect, ITarget, OAttr, OClass, OFlag, OMulti, OSingle, OStyle, OText} from '../types/io';
 import {Registration} from '../types/registration';
 import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
 
@@ -28,6 +28,7 @@ export type ExtraUnresolvedBindingSpec = Record<
     UnresolvedIO<IRect>|
     UnresolvedIO<OSingle>|
     UnresolvedIO<OStyle<any>>|
+    UnresolvedIO<ITarget>|
     UnresolvedIO<OText>
 >;
 

@@ -18,6 +18,7 @@ export enum ApiType {
   RECT,
   SINGLE,
   STYLE,
+  TARGET,
   TEXT,
   VALUE,
 }
@@ -106,6 +107,11 @@ export interface OStyle<S extends keyof CSSStyleDeclaration> {
   readonly propertyName: S;
 }
 
+export interface ITarget {
+  readonly apiType: ApiType.TARGET;
+  readonly ioType: IOType.INPUT;
+}
+
 export interface OText {
   readonly apiType: ApiType.TEXT;
   readonly ioType: IOType.OUTPUT;
@@ -140,5 +146,6 @@ export type InputOutput =
     IRect|
     OSingle|
     OStyle<keyof CSSStyleDeclaration>|
+    ITarget|
     OText|
     IValue<unknown>|OValue<unknown>;
