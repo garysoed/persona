@@ -3,10 +3,11 @@ import {BehaviorSubject, Subject} from 'rxjs';
 
 import {Spec} from '../types/ctrl';
 import {AttributeChangedEvent} from '../types/event';
-import {ApiType, IValue, OValue} from '../types/io';
+import {IValue, OValue} from '../types/io';
 import {Registration, RegistrationSpec} from '../types/registration';
 import {setAttributeChangeObservable} from '../util/attribute-change-observable';
 
+import {getObservedAttributes} from './get-observed-attributes';
 import {upgradeElement} from './upgrade-element';
 
 
@@ -44,18 +45,7 @@ export function registerCustomElement<S extends Spec>(
       }
 
       static get observedAttributes(): readonly string[] {
-        const attributes = [];
-        const hostSpecs = spec.spec.host ?? {};
-        for (const key in hostSpecs) {
-          const spec = hostSpecs[key];
-          if (spec.apiType !== ApiType.ATTR) {
-            continue;
-          }
-
-          attributes.push(spec.attrName);
-        }
-
-        return attributes;
+        return getObservedAttributes(spec);
       }
 
       attributeChangedCallback(attrName: string): void {

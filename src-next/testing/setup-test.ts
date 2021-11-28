@@ -59,8 +59,8 @@ export function setupTest(spec: TestSpec): Tester {
     ...spec,
   });
 
-  for (const registration of registrations) {
-    registrationMap.set(registration.tag, registration);
+  for (const [tag, registration] of registrations) {
+    registrationMap.set(tag, registration);
   }
 
   const tester = new Tester(fakeTime, vine, customElementRegistry);

@@ -12,11 +12,11 @@ export interface InstallSpec {
   readonly vine: Vine;
 }
 
-export function installCustomElements(spec: InstallSpec): readonly GenericRegistration[] {
+export function installCustomElements(spec: InstallSpec): ReadonlyMap<string, GenericRegistration> {
   const registrations = getAllRegistrations(spec.roots);
-  for (const registration of registrations) {
+  for (const [tag, registration] of registrations) {
     registration.configure(spec.vine);
-    spec.customElementRegistry.define(registration.tag, registration.get(spec.vine));
+    spec.customElementRegistry.define(tag, registration.get(spec.vine));
   }
 
   return registrations;
@@ -24,13 +24,14 @@ export function installCustomElements(spec: InstallSpec): readonly GenericRegist
 
 function getAllRegistrations(
     rootRegistrations: readonly GenericRegistration[],
-): readonly GenericRegistration[] {
-  const registrations = [];
+): ReadonlyMap<string, GenericRegistration> {
+  const registrations = new Map<string, GenericRegistration>();
   for (const registration of rootRegistrations) {
-    registrations.push(
-        registration,
-        ...getAllRegistrations(registration.deps ?? []),
-    );
+    registrations.set(registration.tag, registration);
+    const subRegistrations = getAllRegistrations(registration.deps ?? []);
+    for (const [tag, sub] of subRegistrations) {
+      registrations.set(tag, sub);
+    }
   }
 
   return registrations;

@@ -5,6 +5,7 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
 import {AttributeChangedEvent} from '../../export';
+import {getObservedAttributes} from '../core/get-observed-attributes';
 import {upgradeElement} from '../core/upgrade-element';
 import {Spec} from '../types/ctrl';
 import {Registration} from '../types/registration';
@@ -90,10 +91,14 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     const isConnected$ = new BehaviorSubject(false);
     const onAttributeChanged$ = new Subject<AttributeChangedEvent>();
     setAttributeChangeObservable(el, onAttributeChanged$);
+    const observedAttributes = new Set(getObservedAttributes(registration));
     const decoratedEl = Object.assign(
         el,
         {
           attributeChangedCallback(attrName: string): void {
+            if (!observedAttributes.has(attrName)) {
+              return;
+            }
             onAttributeChanged$.next({attrName});
           },
 
