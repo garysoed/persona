@@ -1,3 +1,5 @@
+import {dispatchResizeEvent} from './fake-resize-observer';
+
 interface Options {
   readonly altKey?: boolean;
   readonly ctrlKey?: boolean;
@@ -26,6 +28,7 @@ type Harness = HTMLElement & {
   simulateKeydown(key: string, options?: Options): KeyboardEvent;
   simulateMouseOut(): MouseOutEvents;
   simulateMouseOver(): MouseOverEvents;
+  simulateResize(entries: ReadonlyArray<Partial<ResizeObserverEntry>>): Event;
 };
 
 export function getEl(el: HTMLElement, id: string): Harness|null {
@@ -81,6 +84,10 @@ export function getEl(el: HTMLElement, id: string): Harness|null {
       const event = new KeyboardEvent('keydown', {key, ...options});
       element.dispatchEvent(event);
       return event;
+    },
+
+    simulateResize(entries: ReadonlyArray<Partial<ResizeObserverEntry>>): Event {
+      return dispatchResizeEvent(element, entries);
     },
   });
 }

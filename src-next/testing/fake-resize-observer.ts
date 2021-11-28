@@ -20,8 +20,10 @@ class FakeResizeObserver implements ResizeObserver {
 export function dispatchResizeEvent(
     target: Element,
     entries: ReadonlyArray<Partial<ResizeObserverEntry>>,
-): void {
-  target.dispatchEvent(new CustomEvent(EVENT, {detail: entries}));
+): Event {
+  const event = new CustomEvent(EVENT, {detail: entries});
+  target.dispatchEvent(event);
+  return event;
 }
 
 export function installFakeResizeObserver(): () => void {

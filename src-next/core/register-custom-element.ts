@@ -1,8 +1,8 @@
 import {source} from 'grapevine';
 import {BehaviorSubject, Subject} from 'rxjs';
 
-import {AttributeChangedEvent} from '../../export';
 import {Spec} from '../types/ctrl';
+import {AttributeChangedEvent} from '../types/event';
 import {ApiType, IValue, OValue} from '../types/io';
 import {Registration, RegistrationSpec} from '../types/registration';
 import {setAttributeChangeObservable} from '../util/attribute-change-observable';

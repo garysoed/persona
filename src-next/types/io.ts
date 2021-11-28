@@ -15,6 +15,7 @@ export enum ApiType {
   KEYDOWN,
   MEDIA,
   MULTI,
+  RESIZE,
   SINGLE,
   STYLE,
   TEXT,
@@ -88,6 +89,11 @@ export interface OMulti {
   readonly slotName: string;
 }
 
+export interface IResize {
+  readonly apiType: ApiType.RESIZE;
+  readonly ioType: IOType.INPUT;
+}
+
 export interface OSingle {
   readonly apiType: ApiType.SINGLE;
   readonly ioType: IOType.OUTPUT;
@@ -131,6 +137,7 @@ export type InputOutput =
     IKeydown|
     IMedia|
     OMulti|
+    IResize|
     OSingle|
     OStyle<keyof CSSStyleDeclaration>|
     OText|
