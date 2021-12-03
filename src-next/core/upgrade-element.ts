@@ -27,6 +27,7 @@ export function upgradeElement(
 ): void {
   const shadowRoot = createShadow(registration, element, vine);
   createProperties(registration, element);
+  createMethods(registration, element);
   createCtrl(registration, element, shadowRoot, vine, isConnected$);
   Object.setPrototypeOf(element, registration.get(vine).prototype);
 }
@@ -91,6 +92,30 @@ function createCtrl(
       .subscribe();
 }
 
+function createMethods(
+    registrationSpec: RegistrationSpec<Spec>,
+    element: HTMLElement,
+): void {
+  const methodRecord: Record<string, Function> = {};
+  const spec = {
+    ...(registrationSpec.spec ?? {}),
+  };
+  for (const key in spec.host) {
+    const io = spec.host[key];
+    if (io.apiType !== ApiType.CALL) {
+      continue;
+    }
+
+    const value$ = new Subject<unknown>();
+    methodRecord[key] = (arg: unknown) => {
+      value$.next(arg);
+    };
+    setValueObservable(element, key, value$);
+  }
+
+  Object.assign(element, methodRecord);
+}
+
 function createProperties(
     registrationSpec: RegistrationSpec<Spec>,
     element: HTMLElement,
@@ -106,7 +131,7 @@ function createProperties(
     }
 
     const value$ = new BehaviorSubject<unknown>(io.defaultValue);
-    descriptor[key] = createDescriptor(io, value$);
+    descriptor[key] = createDescriptorForProperty(io, value$);
     setValueObservable(element, key, value$);
   }
 
@@ -114,7 +139,7 @@ function createProperties(
 }
 
 
-function createDescriptor<T>(
+function createDescriptorForProperty<T>(
     io: IValue<T>|OValue<T>,
     value$: BehaviorSubject<T>,
 ): PropertyDescriptor {

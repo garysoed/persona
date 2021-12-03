@@ -7,6 +7,7 @@ export {id} from '../src-next/selector/id';
 export {root} from '../src-next/selector/root';
 
 export {iattr} from '../src-next/input/attr';
+export {icall} from '../src-next/input/call';
 export {ievent} from '../src-next/input/event';
 export {iflag} from '../src-next/input/flag';
 export {ikeydown} from '../src-next/input/keydown';

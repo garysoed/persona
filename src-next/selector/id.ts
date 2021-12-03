@@ -1,6 +1,6 @@
 import {RenderContext} from '../render/types/render-context';
 import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedIO} from '../types/ctrl';
-import {IAttr, IClass, IEvent, IFlag, IKeydown, InputOutput, IRect, ITarget, OAttr, OClass, OFlag, OMulti, OSingle, OStyle, OText} from '../types/io';
+import {IAttr, IClass, IEvent, IFlag, IKeydown, InputOutput, IRect, ITarget, OAttr, OCall, OClass, OFlag, OMulti, OSingle, OStyle, OText} from '../types/io';
 import {Registration} from '../types/registration';
 import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
 
@@ -20,6 +20,7 @@ function getElement(root: ShadowRoot, id: string): HTMLElement {
 export type ExtraUnresolvedBindingSpec = Record<
     string,
     UnresolvedIO<IAttr>|UnresolvedIO<OAttr>|
+    UnresolvedIO<OCall<any>>|
     UnresolvedIO<IClass>|UnresolvedIO<OClass>|
     UnresolvedIO<IEvent>|
     UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|

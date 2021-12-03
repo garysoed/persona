@@ -3,7 +3,7 @@ import {BehaviorSubject, Subject} from 'rxjs';
 
 import {Spec} from '../types/ctrl';
 import {AttributeChangedEvent} from '../types/event';
-import {IValue, OValue} from '../types/io';
+import {ICall, IValue, OValue} from '../types/io';
 import {Registration, RegistrationSpec} from '../types/registration';
 import {setAttributeChangeObservable} from '../util/attribute-change-observable';
 
@@ -18,7 +18,8 @@ interface Typeof<T> {
 
 
 type ApiReadable<A> = {
-  [K in keyof A]: A[K] extends OValue<infer T> ? T : A[K] extends IValue<infer T> ? T : never;
+  [K in keyof A]: A[K] extends OValue<infer T> ? T :
+      A[K] extends IValue<infer T> ? T : never;
 }
 
 type ApiReadonlyKeys<A> = {
@@ -28,7 +29,11 @@ type ApiReadonlyKeys<A> = {
 
 type ApiReadonly<A> = Readonly<ApiReadable<Pick<A, ApiReadonlyKeys<A>>>>;
 
-export type ApiAsProperties<S extends Spec> = ApiReadable<S['host']>&ApiReadonly<S['host']>;
+export type ApiMethod<A> = {
+  [K in keyof A]: A[K] extends ICall<infer A> ? (arg: A) => void : never;
+}
+
+export type ApiAsProperties<S extends Spec> = (ApiReadable<S['host']>&ApiReadonly<S['host']>)|ApiMethod<S['host']>;
 
 export function registerCustomElement<S extends Spec>(
     spec: RegistrationSpec<S>,

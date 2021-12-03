@@ -1,20 +1,23 @@
 import {iattr} from '../input/attr';
+import {icall} from '../input/call';
 import {iclass} from '../input/class';
 import {ievent} from '../input/event';
 import {iflag} from '../input/flag';
 import {ivalue} from '../input/value';
 import {oattr} from '../output/attr';
+import {ocall} from '../output/call';
 import {oclass} from '../output/class';
 import {oevent} from '../output/event';
 import {oflag} from '../output/flag';
 import {ovalue} from '../output/value';
 import {UnresolvedBindingSpec} from '../types/ctrl';
-import {ApiType, IAttr, IClass, IEvent, IFlag, InputOutput, IOType, IValue, OAttr, OClass, OEvent, OFlag, OMulti, OSingle, OText, OValue} from '../types/io';
+import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, IValue, OAttr, OCall, OClass, OEvent, OFlag, OMulti, OSingle, OText, OValue} from '../types/io';
 
 
 type ReversedIO<T> =
     T extends IAttr ? OAttr :
     T extends OAttr ? IAttr :
+    T extends ICall<infer A> ? OCall<A> :
     T extends IClass ? OClass :
     T extends OClass ? IClass :
     T extends OEvent ? IEvent :
@@ -30,6 +33,7 @@ export type ReversedSpec<U extends UnresolvedBindingSpec> = UnresolvedBindingSpe
 
 type ReversableIO =
     IAttr|OAttr|
+    ICall<any>|OCall<any>|
     IClass|OClass|
     OEvent|IEvent|
     IFlag|OFlag|
@@ -56,6 +60,14 @@ function reverseIO(io: ReversableIO): InputOutput {
           return oattr(io.attrName);
         case IOType.OUTPUT:
           return iattr(io.attrName);
+      }
+      break;
+    case ApiType.CALL:
+      switch (io.ioType) {
+        case IOType.INPUT:
+          return ocall(io.methodName, io.argType);
+        case IOType.OUTPUT:
+          return icall(io.methodName, io.argType);
       }
       break;
     case ApiType.CLASS:
