@@ -110,7 +110,7 @@ function createMethods(
     methodRecord[key] = (arg: unknown) => {
       value$.next(arg);
     };
-    setValueObservable(element, key, value$);
+    setValueObservable(element, io.methodName, value$);
   }
 
   Object.assign(element, methodRecord);
@@ -132,7 +132,7 @@ function createProperties(
 
     const value$ = new BehaviorSubject<unknown>(io.defaultValue);
     descriptor[key] = createDescriptorForProperty(io, value$);
-    setValueObservable(element, key, value$);
+    setValueObservable(element, io.key, value$);
   }
 
   Object.defineProperties(element, descriptor);
