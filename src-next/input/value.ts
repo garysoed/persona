@@ -1,10 +1,11 @@
 import {Type, undefinedType, unionType} from 'gs-types';
-import {Observable, throwError, defer} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {defer, from, Observable, throwError} from 'rxjs';
+import {map, retryWhen} from 'rxjs/operators';
 
 import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IOType, IValue} from '../types/io';
 import {getValueObservable} from '../util/value-observable';
+
 
 class ResolvedIValue<T> implements Resolved<UnresolvedIValue<T>> {
   readonly apiType = ApiType.VALUE;
@@ -22,12 +23,19 @@ class ResolvedIValue<T> implements Resolved<UnresolvedIValue<T>> {
     return defer(() => {
       const value$ = getValueObservable(this.target, this.key);
       if (!value$) {
-        return throwError(new Error(`Target ${this.target} has no observable value ${this.key}`));
+        return throwError(
+            new Error(`Target ${this.target.tagName}#${this.target.id} has no observable value ${this.key}`),
+        );
       }
 
       return value$;
     })
         .pipe(
+            retryWhen(() => {
+              return from(
+                  window.customElements.whenDefined(this.target.tagName.toLowerCase()),
+              );
+            }),
             map(value => value ?? this.defaultValue),
             map(value => {
               if (!this.valueType.check(value)) {

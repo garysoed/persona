@@ -84,7 +84,6 @@ function createCtrl(
             const runs = $pipe(
                 ctrl.runs,
                 $map(run => run.pipe(
-                    // TODO: Log error
                     catchError(err => {
                       // eslint-disable-next-line no-console
                       console.warn(err);

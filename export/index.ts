@@ -25,9 +25,11 @@ export {BUTTON} from '../src-next/html/button';
 export {DIV} from '../src-next/html/div';
 export {INPUT} from '../src-next/html/input';
 export {P} from '../src-next/html/p';
+export {SECTION} from '../src-next/html/section';
 export {SPAN} from '../src-next/html/span';
 
 export {RenderSpec} from '../src-next/render/types/render-spec';
+export {renderCustomElement, RenderCustomElementSpec} from '../src-next/render/types/render-custom-element-spec';
 export {renderElement, RenderElementSpec} from '../src-next/render/types/render-element-spec';
 export {renderHtml, RenderHtmlSpec} from '../src-next/render/types/render-html-spec';
 export {renderNode, RenderNodeSpec} from '../src-next/render/types/render-node-spec';
@@ -103,7 +105,6 @@ export {$htmlParseService as $innerHtmlParseService, ParseType} from '../src/ren
 export {HtmlParseService as InnerHtmlParseService} from '../src/render/html-parse-service';
 export {RenderSpecType} from '../src/render/types/render-spec-type';
 export {RenderTextNodeSpec, renderTextNode} from '../src/render/types/render-text-node-spec';
-export {renderCustomElement, RenderCustomElementSpec} from '../src/render/types/render-custom-element-spec';
 export {renderFragment, RenderFragmentSpec} from '../src/render/types/render-fragment-spec';
 export {render} from '../src/render/render';
 
