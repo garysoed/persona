@@ -33,6 +33,6 @@ export class UnresolvedIEvent implements UnresolvedIO<IEvent> {
   }
 }
 
-export function ievent(className: string): UnresolvedIEvent {
-  return new UnresolvedIEvent(className);
+export function ievent(eventName: string): UnresolvedIEvent {
+  return new UnresolvedIEvent(eventName);
 }

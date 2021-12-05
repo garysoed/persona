@@ -58,7 +58,14 @@ function createCtrl(
       vine,
     }));
   })
-      .pipe(shareReplay({bufferSize: 1, refCount: false}));
+      .pipe(
+          catchError(err => {
+            // eslint-disable-next-line no-console
+            console.error(err);
+            return EMPTY;
+          }),
+          shareReplay({bufferSize: 1, refCount: false}),
+      );
 
   combineLatest([
     ctrl$,

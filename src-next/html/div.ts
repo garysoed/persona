@@ -1,5 +1,3 @@
-import {HtmlRegistration} from './html-registration';
-
-export const DIV: HtmlRegistration = {
+export const DIV = {
   spec: {},
 };

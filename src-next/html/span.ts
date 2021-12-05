@@ -1,5 +1,3 @@
-import {HtmlRegistration} from './html-registration';
-
-export const SPAN: HtmlRegistration = {
+export const SPAN = {
   spec: {},
 };

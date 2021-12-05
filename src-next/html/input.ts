@@ -1,7 +1,7 @@
 import {iflag} from '../input/flag';
 
 
-export const BUTTON = {
+export const INPUT = {
   spec: {
     host: {
       autofocus: iflag('autofocus'),

@@ -1,3 +1,5 @@
+import {instanceofType, Type} from 'gs-types';
+
 import {setBoundingClientRect} from './fake-rect';
 import {dispatchResizeEvent} from './fake-resize-observer';
 
@@ -25,12 +27,15 @@ interface MouseOverEvents {
 }
 
 type Harness = HTMLElement & {
+  simulateChange(modifierFn: (el: HTMLInputElement) => void): Event;
   simulateClick(): ClickEvents;
   simulateKeydown(key: string, options?: Options): KeyboardEvent;
   simulateMouseOut(): MouseOutEvents;
   simulateMouseOver(): MouseOverEvents;
   simulateResize(newRect: DOMRect): Event;
 };
+
+const INPUT_EL_TYPE: Type<HTMLInputElement> = instanceofType(HTMLInputElement);
 
 export function getEl(el: HTMLElement, id: string): Harness|null {
   const element = el.shadowRoot?.getElementById(id) ?? null;
@@ -39,6 +44,14 @@ export function getEl(el: HTMLElement, id: string): Harness|null {
   }
 
   return Object.assign(element, {
+    simulateChange(modifierFn: (element: HTMLInputElement) => void): Event {
+      INPUT_EL_TYPE.assert(element);
+      modifierFn(element);
+      const event = new CustomEvent('change');
+      element.dispatchEvent(event);
+      return event;
+    },
+
     simulateClick(): ClickEvents {
       const down = new MouseEvent('mousedown');
       element.dispatchEvent(down);

@@ -23,6 +23,7 @@ export {otext} from '../src-next/output/text';
 
 export {BUTTON} from '../src-next/html/button';
 export {DIV} from '../src-next/html/div';
+export {INPUT} from '../src-next/html/input';
 export {P} from '../src-next/html/p';
 export {SPAN} from '../src-next/html/span';
 
