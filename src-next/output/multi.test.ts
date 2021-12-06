@@ -52,7 +52,7 @@ const HOST = registerCustomElement({
   template: '<!-- #root --><div id="el"><!-- #ref --></div>',
 });
 
-test('@persona/output/multi', init => {
+test('@persona/src/output/multi', init => {
   const _ = init(() => {
     runEnvironment(new BrowserSnapshotsEnv('src-next/output/goldens', goldens));
     const tester = setupTest({roots: [HOST]});

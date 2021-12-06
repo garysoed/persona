@@ -8,4 +8,5 @@ export const BUTTON = {
       disabled: iflag('disabled'),
     },
   },
+  tag: 'button',
 };

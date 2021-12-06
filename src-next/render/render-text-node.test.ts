@@ -47,7 +47,7 @@ const HOST = registerCustomElement({
   template: '<!-- #ref -->',
 });
 
-test('@persona/render/render-text-node', init => {
+test('@persona/src/render/render-text-node', init => {
   const _ = init(() => {
     runEnvironment(new BrowserSnapshotsEnv('src-next/render/goldens', goldens));
     const tester = setupTest({roots: [HOST]});

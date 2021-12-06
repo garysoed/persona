@@ -46,7 +46,7 @@ const HOST = registerCustomElement({
   template: '<!-- #ref --></div>',
 });
 
-test('@persona/render/decorators/apply-children', init => {
+test('@persona/src/render/decorators/apply-children', init => {
   const _ = init(() => {
     runEnvironment(new BrowserSnapshotsEnv('src-next/render/decorators/goldens', goldens));
     const tester = setupTest({roots: [HOST]});

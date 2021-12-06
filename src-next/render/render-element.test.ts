@@ -46,7 +46,7 @@ const HOST = registerCustomElement({
   template: '<!-- #ref -->',
 });
 
-test('@persona/render/render-element', init => {
+test('@persona/src/render/render-element', init => {
   const TAG = 'pr-test';
 
   const _ = init(() => {

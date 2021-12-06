@@ -47,7 +47,7 @@ const HOST = registerCustomElement({
 });
 
 
-test('@persona/render/render-html', init => {
+test('@persona/src/render/render-html', init => {
   const SUPPORTED_TYPE = 'text/xml';
 
   const _ = init(() => {

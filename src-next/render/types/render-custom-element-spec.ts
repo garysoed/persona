@@ -2,7 +2,6 @@ import {getOwnPropertyKeys} from 'gs-tools/export/typescript';
 import {Observable, of as observableOf} from 'rxjs';
 
 import {Binding, Spec, UnresolvedBindingSpec} from '../../types/ctrl';
-import {Registration} from '../../types/registration';
 
 import {BaseRenderSpec} from './base-render-spec';
 import {normalize, normalizeMap, ObservableOrValue} from './observable-or-value';
@@ -27,8 +26,13 @@ export type NormalizedInputsOf<S extends UnresolvedBindingSpec> = Partial<{
   readonly [K in keyof S]: Binding<S[K]> extends Observable<infer T> ? Observable<T> : never;
 }>;
 
+interface LiteRegistration<S extends Spec> {
+  readonly spec: S;
+  readonly tag: string;
+}
+
 interface InputRenderSpec<S extends Spec> extends BaseRenderSpec<HTMLElement> {
-  readonly registration: Registration<HTMLElement, S>;
+  readonly registration: LiteRegistration<S>;
   readonly attrs?: ReadonlyMap<string, ObservableOrValue<string|undefined>>;
   readonly children?: ObservableOrValue<readonly RenderSpec[]>;
   readonly inputs: InputsOf<S['host']&{}>;

@@ -8,4 +8,5 @@ export const INPUT = {
       disabled: iflag('disabled'),
     },
   },
+  tag: 'input',
 };
