@@ -15,6 +15,7 @@ export {irect} from '../src-next/input/rect';
 export {itarget} from '../src-next/input/target';
 
 export {oattr} from '../src-next/output/attr';
+export {oclass} from '../src-next/output/class';
 export {oevent} from '../src-next/output/event';
 export {omulti} from '../src-next/output/multi';
 export {osingle} from '../src-next/output/single';
@@ -27,6 +28,7 @@ export {INPUT} from '../src-next/html/input';
 export {P} from '../src-next/html/p';
 export {SECTION} from '../src-next/html/section';
 export {SPAN} from '../src-next/html/span';
+export {TABLE} from '../src-next/html/table';
 
 export {RenderSpec} from '../src-next/render/types/render-spec';
 export {renderCustomElement, RenderCustomElementSpec} from '../src-next/render/types/render-custom-element-spec';

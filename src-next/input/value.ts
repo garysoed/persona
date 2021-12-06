@@ -1,6 +1,6 @@
 import {Type, undefinedType, unionType} from 'gs-types';
-import {defer, from, Observable, throwError} from 'rxjs';
-import {map, retryWhen} from 'rxjs/operators';
+import {BehaviorSubject, defer, from, Observable, throwError} from 'rxjs';
+import {map, retryWhen, switchMapTo} from 'rxjs/operators';
 
 import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IOType, IValue} from '../types/io';
@@ -34,7 +34,8 @@ class ResolvedIValue<T> implements Resolved<UnresolvedIValue<T>> {
             retryWhen(() => {
               return from(
                   window.customElements.whenDefined(this.target.tagName.toLowerCase()),
-              );
+              )
+                  .pipe(switchMapTo(new BehaviorSubject({})));
             }),
             map(value => value ?? this.defaultValue),
             map(value => {
