@@ -1,7 +1,7 @@
 import {source} from 'grapevine';
 import {assert, should, test} from 'gs-testing';
 import {cache} from 'gs-tools/export/data';
-import {numberType} from 'gs-types';
+import {nullType, numberType, unionType} from 'gs-types';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
@@ -13,17 +13,18 @@ import {Context, Ctrl} from '../types/ctrl';
 import {ivalue} from './value';
 
 
-const $hostValue$ = source(() => new ReplaySubject<number|undefined>());
-const $hostValueWithDefault$ = source(() => new ReplaySubject<number>());
-const $shadowValue$ = source(() => new Subject<number|undefined>());
-const $shadowValueWithDefault$ = source(() => new Subject<number>());
+const $hostValue$ = source(() => new ReplaySubject<number|null|undefined>());
+const $hostValueWithDefault$ = source(() => new ReplaySubject<number|null>());
+const $shadowValue$ = source(() => new Subject<number|null|undefined>());
+const $shadowValueWithDefault$ = source(() => new Subject<number|null>());
 
 const DEFAULT_VALUE = 3;
+const VALUE_TYPE = unionType([numberType, nullType]);
 
 const $host = {
   host: {
-    value: ivalue('value', numberType),
-    valueWithDefault: ivalue('valueWithDefault', numberType, DEFAULT_VALUE),
+    value: ivalue('value', VALUE_TYPE),
+    valueWithDefault: ivalue('valueWithDefault', VALUE_TYPE, DEFAULT_VALUE),
   },
 };
 
@@ -106,6 +107,14 @@ test('@persona/src/input/value', init => {
 
       assert($hostValue$.get(_.tester.vine)).to.emitSequence([undefined, value, undefined]);
     });
+
+    should('handle null values', () => {
+      const element = _.tester.createElement(HOST);
+      element.value = null;
+      element.value = undefined;
+
+      assert($hostValue$.get(_.tester.vine)).to.emitSequence([undefined, null, undefined]);
+    });
   });
 
   test('shadow', () => {
@@ -124,6 +133,14 @@ test('@persona/src/input/value', init => {
       $shadowValue$.get(_.tester.vine).next(undefined);
 
       assert($hostValue$.get(_.tester.vine)).to.emitSequence([undefined, value, undefined]);
+    });
+
+    should('handle null values', () => {
+      _.tester.createElement(SHADOW);
+      $shadowValue$.get(_.tester.vine).next(null);
+      $shadowValue$.get(_.tester.vine).next(undefined);
+
+      assert($hostValue$.get(_.tester.vine)).to.emitSequence([undefined, null, undefined]);
     });
   });
 });

@@ -37,7 +37,6 @@ class ResolvedIValue<T> implements Resolved<UnresolvedIValue<T>> {
               )
                   .pipe(switchMapTo(new BehaviorSubject({})));
             }),
-            map(value => value ?? this.defaultValue),
             map(value => {
               if (!this.valueType.check(value)) {
                 throw new Error(`Value of key ${this.key} is not of type ${this.valueType}`);

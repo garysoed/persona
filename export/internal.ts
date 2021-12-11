@@ -1,3 +1,6 @@
+export {ReversedSpec} from '../src-next/util/reverse-spec';
+
+
 export {Input} from '../src/types/input';
 export {Output} from '../src/types/output';
 export {ShadowRootLike} from '../src/types/shadow-root-like';
