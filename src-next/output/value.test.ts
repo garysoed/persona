@@ -1,14 +1,15 @@
 import {source} from 'grapevine';
-import {assert, should, test} from 'gs-testing';
+import {assert, fake, should, spy, test} from 'gs-testing';
 import {cache} from 'gs-tools/export/data';
 import {numberType} from 'gs-types';
-import {Observable, ReplaySubject, Subject} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {take, tap} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {id} from '../selector/id';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
+import {setValueObservable} from '../util/value-observable';
 
 import {ovalue} from './value';
 
@@ -120,5 +121,27 @@ test('@persona/src/output/value', init => {
       $hostValue$.get(_.tester.vine).next(value);
       assert($shadowValue$.get(_.tester.vine)).to.emitSequence([undefined, value]);
     });
+  });
+
+  should('update values correctly if target is not initialized on time', async () => {
+    const onWhenDefined$ = new Subject<CustomElementConstructor>();
+    fake(spy(window.customElements, 'whenDefined')).always()
+        .return(onWhenDefined$ as any);
+
+    const key = 'key';
+    const output = ovalue(key, numberType);
+    const tag = 'tag';
+    const target = document.createElement(tag);
+
+    const value = 123;
+    const onUpdate = of(456, value).pipe(output.resolve(target).update(), take(1)).toPromise();
+
+    const value$ = new ReplaySubject();
+    setValueObservable(target, key, value$);
+    onWhenDefined$.next(HTMLElement);
+
+    await onUpdate;
+
+    assert(value$).to.emitSequence([value]);
   });
 });

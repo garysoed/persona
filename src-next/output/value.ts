@@ -1,10 +1,11 @@
 import {Type, undefinedType, unionType} from 'gs-types';
-import {OperatorFunction} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {of, OperatorFunction, pipe} from 'rxjs';
+import {switchMap, tap} from 'rxjs/operators';
 
 import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IOType, OValue} from '../types/io';
-import {getValueObservable} from '../util/value-observable';
+import {retryWhenDefined} from '../util/retry-when-defined';
+import {createMissingValueObservableError, getValueObservable} from '../util/value-observable';
 
 
 class ResolvedOValue<T> implements Resolved<UnresolvedOValue<T>> {
@@ -19,10 +20,20 @@ class ResolvedOValue<T> implements Resolved<UnresolvedOValue<T>> {
   ) {}
 
   update(): OperatorFunction<T, unknown> {
-    return tap(newValue => {
-      const value$ = getValueObservable(this.target, this.key);
-      value$?.next(newValue);
-    });
+    return pipe(
+        switchMap(newValue => {
+          return of(newValue).pipe(
+              tap(newValue => {
+                const value$ = getValueObservable(this.target, this.key);
+                if (!value$) {
+                  throw createMissingValueObservableError(this.target, this.key);
+                }
+                value$?.next(newValue);
+              }),
+              retryWhenDefined(this.target.tagName),
+          );
+        }),
+    );
   }
 }
 

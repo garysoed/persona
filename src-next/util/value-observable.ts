@@ -23,3 +23,10 @@ export function setValueObservable<K extends string>(
   map[key] = obs;
   Object.assign(element, {[__value$]: map});
 }
+
+export function createMissingValueObservableError(
+    target: HTMLElement,
+    key: string,
+): Error {
+  return new Error(`Target ${target.tagName}#${target.id} has no observable value ${key}`);
+}

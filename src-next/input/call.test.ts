@@ -1,14 +1,15 @@
 import {source} from 'grapevine';
-import {assert, should, test} from 'gs-testing';
+import {assert, createSpySubject, fake, should, spy, test} from 'gs-testing';
 import {cache} from 'gs-tools/export/data';
 import {numberType} from 'gs-types';
-import {Observable, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {id} from '../selector/id';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
+import {setValueObservable} from '../util/value-observable';
 
 import {icall} from './call';
 
@@ -97,5 +98,24 @@ test('@persona/src/input/call', init => {
 
       assert($hostValue$.get(_.tester.vine)).to.emitSequence([value]);
     });
+  });
+
+  should('emit values if target is not initialized on time', async () => {
+    const onWhenDefined$ = new Subject<CustomElementConstructor>();
+    fake(spy(window.customElements, 'whenDefined')).always()
+        .return(onWhenDefined$ as any);
+
+    const key = 'key';
+    const input = icall(key, numberType);
+    const tag = 'tag';
+    const target = document.createElement(tag);
+    const value$ = createSpySubject(input.resolve(target).value$);
+
+    const value = 123;
+    const valueSubject = new BehaviorSubject(value);
+    setValueObservable(target, key, valueSubject);
+    onWhenDefined$.next(HTMLElement);
+
+    assert(value$).to.emitSequence([value]);
   });
 });

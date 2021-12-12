@@ -1,10 +1,11 @@
 import {Type, undefinedType, unionType} from 'gs-types';
-import {BehaviorSubject, defer, from, Observable, throwError} from 'rxjs';
-import {map, retryWhen, switchMapTo} from 'rxjs/operators';
+import {defer, Observable, throwError} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IOType, IValue} from '../types/io';
-import {getValueObservable} from '../util/value-observable';
+import {retryWhenDefined} from '../util/retry-when-defined';
+import {createMissingValueObservableError, getValueObservable} from '../util/value-observable';
 
 
 class ResolvedIValue<T> implements Resolved<UnresolvedIValue<T>> {
@@ -23,20 +24,13 @@ class ResolvedIValue<T> implements Resolved<UnresolvedIValue<T>> {
     return defer(() => {
       const value$ = getValueObservable(this.target, this.key);
       if (!value$) {
-        return throwError(
-            new Error(`Target ${this.target.tagName}#${this.target.id} has no observable value ${this.key}`),
-        );
+        return throwError(createMissingValueObservableError(this.target, this.key));
       }
 
       return value$;
     })
         .pipe(
-            retryWhen(() => {
-              return from(
-                  window.customElements.whenDefined(this.target.tagName.toLowerCase()),
-              )
-                  .pipe(switchMapTo(new BehaviorSubject({})));
-            }),
+            retryWhenDefined(this.target.tagName),
             map(value => {
               if (!this.valueType.check(value)) {
                 throw new Error(`Value of key ${this.key} is not of type ${this.valueType}`);

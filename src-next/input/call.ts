@@ -4,7 +4,8 @@ import {map} from 'rxjs/operators';
 
 import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, ICall, IOType} from '../types/io';
-import {getValueObservable} from '../util/value-observable';
+import {retryWhenDefined} from '../util/retry-when-defined';
+import {createMissingValueObservableError, getValueObservable} from '../util/value-observable';
 
 
 class ResolvedICall<T> implements Resolved<UnresolvedICall<T>> {
@@ -22,14 +23,13 @@ class ResolvedICall<T> implements Resolved<UnresolvedICall<T>> {
     return defer(() => {
       const value$ = getValueObservable(this.target, this.methodName);
       if (!value$) {
-        return throwError(
-            new Error(`Target ${this.target} has no method value ${this.methodName}`),
-        );
+        return throwError(createMissingValueObservableError(this.target, this.methodName));
       }
 
       return value$;
     })
         .pipe(
+            retryWhenDefined(this.target.tagName),
             map(value => {
               if (!this.argType.check(value)) {
                 throw new Error(`Arg of method ${this.methodName} is not of type ${this.argType}`);

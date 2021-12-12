@@ -1,8 +1,9 @@
 import {source} from 'grapevine';
-import {assert, createSpySubject, should, test} from 'gs-testing';
+import {assert, createSpy, createSpySubject, fake, should, spy, test} from 'gs-testing';
 import {cache} from 'gs-tools/export/data';
-import {instanceofType} from 'gs-types';
-import {fromEvent, Observable, Subject} from 'rxjs';
+import {instanceofType, numberType} from 'gs-types';
+import {fromEvent, Observable, of, Subject} from 'rxjs';
+import {take} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
@@ -25,9 +26,7 @@ const $host = {
 };
 
 class HostCtrl implements Ctrl {
-  constructor(private readonly context: Context<typeof $host>) {
-
-  }
+  constructor(private readonly context: Context<typeof $host>) { }
 
   @cache()
   get runs(): ReadonlyArray<Observable<unknown>> {
@@ -62,6 +61,28 @@ test('@persona/src/output/call', init => {
       $elValue$.get(_.tester.vine).next(event);
 
       assert(spy).to.emitSequence([event]);
+    });
+
+    should('update values correctly if target is not initialized on time', async () => {
+      const onWhenDefined$ = new Subject<CustomElementConstructor>();
+      fake(spy(window.customElements, 'whenDefined')).always()
+          .return(onWhenDefined$ as any);
+
+      const key = 'key';
+      const output = ocall(key, numberType);
+      const tag = 'tag';
+      const target = document.createElement(tag);
+
+      const value = 123;
+      const onUpdate = of(456, value).pipe(output.resolve(target).update(), take(1)).toPromise();
+
+      const calledSpy = createSpy(`${key}Spy`);
+      (target as any)[key] = calledSpy;
+      onWhenDefined$.next(HTMLElement);
+
+      await onUpdate;
+
+      assert(calledSpy).to.haveBeenCalledWith(value);
     });
   });
 });

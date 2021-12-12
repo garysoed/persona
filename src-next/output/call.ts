@@ -1,9 +1,10 @@
 import {instanceofType, Type} from 'gs-types';
-import {BehaviorSubject, defer, from, of, OperatorFunction, pipe, throwError} from 'rxjs';
-import {retryWhen, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
+import {of, OperatorFunction, pipe} from 'rxjs';
+import {switchMap, tap} from 'rxjs/operators';
 
 import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IOType, OCall} from '../types/io';
+import {retryWhenDefined} from '../util/retry-when-defined';
 
 
 interface MaybeHtmlElement extends HTMLElement {
@@ -22,27 +23,19 @@ class ResolvedOCall<T> implements Resolved<UnresolvedOCall<T>> {
   ) {}
 
   update(): OperatorFunction<T, unknown> {
-    const method$ = defer(() => {
-      const method = (this.target as MaybeHtmlElement)[this.methodName];
-      if (!instanceofType(Function).check(method)) {
-        return throwError(new Error(`Property ${this.methodName} is not a function`));
-      }
-
-      return of(method);
-    })
-        .pipe(
-            retryWhen(() => {
-              return from(
-                  window.customElements.whenDefined(this.target.tagName.toLowerCase()),
-              )
-                  .pipe(switchMapTo(new BehaviorSubject({})));
-            }),
-        );
-    // Defer so we have time to upgrade the dependencies
     return pipe(
-        withLatestFrom(method$),
-        tap(([newValue, method]) => {
-          method.call(this.target, newValue);
+        switchMap(newValue => {
+          return of(newValue).pipe(
+              tap(newValue => {
+                const method = (this.target as MaybeHtmlElement)[this.methodName];
+                if (!instanceofType(Function).check(method)) {
+                  throw new Error(`Property ${this.methodName} is not a function`);
+                }
+
+                method.call(this.target, newValue);
+              }),
+              retryWhenDefined(this.target.tagName),
+          );
         }),
     );
   }
