@@ -35,7 +35,7 @@ interface InputRenderSpec<S extends Spec> extends BaseRenderSpec<HTMLElement> {
   readonly registration: LiteRegistration<S>;
   readonly attrs?: ReadonlyMap<string, ObservableOrValue<string|undefined>>;
   readonly children?: ObservableOrValue<readonly RenderSpec[]>;
-  readonly inputs: InputsOf<S['host']&{}>;
+  readonly inputs?: InputsOf<S['host']&{}>;
   readonly styles?: ObservableOrValue<ReadonlyMap<string, string|null>>;
   readonly textContent?: ObservableOrValue<string>;
 }
@@ -55,7 +55,7 @@ export function renderCustomElement<S extends Spec>(input: InputRenderSpec<S>): 
     type: RenderSpecType.CUSTOM_ELEMENT,
     attrs: input.attrs ? normalizeMap(input.attrs) : undefined,
     children: input.children ? normalize(input.children) : undefined,
-    inputs: normalizedInputs(input.inputs),
+    inputs: normalizedInputs(input.inputs ?? {}),
     styles: input.styles ? normalize(input.styles) : undefined,
     textContent: input.textContent !== undefined ? normalize(input.textContent) : undefined,
   };

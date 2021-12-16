@@ -10,7 +10,7 @@ import {FakeMediaQuery, mockMatchMedia} from './mock-match-media';
 import {PersonaTesterEnvironment} from './persona-tester-environment';
 
 
-interface TestSpec {
+export interface TestSpec {
   readonly roots?: ReadonlyArray<Registration<HTMLElement, any>>;
   readonly overrides?: VineConfig['overrides'];
 }
