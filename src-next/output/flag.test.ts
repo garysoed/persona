@@ -5,7 +5,6 @@ import {cache} from 'gs-tools/export/data';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {flattenNode} from '../../src/testing/flatten-node';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {id} from '../selector/id';
@@ -104,13 +103,13 @@ test('@persona/src/output/flag', init => {
     should('update values correctly', () => {
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('flag__el_empty.html');
+      assert(element).to.matchSnapshot('flag__el_empty.html');
 
       $elValue$.get(_.tester.vine).next(true);
-      assert(flattenNode(element)).to.matchSnapshot('flag__el_value.html');
+      assert(element).to.matchSnapshot('flag__el_value.html');
 
       $elValue$.get(_.tester.vine).next(false);
-      assert(flattenNode(element)).to.matchSnapshot('flag__el_reset.html');
+      assert(element).to.matchSnapshot('flag__el_reset.html');
     });
   });
 

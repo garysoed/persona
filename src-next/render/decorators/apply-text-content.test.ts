@@ -7,7 +7,6 @@ import {Observable, of, Subject} from 'rxjs';
 import {registerCustomElement} from '../../core/register-custom-element';
 import {osingle} from '../../output/single';
 import {root} from '../../selector/root';
-import {flattenNode} from '../../testing/flatten-node';
 import {setupTest} from '../../testing/setup-test';
 import {Context, Ctrl} from '../../types/ctrl';
 import {renderNode} from '../types/render-node-spec';
@@ -67,6 +66,6 @@ test('@persona/src/render/decorators/apply-text-content', init => {
       ],
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('apply-text-content__update.html');
+    assert(element).to.matchSnapshot('apply-text-content__update.html');
   });
 });

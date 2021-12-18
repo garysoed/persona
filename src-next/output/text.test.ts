@@ -8,7 +8,6 @@ import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {id} from '../selector/id';
 import {root} from '../selector/root';
-import {flattenNode} from '../testing/flatten-node';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -72,7 +71,7 @@ test('@persona/src/output/text', init => {
       const element = _.tester.createElement(HOST);
       $elValue$.get(_.tester.vine).next('text');
 
-      assert(flattenNode(element)).to.matchSnapshot('text__el.html');
+      assert(element).to.matchSnapshot('text__el.html');
     });
   });
 
@@ -81,7 +80,7 @@ test('@persona/src/output/text', init => {
       const element = _.tester.createElement(HOST);
       $rootValue$.get(_.tester.vine).next('text');
 
-      assert(flattenNode(element)).to.matchSnapshot('text__root.html');
+      assert(element).to.matchSnapshot('text__root.html');
     });
   });
 });

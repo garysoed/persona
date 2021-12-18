@@ -1,7 +1,5 @@
 export {getEl} from '../src-next/testing/get-el';
 export {setupTest, TestSpec, Tester} from '../src-next/testing/setup-test';
-export {flattenNode} from '../src-next/testing/flatten-node';
-
 
 export {createFakeWindow} from '../src/testing/fake-window';
 export {FakeCustomElementRegistry} from '../src/testing/fake-custom-element-registry';

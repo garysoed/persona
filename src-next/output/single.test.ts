@@ -5,7 +5,6 @@ import {cache} from 'gs-tools/export/data';
 import {Observable, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {flattenNode} from '../../src/testing/flatten-node';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {renderNode} from '../render/types/render-node-spec';
@@ -87,27 +86,27 @@ test('@persona/src/output/single', init => {
     should('update values correctly if unslotted', () => {
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('single__el_empty.html');
+      assert(element).to.matchSnapshot('single__el_empty.html');
 
       const node = document.createTextNode('text');
       $elValue$.get(_.tester.vine).next(node);
-      assert(flattenNode(element)).to.matchSnapshot('single__el_value.html');
+      assert(element).to.matchSnapshot('single__el_value.html');
 
       $elValue$.get(_.tester.vine).next(null);
-      assert(flattenNode(element)).to.matchSnapshot('single__el_reset.html');
+      assert(element).to.matchSnapshot('single__el_reset.html');
     });
 
     should('update values correctly if slotted', () => {
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('single__el_slotted_empty.html');
+      assert(element).to.matchSnapshot('single__el_slotted_empty.html');
 
       const node = document.createTextNode('text');
       $elSlottedValue$.get(_.tester.vine).next(node);
-      assert(flattenNode(element)).to.matchSnapshot('single__el_slotted_value.html');
+      assert(element).to.matchSnapshot('single__el_slotted_value.html');
 
       $elSlottedValue$.get(_.tester.vine).next(null);
-      assert(flattenNode(element)).to.matchSnapshot('single__el_slotted_reset.html');
+      assert(element).to.matchSnapshot('single__el_slotted_reset.html');
     });
   });
 
@@ -115,27 +114,27 @@ test('@persona/src/output/single', init => {
     should('update values correctly if unslotted', () => {
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('single__root_empty.html');
+      assert(element).to.matchSnapshot('single__root_empty.html');
 
       const node = document.createTextNode('text');
       $rootValue$.get(_.tester.vine).next(node);
-      assert(flattenNode(element)).to.matchSnapshot('single__root_value.html');
+      assert(element).to.matchSnapshot('single__root_value.html');
 
       $rootValue$.get(_.tester.vine).next(null);
-      assert(flattenNode(element)).to.matchSnapshot('single__root_reset.html');
+      assert(element).to.matchSnapshot('single__root_reset.html');
     });
 
     should('update values correctly if slotted', () => {
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('single__root_slotted_empty.html');
+      assert(element).to.matchSnapshot('single__root_slotted_empty.html');
 
       const node = document.createTextNode('text');
       $rootSlottedValue$.get(_.tester.vine).next(node);
-      assert(flattenNode(element)).to.matchSnapshot('single__root_slotted_value.html');
+      assert(element).to.matchSnapshot('single__root_slotted_value.html');
 
       $rootSlottedValue$.get(_.tester.vine).next(null);
-      assert(flattenNode(element)).to.matchSnapshot('single__root_slotted_reset.html');
+      assert(element).to.matchSnapshot('single__root_slotted_reset.html');
     });
   });
 });

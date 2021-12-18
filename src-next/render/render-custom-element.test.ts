@@ -9,7 +9,6 @@ import {iattr} from '../input/attr';
 import {iflag} from '../input/flag';
 import {osingle} from '../output/single';
 import {root} from '../selector/root';
-import {flattenNode} from '../testing/flatten-node';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -83,7 +82,7 @@ test('@persona/src/render/render-custom-element', init => {
       id: 'id',
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('render-custom-element__emit.html');
+    assert(element).to.matchSnapshot('render-custom-element__emit.html');
   });
 
   should('update the inputs', () => {
@@ -97,7 +96,7 @@ test('@persona/src/render/render-custom-element', init => {
       id: 'id',
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('render-custom-element__update.html');
+    assert(element).to.matchSnapshot('render-custom-element__update.html');
   });
 
   should('update the extra attributes', () => {
@@ -112,7 +111,7 @@ test('@persona/src/render/render-custom-element', init => {
       id: 'id',
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('render-custom-element__extra_attr.html');
+    assert(element).to.matchSnapshot('render-custom-element__extra_attr.html');
   });
 
   should('update the text context', () => {
@@ -127,6 +126,6 @@ test('@persona/src/render/render-custom-element', init => {
       id: 'id',
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('render-custom-element__text.html');
+    assert(element).to.matchSnapshot('render-custom-element__text.html');
   });
 });

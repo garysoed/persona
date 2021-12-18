@@ -8,7 +8,6 @@ import {map} from 'rxjs/operators';
 import {registerCustomElement} from '../core/register-custom-element';
 import {osingle} from '../output/single';
 import {root} from '../selector/root';
-import {flattenNode} from '../testing/flatten-node';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -60,6 +59,6 @@ test('@persona/src/render/render-text-node', init => {
     const textContent = 'textContent';
     $text.get(_.tester.vine).next(textContent);
 
-    assert(flattenNode(element)).to.matchSnapshot('render-text-node.html');
+    assert(element).to.matchSnapshot('render-text-node.html');
   });
 });

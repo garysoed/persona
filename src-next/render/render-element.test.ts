@@ -7,7 +7,6 @@ import {Observable, of, Subject} from 'rxjs';
 import {registerCustomElement} from '../core/register-custom-element';
 import {osingle} from '../output/single';
 import {root} from '../selector/root';
-import {flattenNode} from '../testing/flatten-node';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -64,7 +63,7 @@ test('@persona/src/render/render-element', init => {
       id: 'id',
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('render-element__emit.html');
+    assert(element).to.matchSnapshot('render-element__emit.html');
   });
 
   should('update the attributes', () => {
@@ -77,7 +76,7 @@ test('@persona/src/render/render-element', init => {
       id: 'id',
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('render-element__attribute_update.html');
+    assert(element).to.matchSnapshot('render-element__attribute_update.html');
   });
 
   should('delete the attribute if the value is undefined', () => {
@@ -88,7 +87,7 @@ test('@persona/src/render/render-element', init => {
       id: 'id',
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('render-element__attribute_undefined.html');
+    assert(element).to.matchSnapshot('render-element__attribute_undefined.html');
   });
 
   should('update the text context', () => {
@@ -101,7 +100,7 @@ test('@persona/src/render/render-element', init => {
       id: 'id',
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('render-element__text_content.html');
+    assert(element).to.matchSnapshot('render-element__text_content.html');
   });
 
   should('delete the children', () => {
@@ -120,7 +119,7 @@ test('@persona/src/render/render-element', init => {
       id: 'id',
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('render-element__delete_children.html');
+    assert(element).to.matchSnapshot('render-element__delete_children.html');
   });
 
   should('insert the children', () => {
@@ -139,7 +138,7 @@ test('@persona/src/render/render-element', init => {
       id: 'id',
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('render-element__insert_children.html');
+    assert(element).to.matchSnapshot('render-element__insert_children.html');
   });
 
   should('set the children', () => {
@@ -158,6 +157,6 @@ test('@persona/src/render/render-element', init => {
       id: 'id',
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('render-element__set_children.html');
+    assert(element).to.matchSnapshot('render-element__set_children.html');
   });
 });

@@ -7,7 +7,6 @@ import {Observable, of, Subject} from 'rxjs';
 import {registerCustomElement} from '../../core/register-custom-element';
 import {osingle} from '../../output/single';
 import {root} from '../../selector/root';
-import {flattenNode} from '../../testing/flatten-node';
 import {setupTest} from '../../testing/setup-test';
 import {Context, Ctrl} from '../../types/ctrl';
 import {renderNode} from '../types/render-node-spec';
@@ -63,7 +62,7 @@ test('@persona/src/render/decorators/apply-styles', init => {
       ],
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('apply-styles__add.html');
+    assert(element).to.matchSnapshot('apply-styles__add.html');
   });
 
   should('delete the styles correctly', () => {
@@ -80,6 +79,6 @@ test('@persona/src/render/decorators/apply-styles', init => {
       ],
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('apply-styles__delete.html');
+    assert(element).to.matchSnapshot('apply-styles__delete.html');
   });
 });

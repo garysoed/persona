@@ -5,7 +5,6 @@ import {cache} from 'gs-tools/export/data';
 import {Observable, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {flattenNode} from '../../src/testing/flatten-node';
 import {registerCustomElement} from '../core/register-custom-element';
 import {osingle} from '../output/single';
 import {root} from '../selector/root';
@@ -59,14 +58,14 @@ test('@persona/src/output/render-node', init => {
     should('update values correctly', () => {
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('render-node__el_empty.html');
+      assert(element).to.matchSnapshot('render-node__el_empty.html');
 
       const node = document.createTextNode('text');
       $elValue.get(_.tester.vine).next(node);
-      assert(flattenNode(element)).to.matchSnapshot('render-node__el_value.html');
+      assert(element).to.matchSnapshot('render-node__el_value.html');
 
       $elValue.get(_.tester.vine).next(null);
-      assert(flattenNode(element)).to.matchSnapshot('render-node__el_reset.html');
+      assert(element).to.matchSnapshot('render-node__el_reset.html');
     });
   });
 });

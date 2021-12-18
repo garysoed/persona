@@ -7,7 +7,6 @@ import {Observable, of, Subject} from 'rxjs';
 import {registerCustomElement} from '../core/register-custom-element';
 import {osingle} from '../output/single';
 import {root} from '../selector/root';
-import {flattenNode} from '../testing/flatten-node';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -71,6 +70,6 @@ test('@persona/src/render/render-html', init => {
       id: 'id',
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('render-html.html');
+    assert(element).to.matchSnapshot('render-html.html');
   });
 });

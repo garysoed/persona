@@ -5,7 +5,6 @@ import {cache} from 'gs-tools/export/data';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {flattenNode} from '../../src/testing/flatten-node';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {id} from '../selector/id';
@@ -106,13 +105,13 @@ test('@persona/src/output/attr', init => {
       const value = 'value';
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('attr__el_empty.html');
+      assert(element).to.matchSnapshot('attr__el_empty.html');
 
       $elValue$.get(_.tester.vine).next(value);
-      assert(flattenNode(element)).to.matchSnapshot('attr__el_value.html');
+      assert(element).to.matchSnapshot('attr__el_value.html');
 
       $elValue$.get(_.tester.vine).next(null);
-      assert(flattenNode(element)).to.matchSnapshot('attr__el_reset.html');
+      assert(element).to.matchSnapshot('attr__el_reset.html');
     });
   });
 

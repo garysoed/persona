@@ -7,7 +7,6 @@ import {Observable, of, Subject} from 'rxjs';
 import {registerCustomElement} from '../../core/register-custom-element';
 import {osingle} from '../../output/single';
 import {root} from '../../selector/root';
-import {flattenNode} from '../../testing/flatten-node';
 import {setupTest} from '../../testing/setup-test';
 import {Context, Ctrl} from '../../types/ctrl';
 import {renderNode} from '../types/render-node-spec';
@@ -73,7 +72,7 @@ test('@persona/src/render/decorators/apply-children', init => {
       ],
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('apply-children__delete.html');
+    assert(element).to.matchSnapshot('apply-children__delete.html');
   });
 
   should('insert the children correctly', () => {
@@ -96,7 +95,7 @@ test('@persona/src/render/decorators/apply-children', init => {
       ],
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('apply-children__insert.html');
+    assert(element).to.matchSnapshot('apply-children__insert.html');
   });
 
   should('set the children correctly', () => {
@@ -119,6 +118,6 @@ test('@persona/src/render/decorators/apply-children', init => {
       ],
     }));
 
-    assert(flattenNode(element)).to.matchSnapshot('apply-children__set.html');
+    assert(element).to.matchSnapshot('apply-children__set.html');
   });
 });

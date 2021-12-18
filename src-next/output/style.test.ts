@@ -4,7 +4,6 @@ import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
 import {Observable, Subject} from 'rxjs';
 
-import {flattenNode} from '../../src/testing/flatten-node';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {id} from '../selector/id';
@@ -55,10 +54,10 @@ test('@persona/src/output/style', init => {
     should('set the style correctly', () => {
       const element = _.tester.createElement(HOST);
 
-      assert(flattenNode(element)).to.matchSnapshot('style__el_empty.html');
+      assert(element).to.matchSnapshot('style__el_empty.html');
 
       $elValue$.get(_.tester.vine).next('123px');
-      assert(flattenNode(element)).to.matchSnapshot('style__el_value.html');
+      assert(element).to.matchSnapshot('style__el_value.html');
     });
   });
 });
