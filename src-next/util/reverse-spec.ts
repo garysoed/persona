@@ -3,6 +3,7 @@ import {icall} from '../input/call';
 import {iclass} from '../input/class';
 import {ievent} from '../input/event';
 import {iflag} from '../input/flag';
+import {islotted} from '../input/slotted';
 import {ivalue} from '../input/value';
 import {oattr} from '../output/attr';
 import {ocall} from '../output/call';
@@ -11,7 +12,7 @@ import {oevent} from '../output/event';
 import {oflag} from '../output/flag';
 import {ovalue} from '../output/value';
 import {UnresolvedBindingSpec} from '../types/ctrl';
-import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, IValue, OAttr, OCall, OClass, OEvent, OFlag, OMulti, OSingle, OText, OValue} from '../types/io';
+import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, ISlotted, IValue, OAttr, OCall, OClass, OEvent, OFlag, OMulti, OSingle, OSlotted, OText, OValue} from '../types/io';
 
 
 type ReversedIO<T> =
@@ -23,6 +24,8 @@ type ReversedIO<T> =
     T extends OEvent ? IEvent :
     T extends IFlag ? OFlag :
     T extends OFlag ? IFlag :
+    T extends ISlotted ? OSlotted :
+    T extends OSlotted ? ISlotted :
     T extends IValue<infer V> ? OValue<V> :
     T extends OValue<infer V> ? IValue<V> :
     never;
@@ -39,6 +42,7 @@ type ReversableIO =
     IFlag|OFlag|
     OMulti|
     OSingle|
+    ISlotted|OSlotted|
     OText|
     IValue<any>|OValue<any>;
 
@@ -98,6 +102,14 @@ function reverseIO(io: ReversableIO): InputOutput {
       throw new Error(`Unsupported reversal for ${io.apiType}`);
     case ApiType.SINGLE:
       throw new Error(`Unsupported reversal for ${io.apiType}`);
+    case ApiType.SLOTTED:
+      switch (io.ioType) {
+        case IOType.INPUT:
+          throw new Error(`Unsupported reversal for ${io.apiType} - ${io.ioType}`);
+        case IOType.OUTPUT:
+          return islotted();
+      }
+      break;
     case ApiType.TEXT:
       throw new Error(`Unsupported reversal for ${io.apiType}`);
     case ApiType.VALUE:

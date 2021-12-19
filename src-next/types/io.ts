@@ -18,6 +18,7 @@ export enum ApiType {
   MULTI,
   RECT,
   SINGLE,
+  SLOTTED,
   STYLE,
   TARGET,
   TEXT,
@@ -116,6 +117,16 @@ export interface OSingle {
   readonly slotName: string|null;
 }
 
+export interface ISlotted {
+  readonly apiType: ApiType.SLOTTED;
+  readonly ioType: IOType.INPUT;
+}
+
+export interface OSlotted {
+  readonly apiType: ApiType.SLOTTED;
+  readonly ioType: IOType.OUTPUT;
+}
+
 export interface OStyle<S extends keyof CSSStyleDeclaration> {
   readonly apiType: ApiType.STYLE;
   readonly ioType: IOType.OUTPUT;
@@ -161,6 +172,7 @@ export type InputOutput =
     OMulti|
     IRect|
     OSingle|
+    ISlotted|OSlotted|
     OStyle<keyof CSSStyleDeclaration>|
     ITarget|
     OText|

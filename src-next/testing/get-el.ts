@@ -33,12 +33,14 @@ type Harness = HTMLElement & {
   simulateMouseOut(): MouseOutEvents;
   simulateMouseOver(): MouseOverEvents;
   simulateResize(newRect: DOMRect): Event;
+  simulateSlotChange(modifierFn: (el: HTMLElement) => void): Event;
 };
 
 const INPUT_EL_TYPE: Type<HTMLInputElement> = instanceofType(HTMLInputElement);
+const SLOT_EL_TYPE: Type<HTMLSlotElement> = instanceofType(HTMLSlotElement);
 
-export function getEl(el: HTMLElement, id: string): Harness|null {
-  const element = el.shadowRoot?.getElementById(id) ?? null;
+export function getEl(hostEl: HTMLElement, id: string): Harness|null {
+  const element = hostEl.shadowRoot?.getElementById(id) ?? null;
   if (!element) {
     return null;
   }
@@ -103,6 +105,14 @@ export function getEl(el: HTMLElement, id: string): Harness|null {
     simulateResize(newRect: DOMRect): Event {
       setBoundingClientRect(element, newRect);
       return dispatchResizeEvent(element, [{contentRect: newRect}]);
+    },
+
+    simulateSlotChange(modifierFn: (element: HTMLElement) => void): Event {
+      SLOT_EL_TYPE.assert(element);
+      const event = new CustomEvent('slotchange');
+      modifierFn(hostEl);
+      element.dispatchEvent(event);
+      return event;
     },
   });
 }
