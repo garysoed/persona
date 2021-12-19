@@ -7,7 +7,7 @@
   "render-element__attribute_update.html": "<test-host><gst-fake-shadow><!-- #ref --><pr-test b=\"b2\"></pr-test></gst-fake-shadow></test-host>",
   "render-element__delete_children.html": "<test-host><gst-fake-shadow><!-- #ref --><pr-test><div></div></pr-test></gst-fake-shadow></test-host>",
   "render-element__emit.html": "<test-host><gst-fake-shadow><!-- #ref --><pr-test a=\"avalue\"></pr-test></gst-fake-shadow></test-host>",
-  "render-element__insert_children.html": "<test-host><gst-fake-shadow><!-- #ref --><pr-test><div></div><input></pr-test></gst-fake-shadow></test-host>",
+  "render-element__insert_children.html": "<test-host><gst-fake-shadow><!-- #ref --><pr-test><div></div><input gst-input-value=\"\"></pr-test></gst-fake-shadow></test-host>",
   "render-element__set_children.html": "<test-host><gst-fake-shadow><!-- #ref --><pr-test><div></div></pr-test></gst-fake-shadow></test-host>",
   "render-element__text_content.html": "<test-host><gst-fake-shadow><!-- #ref --><pr-test>text2</pr-test></gst-fake-shadow></test-host>",
   "render-html.html": "<test-host><gst-fake-shadow><!-- #ref --><div></div></gst-fake-shadow></test-host>",
