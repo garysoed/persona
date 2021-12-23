@@ -17,6 +17,7 @@ export {itarget} from '../src-next/input/target';
 export {oattr} from '../src-next/output/attr';
 export {oclass} from '../src-next/output/class';
 export {oevent} from '../src-next/output/event';
+export {oflag} from '../src-next/output/flag';
 export {omulti} from '../src-next/output/multi';
 export {osingle} from '../src-next/output/single';
 export {ostyle} from '../src-next/output/style';

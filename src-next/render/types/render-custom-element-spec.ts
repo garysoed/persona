@@ -1,5 +1,5 @@
 import {getOwnPropertyKeys} from 'gs-tools/export/typescript';
-import {Observable, of as observableOf} from 'rxjs';
+import {Observable, of as observableOf, OperatorFunction, Subject} from 'rxjs';
 
 import {Binding, Spec, UnresolvedBindingSpec} from '../../types/ctrl';
 
@@ -26,6 +26,11 @@ export type NormalizedInputsOf<S extends UnresolvedBindingSpec> = Partial<{
   readonly [K in keyof S]: Binding<S[K]> extends Observable<infer T> ? Observable<T> : never;
 }>;
 
+export type OutputsOf<S extends UnresolvedBindingSpec> = Partial<{
+  readonly [K in keyof S]: Binding<S[K]> extends () => OperatorFunction<infer T, unknown> ?
+      Subject<T> : never;
+}>;
+
 interface LiteRegistration<S extends Spec> {
   readonly spec: S;
   readonly tag: string;
@@ -36,6 +41,7 @@ interface InputRenderSpec<S extends Spec> extends BaseRenderSpec<HTMLElement> {
   readonly attrs?: ReadonlyMap<string, ObservableOrValue<string|undefined>>;
   readonly children?: ObservableOrValue<readonly RenderSpec[]>;
   readonly inputs?: InputsOf<S['host']&{}>;
+  readonly onOutputs?: OutputsOf<S['host']&{}>;
   readonly styles?: ObservableOrValue<ReadonlyMap<string, string|null>>;
   readonly textContent?: ObservableOrValue<string>;
 }
@@ -56,6 +62,7 @@ export function renderCustomElement<S extends Spec>(input: InputRenderSpec<S>): 
     attrs: input.attrs ? normalizeMap(input.attrs) : undefined,
     children: input.children ? normalize(input.children) : undefined,
     inputs: normalizedInputs(input.inputs ?? {}),
+    onOutputs: input.onOutputs ?? {},
     styles: input.styles ? normalize(input.styles) : undefined,
     textContent: input.textContent !== undefined ? normalize(input.textContent) : undefined,
   };

@@ -4,11 +4,13 @@ import {BehaviorSubject, combineLatest, defer, EMPTY, merge, Observable, of, Ope
 import {catchError, distinctUntilChanged, mapTo, shareReplay, switchMap} from 'rxjs/operators';
 
 import {RenderContext} from '../render/types/render-context';
-import {Bindings, BindingSpec, Resolved, ResolvedBindingSpec, ResolvedBindingSpecProvider, ResolvedI, ResolvedO, ShadowBindings, Spec, UnresolvedBindingSpec} from '../types/ctrl';
-import {ApiType, InputOutput, IOType, IValue, OValue} from '../types/io';
+import {Bindings, BindingSpec, ResolvedBindingSpecProvider, ShadowBindings, Spec, UnresolvedBindingSpec} from '../types/ctrl';
+import {ApiType, IOType, IValue, OValue} from '../types/io';
 import {Registration, RegistrationSpec} from '../types/registration';
 import {setValueObservable} from '../util/value-observable';
 
+import {createBinding, createBindings} from './create-bindings';
+import {resolveForHost} from './resolve-for-host';
 import {$getTemplate} from './templates-cache';
 
 
@@ -179,41 +181,6 @@ function createShadow(
   const root = element.attachShadow({mode: 'open'});
   root.appendChild($getTemplate.get(vine)(registrationSpec).content.cloneNode(true));
   return root;
-}
-
-function resolveForHost<S extends UnresolvedBindingSpec>(
-    spec: S,
-    target: HTMLElement,
-    context: RenderContext,
-): ResolvedBindingSpec<S> {
-  const bindings: Partial<Record<keyof S, Resolved<InputOutput>>> = {};
-  for (const key in spec) {
-    const io = spec[key];
-    bindings[key] = io.resolve(
-        target,
-        context,
-    );
-  }
-  return bindings as ResolvedBindingSpec<S>;
-}
-
-function createBindings<S extends UnresolvedBindingSpec>(spec: ResolvedBindingSpec<S>): Bindings<S> {
-  const bindings: Partial<Record<string, Observable<unknown>|(() => OperatorFunction<unknown, unknown>)>> = {};
-  for (const key in spec) {
-    const io = spec[key];
-    bindings[key] = createBinding(io);
-  }
-  return bindings as Bindings<S>;
-}
-
-function createBinding(io: InputOutput&(ResolvedI<unknown>|ResolvedO<any>)): Observable<unknown>|(() => OperatorFunction<unknown, unknown>) {
-  switch (io.ioType) {
-    // TODO(#8): Remove casts, only breaks outside VSCode
-    case IOType.INPUT:
-      return (io as ResolvedI<unknown>).value$;
-    case IOType.OUTPUT:
-      return () => (io as ResolvedO<unknown>).update();
-  }
 }
 
 type ShadowBindingRecord = Record<string, ResolvedBindingSpecProvider<UnresolvedBindingSpec>>;

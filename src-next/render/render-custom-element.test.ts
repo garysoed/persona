@@ -2,12 +2,14 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
-import {Observable, of, Subject} from 'rxjs';
+import {numberType} from 'gs-types';
+import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {iattr} from '../input/attr';
 import {iflag} from '../input/flag';
 import {osingle} from '../output/single';
+import {ovalue} from '../output/value';
 import {root} from '../selector/root';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
@@ -17,15 +19,26 @@ import {renderCustomElement} from './types/render-custom-element-spec';
 import {RenderSpec} from './types/render-spec';
 
 
+const DEFAULT_C = 123;
 const $child = {
   host: {
     a: iattr('a'),
     b: iflag('b'),
+    c: ovalue('c', numberType, DEFAULT_C),
   },
 };
 
+const $c = source(() => new Subject<number>());
+
 class Child implements Ctrl {
-  readonly runs = [];
+  constructor(private readonly $: Context<typeof $child>) {}
+
+  @cache()
+  get runs(): ReadonlyArray<Observable<unknown>> {
+    return [
+      $c.get(this.$.vine).pipe(this.$.host.c()),
+    ];
+  }
 }
 
 const CHILD = registerCustomElement({
@@ -50,9 +63,7 @@ class HostCtrl implements Ctrl {
   @cache()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
-      $spec.get(this.$.vine).pipe(
-          this.$.shadow.root.value(),
-      ),
+      $spec.get(this.$.vine).pipe(this.$.shadow.root.value()),
     ];
   }
 }
@@ -127,5 +138,23 @@ test('@persona/src/render/render-custom-element', init => {
     }));
 
     assert(element).to.matchSnapshot('render-custom-element__text.html');
+  });
+
+  should('apply the bindings correctly', () => {
+    _.tester.createElement(HOST);
+    const c$ = new ReplaySubject<number>();
+    $spec.get(_.tester.vine).next(renderCustomElement({
+      registration: CHILD,
+      onOutputs: {c: c$},
+      textContent: of('text1', 'text2'),
+      id: 'id',
+    }));
+
+    const subject = $c.get(_.tester.vine);
+    subject.next(1);
+    subject.next(2);
+    subject.next(3);
+
+    assert(c$).to.emitSequence([DEFAULT_C, 1, 2, 3]);
   });
 });

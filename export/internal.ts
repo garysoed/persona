@@ -1,5 +1,6 @@
 export {ReversedSpec} from '../src-next/util/reverse-spec';
-
+export {UnresolvedIO, Spec} from '../src-next/types/ctrl';
+export {IFlag, OEvent} from '../src-next/types/io';
 
 export {Input} from '../src/types/input';
 export {Output} from '../src/types/output';
