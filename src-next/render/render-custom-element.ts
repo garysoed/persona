@@ -1,6 +1,7 @@
+import {forwardTo} from 'gs-tools/export/rxjs';
 import {getOwnPropertyKeys} from 'gs-tools/export/typescript';
 import {EMPTY, merge, Observable, of, Subject} from 'rxjs';
-import {switchMap, switchMapTo, tap} from 'rxjs/operators';
+import {switchMap, switchMapTo} from 'rxjs/operators';
 
 import {Spec, UnresolvedBindingSpec} from '../types/ctrl';
 import {IOType} from '../types/io';
@@ -66,7 +67,7 @@ export function renderCustomElement<S extends Spec>(
             continue;
           }
           onChange$List.push((input.value$ as Observable<any>).pipe(
-              tap(value => (outputs[key] ?? new Subject()).next(value)),
+              forwardTo(outputs[key] ?? new Subject()),
           ));
         }
 
