@@ -115,7 +115,7 @@ function createMethods(
     }
 
     const value$ = new Subject<unknown>();
-    methodRecord[key] = (arg: unknown) => {
+    methodRecord[io.methodName] = (arg: unknown) => {
       value$.next(arg);
     };
     setValueObservable(element, io.methodName, value$);

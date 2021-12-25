@@ -12,12 +12,12 @@ interface MaybeHtmlElement extends HTMLElement {
 }
 
 
-class ResolvedOCall<T> implements Resolved<UnresolvedOCall<T>> {
+class ResolvedOCall<T, M extends string> implements Resolved<UnresolvedOCall<T, M>> {
   readonly apiType = ApiType.CALL;
   readonly ioType = IOType.OUTPUT;
 
   constructor(
-      readonly methodName: string,
+      readonly methodName: M,
       readonly argType: Type<T>,
       readonly target: HTMLElement,
   ) {}
@@ -41,20 +41,20 @@ class ResolvedOCall<T> implements Resolved<UnresolvedOCall<T>> {
   }
 }
 
-class UnresolvedOCall<T> implements UnresolvedIO<OCall<T>> {
+class UnresolvedOCall<T, M extends string> implements UnresolvedIO<OCall<T, M>> {
   readonly apiType = ApiType.CALL;
   readonly ioType = IOType.OUTPUT;
 
   constructor(
-      readonly methodName: string,
+      readonly methodName: M,
       readonly argType: Type<T>,
   ) {}
 
-  resolve(target: HTMLElement): ResolvedOCall<T> {
+  resolve(target: HTMLElement): ResolvedOCall<T, M> {
     return new ResolvedOCall(this.methodName, this.argType, target);
   }
 }
 
-export function ocall(methodName: string, argType: Type<unknown>): UnresolvedOCall<unknown> {
+export function ocall<M extends string>(methodName: M, argType: Type<unknown>): UnresolvedOCall<unknown, M> {
   return new UnresolvedOCall(methodName, argType);
 }

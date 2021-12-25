@@ -37,17 +37,17 @@ export interface OAttr {
   readonly attrName: string;
 }
 
-export interface ICall<T> {
+export interface ICall<T, M extends string> {
   readonly apiType: ApiType.CALL;
   readonly ioType: IOType.INPUT;
-  readonly methodName: string;
+  readonly methodName: M;
   readonly argType: Type<T>;
 }
 
-export interface OCall<T> {
+export interface OCall<T, M extends string> {
   readonly apiType: ApiType.CALL;
   readonly ioType: IOType.OUTPUT;
-  readonly methodName: string;
+  readonly methodName: M;
   readonly argType: Type<T>;
 }
 
@@ -163,7 +163,7 @@ export type Resolver = (host: HTMLElement) => HTMLElement;
 
 export type InputOutput =
     IAttr|OAttr|
-    ICall<unknown>|OCall<unknown>|
+    ICall<unknown, string>|OCall<unknown, string>|
     IClass|OClass|
     IEvent|OEvent|
     IFlag|OFlag|

@@ -19,7 +19,7 @@ const $shadowValue$ = source(() => new Subject<number>());
 
 const $host = {
   host: {
-    fn: icall('fn', numberType),
+    fn: icall('callFn', numberType),
   },
 };
 
@@ -84,7 +84,7 @@ test('@persona/src/input/call', init => {
     should('emit values on calls', () => {
       const value = 2;
       const element = _.tester.createElement(HOST);
-      element.fn(value);
+      element.callFn(value);
 
       assert($hostValue$.get(_.tester.vine)).to.emitSequence([value]);
     });

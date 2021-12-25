@@ -20,7 +20,7 @@ function getElement(root: ShadowRoot, id: string): HTMLElement {
 export type ExtraUnresolvedBindingSpec = Record<
     string,
     UnresolvedIO<IAttr>|UnresolvedIO<OAttr>|
-    UnresolvedIO<OCall<any>>|
+    UnresolvedIO<OCall<any, any>>|
     UnresolvedIO<IClass>|UnresolvedIO<OClass>|
     UnresolvedIO<IEvent>|
     UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|

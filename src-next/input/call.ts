@@ -8,13 +8,13 @@ import {retryWhenDefined} from '../util/retry-when-defined';
 import {createMissingValueObservableError, getValueObservable} from '../util/value-observable';
 
 
-class ResolvedICall<T> implements Resolved<UnresolvedICall<T>> {
+class ResolvedICall<T, M extends string> implements Resolved<UnresolvedICall<T, M>> {
   readonly apiType = ApiType.CALL;
   readonly ioType = IOType.INPUT;
 
   constructor(
       readonly target: HTMLElement,
-      readonly methodName: string,
+      readonly methodName: M,
       readonly argType: Type<T>,
   ) {}
 
@@ -41,20 +41,20 @@ class ResolvedICall<T> implements Resolved<UnresolvedICall<T>> {
   }
 }
 
-class UnresolvedICall<T> implements UnresolvedIO<ICall<T>> {
+class UnresolvedICall<T, M extends string> implements UnresolvedIO<ICall<T, M>> {
   readonly apiType = ApiType.CALL;
   readonly ioType = IOType.INPUT;
 
   constructor(
-      readonly methodName: string,
+      readonly methodName: M,
       readonly argType: Type<T>,
   ) {}
 
-  resolve(target: HTMLElement): ResolvedICall<T> {
+  resolve(target: HTMLElement): ResolvedICall<T, M> {
     return new ResolvedICall(target, this.methodName, this.argType);
   }
 }
 
-export function icall<T>(methodName: string, argType: Type<T>): UnresolvedICall<T> {
+export function icall<T, M extends string>(methodName: M, argType: Type<T>): UnresolvedICall<T, M> {
   return new UnresolvedICall(methodName, argType);
 }

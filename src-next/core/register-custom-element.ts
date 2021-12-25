@@ -46,12 +46,14 @@ type ApiReadonlyRaw<A> = {
 export type ApiReadonly<A> = ApiReadonlyRaw<Pick<A, ApiReadonlyKeys<A>>>;
 
 
+type MethodNameOf<O> = O extends ICall<any, infer M> ? M : never;
+
 type ApiMethodRaw<A> = {
-  [K in keyof A]: A[K] extends ICall<infer A> ? (arg: A) => void : never;
+  [K in keyof A as MethodNameOf<A[K]>]: A[K] extends ICall<infer A, string> ? (arg: A) => void : never;
 }
 
 type ApiMethodKeys<A> = {
-  readonly [K in keyof A]: A[K] extends ICall<any> ? K : never;
+  readonly [K in keyof A]: A[K] extends ICall<any, any> ? K : never;
 }[keyof A];
 
 type ApiMethod<A> = ApiMethodRaw<Pick<A, ApiMethodKeys<A>>>;

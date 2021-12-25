@@ -23,8 +23,8 @@ const DEFAULT_VALUE = 3;
 
 const $host = {
   host: {
-    value: ovalue('value', numberType),
-    valueWithDefault: ovalue('valueWithDefault', numberType, DEFAULT_VALUE),
+    value: ovalue('valueProp', numberType),
+    valueWithDefault: ovalue('valueWithDefaultProp', numberType, DEFAULT_VALUE),
   },
 };
 
@@ -88,20 +88,20 @@ test('@persona/src/output/value', init => {
       const value = 2;
       const element = _.tester.createElement(HOST);
 
-      assert(element.valueWithDefault).to.equal(DEFAULT_VALUE);
+      assert(element.valueWithDefaultProp).to.equal(DEFAULT_VALUE);
 
       $hostValueWithDefault$.get(_.tester.vine).next(value);
-      assert(element.valueWithDefault).to.equal(value);
+      assert(element.valueWithDefaultProp).to.equal(value);
     });
 
     should('update values correctly if the default value is not given', () => {
       const value = 2;
       const element = _.tester.createElement(HOST);
 
-      assert(element.value).toNot.beDefined();
+      assert(element.valueProp).toNot.beDefined();
 
       $hostValue$.get(_.tester.vine).next(value);
-      assert(element.value).to.equal(value);
+      assert(element.valueProp).to.equal(value);
     });
   });
 

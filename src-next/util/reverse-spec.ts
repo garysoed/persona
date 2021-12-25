@@ -18,7 +18,7 @@ import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, ISlot
 type ReversedIO<T> =
     T extends IAttr ? OAttr :
     T extends OAttr ? IAttr :
-    T extends ICall<infer A> ? OCall<A> :
+    T extends ICall<infer A, infer M> ? OCall<A, M> :
     T extends IClass ? OClass :
     T extends OClass ? IClass :
     T extends OEvent ? IEvent :
@@ -36,7 +36,7 @@ export type ReversedSpec<U extends UnresolvedBindingSpec> = UnresolvedBindingSpe
 
 type ReversableIO =
     IAttr|OAttr|
-    ICall<any>|OCall<any>|
+    ICall<any, any>|OCall<any, any>|
     IClass|OClass|
     OEvent|IEvent|
     IFlag|OFlag|
