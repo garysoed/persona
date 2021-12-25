@@ -138,6 +138,11 @@ export interface ITarget {
   readonly ioType: IOType.INPUT;
 }
 
+export interface IText {
+  readonly apiType: ApiType.TEXT;
+  readonly ioType: IOType.INPUT;
+}
+
 export interface OText {
   readonly apiType: ApiType.TEXT;
   readonly ioType: IOType.OUTPUT;
@@ -175,5 +180,5 @@ export type InputOutput =
     ISlotted|OSlotted|
     OStyle<keyof CSSStyleDeclaration>|
     ITarget|
-    OText|
+    IText|OText|
     IValue<unknown, string>|OValue<unknown, string>;

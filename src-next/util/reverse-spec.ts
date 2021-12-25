@@ -4,15 +4,17 @@ import {iclass} from '../input/class';
 import {ievent} from '../input/event';
 import {iflag} from '../input/flag';
 import {islotted} from '../input/slotted';
+import {itext} from '../input/text';
 import {ivalue} from '../input/value';
 import {oattr} from '../output/attr';
 import {ocall} from '../output/call';
 import {oclass} from '../output/class';
 import {oevent} from '../output/event';
 import {oflag} from '../output/flag';
+import {otext} from '../output/text';
 import {ovalue} from '../output/value';
 import {UnresolvedBindingSpec} from '../types/ctrl';
-import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, ISlotted, IValue, OAttr, OCall, OClass, OEvent, OFlag, OMulti, OSingle, OSlotted, OText, OValue} from '../types/io';
+import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, ISlotted, IText, IValue, OAttr, OCall, OClass, OEvent, OFlag, OMulti, OSingle, OSlotted, OText, OValue} from '../types/io';
 
 
 type ReversedIO<T> =
@@ -43,7 +45,7 @@ type ReversableIO =
     OMulti|
     OSingle|
     ISlotted|OSlotted|
-    OText|
+    IText|OText|
     IValue<any, any>|OValue<any, any>;
 
 export function reverseSpec<U extends UnresolvedBindingSpec>(spec: U): ReversedSpec<U> {
@@ -111,7 +113,13 @@ function reverseIO(io: ReversableIO): InputOutput {
       }
       break;
     case ApiType.TEXT:
-      throw new Error(`Unsupported reversal for ${io.apiType}`);
+      switch (io.ioType) {
+        case IOType.INPUT:
+          return otext();
+        case IOType.OUTPUT:
+          return itext();
+      }
+      break;
     case ApiType.VALUE:
       switch (io.ioType) {
         case IOType.INPUT:

@@ -13,6 +13,7 @@ export {iflag} from '../src-next/input/flag';
 export {ikeydown} from '../src-next/input/keydown';
 export {irect} from '../src-next/input/rect';
 export {itarget} from '../src-next/input/target';
+export {itext} from '../src-next/input/text';
 
 export {oattr} from '../src-next/output/attr';
 export {oclass} from '../src-next/output/class';

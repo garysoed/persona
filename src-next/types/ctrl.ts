@@ -4,7 +4,7 @@ import {Observable, OperatorFunction} from 'rxjs';
 import {RenderContext} from '../render/types/render-context';
 import {RenderSpec} from '../render/types/render-spec';
 
-import {IAttr, ICall, IClass, IEvent, IFlag, IKeydown, IMedia, InputOutput, IRect, ISlotted, ITarget, IValue, OAttr, OCall, OClass, OEvent, OFlag, OMulti, OSingle, OSlotted, OStyle, OText, OValue} from './io';
+import {IAttr, ICall, IClass, IEvent, IFlag, IKeydown, IMedia, InputOutput, IRect, ISlotted, ITarget, IText, IValue, OAttr, OCall, OClass, OEvent, OFlag, OMulti, OSingle, OSlotted, OStyle, OText, OValue} from './io';
 import {Target} from './target';
 
 
@@ -41,6 +41,7 @@ export type Resolved<T extends InputOutput> =
     T extends OSlotted ? OSlotted&ResolvedO<readonly Node[]> :
     T extends OStyle<infer S> ? OStyle<S>&ResolvedO<CSSStyleDeclaration[S]> :
     T extends ITarget ? ITarget&ResolvedI<HTMLElement> :
+    T extends IText ? IText&ResolvedI<string> :
     T extends OText ? OText&ResolvedO<string> :
     T extends IValue<infer V, infer P> ? IValue<V, P>&ResolvedI<V> :
     T extends OValue<infer V, infer P> ? OValue<V, P>&ResolvedO<V> : never;
@@ -66,7 +67,7 @@ export type UnresolvedBindingSpec = {
       UnresolvedIO<OMulti>|
       UnresolvedIO<OSingle>|
       UnresolvedIO<ISlotted>|UnresolvedIO<OSlotted>|
-      UnresolvedIO<OText>|
+      UnresolvedIO<IText>|UnresolvedIO<OText>|
       UnresolvedIO<IValue<unknown, any>>|UnresolvedIO<OValue<any, any>>;
 }
 
