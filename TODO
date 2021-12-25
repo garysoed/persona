@@ -1,6 +1,9 @@
 persona
   v2.0
-    ☐ Log the registration.
     ✔ Change `single` and `multi` to take in render specs
+
+    improvements:
+      ☐ Call function name should follow the string, not the key name.
+      ✔ Value property name should follow the string, not the key name.
 
 

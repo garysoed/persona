@@ -8,13 +8,13 @@ import {retryWhenDefined} from '../util/retry-when-defined';
 import {createMissingValueObservableError, getValueObservable} from '../util/value-observable';
 
 
-class ResolvedIValue<T> implements Resolved<UnresolvedIValue<T>> {
+class ResolvedIValue<T, P extends string> implements Resolved<UnresolvedIValue<T, P>> {
   readonly apiType = ApiType.VALUE;
   readonly ioType = IOType.INPUT;
 
   constructor(
       readonly defaultValue: T,
-      readonly key: string,
+      readonly key: P,
       readonly target: HTMLElement,
       readonly valueType: Type<T>,
   ) {}
@@ -42,17 +42,17 @@ class ResolvedIValue<T> implements Resolved<UnresolvedIValue<T>> {
   }
 }
 
-class UnresolvedIValue<T> implements UnresolvedIO<IValue<T>> {
+export class UnresolvedIValue<T, P extends string> implements UnresolvedIO<IValue<T, P>> {
   readonly apiType = ApiType.VALUE;
   readonly ioType = IOType.INPUT;
 
   constructor(
       readonly defaultValue: T,
-      readonly key: string,
+      readonly key: P,
       readonly valueType: Type<T>,
   ) {}
 
-  resolve(target: HTMLElement): ResolvedIValue<T> {
+  resolve(target: HTMLElement): ResolvedIValue<T, P> {
     return new ResolvedIValue(
         this.defaultValue,
         this.key,
@@ -62,9 +62,16 @@ class UnresolvedIValue<T> implements UnresolvedIO<IValue<T>> {
   }
 }
 
-export function ivalue<T>(key: string, valueType: Type<T>, defaultValue: T): UnresolvedIValue<T>;
-export function ivalue<T>(key: string, valueType: Type<T>): UnresolvedIValue<T|undefined>;
-export function ivalue(key: string, valueType: Type<unknown>, defaultValue?: unknown): UnresolvedIValue<unknown> {
+export function ivalue<T, P extends string>(
+    key: P,
+    valueType: Type<T>,
+    defaultValue: T,
+): UnresolvedIValue<T, P>;
+export function ivalue<T, P extends string>(
+    key: P,
+    valueType: Type<T>,
+): UnresolvedIValue<T|undefined, P>;
+export function ivalue(key: string, valueType: Type<unknown>, defaultValue?: unknown): UnresolvedIValue<unknown, string> {
   if (defaultValue !== undefined) {
     return new UnresolvedIValue(defaultValue, key, valueType);
   }

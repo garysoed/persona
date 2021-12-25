@@ -8,13 +8,13 @@ import {retryWhenDefined} from '../util/retry-when-defined';
 import {createMissingValueObservableError, getValueObservable} from '../util/value-observable';
 
 
-class ResolvedOValue<T> implements Resolved<UnresolvedOValue<T>> {
+class ResolvedOValue<T, P extends string> implements Resolved<UnresolvedOValue<T, P>> {
   readonly apiType = ApiType.VALUE;
   readonly ioType = IOType.OUTPUT;
 
   constructor(
       readonly defaultValue: T,
-      readonly key: string,
+      readonly key: P,
       readonly target: HTMLElement,
       readonly valueType: Type<T>,
   ) {}
@@ -37,17 +37,17 @@ class ResolvedOValue<T> implements Resolved<UnresolvedOValue<T>> {
   }
 }
 
-class UnresolvedOValue<T> implements UnresolvedIO<OValue<T>> {
+class UnresolvedOValue<T, P extends string> implements UnresolvedIO<OValue<T, P>> {
   readonly apiType = ApiType.VALUE;
   readonly ioType = IOType.OUTPUT;
 
   constructor(
       readonly defaultValue: T,
-      readonly key: string,
+      readonly key: P,
       readonly valueType: Type<T>,
   ) {}
 
-  resolve(target: HTMLElement): ResolvedOValue<T> {
+  resolve(target: HTMLElement): ResolvedOValue<T, P> {
     return new ResolvedOValue(
         this.defaultValue,
         this.key,
@@ -57,9 +57,16 @@ class UnresolvedOValue<T> implements UnresolvedIO<OValue<T>> {
   }
 }
 
-export function ovalue<T>(key: string, valueType: Type<T>, startValue: T): UnresolvedOValue<T>;
-export function ovalue<T>(key: string, valueType: Type<T>): UnresolvedOValue<T|undefined>;
-export function ovalue(key: string, valueType: Type<unknown>, defaultValue?: unknown): UnresolvedOValue<unknown> {
+export function ovalue<T, P extends string>(
+    key: P,
+    valueType: Type<T>,
+    startValue: T,
+): UnresolvedOValue<T, P>;
+export function ovalue<T, P extends string>(
+    key: P,
+    valueType: Type<T>,
+): UnresolvedOValue<T|undefined, P>;
+export function ovalue(key: string, valueType: Type<unknown>, defaultValue?: unknown): UnresolvedOValue<unknown, string> {
   if (defaultValue !== undefined) {
     return new UnresolvedOValue(defaultValue, key, valueType);
   }

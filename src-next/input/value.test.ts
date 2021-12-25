@@ -24,10 +24,11 @@ const VALUE_TYPE = unionType([numberType, nullType]);
 
 const $host = {
   host: {
-    value: ivalue('value', VALUE_TYPE),
-    valueWithDefault: ivalue('valueWithDefault', VALUE_TYPE, DEFAULT_VALUE),
+    value: ivalue('valueProp', VALUE_TYPE),
+    valueWithDefault: ivalue('valueWithDefaultProp', VALUE_TYPE, DEFAULT_VALUE),
   },
 };
+
 
 class HostCtrl implements Ctrl {
   constructor(
@@ -95,7 +96,7 @@ test('@persona/src/input/value', init => {
     should('emit values on sets when default values are given', () => {
       const value = 2;
       const element = _.tester.createElement(HOST);
-      element.valueWithDefault = value;
+      element.valueWithDefaultProp = value;
 
       assert($hostValueWithDefault$.get(_.tester.vine)).to.emitSequence([DEFAULT_VALUE, value]);
     });
@@ -103,16 +104,16 @@ test('@persona/src/input/value', init => {
     should('emit values on sets when default values aren\'t given', () => {
       const value = 2;
       const element = _.tester.createElement(HOST);
-      element.value = value;
-      element.value = undefined;
+      element.valueProp = value;
+      element.valueProp = undefined;
 
       assert($hostValue$.get(_.tester.vine)).to.emitSequence([undefined, value, undefined]);
     });
 
     should('handle null values', () => {
       const element = _.tester.createElement(HOST);
-      element.value = null;
-      element.value = undefined;
+      element.valueProp = null;
+      element.valueProp = undefined;
 
       assert($hostValue$.get(_.tester.vine)).to.emitSequence([undefined, null, undefined]);
     });

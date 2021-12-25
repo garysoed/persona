@@ -139,7 +139,7 @@ function createProperties(
     }
 
     const value$ = new BehaviorSubject<unknown>(io.defaultValue);
-    descriptor[key] = createDescriptorForProperty(io, value$);
+    descriptor[io.key] = createDescriptorForProperty(io, value$);
     setValueObservable(element, io.key, value$);
   }
 
@@ -148,7 +148,7 @@ function createProperties(
 
 
 function createDescriptorForProperty<T>(
-    io: IValue<T>|OValue<T>,
+    io: IValue<T, string>|OValue<T, string>,
     value$: BehaviorSubject<T>,
 ): PropertyDescriptor {
   const getterDescriptor: PropertyDescriptor = {

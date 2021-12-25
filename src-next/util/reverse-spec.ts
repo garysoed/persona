@@ -26,8 +26,8 @@ type ReversedIO<T> =
     T extends OFlag ? IFlag :
     T extends ISlotted ? OSlotted :
     T extends OSlotted ? ISlotted :
-    T extends IValue<infer V> ? OValue<V> :
-    T extends OValue<infer V> ? IValue<V> :
+    T extends IValue<infer V, infer P> ? OValue<V, P> :
+    T extends OValue<infer V, infer P> ? IValue<V, P> :
     never;
 
 export type ReversedSpec<U extends UnresolvedBindingSpec> = UnresolvedBindingSpec & {
@@ -44,7 +44,7 @@ type ReversableIO =
     OSingle|
     ISlotted|OSlotted|
     OText|
-    IValue<any>|OValue<any>;
+    IValue<any, any>|OValue<any, any>;
 
 export function reverseSpec<U extends UnresolvedBindingSpec>(spec: U): ReversedSpec<U> {
   const reversed: Partial<Record<keyof U, ReversableIO>> = {};

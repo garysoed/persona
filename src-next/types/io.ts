@@ -143,19 +143,19 @@ export interface OText {
   readonly ioType: IOType.OUTPUT;
 }
 
-export interface IValue<T> {
+export interface IValue<T, P extends string> {
   readonly apiType: ApiType.VALUE;
   readonly ioType: IOType.INPUT;
   readonly defaultValue: T;
-  readonly key: string;
+  readonly key: P;
   readonly valueType: Type<T>;
 }
 
-export interface OValue<T> {
+export interface OValue<T, P extends string> {
   readonly apiType: ApiType.VALUE;
   readonly ioType: IOType.OUTPUT;
   readonly valueType: Type<T>;
-  readonly key: string;
+  readonly key: P;
   readonly defaultValue: T;
 }
 
@@ -176,4 +176,4 @@ export type InputOutput =
     OStyle<keyof CSSStyleDeclaration>|
     ITarget|
     OText|
-    IValue<unknown>|OValue<unknown>;
+    IValue<unknown, string>|OValue<unknown, string>;

@@ -16,25 +16,34 @@ interface Typeof<T> {
   prototype: T;
 }
 
+export type PropertyNameOf<O> = O extends OValue<any, infer P> ? P :
+    O extends IValue<any, infer P> ? P :
+    never;
+
 type ApiReadableKeys<A> = {
-  readonly [K in keyof A]: A[K] extends OValue<any> ? K :
-      A[K] extends IValue<any> ? K : never;
+  readonly [K in keyof A]: A[K] extends OValue<any, any> ? K :
+      A[K] extends IValue<any, any> ? K : never;
 }[keyof A];
 
 type ApiReadableRaw<A> = {
-  [K in keyof A]: A[K] extends OValue<infer T> ? T :
-      A[K] extends IValue<infer T> ? T : never;
-}
+  [K in keyof A as PropertyNameOf<A[K]>]: A[K] extends OValue<infer T, string> ? T :
+      A[K] extends IValue<infer T, string> ? T : never;
+};
 
 type ApiReadable<A> = ApiReadableRaw<Pick<A, ApiReadableKeys<A>>>;
 
 
 type ApiReadonlyKeys<A> = {
-  readonly [K in keyof A]: A[K] extends IValue<unknown> ? never :
-      A[K] extends OValue<unknown> ? K : never;
+  readonly [K in keyof A]: A[K] extends OValue<unknown, any> ? K : never;
 }[keyof A];
 
-type ApiReadonly<A> = Readonly<ApiReadable<Pick<A, ApiReadonlyKeys<A>>>>;
+type ApiReadonlyRaw<A> = {
+  readonly [K in keyof A as PropertyNameOf<A[K]>]: A[K] extends OValue<infer T, string> ? T :
+      never;
+};
+
+
+export type ApiReadonly<A> = ApiReadonlyRaw<Pick<A, ApiReadonlyKeys<A>>>;
 
 
 type ApiMethodRaw<A> = {
@@ -48,9 +57,7 @@ type ApiMethodKeys<A> = {
 type ApiMethod<A> = ApiMethodRaw<Pick<A, ApiMethodKeys<A>>>;
 
 
-export type ApiAsProperties<S extends Spec> =
-    ApiReadable<S['host']>&ApiReadonly<S['host']>&ApiMethod<S['host']>;
-
+export type ApiAsProperties<S extends Spec> = (ApiReadable<S['host']>&ApiReadonly<S['host']>&ApiMethod<S['host']>);
 
 export function registerCustomElement<S extends Spec>(
     spec: RegistrationSpec<S>,

@@ -42,8 +42,8 @@ export type Resolved<T extends InputOutput> =
     T extends OStyle<infer S> ? OStyle<S>&ResolvedO<CSSStyleDeclaration[S]> :
     T extends ITarget ? ITarget&ResolvedI<HTMLElement> :
     T extends OText ? OText&ResolvedO<string> :
-    T extends IValue<infer V> ? IValue<V>&ResolvedI<V> :
-    T extends OValue<infer V> ? OValue<V>&ResolvedO<V> : never;
+    T extends IValue<infer V, infer P> ? IValue<V, P>&ResolvedI<V> :
+    T extends OValue<infer V, infer P> ? OValue<V, P>&ResolvedO<V> : never;
 
 export type ResolvedProvider<T extends InputOutput> =
     (root: ShadowRoot, context: RenderContext) => Resolved<T>;
@@ -67,7 +67,7 @@ export type UnresolvedBindingSpec = {
       UnresolvedIO<OSingle>|
       UnresolvedIO<ISlotted>|UnresolvedIO<OSlotted>|
       UnresolvedIO<OText>|
-      UnresolvedIO<IValue<unknown>>|UnresolvedIO<OValue<any>>;
+      UnresolvedIO<IValue<unknown, any>>|UnresolvedIO<OValue<any, any>>;
 }
 
 export type ResolvedBindingSpec<S extends UnresolvedBindingSpec> = {
