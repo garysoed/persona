@@ -1,11 +1,11 @@
 import {Observable, of as observableOf} from 'rxjs';
 import {switchMap} from 'rxjs/operators';
 
-import {ShadowContext} from '../core/shadow-context';
 
 import {$htmlParseService} from './html-parse-service';
-import {NodeWithId} from './node-with-id';
 import {renderNode} from './render-node';
+import {NodeWithId} from './types/node-with-id';
+import {RenderContext} from './types/render-context';
 import {RenderHtmlSpec} from './types/render-html-spec';
 import {RenderSpecType} from './types/render-spec-type';
 
@@ -22,7 +22,7 @@ import {RenderSpecType} from './types/render-spec-type';
  */
 export function renderHtml(
     spec: RenderHtmlSpec,
-    context: ShadowContext,
+    context: RenderContext,
 ): Observable<NodeWithId<Element>|null> {
   const service = $htmlParseService.get(context.vine);
   return spec.raw

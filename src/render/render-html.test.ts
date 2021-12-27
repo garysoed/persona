@@ -1,67 +1,75 @@
-import {assert, createSpy, createSpyInstance, fake, should, test} from 'gs-testing';
-import {Observable, of as observableOf, of} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {source} from 'grapevine';
+import {assert, runEnvironment, should, test} from 'gs-testing';
+import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {cache} from 'gs-tools/export/data';
+import {Observable, of, Subject} from 'rxjs';
 
-import {createFakeContext} from '../testing/create-fake-context';
+import {registerCustomElement} from '../core/register-custom-element';
+import {osingle} from '../output/single';
+import {root} from '../selector/root';
+import {setupTest} from '../testing/setup-test';
+import {Context, Ctrl} from '../types/ctrl';
 
-import {$htmlParseService, HtmlParseService} from './html-parse-service';
-import {NodeWithId} from './node-with-id';
-import {renderHtml} from './render-html';
-import {RenderSpecType} from './types/render-spec-type';
+import goldens from './goldens/goldens.json';
+import {renderHtml} from './types/render-html-spec';
+import {RenderSpec} from './types/render-spec';
 
 
-test('@persona/render/render-html', init => {
-  const RAW = 'RAW';
+const $spec = source(() => new Subject<RenderSpec|null>());
+
+const $host = {
+  shadow: {
+    root: root({
+      value: osingle('#ref'),
+    }),
+  },
+};
+
+class HostCtrl implements Ctrl {
+  constructor(private readonly $: Context<typeof $host>) {}
+
+  @cache()
+  get runs(): ReadonlyArray<Observable<unknown>> {
+    return [
+      $spec.get(this.$.vine).pipe(
+          this.$.shadow.root.value(),
+      ),
+    ];
+  }
+}
+
+const HOST = registerCustomElement({
+  tag: 'test-host',
+  ctrl: HostCtrl,
+  spec: $host,
+  template: '<!-- #ref -->',
+});
+
+
+test('@persona/src/render/render-html', init => {
   const SUPPORTED_TYPE = 'text/xml';
 
   const _ = init(() => {
-    const el = document.createElement('div');
-    const shadowRoot = el.attachShadow({mode: 'open'});
-    const mockHtmlParseService = createSpyInstance(HtmlParseService);
-    const context = createFakeContext({
-      shadowRoot,
-      overrides: [
-        {override: $htmlParseService, withValue: mockHtmlParseService},
-      ],
+    runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));
+
+    const tester = setupTest({
+      roots: [HOST],
     });
-    return {context, mockHtmlParseService};
+
+    return {tester};
   });
 
   should('emit the parse result', () => {
     const el = document.createElement('div');
-    fake(_.mockHtmlParseService.parse).always().return(observableOf(el));
 
-    const spy = createSpy<Observable<unknown>, [NodeWithId<Node>]>('decorator');
-    fake(spy).always().return(of({}));
+    const element = _.tester.createElement(HOST);
 
-    const tagName$ = renderHtml(
-        {
-          type: RenderSpecType.HTML,
-          raw: observableOf(RAW),
-          parseType: SUPPORTED_TYPE,
-          id: 'id',
-          decorators: [spy],
-        },
-        _.context,
-    )
-        .pipe(map(el => {
-          const html = (el as unknown as HTMLElement);
-          return html.tagName;
-        }));
+    $spec.get(_.tester.vine).next(renderHtml({
+      raw: of(el.outerHTML),
+      parseType: SUPPORTED_TYPE,
+      id: 'id',
+    }));
 
-    assert(tagName$).to.emitWith('DIV');
-    assert(spy).to.haveBeenCalled();
-
-    // Should emit the copy, not the exact instance.
-    assert(renderHtml(
-        {
-          type: RenderSpecType.HTML,
-          raw: observableOf(RAW),
-          parseType: SUPPORTED_TYPE,
-          id: 'id',
-        },
-        _.context,
-    ))
-        .toNot.emitWith(el as any);
+    assert(element).to.matchSnapshot('render-html.html');
   });
 });

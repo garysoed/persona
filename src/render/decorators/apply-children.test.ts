@@ -11,8 +11,9 @@ import {setupTest} from '../../testing/setup-test';
 import {Context, Ctrl} from '../../types/ctrl';
 import {renderNode} from '../types/render-node-spec';
 import {RenderSpec} from '../types/render-spec';
+import {renderTextNode} from '../types/render-text-node-spec';
 
-import {applyStyles} from './apply-styles';
+import {applyChildren} from './apply-children';
 import goldens from './goldens/goldens.json';
 
 
@@ -41,44 +42,82 @@ const HOST = registerCustomElement({
   tag: 'test-host',
   ctrl: Host,
   spec: $host,
-  template: '<!-- #ref -->',
+  template: '<!-- #ref --></div>',
 });
 
-test('@persona/src/render/decorators/apply-styles', init => {
+test('@persona/src/render/decorators/apply-children', init => {
   const _ = init(() => {
     runEnvironment(new BrowserSnapshotsEnv('src/render/decorators/goldens', goldens));
     const tester = setupTest({roots: [HOST]});
     return {tester};
   });
 
-  should('add the styles correctly', () => {
+  should('delete the children correctly', () => {
+    const child1 = renderTextNode({
+      id: {},
+      textContent: 'child1',
+    });
+    const child2 = renderTextNode({
+      id: {},
+      textContent: 'child2',
+    });
+
     const element = _.tester.createElement(HOST);
 
     $spec.get(_.tester.vine).next(renderNode({
       id: {},
       node: document.createElement('a'),
       decorators: [
-        applyStyles(of(new Map([['height', '1px'], ['width', '2px']]))),
+        applyChildren(of([child1, child2], [child1]), {document, vine: _.tester.vine}),
       ],
     }));
 
-    assert(element).to.matchSnapshot('apply-styles__add.html');
+    assert(element).to.matchSnapshot('apply-children__delete.html');
   });
 
-  should('delete the styles correctly', () => {
+  should('insert the children correctly', () => {
+    const child1 = renderTextNode({
+      id: {},
+      textContent: 'child1',
+    });
+    const child2 = renderTextNode({
+      id: {},
+      textContent: 'child2',
+    });
+
     const element = _.tester.createElement(HOST);
 
     $spec.get(_.tester.vine).next(renderNode({
       id: {},
       node: document.createElement('a'),
       decorators: [
-        applyStyles(of(
-            new Map([['height', '1px'], ['width', '2px']]),
-            new Map([['height', '1px']]),
-        )),
+        applyChildren(of([child2], [child1, child2]), {document, vine: _.tester.vine}),
       ],
     }));
 
-    assert(element).to.matchSnapshot('apply-styles__delete.html');
+    assert(element).to.matchSnapshot('apply-children__insert.html');
+  });
+
+  should('set the children correctly', () => {
+    const child1 = renderTextNode({
+      id: {},
+      textContent: 'child1',
+    });
+    const child2 = renderTextNode({
+      id: {},
+      textContent: 'child2',
+    });
+
+    const element = _.tester.createElement(HOST);
+
+    $spec.get(_.tester.vine).next(renderNode({
+      id: {},
+      node: document.createElement('a'),
+      decorators: [
+        applyChildren(of([child2], [child1]), {document, vine: _.tester.vine}),
+      ],
+    }));
+
+    assert(element).to.matchSnapshot('apply-children__set.html');
   });
 });

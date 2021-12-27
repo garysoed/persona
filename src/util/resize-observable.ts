@@ -1,11 +1,11 @@
-import {Observable, fromEventPattern} from 'rxjs';
-import {share} from 'rxjs/operators';
+import {Observable, fromEventPattern, of} from 'rxjs';
+import {share, switchMap} from 'rxjs/operators';
 
 
 export function resizeObservable(
     targetEl: Element,
     options: ResizeObserverOptions,
-): Observable<readonly ResizeObserverEntry[]> {
+): Observable<ResizeObserverEntry> {
   return fromEventPattern<readonly ResizeObserverEntry[]>(
       handler => {
         const observer = new ResizeObserver(entries => handler(entries));
@@ -15,5 +15,8 @@ export function resizeObservable(
       },
       (_, observer: ResizeObserver) => observer.disconnect(),
   )
-      .pipe(share());
+      .pipe(
+          switchMap(entries => of(...entries)),
+          share(),
+      );
 }

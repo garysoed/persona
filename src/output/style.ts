@@ -1,43 +1,41 @@
-import {OperatorFunction} from 'rxjs';
+import {OperatorFunction, pipe} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {ShadowContext} from '../core/shadow-context';
-import {Output} from '../types/output';
-import {Resolver} from '../types/resolver';
-import {UnresolvedOutput} from '../types/unresolved-output';
+import {Resolved, UnresolvedIO} from '../types/ctrl';
+import {ApiType, IOType, OStyle} from '../types/io';
 
 
-export class StyleOutput<S extends keyof CSSStyleDeclaration> implements Output<CSSStyleDeclaration[S]> {
-  readonly type = 'out';
+class ResolvedOStyle<S extends keyof CSSStyleDeclaration> implements Resolved<UnresolvedOStyle<S>> {
+  readonly apiType = ApiType.STYLE;
+  readonly ioType = IOType.OUTPUT;
 
   constructor(
-      readonly resolver: Resolver<HTMLElement>,
-      readonly styleKey: S,
-  ) { }
+      readonly propertyName: S,
+      readonly target: HTMLElement,
+  ) {}
 
-  output(context: ShadowContext): OperatorFunction<CSSStyleDeclaration[S], unknown> {
-    return value$ => value$
-        .pipe(
-            tap(value => {
-              const el = this.resolver(context);
-              el.style[this.styleKey] = value;
-            }),
-        );
+  update(): OperatorFunction<CSSStyleDeclaration[S], unknown> {
+    return pipe(
+        tap(newValue => {
+          this.target.style[this.propertyName] = newValue;
+        }),
+    );
   }
 }
 
-class UnresolvedStyleOutput<S extends keyof CSSStyleDeclaration> implements UnresolvedOutput<Element, CSSStyleDeclaration[S]> {
-  constructor(
-      private readonly styleKey: S,
-  ) { }
+class UnresolvedOStyle<S extends keyof CSSStyleDeclaration> implements UnresolvedIO<OStyle<S>> {
+  readonly apiType = ApiType.STYLE;
+  readonly ioType = IOType.OUTPUT;
 
-  resolve(resolver: Resolver<HTMLElement>): StyleOutput<S> {
-    return new StyleOutput(resolver, this.styleKey);
+  constructor(
+      readonly propertyName: S,
+  ) {}
+
+  resolve(target: HTMLElement): ResolvedOStyle<S> {
+    return new ResolvedOStyle(this.propertyName, target);
   }
 }
 
-export function style<S extends keyof CSSStyleDeclaration>(
-    styleKey: S,
-): UnresolvedStyleOutput<S> {
-  return new UnresolvedStyleOutput(styleKey);
+export function ostyle<S extends keyof CSSStyleDeclaration>(propertyName: S): UnresolvedOStyle<S> {
+  return new UnresolvedOStyle<S>(propertyName);
 }

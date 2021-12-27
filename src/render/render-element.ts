@@ -1,15 +1,13 @@
 import {Observable} from 'rxjs';
-import {switchMap, tap} from 'rxjs/operators';
-
-import {ShadowContext} from '../core/shadow-context';
-import {ownerDocument} from '../input/owner-document';
+import {tap} from 'rxjs/operators';
 
 import {applyChildren} from './decorators/apply-children';
 import {Decorator} from './decorators/apply-decorators';
 import {applyStyles} from './decorators/apply-styles';
 import {applyTextContent} from './decorators/apply-text-content';
-import {NodeWithId, __id} from './node-with-id';
 import {renderNode} from './render-node';
+import {NodeWithId, __id} from './types/node-with-id';
+import {RenderContext} from './types/render-context';
 import {RenderElementSpec} from './types/render-element-spec';
 import {RenderSpecType} from './types/render-spec-type';
 
@@ -46,7 +44,7 @@ export interface Values {
  */
 export function renderElement(
     spec: RenderElementSpec,
-    context: ShadowContext,
+    context: RenderContext,
 ): Observable<HTMLElement&{[__id]: unknown}> {
   const decorators: Array<Decorator<NodeWithId<HTMLElement>>> = [];
   const extraAttrs = spec.attrs ?? new Map<string, Observable<string|undefined>>();
@@ -78,14 +76,10 @@ export function renderElement(
     decorators.push(...spec.decorators);
   }
 
-  return ownerDocument().getValue(context).pipe(
-      switchMap(document => {
-        return renderNode({
-          ...spec,
-          type: RenderSpecType.NODE,
-          node: document.createElement(spec.tag),
-          decorators,
-        });
-      }),
-  );
+  return renderNode({
+    ...spec,
+    type: RenderSpecType.NODE,
+    node: context.document.createElement(spec.tag),
+    decorators,
+  });
 }

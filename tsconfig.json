@@ -28,8 +28,8 @@
     "target": "es6",
   },
   "include": [
-    "src-next/**/*.json",
-    "src-next/**/*.ts",
+    "src/**/*.json",
+    "src/**/*.ts",
     "src/**/*.ts",
     "node_modules/devbase/ts/typings/*.d.ts",
     "export/*.ts",

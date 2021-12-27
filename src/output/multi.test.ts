@@ -1,159 +1,258 @@
-import {assert, run, should, test} from 'gs-testing';
-import {Subject} from 'rxjs';
+import {source} from 'grapevine';
+import {assert, runEnvironment, should, test} from 'gs-testing';
+import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {cache} from 'gs-tools/export/data';
+import {Observable, Subject} from 'rxjs';
 
-import {$div} from '../html/div';
+import {registerCustomElement} from '../core/register-custom-element';
+import {DIV} from '../html/div';
+import {renderNode} from '../render/types/render-node-spec';
 import {RenderSpec} from '../render/types/render-spec';
-import {RenderSpecType} from '../render/types/render-spec-type';
-import {element} from '../selector/element';
-import {createFakeContext} from '../testing/create-fake-context';
+import {id} from '../selector/id';
+import {root} from '../selector/root';
+import {setupTest} from '../testing/setup-test';
+import {Context, Ctrl} from '../types/ctrl';
 
-import {multi} from './multi';
+import goldens from './goldens/goldens.json';
+import {omulti} from './multi';
 
 
-function renderElementSpec(tag: string, id?: string): RenderSpec {
-  return {type: RenderSpecType.ELEMENT, tag, id: id ?? tag};
+const $elValue$ = source(() => new Subject<readonly RenderSpec[]>());
+const $rootValue$ = source(() => new Subject<readonly RenderSpec[]>());
+
+
+const $host = {
+  shadow: {
+    root: root({
+      value: omulti('#root'),
+    }),
+    el: id('el', DIV, {
+      value: omulti('#ref'),
+    }),
+  },
+};
+
+class HostCtrl implements Ctrl {
+  constructor(private readonly $: Context<typeof $host>) {}
+
+  @cache()
+  get runs(): ReadonlyArray<Observable<unknown>> {
+    return [
+      $elValue$.get(this.$.vine).pipe(this.$.shadow.el.value()),
+      $rootValue$.get(this.$.vine).pipe(this.$.shadow.root.value()),
+    ];
+  }
 }
 
-test('@persona/output/multi', init => {
-  const ELEMENT_ID = 'elementId';
-  const SLOT_NAME = 'slotName';
+const HOST = registerCustomElement({
+  tag: 'test-host',
+  ctrl: HostCtrl,
+  spec: $host,
+  template: '<!-- #root --><div id="el"><!-- #ref --></div>',
+});
 
+test('@persona/src/output/multi', init => {
   const _ = init(() => {
-    const $ = element(ELEMENT_ID, $div, {
-      list: multi(SLOT_NAME),
-    });
-
-    const root = document.createElement('div');
-    const shadowRoot = root.attachShadow({mode: 'open'});
-
-    const slot = document.createComment(SLOT_NAME);
-
-    const parentEl = document.createElement('div');
-    parentEl.id = ELEMENT_ID;
-    parentEl.appendChild(slot);
-
-    shadowRoot.appendChild(parentEl);
-
-    const output = $._.list;
-
-    return {output, context: createFakeContext({shadowRoot}), parentEl, slot};
+    runEnvironment(new BrowserSnapshotsEnv('src/output/goldens', goldens));
+    const tester = setupTest({roots: [HOST]});
+    return {tester};
   });
 
-  test('output', _, init => {
-    const _ = init(_ => {
-      const diff$ = new Subject<readonly RenderSpec[]>();
-
-      run(diff$.pipe(_.output.output(_.context)));
-
-      return {..._, diff$};
-    });
-
+  test('root', _, () => {
     should('process \'init\' correctly', () => {
-      const node1 = renderElementSpec('div1');
-      const node2 = renderElementSpec('div2');
-      const node3 = renderElementSpec('div3');
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: {}, node: document.createElement('div1')});
+      const node2 = renderNode({id: {}, node: document.createElement('div2')});
+      const node3 = renderNode({id: {}, node: document.createElement('div3')});
 
-      _.diff$.next([node1, node2, node3]);
+      $rootValue$.get(_.tester.vine).next([node1, node2, node3]);
 
-      assert((_.slot.nextSibling as HTMLElement).tagName).to.equal('DIV1');
-      assert((_.slot.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV2');
-      assert((_.slot.nextSibling?.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV3');
+      assert(element).to.matchSnapshot('multi__root_init.html');
     });
 
     should('process \'insert\' correctly for index 0', () => {
-      const node1 = renderElementSpec('div1');
-      const node2 = renderElementSpec('div2');
-      const node3 = renderElementSpec('div3');
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: {}, node: document.createElement('div1')});
+      const node2 = renderNode({id: {}, node: document.createElement('div2')});
+      const node3 = renderNode({id: {}, node: document.createElement('div3')});
 
-      _.diff$.next([node1, node2, node3]);
+      $rootValue$.get(_.tester.vine).next([node1, node2, node3]);
 
-      const insertNode = renderElementSpec('div0');
-      _.diff$.next([insertNode, node1, node2, node3]);
+      const insertNode = renderNode({id: {}, node: document.createElement('div0')});
+      $rootValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
 
-      assert((_.slot.nextSibling as HTMLElement).tagName).to.equal('DIV0');
-      assert((_.slot.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV1');
-      assert((_.slot.nextSibling?.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV2');
-      assert((_.slot.nextSibling?.nextSibling?.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV3');
+      assert(element).to.matchSnapshot('multi__root_insert_start.html');
     });
 
     should('process \'insert\' correctly for index 2', () => {
-      const node1 = renderElementSpec('div1');
-      const node2 = renderElementSpec('div2');
-      const node3 = renderElementSpec('div3');
-      _.diff$.next([node1, node2, node3]);
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: {}, node: document.createElement('div1')});
+      const node2 = renderNode({id: {}, node: document.createElement('div2')});
+      const node3 = renderNode({id: {}, node: document.createElement('div3')});
+      $rootValue$.get(_.tester.vine).next([node1, node2, node3]);
 
-      const insertNode = renderElementSpec('div0');
-      _.diff$.next([node1, node2, insertNode, node3]);
+      const insertNode = renderNode({id: {}, node: document.createElement('div0')});
+      $rootValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
 
-      assert((_.slot.nextSibling as HTMLElement).tagName).to.equal('DIV1');
-      assert((_.slot.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV2');
-      assert((_.slot.nextSibling?.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV0');
-      assert((_.slot.nextSibling?.nextSibling?.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV3');
+      assert(element).to.matchSnapshot('multi__root_insert_middle.html');
     });
 
     should('process \'insert\' correctly for large index', () => {
-      const node1 = renderElementSpec('div1');
-      const node2 = renderElementSpec('div2');
-      const node3 = renderElementSpec('div3');
-      _.diff$.next([node1, node2, node3]);
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: {}, node: document.createElement('div1')});
+      const node2 = renderNode({id: {}, node: document.createElement('div2')});
+      const node3 = renderNode({id: {}, node: document.createElement('div3')});
+      $rootValue$.get(_.tester.vine).next([node1, node2, node3]);
 
-      const insertNode = renderElementSpec('div0');
-      _.diff$.next([node1, node2, node3, insertNode]);
+      const insertNode = renderNode({id: {}, node: document.createElement('div0')});
+      $rootValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
 
-      assert((_.slot.nextSibling as HTMLElement).tagName).to.equal('DIV1');
-      assert((_.slot.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV2');
-      assert((_.slot.nextSibling?.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV3');
-      assert((_.slot.nextSibling?.nextSibling?.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV0');
+      assert(element).to.matchSnapshot('multi__root_insert_end.html');
     });
 
     should('process \'delete\' correctly', () => {
-      const node1 = renderElementSpec('div1');
-      const node2 = renderElementSpec('div2');
-      const node3 = renderElementSpec('div3');
-      _.diff$.next([node1, node2, node3]);
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: {}, node: document.createElement('div1')});
+      const node2 = renderNode({id: {}, node: document.createElement('div2')});
+      const node3 = renderNode({id: {}, node: document.createElement('div3')});
+      $rootValue$.get(_.tester.vine).next([node1, node2, node3]);
 
-      _.diff$.next([node1, node3]);
+      $rootValue$.get(_.tester.vine).next([node1, node3]);
 
-      assert((_.slot.nextSibling as HTMLElement).tagName).to.equal('DIV1');
-      assert((_.slot.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV3');
-      assert(_.slot.nextSibling?.nextSibling?.nextSibling).to.beNull();
+      assert(element).to.matchSnapshot('multi__root_delete.html');
     });
 
     should('ignore node insertions with the same id', () => {
-      const node1 = renderElementSpec('div1', '1');
-      const node2 = renderElementSpec('div1', '1');
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: '1', node: document.createElement('div1')});
+      const node2 = renderNode({id: '1', node: document.createElement('div2')});
 
-      _.diff$.next([node1]);
-      _.diff$.next([node2]);
+      $rootValue$.get(_.tester.vine).next([node1]);
+      $rootValue$.get(_.tester.vine).next([node2]);
 
-      assert((_.slot.nextSibling as HTMLElement).tagName).to.equal('DIV1');
-      assert(_.slot.nextSibling?.nextSibling).to.beNull();
+      assert(element).to.matchSnapshot('multi__root_same_id.html');
     });
 
-    should('hide errors when deleting', () => {
-      const node = renderElementSpec('div');
-      _.diff$.next([node, node]);
+    should('handle deleting duplicates', () => {
+      const element = _.tester.createElement(HOST);
+      const node = renderNode({id: {}, node: document.createElement('div')});
+      $rootValue$.get(_.tester.vine).next([node, node]);
 
-      _.diff$.next([]);
+      $rootValue$.get(_.tester.vine).next([]);
 
-      assert(_.slot.nextSibling).to.beNull();
+      assert(element).to.matchSnapshot('multi__root_delete_duplicate.html');
     });
 
     should('replace the element correctly for \'set\'', () => {
-      const node1 = renderElementSpec('div1');
-      const node2 = renderElementSpec('div2');
-      const node3 = renderElementSpec('div3');
-      _.diff$.next([node1, node2, node3]);
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: {}, node: document.createElement('div1')});
+      const node2 = renderNode({id: {}, node: document.createElement('div2')});
+      const node3 = renderNode({id: {}, node: document.createElement('div3')});
+      $rootValue$.get(_.tester.vine).next([node1, node2, node3]);
 
-      const existingElement = document.createElement('div');
-      _.parentEl.appendChild(existingElement);
+      const setNode = renderNode({id: {}, node: document.createElement('div0')});
+      $rootValue$.get(_.tester.vine).next([setNode, node2, node3]);
 
-      const setNode = renderElementSpec('div0');
-      _.diff$.next([setNode, node2, node3]);
+      assert(element).to.matchSnapshot('multi__root_set.html');
+    });
+  });
 
-      assert((_.slot.nextSibling as HTMLElement).tagName).to.equal('DIV0');
-      assert((_.slot.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV2');
-      assert((_.slot.nextSibling?.nextSibling?.nextSibling as HTMLElement).tagName).to.equal('DIV3');
+  test('el', () => {
+    should('process \'init\' correctly', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: {}, node: document.createElement('div1')});
+      const node2 = renderNode({id: {}, node: document.createElement('div2')});
+      const node3 = renderNode({id: {}, node: document.createElement('div3')});
+
+      $elValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      assert(element).to.matchSnapshot('multi__el_init.html');
+    });
+
+    should('process \'insert\' correctly for index 0', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: {}, node: document.createElement('div1')});
+      const node2 = renderNode({id: {}, node: document.createElement('div2')});
+      const node3 = renderNode({id: {}, node: document.createElement('div3')});
+
+      $elValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      const insertNode = renderNode({id: {}, node: document.createElement('div0')});
+      $elValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
+
+      assert(element).to.matchSnapshot('multi__el_insert_start.html');
+    });
+
+    should('process \'insert\' correctly for index 2', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: {}, node: document.createElement('div1')});
+      const node2 = renderNode({id: {}, node: document.createElement('div2')});
+      const node3 = renderNode({id: {}, node: document.createElement('div3')});
+      $elValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      const insertNode = renderNode({id: {}, node: document.createElement('div0')});
+      $elValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
+
+      assert(element).to.matchSnapshot('multi__el_insert_middle.html');
+    });
+
+    should('process \'insert\' correctly for large index', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: {}, node: document.createElement('div1')});
+      const node2 = renderNode({id: {}, node: document.createElement('div2')});
+      const node3 = renderNode({id: {}, node: document.createElement('div3')});
+      $elValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      const insertNode = renderNode({id: {}, node: document.createElement('div0')});
+      $elValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
+
+      assert(element).to.matchSnapshot('multi__el_insert_end.html');
+    });
+
+    should('process \'delete\' correctly', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: {}, node: document.createElement('div1')});
+      const node2 = renderNode({id: {}, node: document.createElement('div2')});
+      const node3 = renderNode({id: {}, node: document.createElement('div3')});
+      $elValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      $elValue$.get(_.tester.vine).next([node1, node3]);
+
+      assert(element).to.matchSnapshot('multi__el_delete.html');
+    });
+
+    should('ignore node insertions with the same id', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: '1', node: document.createElement('div1')});
+      const node2 = renderNode({id: '1', node: document.createElement('div2')});
+
+      $elValue$.get(_.tester.vine).next([node1]);
+      $elValue$.get(_.tester.vine).next([node2]);
+
+      assert(element).to.matchSnapshot('multi__el_same_id.html');
+    });
+
+    should('handle deleting duplicates', () => {
+      const element = _.tester.createElement(HOST);
+      const node = renderNode({id: {}, node: document.createElement('div')});
+      $elValue$.get(_.tester.vine).next([node, node]);
+
+      $elValue$.get(_.tester.vine).next([]);
+
+      assert(element).to.matchSnapshot('multi__el_delete_duplicate.html');
+    });
+
+    should('replace the element correctly for \'set\'', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = renderNode({id: {}, node: document.createElement('div1')});
+      const node2 = renderNode({id: {}, node: document.createElement('div2')});
+      const node3 = renderNode({id: {}, node: document.createElement('div3')});
+      $elValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      const setNode = renderNode({id: {}, node: document.createElement('div0')});
+      $elValue$.get(_.tester.vine).next([setNode, node2, node3]);
+
+      assert(element).to.matchSnapshot('multi__el_set.html');
     });
   });
 });

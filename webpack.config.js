@@ -6,7 +6,7 @@ module.exports = webpackBuilder(__dirname)
         .addEntry(
             'entry',
             [
-              ...glob.sync('./src-next/**/*.test.ts'),
+              ...glob.sync('./src/**/*.test.ts'),
             ],
         )
         .setOutput('bundle.js', '/out')

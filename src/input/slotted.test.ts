@@ -1,39 +1,65 @@
-import {arrayThat, assert, createSpySubject, should, test} from 'gs-testing';
+import {source} from 'grapevine';
+import {arrayThat, assert, should, test} from 'gs-testing';
+import {cache} from 'gs-tools/export/data';
+import {Observable, ReplaySubject} from 'rxjs';
+import {tap} from 'rxjs/operators';
 
-import {$slot} from '../html/slot';
-import {element} from '../selector/element';
-import {createFakeContext} from '../testing/create-fake-context';
+import {registerCustomElement} from '../core/register-custom-element';
+import {SLOT} from '../html/slot';
+import {id} from '../selector/id';
+import {getEl} from '../testing/get-el';
+import {setupTest} from '../testing/setup-test';
+import {Context, Ctrl} from '../types/ctrl';
 
-import {slotted} from './slotted';
+
+const $elValue$ = source(() => new ReplaySubject<readonly Node[]>());
 
 
-test('@persona/main/slotted', () => {
-  test('getValue', () => {
-    should('emit the element correctly', () => {
-      const id = 'id';
-      const $ = element(id, $slot, {
-        slot: slotted(),
+const $host = {
+  shadow: {
+    slot: id('slot', SLOT),
+  },
+};
+
+class HostCtrl implements Ctrl {
+  constructor(private readonly context: Context<typeof $host>) {}
+
+  @cache()
+  get runs(): ReadonlyArray<Observable<unknown>> {
+    return [
+      this.context.shadow.slot.slotted.pipe(
+          tap(value => $elValue$.get(this.context.vine).next(value)),
+      ),
+    ];
+  }
+}
+
+const HOST = registerCustomElement({
+  tag: 'test-host',
+  ctrl: HostCtrl,
+  spec: $host,
+  template: '<slot id="slot"></slot>',
+});
+
+
+test('@persona/src/input/attr', init => {
+  const _ = init(() => {
+    const tester = setupTest({roots: [HOST]});
+    return {tester};
+  });
+
+  test('el', () => {
+    should('emit values on sets', () => {
+      const element = _.tester.createElement(HOST);
+      const newNode = document.createTextNode('text');
+      getEl(element, 'slot')!.simulateSlotChange(element => {
+        element.appendChild(newNode);
       });
-      const slotName = 'slotName';
 
-      const root = document.createElement('div');
-      const shadowRoot = root.attachShadow({mode: 'open'});
-
-      const slotEl = document.createElement('slot');
-      slotEl.id = id;
-      slotEl.name = slotName;
-      shadowRoot.appendChild(slotEl);
-
-      const el1 = document.createElement('div');
-      el1.setAttribute('slot', slotName);
-      root.appendChild(el1);
-
-      const el2 = document.createElement('div');
-      el2.setAttribute('slot', slotName);
-      root.appendChild(el2);
-
-      const spyElement$ = createSpySubject($._.slot.getValue(createFakeContext({shadowRoot})));
-      assert(spyElement$).to.emitWith(arrayThat<Node>().haveExactElements([el1, el2]));
+      assert($elValue$.get(_.tester.vine)).to.emitSequence([
+        arrayThat<Node>().haveExactElements([]),
+        arrayThat<Node>().haveExactElements([newNode]),
+      ]);
     });
   });
 });

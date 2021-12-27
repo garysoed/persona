@@ -1,134 +1,160 @@
-import {assert, createSpySubject, should, test} from 'gs-testing';
-import {of as observableOf} from 'rxjs';
-import {map, shareReplay} from 'rxjs/operators';
+import {source} from 'grapevine';
+import {assert, runEnvironment, should, test} from 'gs-testing';
+import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {cache} from 'gs-tools/export/data';
+import {numberType} from 'gs-types';
+import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 
-import {integerParser, stringParser} from '../../src-next/util/parsers';
-import {attribute} from '../input/attribute';
-import {createFakeContext} from '../testing/create-fake-context';
+import {registerCustomElement} from '../core/register-custom-element';
+import {iattr} from '../input/attr';
+import {iflag} from '../input/flag';
+import {osingle} from '../output/single';
+import {ovalue} from '../output/value';
+import {root} from '../selector/root';
+import {setupTest} from '../testing/setup-test';
+import {Context, Ctrl} from '../types/ctrl';
+
+import goldens from './goldens/goldens.json';
+import {renderCustomElement} from './types/render-custom-element-spec';
+import {RenderSpec} from './types/render-spec';
 
 
-import {__id} from './node-with-id';
-import {renderCustomElement} from './render-custom-element';
-import {RenderSpecType} from './types/render-spec-type';
-
-
-const $spec = {
-  tag: 'pr-test',
-  api: {
-    a: attribute('a', stringParser()),
-    b: attribute('b', integerParser()),
+const DEFAULT_C = 123;
+const $child = {
+  host: {
+    a: iattr('a'),
+    b: iflag('b'),
+    c: ovalue('c', numberType, DEFAULT_C),
   },
 };
 
-test('@persona/render/render-custom-element', init => {
+const $c = source(() => new Subject<number>());
+
+class Child implements Ctrl {
+  constructor(private readonly $: Context<typeof $child>) {}
+
+  @cache()
+  get runs(): ReadonlyArray<Observable<unknown>> {
+    return [
+      $c.get(this.$.vine).pipe(this.$.host.c()),
+    ];
+  }
+}
+
+const CHILD = registerCustomElement({
+  tag: 'pr-test',
+  ctrl: Child,
+  spec: $child,
+  template: '<div>child<slot></slot></div>',
+});
+
+const $spec = source(() => new Subject<RenderSpec|null>());
+const $host = {
+  shadow: {
+    root: root({
+      value: osingle('#ref'),
+    }),
+  },
+};
+
+class HostCtrl implements Ctrl {
+  constructor(private readonly $: Context<typeof $host>) {}
+
+  @cache()
+  get runs(): ReadonlyArray<Observable<unknown>> {
+    return [
+      $spec.get(this.$.vine).pipe(this.$.shadow.root.value()),
+    ];
+  }
+}
+
+const HOST = registerCustomElement({
+  tag: 'test-host',
+  ctrl: HostCtrl,
+  spec: $host,
+  template: '<!-- #ref -->',
+});
+
+test('@persona/src/render/render-custom-element', init => {
   const _ = init(() => {
-    const el = document.createElement('div');
-    const shadowRoot = el.attachShadow({mode: 'open'});
-    const context = createFakeContext({shadowRoot});
-    return {context};
+    runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));
+    const tester = setupTest({roots: [HOST, CHILD]});
+    return {tester};
   });
 
   should('emit the custom element', () => {
-    const id = 'id';
-    const a = 'avalue';
-    const element$ = renderCustomElement(
-        {
-          type: RenderSpecType.CUSTOM_ELEMENT,
-          spec: $spec,
-          inputs: {
-            a: observableOf(a),
-            b: observableOf(123),
-          },
-          id,
-        },
-        _.context,
-    )
-        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+    const element = _.tester.createElement(HOST);
+    $spec.get(_.tester.vine).next(renderCustomElement({
+      registration: CHILD,
+      inputs: {
+        a: of('avalue'),
+        b: of(true),
+      },
+      id: 'id',
+    }));
 
-    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
-    const a$ = createSpySubject(element$.pipe(map(el => el.getAttribute($spec.api.a.attrName))));
-    const b$ = createSpySubject(element$.pipe(map(el => el.getAttribute($spec.api.b.attrName))));
-    const id$ = createSpySubject(element$.pipe(map(el => el[__id])));
-
-    assert(tag$).to.emitSequence([$spec.tag.toUpperCase()]);
-    assert(a$).to.emitSequence([a]);
-    assert(b$).to.emitSequence(['123']);
-    assert(id$).to.emitSequence([id]);
+    assert(element).to.matchSnapshot('render-custom-element__emit.html');
   });
 
-  should('update the inputs without emitting the custom element', () => {
-    const a1 = 'a1';
-    const a2 = 'a2';
-    const element$ = renderCustomElement(
-        {
-          type: RenderSpecType.CUSTOM_ELEMENT,
-          spec: $spec,
-          inputs: {
-            a: observableOf(a1, a2),
-            b: observableOf(123, 456),
-          },
-          id: 'id',
-        },
-        _.context,
-    )
-        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+  should('update the inputs', () => {
+    const element = _.tester.createElement(HOST);
+    $spec.get(_.tester.vine).next(renderCustomElement({
+      registration: CHILD,
+      inputs: {
+        a: of('a1', 'a2'),
+        b: of(true, false),
+      },
+      id: 'id',
+    }));
 
-    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
-    const a$ = createSpySubject(element$.pipe(map(el => el.getAttribute($spec.api.a.attrName))));
-    const b$ = createSpySubject(element$.pipe(map(el => el.getAttribute($spec.api.b.attrName))));
-
-    assert(tag$).to.emitSequence([$spec.tag.toUpperCase()]);
-    assert(a$).to.emitSequence([a2]);
-    assert(b$).to.emitSequence(['456']);
+    assert(element).to.matchSnapshot('render-custom-element__update.html');
   });
 
-  should('update the extra attributes without emitting the custom element', () => {
-    const c1 = 'c1';
-    const c2 = 'c2';
-    const element$ = renderCustomElement(
-        {
-          type: RenderSpecType.CUSTOM_ELEMENT,
-          spec: $spec,
-          inputs: {
-            a: observableOf('a'),
-            b: observableOf(123),
-          },
-          attrs: new Map([['c', observableOf(c1, c2)]]),
-          id: 'id',
-        },
-        _.context,
-    )
-        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+  should('update the extra attributes', () => {
+    const element = _.tester.createElement(HOST);
+    $spec.get(_.tester.vine).next(renderCustomElement({
+      registration: CHILD,
+      inputs: {
+        a: of('a'),
+        b: of(true),
+      },
+      attrs: new Map([['c', of('c1', 'c2')]]),
+      id: 'id',
+    }));
 
-    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
-    const c$ = createSpySubject(element$.pipe(map(el => el.getAttribute('c'))));
-
-    assert(tag$).to.emitSequence([$spec.tag.toUpperCase()]);
-    assert(c$).to.emitSequence([c2]);
+    assert(element).to.matchSnapshot('render-custom-element__extra_attr.html');
   });
 
-  should('update the text context without emitting the custom element', () => {
-    const text1 = 'text1';
-    const text2 = 'text2';
-    const element$ = renderCustomElement(
-        {
-          type: RenderSpecType.CUSTOM_ELEMENT,
-          spec: $spec,
-          inputs: {
-            a: observableOf('a'),
-            b: observableOf(123),
-          },
-          textContent: observableOf(text1, text2),
-          id: 'id',
-        },
-        _.context,
-    )
-        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+  should('update the text context', () => {
+    const element = _.tester.createElement(HOST);
+    $spec.get(_.tester.vine).next(renderCustomElement({
+      registration: CHILD,
+      inputs: {
+        a: of('a'),
+        b: of(true),
+      },
+      textContent: of('text1', 'text2'),
+      id: 'id',
+    }));
 
-    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
-    const text$ = createSpySubject(element$.pipe(map(el => el.textContent)));
+    assert(element).to.matchSnapshot('render-custom-element__text.html');
+  });
 
-    assert(tag$).to.emitSequence([$spec.tag.toUpperCase()]);
-    assert(text$).to.emitSequence([text2]);
+  should('apply the bindings correctly', () => {
+    _.tester.createElement(HOST);
+    const c$ = new ReplaySubject<number>();
+    $spec.get(_.tester.vine).next(renderCustomElement({
+      registration: CHILD,
+      onOutputs: {c: c$},
+      textContent: of('text1', 'text2'),
+      id: 'id',
+    }));
+
+    const subject = $c.get(_.tester.vine);
+    subject.next(1);
+    subject.next(2);
+    subject.next(3);
+
+    assert(c$).to.emitSequence([DEFAULT_C, 1, 2, 3]);
   });
 });

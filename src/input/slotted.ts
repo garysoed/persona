@@ -1,30 +1,42 @@
+import {cache} from 'gs-tools/export/data';
 import {fromEvent, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
-import {ShadowContext} from '../core/shadow-context';
-import {Input} from '../types/input';
-import {Resolver} from '../types/resolver';
-import {UnresolvedElementProperty} from '../types/unresolved-element-property';
+import {Resolved, UnresolvedIO} from '../types/ctrl';
+import {ApiType, IOType, ISlotted} from '../types/io';
 
 
-export class SlottedInput implements Input<readonly Node[]> {
-  constructor(readonly resolver: Resolver<HTMLSlotElement>) { }
+class ResolvedISlotted implements Resolved<UnresolvedISlotted> {
+  readonly apiType = ApiType.SLOTTED;
+  readonly ioType = IOType.INPUT;
 
-  getValue(context: ShadowContext): Observable<readonly Node[]> {
-    const el = this.resolver(context);
-    return fromEvent(el, 'slotchange').pipe(
+  constructor(
+      readonly target: HTMLElement,
+  ) {}
+
+  @cache()
+  get value$(): Observable<readonly Node[]> {
+    return fromEvent(this.target, 'slotchange').pipe(
         startWith({}),
-        map(() => el.assignedNodes()),
+        map(() => {
+          if (!(this.target instanceof HTMLSlotElement)) {
+            return [];
+          }
+          return this.target.assignedNodes();
+        }),
     );
   }
 }
 
-export class UnresolvedSlottedInput implements UnresolvedElementProperty<Element, Input<readonly Node[]>> {
-  resolve(resolver: Resolver<HTMLSlotElement>): SlottedInput {
-    return new SlottedInput(resolver);
+class UnresolvedISlotted implements UnresolvedIO<ISlotted> {
+  readonly apiType = ApiType.SLOTTED;
+  readonly ioType = IOType.INPUT;
+
+  resolve(target: HTMLElement): ResolvedISlotted {
+    return new ResolvedISlotted(target);
   }
 }
 
-export function slotted(): UnresolvedSlottedInput {
-  return new UnresolvedSlottedInput();
+export function islotted(): UnresolvedISlotted {
+  return new UnresolvedISlotted();
 }

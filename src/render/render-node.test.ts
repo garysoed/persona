@@ -12,10 +12,10 @@ import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import goldens from './goldens/goldens.json';
-import {renderTextNode} from './types/render-text-node-spec';
+import {renderNode} from './types/render-node-spec';
 
 
-const $text = source(() => new Subject<string>());
+const $elValue = source(() => new Subject<Node|null>());
 
 const $host = {
   shadow: {
@@ -31,8 +31,8 @@ class HostCtrl implements Ctrl {
   @cache()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
-      $text.get(this.$.vine).pipe(
-          map(textContent => renderTextNode({id: {}, textContent})),
+      $elValue.get(this.$.vine).pipe(
+          map(node => !node ? null : renderNode({id: node, node})),
           this.$.shadow.el.value(),
       ),
     ];
@@ -46,19 +46,26 @@ const HOST = registerCustomElement({
   template: '<!-- #ref -->',
 });
 
-test('@persona/src/render/render-text-node', init => {
+
+test('@persona/src/output/render-node', init => {
   const _ = init(() => {
     runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));
     const tester = setupTest({roots: [HOST]});
     return {tester};
   });
 
-  should('emit the text node', () => {
-    const element = _.tester.createElement(HOST);
+  test('el', () => {
+    should('update values correctly', () => {
+      const element = _.tester.createElement(HOST);
 
-    const textContent = 'textContent';
-    $text.get(_.tester.vine).next(textContent);
+      assert(element).to.matchSnapshot('render-node__el_empty.html');
 
-    assert(element).to.matchSnapshot('render-text-node.html');
+      const node = document.createTextNode('text');
+      $elValue.get(_.tester.vine).next(node);
+      assert(element).to.matchSnapshot('render-node__el_value.html');
+
+      $elValue.get(_.tester.vine).next(null);
+      assert(element).to.matchSnapshot('render-node__el_reset.html');
+    });
   });
 });

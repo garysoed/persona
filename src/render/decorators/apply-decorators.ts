@@ -1,7 +1,7 @@
 import {EMPTY, merge, Observable, of} from 'rxjs';
 import {switchMapTo} from 'rxjs/operators';
 
-import {NodeWithId} from '../node-with-id';
+import {NodeWithId} from '../types/node-with-id';
 
 
 export type Decorator<N extends NodeWithId<Node>> = (node: N) => Observable<unknown>;

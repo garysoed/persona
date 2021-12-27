@@ -1,221 +1,162 @@
-import {arrayThat, assert, createSpySubject, run, should, test} from 'gs-testing';
-import {arrayFrom} from 'gs-tools/export/collect';
-import {combineLatest, fromEvent, of as observableOf, ReplaySubject} from 'rxjs';
-import {map, shareReplay, take, tap} from 'rxjs/operators';
+import {source} from 'grapevine';
+import {assert, runEnvironment, should, test} from 'gs-testing';
+import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {cache} from 'gs-tools/export/data';
+import {Observable, of, Subject} from 'rxjs';
 
-import {createFakeContext} from '../testing/create-fake-context';
+import {registerCustomElement} from '../core/register-custom-element';
+import {osingle} from '../output/single';
+import {root} from '../selector/root';
+import {setupTest} from '../testing/setup-test';
+import {Context, Ctrl} from '../types/ctrl';
 
-import {renderElement} from './render-element';
-import {RenderSpecType} from './types/render-spec-type';
+import goldens from './goldens/goldens.json';
+import {renderElement} from './types/render-element-spec';
+import {RenderSpec} from './types/render-spec';
 
 
-test('@persona/render/render-element', init => {
+const $spec = source(() => new Subject<RenderSpec|null>());
+
+const $host = {
+  shadow: {
+    root: root({
+      value: osingle('#ref'),
+    }),
+  },
+};
+
+class HostCtrl implements Ctrl {
+  constructor(private readonly $: Context<typeof $host>) {}
+
+  @cache()
+  get runs(): ReadonlyArray<Observable<unknown>> {
+    return [
+      $spec.get(this.$.vine).pipe(
+          this.$.shadow.root.value(),
+      ),
+    ];
+  }
+}
+
+const HOST = registerCustomElement({
+  tag: 'test-host',
+  ctrl: HostCtrl,
+  spec: $host,
+  template: '<!-- #ref -->',
+});
+
+test('@persona/src/render/render-element', init => {
   const TAG = 'pr-test';
 
   const _ = init(() => {
-    const el = document.createElement('div');
-    const shadowRoot = el.attachShadow({mode: 'open'});
-    const context = createFakeContext({shadowRoot});
-    return {context};
+    runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));
+    const tester = setupTest({roots: [HOST]});
+    return {tester};
   });
 
   should('emit the element', () => {
     const a = 'avalue';
-    const element$ = renderElement(
-        {
-          type: RenderSpecType.ELEMENT,
-          tag: TAG,
-          attrs: new Map([['a', observableOf(a)]]),
-          id: 'id',
-        },
-        _.context,
-    )
-        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+    const element = _.tester.createElement(HOST);
+    $spec.get(_.tester.vine).next(renderElement({
+      tag: TAG,
+      attrs: new Map([['a', of(a)]]),
+      id: 'id',
+    }));
 
-    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
-    const a$ = createSpySubject(element$.pipe(map(el => el.getAttribute('a'))));
-
-    assert(tag$).to.emitSequence([TAG.toUpperCase()]);
-    assert(a$).to.emitSequence([a]);
+    assert(element).to.matchSnapshot('render-element__emit.html');
   });
 
-  should('update the attributes without emitting the element', () => {
+  should('update the attributes', () => {
     const b1 = 'b1';
     const b2 = 'b2';
-    const element$ = renderElement(
-        {
-          type: RenderSpecType.ELEMENT,
-          tag: TAG,
-          attrs: new Map([['b', observableOf(b1, b2)]]),
-          id: 'id',
-        },
-        _.context,
-    )
-        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+    const element = _.tester.createElement(HOST);
+    $spec.get(_.tester.vine).next(renderElement({
+      tag: TAG,
+      attrs: new Map([['b', of(b1, b2)]]),
+      id: 'id',
+    }));
 
-    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
-    const b$ = createSpySubject(element$.pipe(map(el => el.getAttribute('b'))));
-
-    assert(tag$).to.emitSequence([TAG.toUpperCase()]);
-    assert(b$).to.emitSequence([b2]);
+    assert(element).to.matchSnapshot('render-element__attribute_update.html');
   });
 
   should('delete the attribute if the value is undefined', () => {
-    const element$ = renderElement(
-        {
-          type: RenderSpecType.ELEMENT,
-          tag: TAG,
-          attrs: new Map([['b', observableOf('bValue', undefined)]]),
-          id: 'id',
-        },
-        _.context,
-    )
-        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+    const element = _.tester.createElement(HOST);
+    $spec.get(_.tester.vine).next(renderElement({
+      tag: TAG,
+      attrs: new Map([['b', of('bValue', undefined)]]),
+      id: 'id',
+    }));
 
-    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
-    const b$ = createSpySubject(element$.pipe(map(el => el.hasAttribute('b'))));
-
-    assert(tag$).to.emitSequence([TAG.toUpperCase()]);
-    assert(b$).to.emitSequence([false]);
+    assert(element).to.matchSnapshot('render-element__attribute_undefined.html');
   });
 
-  should('update the text context without emitting the element', () => {
+  should('update the text context', () => {
     const text1 = 'text1';
     const text2 = 'text2';
-    const element$ = renderElement(
-        {
-          type: RenderSpecType.ELEMENT,
-          tag: TAG,
-          textContent: observableOf(text1, text2),
-          id: 'id',
-        },
-        _.context,
-    )
-        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+    const element = _.tester.createElement(HOST);
+    $spec.get(_.tester.vine).next(renderElement({
+      tag: TAG,
+      textContent: of(text1, text2),
+      id: 'id',
+    }));
 
-    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
-    const text$ = createSpySubject(element$.pipe(map(el => el.textContent)));
-
-    assert(tag$).to.emitSequence([TAG.toUpperCase()]);
-    assert(text$).to.emitSequence([text2]);
+    assert(element).to.matchSnapshot('render-element__text_content.html');
   });
 
-  should('delete the children without emitting the element', () => {
-    const child1 = {
-      type: RenderSpecType.ELEMENT as const,
+  should('delete the children', () => {
+    const child1 = renderElement({
       tag: 'div',
       id: {},
-    };
-    const child2 = {
-      type: RenderSpecType.ELEMENT as const,
+    });
+    const child2 = renderElement({
       tag: 'input',
       id: {},
-    };
-    const element$ = renderElement(
-        {
-          type: RenderSpecType.ELEMENT,
-          tag: TAG,
-          children: observableOf([child1, child2], [child1]),
-          id: 'id',
-        },
-        _.context,
-    )
-        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+    });
+    const element = _.tester.createElement(HOST);
+    $spec.get(_.tester.vine).next(renderElement({
+      tag: TAG,
+      children: of([child1, child2], [child1]),
+      id: 'id',
+    }));
 
-    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
-    const children$ = createSpySubject(
-        element$.pipe(map(el => arrayFrom(el.children)))
-            .pipe(map(els => els.map(el => el.tagName))),
-    );
-
-    assert(tag$).to.emitSequence([TAG.toUpperCase()]);
-    assert(children$).to.emitSequence([arrayThat<string>().haveExactElements(['DIV'])]);
+    assert(element).to.matchSnapshot('render-element__delete_children.html');
   });
 
-  should('insert the children without emitting the element', () => {
-    const child1 = {
-      type: RenderSpecType.ELEMENT as const,
+  should('insert the children', () => {
+    const child1 = renderElement({
       tag: 'div',
       id: {},
-    };
-    const child2 = {
-      type: RenderSpecType.ELEMENT as const,
+    });
+    const child2 = renderElement({
       tag: 'input',
       id: {},
-    };
-    const element$ = renderElement(
-        {
-          type: RenderSpecType.ELEMENT,
-          tag: TAG,
-          children: observableOf([child2], [child1, child2]),
-          id: 'id',
-        },
-        _.context,
-    )
-        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+    });
+    const element = _.tester.createElement(HOST);
+    $spec.get(_.tester.vine).next(renderElement({
+      tag: TAG,
+      children: of([child2], [child1, child2]),
+      id: 'id',
+    }));
 
-    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
-    const children$ = createSpySubject(
-        element$.pipe(map(el => arrayFrom(el.children)))
-            .pipe(map(els => els.map(el => el.tagName))),
-    );
-
-    assert(tag$).to.emitSequence([TAG.toUpperCase()]);
-    assert(children$).to.emitSequence([arrayThat<string>().haveExactElements(['DIV', 'INPUT'])]);
+    assert(element).to.matchSnapshot('render-element__insert_children.html');
   });
 
-  should('set the children without emitting the element', () => {
-    const child1 = {
-      type: RenderSpecType.ELEMENT as const,
+  should('set the children', () => {
+    const child1 = renderElement({
       tag: 'div',
       id: {},
-    };
-    const child2 = {
-      type: RenderSpecType.ELEMENT as const,
+    });
+    const child2 = renderElement({
       tag: 'input',
       id: {},
-    };
-    const element$ = renderElement(
-        {
-          type: RenderSpecType.ELEMENT,
-          tag: TAG,
-          children: observableOf([child2], [child1]),
-          id: 'id',
-        },
-        _.context,
-    )
-        .pipe(shareReplay({bufferSize: 1, refCount: true}));
+    });
+    const element = _.tester.createElement(HOST);
+    $spec.get(_.tester.vine).next(renderElement({
+      tag: TAG,
+      children: of([child2], [child1]),
+      id: 'id',
+    }));
 
-    const tag$ = createSpySubject(element$.pipe(map(el => el.tagName)));
-    const children$ = createSpySubject(
-        element$.pipe(map(el => arrayFrom(el.children)))
-            .pipe(map(els => els.map(el => el.tagName))),
-    );
-
-    assert(tag$).to.emitSequence([TAG.toUpperCase()]);
-    assert(children$).to.emitSequence([arrayThat<string>().haveExactElements(['DIV'])]);
-  });
-
-  should('run the decorator correctly', () => {
-    const onEvent$ = new ReplaySubject<EventTarget>();
-
-    const el$ = renderElement(
-        {
-          type: RenderSpecType.ELEMENT,
-          tag: TAG,
-          id: 'id',
-          decorators: [el => fromEvent(el, 'click').pipe(tap(e => onEvent$.next(e.target!)))],
-        },
-        _.context,
-    )
-        .pipe(shareReplay({bufferSize: 1, refCount: false}));
-
-    // Subscribes to start updating.
-    run(el$);
-
-    // Click should be registered.
-    run(el$.pipe(take(1), tap(el => el.click())));
-    assert(combineLatest([onEvent$, el$]).pipe(map(([target, el]) => target === el)))
-        .to.emitSequence([true]);
+    assert(element).to.matchSnapshot('render-element__set_children.html');
   });
 });

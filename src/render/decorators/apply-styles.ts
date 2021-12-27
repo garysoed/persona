@@ -2,7 +2,8 @@ import {diffMap} from 'gs-tools/export/rxjs';
 import {Observable} from 'rxjs';
 import {startWith, tap} from 'rxjs/operators';
 
-import {NodeWithId} from '../node-with-id';
+import {NodeWithId} from '../types/node-with-id';
+
 
 import {Decorator} from './apply-decorators';
 

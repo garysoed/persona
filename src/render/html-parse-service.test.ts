@@ -3,7 +3,7 @@ import {assert, createSpyInstance, fake, resetCalls, should, test} from 'gs-test
 import {HtmlParseService} from './html-parse-service';
 
 
-test('@persona/render/html-parse-service', init => {
+test('@persona/src/render/html-parse-service', init => {
   const _ = init(() => {
     const mockDOMParser = createSpyInstance(DOMParser);
     const service = new HtmlParseService(mockDOMParser);

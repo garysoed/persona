@@ -1,11 +1,11 @@
-import {$asArray, $filterNonNull, $pipe} from 'gs-tools/export/collect';
+import {$asArray, $filterNonNull, $pipe, arrayFrom} from 'gs-tools/export/collect';
 import {diffArray} from 'gs-tools/export/rxjs';
 import {combineLatest, Observable, of as observableOf} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
 
-import {ShadowContext} from '../../core/shadow-context';
-import {NodeWithId} from '../node-with-id';
 import {render} from '../render';
+import {NodeWithId} from '../types/node-with-id';
+import {RenderContext} from '../types/render-context';
 import {RenderSpec} from '../types/render-spec';
 
 import {Decorator} from './apply-decorators';
@@ -13,8 +13,8 @@ import {Decorator} from './apply-decorators';
 
 export function applyChildren(
     children$: Observable<readonly RenderSpec[]>,
-    context: ShadowContext,
-): Decorator<NodeWithId<Element>> {
+    context: RenderContext,
+): Decorator<NodeWithId<Element|DocumentFragment>> {
   return el => children$.pipe(
       switchMap(specs => {
         const renderedNode$list = specs.map(spec => render(spec, context));
@@ -33,7 +33,10 @@ export function applyChildren(
             el.removeChild(diff.value);
             break;
           case 'init':
-            el.innerHTML = '';
+            for (const child of arrayFrom(el.children)) {
+              el.removeChild(child);
+            }
+
             for (const child of diff.value) {
               el.appendChild(child);
             }

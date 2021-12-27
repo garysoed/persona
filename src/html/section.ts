@@ -1,8 +1,4 @@
-import {$elementApi} from './element';
-
-export const $section = {
+export const SECTION = {
+  spec: {},
   tag: 'section',
-  api: {
-    ...$elementApi,
-  },
 };

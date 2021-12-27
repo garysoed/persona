@@ -1,7 +1,8 @@
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {NodeWithId} from '../node-with-id';
+import {NodeWithId} from '../types/node-with-id';
+
 
 import {Decorator} from './apply-decorators';
 

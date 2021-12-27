@@ -1,14 +1,16 @@
+import {forwardTo} from 'gs-tools/export/rxjs';
 import {getOwnPropertyKeys} from 'gs-tools/export/typescript';
-import {EMPTY, merge, Observable, of as observableOf} from 'rxjs';
+import {EMPTY, merge, Observable, of, Subject} from 'rxjs';
 import {switchMap, switchMapTo} from 'rxjs/operators';
 
-import {ShadowContext} from '../core/shadow-context';
-import {api, UnresolvedSpec} from '../main/api';
-import {UnresolvedOutput} from '../types/unresolved-output';
+import {Spec, UnresolvedBindingSpec} from '../types/ctrl';
+import {IOType} from '../types/io';
+import {reverseSpec} from '../util/reverse-spec';
 
-import {__id} from './node-with-id';
 import {renderElement, Values as ElementValues} from './render-element';
-import {InputsOf, NormalizedInputsOf, RenderCustomElementSpec} from './types/render-custom-element-spec';
+import {NodeWithId} from './types/node-with-id';
+import {RenderContext} from './types/render-context';
+import {InputsOf, NormalizedInputsOf, OutputsOf, RenderCustomElementSpec} from './types/render-custom-element-spec';
 import {RenderSpecType} from './types/render-spec-type';
 
 
@@ -17,7 +19,7 @@ import {RenderSpecType} from './types/render-spec-type';
  *
  * @thHidden
  */
-export interface Values<S extends UnresolvedSpec> extends ElementValues {
+export interface Values<S extends UnresolvedBindingSpec> extends ElementValues {
   /**
    * Inputs to the custom element.
    */
@@ -27,7 +29,7 @@ export interface Values<S extends UnresolvedSpec> extends ElementValues {
 /**
  * Renders a custom element given the specs and values.
  *
- * @param spec - Custom element's specs.
+ * @param renderSpec - Custom element's specs.
  * @param values - Values to use for the custom element.
  * @param context - The Persona context.
  * @returns `Observable` that emits the created custom element. This only emits when the element is
@@ -35,29 +37,42 @@ export interface Values<S extends UnresolvedSpec> extends ElementValues {
  *
  * @thModule render
  */
-export function renderCustomElement<S extends UnresolvedSpec>(
-    spec: RenderCustomElementSpec<S>,
-    context: ShadowContext,
-): Observable<HTMLElement&{[__id]: unknown}> {
+export function renderCustomElement<S extends Spec>(
+    renderSpec: RenderCustomElementSpec<S>,
+    context: RenderContext,
+): Observable<NodeWithId<HTMLElement>> {
   const elementSpec = {
-    ...spec,
-    tag: spec.spec.tag,
+    ...renderSpec,
+    tag: renderSpec.registration.tag,
     type: RenderSpecType.ELEMENT as const,
   };
   return renderElement(elementSpec, context).pipe(
       switchMap(el => {
-        const resolver = (): HTMLElement => el;
         const onChange$List = [];
 
-        const convertedSpec = api(spec.spec.api);
-        const inputs: NormalizedInputsOf<S> = spec.inputs || {};
+        const reversed = reverseSpec(renderSpec.registration.spec.host ?? {});
+        const inputs: NormalizedInputsOf<S['host']&{}> = renderSpec.inputs ?? {};
         for (const key of getOwnPropertyKeys(inputs)) {
-          const output = (convertedSpec[key as string] as UnresolvedOutput<Element, any>).resolve(resolver);
-          onChange$List.push((inputs[key] as Observable<unknown>).pipe(output.output(context)));
+          const output = reversed[key as string].resolve(el, context);
+          if (output.ioType !== IOType.OUTPUT) {
+            continue;
+          }
+          onChange$List.push((inputs[key] as Observable<any>).pipe(output.update()));
+        }
+
+        const outputs: OutputsOf<S['host']&{}> = renderSpec.onOutputs ?? {};
+        for (const key of getOwnPropertyKeys(outputs)) {
+          const input = reversed[key as string].resolve(el, context);
+          if (input.ioType !== IOType.INPUT) {
+            continue;
+          }
+          onChange$List.push((input.value$ as Observable<any>).pipe(
+              forwardTo(outputs[key] ?? new Subject()),
+          ));
         }
 
         return merge(
-            observableOf(el),
+            of(el),
             merge(...onChange$List).pipe(switchMapTo(EMPTY)),
         );
       }),

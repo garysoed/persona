@@ -1,45 +1,47 @@
-import {$asArray, $filterNonNull, $pipe} from 'gs-tools/export/collect';
-import {diffArray} from 'gs-tools/export/rxjs';
+import {$pipe, $filterNonNull, $asArray} from 'gs-tools/export/collect';
+import {diffArray, filterNonNullable} from 'gs-tools/export/rxjs';
 import {assertUnreachable} from 'gs-tools/export/typescript';
-import {combineLatest, NEVER, Observable, of as observableOf, OperatorFunction, pipe} from 'rxjs';
+import {combineLatest, NEVER, Observable, of, OperatorFunction, pipe} from 'rxjs';
 import {map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 
-import {ShadowContext} from '../core/shadow-context';
-import {createSlotObs} from '../main/create-slot-obs';
-import {__id} from '../render/node-with-id';
 import {render} from '../render/render';
+import {__id} from '../render/types/node-with-id';
+import {RenderContext} from '../render/types/render-context';
 import {RenderSpec} from '../render/types/render-spec';
-import {Output} from '../types/output';
-import {Resolver} from '../types/resolver';
+import {Resolved, UnresolvedIO} from '../types/ctrl';
+import {ApiType, IOType, OMulti} from '../types/io';
 import {Selectable} from '../types/selectable';
-import {UnresolvedOutput} from '../types/unresolved-output';
+import {Target} from '../types/target';
+import {initSlot} from '../util/init-slot';
 
 
-export class MultiOutput implements Output<readonly RenderSpec[]> {
-  readonly type = 'out';
+class ResolvedOMulti implements Resolved<UnresolvedOMulti> {
+  readonly apiType = ApiType.MULTI;
+  readonly ioType = IOType.OUTPUT;
 
   constructor(
       readonly slotName: string,
-      readonly resolver: Resolver<Selectable>,
-  ) { }
+      readonly target: Target,
+      private readonly context: RenderContext,
+  ) {}
 
-  output(context: ShadowContext): OperatorFunction<readonly RenderSpec[], unknown> {
-    const parentEl = this.resolver(context);
-
+  update(): OperatorFunction<readonly RenderSpec[], unknown> {
+    const slotEl$ = of(this.target).pipe(
+        initSlot(this.slotName),
+        filterNonNullable(),
+    );
     return pipe(
         switchMap(specs => {
-          const node$list = specs.map(spec => render(spec, context));
+          const node$list = specs.map(spec => render(spec, this.context));
           if (node$list.length <= 0) {
-            return observableOf([]);
+            return of([]);
           }
 
           return combineLatest(node$list);
         }),
         map(nodes => $pipe(nodes, $filterNonNull(), $asArray())),
         diffArray((a, b) => a[__id] === b[__id]),
-        withLatestFrom(
-            createSlotObs(observableOf(parentEl), this.slotName),
-        ),
+        withLatestFrom(slotEl$),
         tap(([diff, slotNode]) => {
           if (!slotNode) {
             return;
@@ -48,17 +50,17 @@ export class MultiOutput implements Output<readonly RenderSpec[]> {
           switch (diff.type) {
             case 'init':
               for (let i = 0; i < diff.value.length; i++) {
-                this.insertEl(parentEl, slotNode, diff.value[i], i);
+                this.insertEl(this.target, slotNode, diff.value[i], i);
               }
               return;
             case 'insert':
-              this.insertEl(parentEl, slotNode, diff.value, diff.index);
+              this.insertEl(this.target, slotNode, diff.value, diff.index);
               return;
             case 'delete':
-              this.deleteEl(parentEl, slotNode, diff.index);
+              this.deleteEl(this.target, slotNode, diff.index);
               return;
             case 'set':
-              this.setEl(parentEl, slotNode, diff.value, diff.index);
+              this.setEl(this.target, slotNode, diff.value, diff.index);
               return;
             default:
               assertUnreachable(diff);
@@ -107,20 +109,17 @@ export class MultiOutput implements Output<readonly RenderSpec[]> {
   }
 }
 
-class UnresolvedMultiOutput implements UnresolvedOutput<Selectable, readonly RenderSpec[]> {
+class UnresolvedOMulti implements UnresolvedIO<OMulti> {
+  readonly apiType = ApiType.MULTI;
+  readonly ioType = IOType.OUTPUT;
+
   constructor(
-      private readonly slotName: string,
-  ) { }
+      readonly slotName: string,
+  ) {}
 
-  resolve(resolver: Resolver<Selectable>): MultiOutput {
-    return new MultiOutput(this.slotName, resolver);
+  resolve(target: Target, context: RenderContext): ResolvedOMulti {
+    return new ResolvedOMulti(this.slotName, target, context);
   }
-}
-
-export function multi(
-    slotName: string,
-): UnresolvedMultiOutput {
-  return new UnresolvedMultiOutput(slotName);
 }
 
 function getNode(slotNode: Node, index: number): Node|null {
@@ -131,3 +130,8 @@ function getNode(slotNode: Node, index: number): Node|null {
 
   return curr;
 }
+
+export function omulti(refName: string): UnresolvedOMulti {
+  return new UnresolvedOMulti(refName);
+}
+

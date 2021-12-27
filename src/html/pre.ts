@@ -1,8 +1,4 @@
-import {$elementApi} from './element';
-
-export const $pre = {
+export const PRE = {
+  spec: {},
   tag: 'pre',
-  api: {
-    ...$elementApi,
-  },
 };

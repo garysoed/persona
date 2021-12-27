@@ -1,10 +1,7 @@
 import {getOwnPropertyKeys} from 'gs-tools/export/typescript';
-import {Observable, of as observableOf} from 'rxjs';
+import {Observable, of as observableOf, OperatorFunction, Subject} from 'rxjs';
 
-import {UnresolvedSpec} from '../../main/api';
-import {ComponentSpec} from '../../main/component-spec';
-import {Input} from '../../types/input';
-import {UnresolvedElementProperty} from '../../types/unresolved-element-property';
+import {Binding, Spec, UnresolvedBindingSpec} from '../../types/ctrl';
 
 import {BaseRenderSpec} from './base-render-spec';
 import {normalize, normalizeMap, ObservableOrValue} from './observable-or-value';
@@ -21,45 +18,57 @@ import {RenderSpecType} from './render-spec-type';
  *
  * @thHidden
  */
-export type InputsOf<S extends UnresolvedSpec> = Partial<{
-  readonly [K in keyof S]: S[K] extends UnresolvedElementProperty<Element, Input<infer T>> ? ObservableOrValue<T> : never;
+export type InputsOf<S extends UnresolvedBindingSpec> = Partial<{
+  readonly [K in keyof S]: Binding<S[K]> extends Observable<infer T> ? ObservableOrValue<T> : never;
 }>;
 
-export type NormalizedInputsOf<S extends UnresolvedSpec> = {
-  readonly [K in keyof S]: S[K] extends UnresolvedElementProperty<Element, Input<infer T>> ? Observable<T> : never;
+export type NormalizedInputsOf<S extends UnresolvedBindingSpec> = Partial<{
+  readonly [K in keyof S]: Binding<S[K]> extends Observable<infer T> ? Observable<T> : never;
+}>;
+
+export type OutputsOf<S extends UnresolvedBindingSpec> = Partial<{
+  readonly [K in keyof S]: Binding<S[K]> extends () => OperatorFunction<infer T, unknown> ?
+      Subject<T> : never;
+}>;
+
+interface LiteRegistration<S extends Spec> {
+  readonly spec: S;
+  readonly tag: string;
 }
 
-interface InputRenderSpec<S extends UnresolvedSpec> extends BaseRenderSpec<HTMLElement> {
-  readonly spec: ComponentSpec<S, Element>;
+interface InputRenderSpec<S extends Spec> extends BaseRenderSpec<HTMLElement> {
+  readonly registration: LiteRegistration<S>;
   readonly attrs?: ReadonlyMap<string, ObservableOrValue<string|undefined>>;
   readonly children?: ObservableOrValue<readonly RenderSpec[]>;
-  readonly inputs: InputsOf<S>;
+  readonly inputs?: InputsOf<S['host']&{}>;
+  readonly onOutputs?: OutputsOf<S['host']&{}>;
   readonly styles?: ObservableOrValue<ReadonlyMap<string, string|null>>;
   readonly textContent?: ObservableOrValue<string>;
 }
 
-export interface RenderCustomElementSpec<S extends UnresolvedSpec> extends InputRenderSpec<S> {
+export interface RenderCustomElementSpec<S extends Spec> extends InputRenderSpec<S> {
   readonly type: RenderSpecType.CUSTOM_ELEMENT;
   readonly attrs?: ReadonlyMap<string, Observable<string|undefined>>;
   readonly children?: Observable<readonly RenderSpec[]>;
-  readonly inputs: NormalizedInputsOf<S>;
+  readonly inputs: NormalizedInputsOf<S['host']&{}>;
   readonly styles?: Observable<ReadonlyMap<string, string|null>>;
   readonly textContent?: Observable<string>;
 }
 
-export function renderCustomElement<S extends UnresolvedSpec>(input: InputRenderSpec<S>): RenderCustomElementSpec<S> {
+export function renderCustomElement<S extends Spec>(input: InputRenderSpec<S>): RenderCustomElementSpec<S> {
   return {
     ...input,
     type: RenderSpecType.CUSTOM_ELEMENT,
     attrs: input.attrs ? normalizeMap(input.attrs) : undefined,
     children: input.children ? normalize(input.children) : undefined,
-    inputs: normalizedInputs(input.inputs),
+    inputs: normalizedInputs(input.inputs ?? {}),
+    onOutputs: input.onOutputs ?? {},
     styles: input.styles ? normalize(input.styles) : undefined,
     textContent: input.textContent !== undefined ? normalize(input.textContent) : undefined,
   };
 }
 
-function normalizedInputs<S extends UnresolvedSpec>(spec: InputsOf<S>): NormalizedInputsOf<S> {
+function normalizedInputs<S extends UnresolvedBindingSpec>(spec: InputsOf<S>): NormalizedInputsOf<S> {
   const output: {[K in keyof S]?: Observable<unknown>} = {};
   for (const key of getOwnPropertyKeys(spec)) {
     const v: ObservableOrValue<unknown> = spec[key];

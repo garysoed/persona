@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs';
 
-import {NodeWithId} from './node-with-id';
 import {renderBase} from './render-base';
+import {NodeWithId} from './types/node-with-id';
 import {RenderNodeSpec} from './types/render-node-spec';
 
 

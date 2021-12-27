@@ -1,100 +1,140 @@
-import {assert, run, should, test} from 'gs-testing';
-import {Subject} from 'rxjs';
+import {source} from 'grapevine';
+import {assert, runEnvironment, should, test} from 'gs-testing';
+import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {cache} from 'gs-tools/export/data';
+import {Observable, Subject} from 'rxjs';
+import {map} from 'rxjs/operators';
 
-import {$div} from '../html/div';
-import {RenderElementSpec} from '../render/types/render-element-spec';
-import {RenderSpec} from '../render/types/render-spec';
-import {RenderSpecType} from '../render/types/render-spec-type';
-import {element} from '../selector/element';
-import {createFakeContext} from '../testing/create-fake-context';
+import {registerCustomElement} from '../core/register-custom-element';
+import {DIV} from '../html/div';
+import {renderNode} from '../render/types/render-node-spec';
+import {id} from '../selector/id';
+import {root} from '../selector/root';
+import {setupTest} from '../testing/setup-test';
+import {Context, Ctrl} from '../types/ctrl';
 
-import {single} from './single';
+import goldens from './goldens/goldens.json';
+import {osingle} from './single';
 
 
-function renderElementSpec(tag: string, id?: string): RenderElementSpec {
-  return {type: RenderSpecType.ELEMENT, tag, id: id ?? tag};
+const $elValue$ = source(() => new Subject<Node|null>());
+const $elSlottedValue$ = source(() => new Subject<Node|null>());
+const $rootValue$ = source(() => new Subject<Node|null>());
+const $rootSlottedValue$ = source(() => new Subject<Node|null>());
+
+
+const $host = {
+  shadow: {
+    root: root({
+      slotted: osingle('#root'),
+      value: osingle(),
+    }),
+    el: id('el', DIV, {
+      slotted: osingle('#ref'),
+      value: osingle(),
+    }),
+  },
+};
+
+class HostCtrl implements Ctrl {
+  constructor(private readonly $: Context<typeof $host>) {}
+
+  @cache()
+  get runs(): ReadonlyArray<Observable<unknown>> {
+    return [
+      $elSlottedValue$.get(this.$.vine).pipe(
+          map(node => !node ? null : renderNode({id: node, node})),
+          this.$.shadow.el.slotted(),
+      ),
+      $elValue$.get(this.$.vine).pipe(
+          map(node => !node ? null : renderNode({id: node, node})),
+          this.$.shadow.el.value(),
+      ),
+      $rootSlottedValue$.get(this.$.vine).pipe(
+          map(node => !node ? null : renderNode({id: node, node})),
+          this.$.shadow.root.slotted(),
+      ),
+      $rootValue$.get(this.$.vine).pipe(
+          map(node => !node ? null : renderNode({id: node, node})),
+          this.$.shadow.root.value(),
+      ),
+    ];
+  }
 }
 
-test('@persona/output/single', init => {
-  const ELEMENT_ID = 'elementId';
-  const SLOT_NAME = 'slotName';
+const HOST = registerCustomElement({
+  tag: 'test-host',
+  ctrl: HostCtrl,
+  spec: $host,
+  template: `
+  <!-- #root -->
+  <div id="el">
+    <!-- #ref -->
+    other
+  </div>`,
+});
 
+
+test('@persona/src/output/single', init => {
   const _ = init(() => {
-    const $ = element(ELEMENT_ID, $div, {
-      single: single(SLOT_NAME),
-    });
-
-    const root = document.createElement('div');
-    const shadowRoot = root.attachShadow({mode: 'open'});
-
-    const slot = document.createComment(SLOT_NAME);
-
-    const parentEl = document.createElement('div');
-    parentEl.id = ELEMENT_ID;
-    parentEl.appendChild(slot);
-
-    shadowRoot.appendChild(parentEl);
-
-    const output = $._.single;
-    return {context: createFakeContext({shadowRoot}), slot, parentEl, output};
+    runEnvironment(new BrowserSnapshotsEnv('src/output/goldens', goldens));
+    const tester = setupTest({roots: [HOST]});
+    return {tester};
   });
 
-  test('output', _, init => {
-    const _ = init(_ => {
-      const render$ = new Subject<RenderSpec|null>();
+  test('el', () => {
+    should('update values correctly if unslotted', () => {
+      const element = _.tester.createElement(HOST);
 
-      run(render$.pipe(_.output.output(_.context)));
+      assert(element).to.matchSnapshot('single__el_empty.html');
 
-      return {..._, render$};
+      const node = document.createTextNode('text');
+      $elValue$.get(_.tester.vine).next(node);
+      assert(element).to.matchSnapshot('single__el_value.html');
+
+      $elValue$.get(_.tester.vine).next(null);
+      assert(element).to.matchSnapshot('single__el_reset.html');
     });
 
-    should('process correctly for adding a node', () => {
-      _.render$.next(renderElementSpec('div'));
+    should('update values correctly if slotted', () => {
+      const element = _.tester.createElement(HOST);
 
-      assert((_.slot.nextSibling as HTMLElement).tagName).to.equal('DIV');
-      assert(_.slot.nextSibling?.nextSibling).to.beNull();
+      assert(element).to.matchSnapshot('single__el_slotted_empty.html');
+
+      const node = document.createTextNode('text');
+      $elSlottedValue$.get(_.tester.vine).next(node);
+      assert(element).to.matchSnapshot('single__el_slotted_value.html');
+
+      $elSlottedValue$.get(_.tester.vine).next(null);
+      assert(element).to.matchSnapshot('single__el_slotted_reset.html');
+    });
+  });
+
+  test('root', () => {
+    should('update values correctly if unslotted', () => {
+      const element = _.tester.createElement(HOST);
+
+      assert(element).to.matchSnapshot('single__root_empty.html');
+
+      const node = document.createTextNode('text');
+      $rootValue$.get(_.tester.vine).next(node);
+      assert(element).to.matchSnapshot('single__root_value.html');
+
+      $rootValue$.get(_.tester.vine).next(null);
+      assert(element).to.matchSnapshot('single__root_reset.html');
     });
 
-    should('process correctly for replacing a node', () => {
-      const node1 = renderElementSpec('div');
-      _.render$.next(node1);
+    should('update values correctly if slotted', () => {
+      const element = _.tester.createElement(HOST);
 
-      const node2 = renderElementSpec('input');
-      _.render$.next(node2);
+      assert(element).to.matchSnapshot('single__root_slotted_empty.html');
 
-      assert((_.slot.nextSibling as HTMLElement).tagName).to.equal('INPUT');
-      assert(_.slot.nextSibling?.nextSibling).to.beNull();
-    });
+      const node = document.createTextNode('text');
+      $rootSlottedValue$.get(_.tester.vine).next(node);
+      assert(element).to.matchSnapshot('single__root_slotted_value.html');
 
-    should('not replace node if the new one has the same ID', () => {
-      const node1 = renderElementSpec('div');
-      _.render$.next(node1);
-
-      const node2 = renderElementSpec('input', 'div');
-      _.render$.next(node2);
-
-      assert((_.slot.nextSibling as HTMLElement).tagName).to.equal('DIV');
-      assert(_.slot.nextSibling?.nextSibling).to.beNull();
-    });
-
-    should('process correctly for deleting a node', () => {
-      _.render$.next(renderElementSpec('n'));
-      _.render$.next(null);
-
-      assert(_.slot.nextSibling).to.beNull();
-    });
-
-    should('hide errors when deleting node', () => {
-      const node = renderElementSpec('div');
-
-      _.render$.next(node);
-
-      const newParent = document.createElement('input');
-      newParent.appendChild(_.slot.nextSibling!);
-
-      _.render$.next(null);
-
-      assert(_.slot.nextSibling).to.beNull();
+      $rootSlottedValue$.get(_.tester.vine).next(null);
+      assert(element).to.matchSnapshot('single__root_slotted_reset.html');
     });
   });
 });

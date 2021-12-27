@@ -1,11 +1,12 @@
-import {arrayThat, assert, createSpySubject, objectThat, runEnvironment, should, test} from 'gs-testing';
+import {assert, createSpySubject, runEnvironment, should, test} from 'gs-testing';
 
-import {resizeObservable} from '../../export';
 import {dispatchResizeEvent} from '../testing/fake-resize-observer';
 import {PersonaTesterEnvironment} from '../testing/persona-tester-environment';
 
+import {resizeObservable} from './resize-observable';
 
-test('@persona/util/resize-observable', init => {
+
+test('@persona/src/util/resize-observable', init => {
   init(() => {
     runEnvironment(new PersonaTesterEnvironment());
     return {};
@@ -17,16 +18,17 @@ test('@persona/util/resize-observable', init => {
     addedEl.style.height = '0';
     document.body.appendChild(addedEl);
 
-    const records$ = createSpySubject(resizeObservable(addedEl, {}));
+    const records$ = createSpySubject<Pick<ResizeObserverEntry, 'contentRect'>>(
+        resizeObservable(addedEl, {}),
+    );
     assert(records$).toNot.emit();
 
     addedEl.style.height = '23px';
-    const record = {contentRect: new DOMRect(1, 2, 3, 4)};
-    const records = [record];
-    dispatchResizeEvent(addedEl, records);
 
-    assert(records$).to.emitWith(arrayThat<ResizeObserverEntry>().haveExactElements([
-      objectThat<ResizeObserverEntry>().haveProperties(record),
-    ]));
+    const record1 = {contentRect: new DOMRect(1, 2, 3, 4)};
+    const record2 = {contentRect: new DOMRect(5, 6, 7, 8)};
+    dispatchResizeEvent(addedEl, [record1, record2]);
+
+    assert(records$).to.emitSequence([record1, record2]);
   });
 });

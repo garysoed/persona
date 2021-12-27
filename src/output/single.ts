@@ -1,35 +1,40 @@
 import {filterNonNullable} from 'gs-tools/export/rxjs';
-import {of as observableOf, OperatorFunction, pipe} from 'rxjs';
+import {of, OperatorFunction, pipe} from 'rxjs';
 import {distinctUntilChanged, pairwise, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 
-import {ShadowContext} from '../core/shadow-context';
-import {createSlotObs} from '../main/create-slot-obs';
-import {__id} from '../render/node-with-id';
 import {render} from '../render/render';
+import {__id} from '../render/types/node-with-id';
+import {RenderContext} from '../render/types/render-context';
 import {RenderSpec} from '../render/types/render-spec';
-import {Output} from '../types/output';
-import {Resolver} from '../types/resolver';
-import {Selectable} from '../types/selectable';
-import {UnresolvedOutput} from '../types/unresolved-output';
+import {Resolved, UnresolvedIO} from '../types/ctrl';
+import {ApiType, IOType, OSingle} from '../types/io';
+import {Target} from '../types/target';
+import {initSlot} from '../util/init-slot';
 
 
-export class SingleOutput implements Output<RenderSpec|null|undefined> {
-  readonly type = 'out';
+class ResolvedOSingle implements Resolved<UnresolvedOSingle> {
+  readonly apiType = ApiType.SINGLE;
+  readonly ioType = IOType.OUTPUT;
 
   constructor(
-      readonly slotName: string,
-      readonly resolver: Resolver<Selectable>,
-  ) { }
+      readonly slotName: string|null,
+      readonly target: Target,
+      private readonly context: RenderContext,
+  ) {}
 
-  output(context: ShadowContext): OperatorFunction<RenderSpec|null|undefined, unknown> {
-    const parent = this.resolver(context);
-
+  update(): OperatorFunction<RenderSpec|null, unknown> {
+    const slotEl$ = this.slotName
+      ? of(this.target).pipe(
+          initSlot(this.slotName),
+          filterNonNullable(),
+      )
+      : of(null);
     return pipe(
         switchMap(spec => {
           if (!spec) {
-            return observableOf(null);
+            return of(null);
           }
-          return render(spec, context);
+          return render(spec, this.context);
         }),
         startWith(null),
         distinctUntilChanged((a, b) => {
@@ -39,36 +44,39 @@ export class SingleOutput implements Output<RenderSpec|null|undefined> {
           return a === b;
         }),
         pairwise(),
-        withLatestFrom(
-            createSlotObs(observableOf(parent), this.slotName).pipe(filterNonNullable()),
-        ),
+        withLatestFrom(slotEl$),
         tap(([[previous, current], slotEl]) => {
           // Remove the previous node.
           if (previous) {
             try {
-              parent.removeChild(previous);
+              this.target.removeChild(previous);
             } catch (e) {
-              // ignored
+            // ignored
             }
           }
 
           // Add the new node.
           if (current) {
-            parent.insertBefore(current, slotEl.nextSibling);
+            this.target.insertBefore(current, slotEl?.nextSibling ?? null);
           }
         }),
     );
   }
 }
 
-class UnresolvedSingleOutput implements UnresolvedOutput<Selectable, RenderSpec|null> {
-  constructor(readonly slotName: string) { }
+class UnresolvedOSingle implements UnresolvedIO<OSingle> {
+  readonly apiType = ApiType.SINGLE;
+  readonly ioType = IOType.OUTPUT;
 
-  resolve(resolver: Resolver<Selectable>): SingleOutput {
-    return new SingleOutput(this.slotName, resolver);
+  constructor(
+      readonly slotName: string|null,
+  ) {}
+
+  resolve(target: Target, context: RenderContext): ResolvedOSingle {
+    return new ResolvedOSingle(this.slotName, target, context);
   }
 }
 
-export function single(slotName: string): UnresolvedSingleOutput {
-  return new UnresolvedSingleOutput(slotName);
+export function osingle(refName: string|null = null): UnresolvedOSingle {
+  return new UnresolvedOSingle(refName);
 }

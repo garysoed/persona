@@ -1,8 +1,4 @@
-import {$elementApi} from './element';
-
-export const $span = {
+export const SPAN = {
+  spec: {},
   tag: 'span',
-  api: {
-    ...$elementApi,
-  },
 };

@@ -1,22 +1,4 @@
-import {$elementApi} from './element';
-
-export const $table = {
+export const TABLE = {
+  spec: {},
   tag: 'table',
-  api: {
-    ...$elementApi,
-  },
-};
-
-export const $tbody = {
-  tag: 'tbody',
-  api: {
-    ...$elementApi,
-  },
-};
-
-export const $thead = {
-  tag: 'thead',
-  api: {
-    ...$elementApi,
-  },
 };
