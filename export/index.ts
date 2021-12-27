@@ -29,6 +29,7 @@ export {DIV} from '../src-next/html/div';
 export {INPUT, AutocompleteType, InputType} from '../src-next/html/input';
 export {LABEL} from '../src-next/html/label';
 export {P} from '../src-next/html/p';
+export {PRE} from '../src-next/html/pre';
 export {SECTION} from '../src-next/html/section';
 export {SLOT} from '../src-next/html/slot';
 export {SPAN} from '../src-next/html/span';
