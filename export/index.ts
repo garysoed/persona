@@ -106,8 +106,8 @@ export {mutationObservable} from '../src/util/mutation-observable';
 export {resizeObservable} from '../src/util/resize-observable';
 
 // Location
-export {LocationService, Route, RouteSpec} from '../src/location/location-service';
-export {fromPattern} from '../src/location/location-converter';
+export {LocationService, Route, RouteSpec} from '../src-next/location/location-service';
+export {fromPattern} from '../src-next/location/location-converter';
 
 // Render spec
 export {$htmlParseService as $innerHtmlParseService, ParseType} from '../src/render/html-parse-service';
@@ -118,7 +118,7 @@ export {render} from '../src/render/render';
 export {NodeWithId} from '../src/render/node-with-id';
 export {setId} from '../src/render/set-id';
 
-export {booleanParser, enumParser, floatParser, integerParser, listParser, mapParser, stringParser} from '../src/util/parsers';
+export {booleanParser, enumParser, floatParser, integerParser, listParser, mapParser, stringParser} from '../src-next/util/parsers';
 
 // HTML
 export {$div} from '../src/html/div';

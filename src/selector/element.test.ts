@@ -1,9 +1,9 @@
 import {assert, should, test} from 'gs-testing';
 
+import {integerParser} from '../../src-next/util/parsers';
 import {$div} from '../html/div';
 import {attribute, AttributeInput} from '../input/attribute';
 import {createFakeContext} from '../testing/create-fake-context';
-import {integerParser} from '../util/parsers';
 
 import {element} from './element';
 

@@ -1,6 +1,6 @@
 import {assert, objectThat, run, should, spy, test} from 'gs-testing';
 
-import {createFakeWindow} from '../testing/fake-window';
+import {createFakeWindow} from '../../src/testing/fake-window';
 import {integerParser} from '../util/parsers';
 
 import {fromPattern} from './location-converter';
@@ -12,7 +12,7 @@ const SPEC = {
   pathA: fromPattern('/a/:a', {a: integerParser()}),
 };
 
-test('@persona/location/location-service', init => {
+test('@persona/src/location/location-service', init => {
   const _ = init(() => {
     const fakeWindow = createFakeWindow();
 

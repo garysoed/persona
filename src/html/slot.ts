@@ -1,7 +1,7 @@
 import {instanceofType} from 'gs-types';
 
+import {stringParser} from '../../src-next/util/parsers';
 import {attribute} from '../input/attribute';
-import {stringParser} from '../util/parsers';
 
 import {$elementApi} from './element';
 

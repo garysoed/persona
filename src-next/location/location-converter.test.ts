@@ -5,7 +5,7 @@ import {integerParser, stringParser} from '../util/parsers';
 
 import {fromPattern} from './location-converter';
 
-test('@persona/location/location-converter', () => {
+test('@persona/src/location/location-converter', () => {
   test('fromPattern', () => {
     test('convertBackward', () => {
       should('pass if the location has the correct type', () => {
