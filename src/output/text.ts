@@ -1,5 +1,5 @@
-import {OperatorFunction, pipe} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {of, OperatorFunction, pipe} from 'rxjs';
+import {mapTo, switchMap} from 'rxjs/operators';
 
 import {RenderSpec} from '../../export';
 import {RenderContext} from '../render/types/render-context';
@@ -17,16 +17,21 @@ class ResolvedOText implements Resolved<UnresolvedOText> {
 
   constructor(
       readonly target: Target,
-      private readonly singleOutput: ResolvedO<RenderSpec>,
+      private readonly singleOutput: ResolvedO<RenderSpec, unknown>,
   ) {}
 
-  update(): OperatorFunction<string, unknown> {
+  update(): OperatorFunction<string, string> {
     return pipe(
-        map(value => renderTextNode({
-          id: value,
-          textContent: value,
-        })),
-        this.singleOutput.update(),
+        switchMap(value => {
+          const spec = renderTextNode({
+            id: value,
+            textContent: value,
+          });
+          return of(spec).pipe(
+              this.singleOutput.update(),
+              mapTo(value),
+          );
+        }),
     );
   }
 }

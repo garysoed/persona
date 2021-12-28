@@ -14,7 +14,7 @@ class ResolvedOEvent implements Resolved<UnresolvedOEvent> {
       readonly target: HTMLElement,
   ) {}
 
-  update(): OperatorFunction<Event, unknown> {
+  update(): OperatorFunction<Event, Event> {
     return pipe(
         tap(newValue => {
           this.target.dispatchEvent(newValue);

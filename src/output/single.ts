@@ -1,6 +1,6 @@
 import {filterNonNullable} from 'gs-tools/export/rxjs';
-import {of, OperatorFunction, pipe} from 'rxjs';
-import {distinctUntilChanged, pairwise, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {EMPTY, merge, of, OperatorFunction} from 'rxjs';
+import {distinctUntilChanged, pairwise, startWith, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 
 import {render} from '../render/render';
 import {__id} from '../render/types/node-with-id';
@@ -22,45 +22,51 @@ class ResolvedOSingle implements Resolved<UnresolvedOSingle> {
       private readonly context: RenderContext,
   ) {}
 
-  update(): OperatorFunction<RenderSpec|null, unknown> {
+  update(): OperatorFunction<RenderSpec|null, RenderSpec|null> {
     const slotEl$ = this.slotName
       ? of(this.target).pipe(
           initSlot(this.slotName),
           filterNonNullable(),
       )
       : of(null);
-    return pipe(
-        switchMap(spec => {
-          if (!spec) {
-            return of(null);
-          }
-          return render(spec, this.context);
-        }),
-        startWith(null),
-        distinctUntilChanged((a, b) => {
-          if (a !== null && b !== null) {
-            return a[__id] === b[__id];
-          }
-          return a === b;
-        }),
-        pairwise(),
-        withLatestFrom(slotEl$),
-        tap(([[previous, current], slotEl]) => {
-          // Remove the previous node.
-          if (previous) {
-            try {
-              this.target.removeChild(previous);
-            } catch (e) {
-            // ignored
-            }
-          }
+    return spec$ => {
+      const render$ = spec$
+          .pipe(
+              switchMap(spec => {
+                if (!spec) {
+                  return of(null);
+                }
+                return render(spec, this.context);
+              }),
+              startWith(null),
+              distinctUntilChanged((a, b) => {
+                if (a !== null && b !== null) {
+                  return a[__id] === b[__id];
+                }
+                return a === b;
+              }),
+              pairwise(),
+              withLatestFrom(slotEl$),
+              tap(([[previous, current], slotEl]) => {
+                // Remove the previous node.
+                if (previous) {
+                  try {
+                    this.target.removeChild(previous);
+                  } catch (e) {
+                    // ignored
+                  }
+                }
 
-          // Add the new node.
-          if (current) {
-            this.target.insertBefore(current, slotEl?.nextSibling ?? null);
-          }
-        }),
-    );
+                // Add the new node.
+                if (current) {
+                  this.target.insertBefore(current, slotEl?.nextSibling ?? null);
+                }
+              }),
+              switchMapTo(EMPTY),
+          );
+
+      return merge(render$, spec$);
+    };
   }
 }
 

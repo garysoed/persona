@@ -19,7 +19,7 @@ class ResolvedOValue<T, P extends string> implements Resolved<UnresolvedOValue<T
       readonly valueType: Type<T>,
   ) {}
 
-  update(): OperatorFunction<T, unknown> {
+  update(): OperatorFunction<T, T> {
     return pipe(
         switchMap(newValue => {
           return of(newValue).pipe(

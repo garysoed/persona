@@ -14,7 +14,7 @@ class ResolvedOAttr implements Resolved<UnresolvedOAttr> {
       readonly target: HTMLElement,
   ) {}
 
-  update(): OperatorFunction<string|null, unknown> {
+  update(): OperatorFunction<string|null, string|null> {
     return pipe(
         tap(newValue => {
           if (!newValue) {

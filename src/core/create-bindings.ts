@@ -12,12 +12,12 @@ export function createBindings<S extends UnresolvedBindingSpec>(spec: ResolvedBi
   return bindings as Bindings<S>;
 }
 
-export function createBinding(io: InputOutput&(ResolvedI<unknown>|ResolvedO<any>)): Observable<unknown>|(() => OperatorFunction<unknown, unknown>) {
+export function createBinding(io: InputOutput&(ResolvedI<unknown>|ResolvedO<any, any>)): Observable<unknown>|(() => OperatorFunction<unknown, unknown>) {
   switch (io.ioType) {
     // TODO(#8): Remove casts, only breaks outside VSCode
     case IOType.INPUT:
       return (io as ResolvedI<unknown>).value$;
     case IOType.OUTPUT:
-      return () => (io as ResolvedO<unknown>).update();
+      return () => (io as ResolvedO<unknown, unknown>).update();
   }
 }

@@ -14,7 +14,7 @@ class ResolvedOFlag implements Resolved<UnresolvedOFlag> {
       readonly target: HTMLElement,
   ) {}
 
-  update(): OperatorFunction<boolean, unknown> {
+  update(): OperatorFunction<boolean, boolean> {
     return pipe(
         tap(hasAttribute => {
           if (!hasAttribute) {

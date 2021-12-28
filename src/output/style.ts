@@ -14,7 +14,7 @@ class ResolvedOStyle<S extends keyof CSSStyleDeclaration> implements Resolved<Un
       readonly target: HTMLElement,
   ) {}
 
-  update(): OperatorFunction<CSSStyleDeclaration[S], unknown> {
+  update(): OperatorFunction<CSSStyleDeclaration[S], CSSStyleDeclaration[S]> {
     return pipe(
         tap(newValue => {
           this.target.style[this.propertyName] = newValue;

@@ -14,7 +14,7 @@ class ResolvedOClass implements Resolved<UnresolvedOClass> {
       readonly target: HTMLElement,
   ) {}
 
-  update(): OperatorFunction<boolean, unknown> {
+  update(): OperatorFunction<boolean, boolean> {
     return pipe(
         tap(newValue => {
           if (!newValue) {

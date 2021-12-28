@@ -1,8 +1,8 @@
-import {$pipe, $filterNonNull, $asArray} from 'gs-tools/export/collect';
+import {$asArray, $filterNonNull, $pipe} from 'gs-tools/export/collect';
 import {diffArray, filterNonNullable} from 'gs-tools/export/rxjs';
 import {assertUnreachable} from 'gs-tools/export/typescript';
-import {combineLatest, NEVER, Observable, of, OperatorFunction, pipe} from 'rxjs';
-import {map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {combineLatest, EMPTY, merge, NEVER, Observable, of, OperatorFunction} from 'rxjs';
+import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 
 import {render} from '../render/render';
 import {__id} from '../render/types/node-with-id';
@@ -25,48 +25,54 @@ class ResolvedOMulti implements Resolved<UnresolvedOMulti> {
       private readonly context: RenderContext,
   ) {}
 
-  update(): OperatorFunction<readonly RenderSpec[], unknown> {
+  update(): OperatorFunction<readonly RenderSpec[], readonly RenderSpec[]> {
     const slotEl$ = of(this.target).pipe(
         initSlot(this.slotName),
         filterNonNullable(),
     );
-    return pipe(
-        switchMap(specs => {
-          const node$list = specs.map(spec => render(spec, this.context));
-          if (node$list.length <= 0) {
-            return of([]);
-          }
 
-          return combineLatest(node$list);
-        }),
-        map(nodes => $pipe(nodes, $filterNonNull(), $asArray())),
-        diffArray((a, b) => a[__id] === b[__id]),
-        withLatestFrom(slotEl$),
-        tap(([diff, slotNode]) => {
-          if (!slotNode) {
-            return;
-          }
+    return specs$ => {
+      const render$ = specs$.pipe(
+          switchMap(specs => {
+            const node$list = specs.map(spec => render(spec, this.context));
+            if (node$list.length <= 0) {
+              return of([]);
+            }
 
-          switch (diff.type) {
-            case 'init':
-              for (let i = 0; i < diff.value.length; i++) {
-                this.insertEl(this.target, slotNode, diff.value[i], i);
-              }
+            return combineLatest(node$list);
+          }),
+          map(nodes => $pipe(nodes, $filterNonNull(), $asArray())),
+          diffArray((a, b) => a[__id] === b[__id]),
+          withLatestFrom(slotEl$),
+          tap(([diff, slotNode]) => {
+            if (!slotNode) {
               return;
-            case 'insert':
-              this.insertEl(this.target, slotNode, diff.value, diff.index);
-              return;
-            case 'delete':
-              this.deleteEl(this.target, slotNode, diff.index);
-              return;
-            case 'set':
-              this.setEl(this.target, slotNode, diff.value, diff.index);
-              return;
-            default:
-              assertUnreachable(diff);
-          }
-        }),
-    );
+            }
+
+            switch (diff.type) {
+              case 'init':
+                for (let i = 0; i < diff.value.length; i++) {
+                  this.insertEl(this.target, slotNode, diff.value[i], i);
+                }
+                return;
+              case 'insert':
+                this.insertEl(this.target, slotNode, diff.value, diff.index);
+                return;
+              case 'delete':
+                this.deleteEl(this.target, slotNode, diff.index);
+                return;
+              case 'set':
+                this.setEl(this.target, slotNode, diff.value, diff.index);
+                return;
+              default:
+                assertUnreachable(diff);
+            }
+          }),
+          switchMapTo(EMPTY),
+      );
+
+      return merge(specs$, render$);
+    };
   }
 
   private deleteEl(parentNode: Node, slotNode: Node, index: number): Observable<unknown> {

@@ -13,7 +13,7 @@ class ResolvedOSlotted implements Resolved<UnresolvedOSlotted> {
       readonly target: HTMLElement,
   ) {}
 
-  update(): OperatorFunction<readonly Node[], unknown> {
+  update(): OperatorFunction<readonly Node[], readonly Node[]> {
     return switchMapTo(throwError(new Error('oslotted cannot be set')));
   }
 }
