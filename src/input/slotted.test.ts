@@ -7,7 +7,8 @@ import {tap} from 'rxjs/operators';
 import {registerCustomElement} from '../core/register-custom-element';
 import {SLOT} from '../html/slot';
 import {id} from '../selector/id';
-import {getEl} from '../testing/get-el';
+import {getHarness} from '../testing/harness/get-harness';
+import {SlotHarness} from '../testing/harness/slot-harness';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -52,7 +53,7 @@ test('@persona/src/input/attr', init => {
     should('emit values on sets', () => {
       const element = _.tester.createElement(HOST);
       const newNode = document.createTextNode('text');
-      getEl(element, 'slot')!.simulateSlotChange(element => {
+      getHarness(element, 'slot', SlotHarness).simulateSlotChange(element => {
         element.appendChild(newNode);
       });
 

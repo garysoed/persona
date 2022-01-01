@@ -7,7 +7,8 @@ import {tap} from 'rxjs/operators';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {id} from '../selector/id';
-import {getEl} from '../testing/get-el';
+import {ElementHarness} from '../testing/harness/element-harness';
+import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -96,26 +97,26 @@ test('@persona/src/input/keydown', init => {
   test('el', () => {
     should('match the key correctly', () => {
       const element = _.tester.createElement(HOST);
-      const root = getEl(element, 'el')!;
+      const harness = getHarness(element, 'el', ElementHarness);
 
-      const event = root.simulateKeydown(KEY);
-      root.simulateKeydown('other');
+      const event = harness.simulateKeydown(KEY);
+      harness.simulateKeydown('other');
 
       assert($noOption$.get(_.tester.vine)).to.emitSequence([event]);
     });
 
     should('match the alt correctly', () => {
       const element = _.tester.createElement(HOST);
-      const root = getEl(element, 'el')!;
+      const harness = getHarness(element, 'el', ElementHarness);
 
       // alt === true
-      const altEvent = root.simulateKeydown(KEY, {altKey: true});
-      root.simulateKeydown('other');
+      const altEvent = harness.simulateKeydown(KEY, {altKey: true});
+      harness.simulateKeydown('other');
       assert($altTrue$.get(_.tester.vine)).to.emitSequence([altEvent]);
 
       // alt === false
-      const nonAltEvent = root.simulateKeydown(KEY);
-      root.simulateKeydown('other', {altKey: true});
+      const nonAltEvent = harness.simulateKeydown(KEY);
+      harness.simulateKeydown('other', {altKey: true});
       assert($altFalse$.get(_.tester.vine)).to.emitSequence([nonAltEvent]);
 
       // alt === undefined
@@ -124,16 +125,16 @@ test('@persona/src/input/keydown', init => {
 
     should('match the ctrl correctly', () => {
       const element = _.tester.createElement(HOST);
-      const root = getEl(element, 'el')!;
+      const harness = getHarness(element, 'el', ElementHarness);
 
       // ctrl === true
-      const ctrlEvent = root.simulateKeydown(KEY, {ctrlKey: true});
-      root.simulateKeydown('other');
+      const ctrlEvent = harness.simulateKeydown(KEY, {ctrlKey: true});
+      harness.simulateKeydown('other');
       assert($ctrlTrue$.get(_.tester.vine)).to.emitSequence([ctrlEvent]);
 
       // ctrl === false
-      const nonCtrlEvent = root.simulateKeydown(KEY);
-      root.simulateKeydown('other', {ctrlKey: true});
+      const nonCtrlEvent = harness.simulateKeydown(KEY);
+      harness.simulateKeydown('other', {ctrlKey: true});
       assert($ctrlFalse$.get(_.tester.vine)).to.emitSequence([nonCtrlEvent]);
 
       // ctrl === undefined
@@ -142,16 +143,16 @@ test('@persona/src/input/keydown', init => {
 
     should('match the meta correctly', () => {
       const element = _.tester.createElement(HOST);
-      const root = getEl(element, 'el')!;
+      const harness = getHarness(element, 'el', ElementHarness);
 
       // meta === true
-      const metaEvent = root.simulateKeydown(KEY, {metaKey: true});
-      root.simulateKeydown('other');
+      const metaEvent = harness.simulateKeydown(KEY, {metaKey: true});
+      harness.simulateKeydown('other');
       assert($metaTrue$.get(_.tester.vine)).to.emitSequence([metaEvent]);
 
       // meta === false
-      const nonMetaEvent = root.simulateKeydown(KEY);
-      root.simulateKeydown('other', {metaKey: true});
+      const nonMetaEvent = harness.simulateKeydown(KEY);
+      harness.simulateKeydown('other', {metaKey: true});
       assert($metaFalse$.get(_.tester.vine)).to.emitSequence([nonMetaEvent]);
 
       // meta === undefined
@@ -160,16 +161,16 @@ test('@persona/src/input/keydown', init => {
 
     should('match the shift correctly', () => {
       const element = _.tester.createElement(HOST);
-      const root = getEl(element, 'el')!;
+      const harness = getHarness(element, 'el', ElementHarness);
 
       // shift === true
-      const shiftEvent = root.simulateKeydown(KEY, {shiftKey: true});
-      root.simulateKeydown('other');
+      const shiftEvent = harness.simulateKeydown(KEY, {shiftKey: true});
+      harness.simulateKeydown('other');
       assert($shiftTrue$.get(_.tester.vine)).to.emitSequence([shiftEvent]);
 
       // shift === false
-      const nonShiftEvent = root.simulateKeydown(KEY);
-      root.simulateKeydown('other', {shiftKey: true});
+      const nonShiftEvent = harness.simulateKeydown(KEY);
+      harness.simulateKeydown('other', {shiftKey: true});
       assert($shiftFalse$.get(_.tester.vine)).to.emitSequence([nonShiftEvent]);
 
       // shift === undefined
@@ -178,9 +179,9 @@ test('@persona/src/input/keydown', init => {
 
     should('ignore if event is not KeyboardEvent', () => {
       const element = _.tester.createElement(HOST);
-      const root = getEl(element, 'el')!;
+      const harness = getHarness(element, 'el', ElementHarness);
 
-      root.dispatchEvent(new CustomEvent<unknown>('keydown'));
+      harness.element.dispatchEvent(new CustomEvent<unknown>('keydown'));
       assert($noOption$.get(_.tester.vine)).toNot.emit();
     });
   });
