@@ -89,7 +89,7 @@ function reverseIO(io: ReversableIO): InputOutput {
         case IOType.INPUT:
           return oevent(io.eventName);
         case IOType.OUTPUT:
-          return ievent(io.eventName);
+          return ievent(io.eventName, {matchTarget: true});
       }
       break;
     case ApiType.FLAG:
