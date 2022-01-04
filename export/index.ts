@@ -12,8 +12,10 @@ export {ievent} from '../src/input/event';
 export {iflag} from '../src/input/flag';
 export {ikeydown} from '../src/input/keydown';
 export {irect} from '../src/input/rect';
+export {islotted} from '../src/input/slotted';
 export {itarget} from '../src/input/target';
 export {itext} from '../src/input/text';
+export {ivalue} from '../src/input/value';
 
 export {oattr} from '../src/output/attr';
 export {oclass} from '../src/output/class';

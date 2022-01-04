@@ -6,5 +6,6 @@ persona
       ✔ Call function name should follow the string, not the key name.
       ✔ Value property name should follow the string, not the key name.
       ☐ `single` and `multi` should output the bindings.
+      ☐ `iattr` and `oattr` should expose as property?
 
 
