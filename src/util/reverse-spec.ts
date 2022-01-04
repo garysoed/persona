@@ -23,7 +23,7 @@ type ReversedIO<T> =
     T extends ICall<infer A, infer M> ? OCall<A, M> :
     T extends IClass ? OClass :
     T extends OClass ? IClass :
-    T extends OEvent ? IEvent :
+    T extends OEvent<infer E> ? IEvent<E> :
     T extends IFlag ? OFlag :
     T extends OFlag ? IFlag :
     T extends ISlotted ? OSlotted :
@@ -40,7 +40,7 @@ type ReversableIO =
     IAttr|OAttr|
     ICall<any, any>|OCall<any, any>|
     IClass|OClass|
-    OEvent|IEvent|
+    OEvent<any>|IEvent<any>|
     IFlag|OFlag|
     OMulti|
     OSingle|
@@ -87,9 +87,9 @@ function reverseIO(io: ReversableIO): InputOutput {
     case ApiType.EVENT:
       switch (io.ioType) {
         case IOType.INPUT:
-          return oevent(io.eventName);
+          return oevent(io.eventName, io.eventType);
         case IOType.OUTPUT:
-          return ievent(io.eventName, {matchTarget: true});
+          return ievent(io.eventName, io.eventType, {matchTarget: true});
       }
       break;
     case ApiType.FLAG:

@@ -63,16 +63,22 @@ export interface OClass {
   readonly className: string;
 }
 
-export interface IEvent {
+export interface EventCtor<E extends Event> {
+  new (...args: readonly any[]): E;
+}
+
+export interface IEvent<E extends Event> {
   readonly apiType: ApiType.EVENT;
   readonly ioType: IOType.INPUT;
   readonly eventName: string;
+  readonly eventType: EventCtor<E>;
 }
 
-export interface OEvent {
+export interface OEvent<E extends Event> {
   readonly apiType: ApiType.EVENT;
   readonly ioType: IOType.OUTPUT;
   readonly eventName: string;
+  readonly eventType: EventCtor<E>;
 }
 
 export interface IFlag {
@@ -170,7 +176,7 @@ export type InputOutput =
     IAttr|OAttr|
     ICall<unknown, string>|OCall<unknown, string>|
     IClass|OClass|
-    IEvent|OEvent|
+    IEvent<Event>|OEvent<Event>|
     IFlag|OFlag|
     IKeydown|
     IMedia|

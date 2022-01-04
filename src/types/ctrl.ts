@@ -28,8 +28,8 @@ export type Resolved<T extends InputOutput> =
     T extends OCall<infer A, infer M> ? OCall<A, M>&ResolvedO<A, A> :
     T extends IClass ? IClass&ResolvedI<boolean> :
     T extends OClass ? OClass&ResolvedO<boolean, boolean> :
-    T extends IEvent ? IEvent&ResolvedI<Event> :
-    T extends OEvent ? OEvent&ResolvedO<Event, Event> :
+    T extends IEvent<infer E> ? IEvent<E>&ResolvedI<E> :
+    T extends OEvent<infer E> ? OEvent<E>&ResolvedO<E, E> :
     T extends IFlag ? IFlag&ResolvedI<boolean> :
     T extends OFlag ? OFlag&ResolvedO<boolean, boolean> :
     T extends IKeydown ? IKeydown&ResolvedI<KeyboardEvent> :
@@ -62,7 +62,7 @@ export type UnresolvedBindingSpec = {
       UnresolvedIO<IAttr>|UnresolvedIO<OAttr>|
       UnresolvedIO<ICall<unknown, any>>|
       UnresolvedIO<IClass>|UnresolvedIO<OClass>|
-      UnresolvedIO<IEvent>|UnresolvedIO<OEvent>|
+      UnresolvedIO<IEvent<any>>|UnresolvedIO<OEvent<any>>|
       UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|
       UnresolvedIO<OMulti>|
       UnresolvedIO<OSingle>|

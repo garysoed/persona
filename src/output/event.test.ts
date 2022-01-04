@@ -15,14 +15,14 @@ import {oevent} from './event';
 import goldens from './goldens/goldens.json';
 
 
-const $hostValue$ = source(() => new Subject<Event>());
-const $shadowValue$ = source(() => new ReplaySubject<Event>());
+const $hostValue$ = source(() => new Subject<CustomEvent>());
+const $shadowValue$ = source(() => new ReplaySubject<CustomEvent>());
 
 const EVENT_NAME = 'event-name';
 
 const $host = {
   host: {
-    event: oevent(EVENT_NAME),
+    event: oevent(EVENT_NAME, CustomEvent),
   },
 };
 

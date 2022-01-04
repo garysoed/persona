@@ -22,8 +22,8 @@ const EVENT_NAME = 'event-name';
 const $host = {
   shadow: {
     el: id('el', DIV, {
-      event: ievent(EVENT_NAME),
-      eventStrict: ievent(EVENT_NAME, {matchTarget: true}),
+      event: ievent(EVENT_NAME, CustomEvent),
+      eventStrict: ievent(EVENT_NAME, CustomEvent, {matchTarget: true}),
     }),
   },
 };
@@ -72,6 +72,16 @@ test('@persona/src/input/event', init => {
       element.dispatchEvent(event);
 
       assert($elValue$.get(_.tester.vine)).to.emitSequence([event]);
+      assert($elValueStrict$.get(_.tester.vine)).to.emitSequence([]);
+    });
+
+    should.only('ignore events that do not match the type', () => {
+      const rootEl = _.tester.createElement(HOST);
+      const element = getEl(rootEl, 'sub')!;
+      const event = new KeyboardEvent(EVENT_NAME, {bubbles: true});
+      element.dispatchEvent(event);
+
+      assert($elValue$.get(_.tester.vine)).to.emitSequence([]);
       assert($elValueStrict$.get(_.tester.vine)).to.emitSequence([]);
     });
   });

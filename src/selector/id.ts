@@ -22,7 +22,7 @@ export type ExtraUnresolvedBindingSpec = Record<
     UnresolvedIO<IAttr>|UnresolvedIO<OAttr>|
     UnresolvedIO<OCall<any, any>>|
     UnresolvedIO<IClass>|UnresolvedIO<OClass>|
-    UnresolvedIO<IEvent>|
+    UnresolvedIO<IEvent<any>>|
     UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|
     UnresolvedIO<IKeydown>|
     UnresolvedIO<OMulti>|
