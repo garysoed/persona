@@ -181,7 +181,7 @@ test('@persona/src/input/keydown', init => {
       const element = _.tester.createElement(HOST);
       const harness = getHarness(element, 'el', ElementHarness);
 
-      harness.element.dispatchEvent(new CustomEvent<unknown>('keydown'));
+      harness.target.dispatchEvent(new CustomEvent<unknown>('keydown'));
       assert($noOption$.get(_.tester.vine)).toNot.emit();
     });
   });

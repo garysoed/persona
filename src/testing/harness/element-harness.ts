@@ -3,21 +3,8 @@ import {instanceofType} from 'gs-types';
 import {setBoundingClientRect} from '../fake-rect';
 import {dispatchResizeEvent} from '../fake-resize-observer';
 
-import {Harness} from './harness';
+import {EventTargetHarness} from './event-target-harness';
 
-
-interface ClickEvents {
-  readonly down: MouseEvent;
-  readonly up: MouseEvent;
-  readonly click: MouseEvent;
-}
-
-interface KeyOptions {
-  readonly altKey?: boolean;
-  readonly ctrlKey?: boolean;
-  readonly metaKey?: boolean;
-  readonly shiftKey?: boolean;
-}
 
 interface MouseOutEvents {
   readonly leaves: readonly MouseEvent[];
@@ -29,36 +16,22 @@ interface MouseOverEvents {
   readonly over: MouseEvent;
 }
 
-export class ElementHarness<E extends Element> implements Harness<E> {
+export class ElementHarness<E extends Element> extends EventTargetHarness<E> {
   static readonly validType = instanceofType(Element);
 
   constructor(
-      readonly element: E,
+      readonly target: E,
       readonly hostElement: Element,
-  ) { }
-
-  simulateClick(): ClickEvents {
-    const down = new MouseEvent('mousedown');
-    this.element.dispatchEvent(down);
-    const up = new MouseEvent('mouseup');
-    this.element.dispatchEvent(up);
-    const click = new MouseEvent('click');
-    this.element.dispatchEvent(click);
-    return {down, up, click};
-  }
-
-  simulateKeydown(key: string, options?: KeyOptions): KeyboardEvent {
-    const event = new KeyboardEvent('keydown', {key, ...options});
-    this.element.dispatchEvent(event);
-    return event;
+  ) {
+    super(target);
   }
 
   simulateMouseOut(): MouseOutEvents {
     const out = new MouseEvent('mouseout');
-    this.element.dispatchEvent(out);
+    this.target.dispatchEvent(out);
 
     const leaves: MouseEvent[] = [];
-    let curr: Element|null = this.element;
+    let curr: Element|null = this.target;
     while(curr !== null) {
       const enter = new MouseEvent('mouseleave');
       curr.dispatchEvent(enter);
@@ -69,14 +42,14 @@ export class ElementHarness<E extends Element> implements Harness<E> {
     return {leaves, out};
   }
 
-  simulateMouseOver(): MouseOverEvents {
+  simulateMouseOver(options: MouseEventInit = {}): MouseOverEvents {
     const over = new MouseEvent('mouseover');
-    this.element.dispatchEvent(over);
+    this.target.dispatchEvent(over);
 
     const enters: MouseEvent[] = [];
-    let curr: Element|null = this.element;
+    let curr: Element|null = this.target;
     while(curr !== null) {
-      const enter = new MouseEvent('mouseenter');
+      const enter = new MouseEvent('mouseenter', options);
       curr.dispatchEvent(enter);
       enters.push(enter);
       curr = curr.parentElement;
@@ -86,7 +59,7 @@ export class ElementHarness<E extends Element> implements Harness<E> {
   }
 
   simulateResize(newRect: DOMRect): Event {
-    setBoundingClientRect(this.element, newRect);
-    return dispatchResizeEvent(this.element, [{contentRect: newRect}]);
+    setBoundingClientRect(this.target, newRect);
+    return dispatchResizeEvent(this.target, [{contentRect: newRect}]);
   }
 }

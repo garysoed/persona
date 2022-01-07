@@ -1,8 +1,7 @@
 import {Type} from 'gs-types';
 
-export interface Harness<E extends Element> {
-  readonly element: E;
-  readonly hostElement: Element;
+export interface Harness<E> {
+  readonly target: E;
 }
 
 export type HarnessCtor<E extends Element, H extends Harness<E>> = {

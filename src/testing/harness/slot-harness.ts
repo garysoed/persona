@@ -8,7 +8,7 @@ export class SlotHarness<E extends HTMLSlotElement> extends ElementHarness<E> {
   simulateSlotChange(modifierFn: (hostEl: Element) => void): Event {
     const event = new CustomEvent('slotchange');
     modifierFn(this.hostElement);
-    this.element.dispatchEvent(event);
+    this.target.dispatchEvent(event);
     return event;
   }
 }

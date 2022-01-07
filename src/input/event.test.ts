@@ -75,7 +75,7 @@ test('@persona/src/input/event', init => {
       assert($elValueStrict$.get(_.tester.vine)).to.emitSequence([]);
     });
 
-    should.only('ignore events that do not match the type', () => {
+    should('ignore events that do not match the type', () => {
       const rootEl = _.tester.createElement(HOST);
       const element = getEl(rootEl, 'sub')!;
       const event = new KeyboardEvent(EVENT_NAME, {bubbles: true});

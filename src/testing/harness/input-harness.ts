@@ -6,9 +6,9 @@ export class InputHarness<E extends HTMLInputElement> extends ElementHarness<E> 
   static readonly validType = instanceofType(HTMLInputElement);
 
   simulateChange(modifierFn: (element: HTMLInputElement) => void): Event {
-    modifierFn(this.element);
+    modifierFn(this.target);
     const event = new Event('change');
-    this.element.dispatchEvent(event);
+    this.target.dispatchEvent(event);
     return event;
   }
 }
