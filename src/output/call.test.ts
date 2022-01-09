@@ -54,7 +54,7 @@ test('@persona/src/output/call', init => {
       const host = _.tester.createElement(HOST);
 
       const eventName = 'event-name';
-      const el = getEl(host, 'el')!;
+      const el = getEl(host, '#el')!;
       const spy = createSpySubject(fromEvent(el, eventName));
 
       const event = new CustomEvent(eventName);

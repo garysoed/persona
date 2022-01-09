@@ -14,7 +14,7 @@ import {Context, Ctrl} from '../types/ctrl';
 import {itarget} from './target';
 
 
-const $elValue$ = source(() => new ReplaySubject<HTMLElement>());
+const $elValue$ = source(() => new ReplaySubject<Element>());
 
 const $host = {
   shadow: {
@@ -54,7 +54,7 @@ test('@persona/src/input/target', init => {
   test('el', () => {
     should('update values correctly', () => {
       const rootEl = _.tester.createElement(HOST);
-      const element = getEl(rootEl, 'el')!;
+      const element = getEl(rootEl, '#el')!;
 
       assert($elValue$.get(_.tester.vine)).to.emitSequence([element]);
     });

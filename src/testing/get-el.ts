@@ -1,9 +1,8 @@
-type Harness = HTMLElement & {
-};
+type Harness<E extends Element> = E & {};
 
 
-export function getEl(hostEl: HTMLElement, id: string): Harness|null {
-  const element = hostEl.shadowRoot?.getElementById(id) ?? null;
+export function getEl<E extends Element>(hostEl: HTMLElement, selector: string): Harness<E>|null {
+  const element: E = (hostEl.shadowRoot?.querySelector(selector) ?? null) as E;
   if (!element) {
     return null;
   }

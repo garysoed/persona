@@ -71,7 +71,7 @@ test('@persona/src/input/text', init => {
     should('emit values on sets', () => {
       const element = _.tester.createElement(HOST);
       const text = 'text';
-      const div = getEl(element, 'div')!;
+      const div = getEl(element, '#div')!;
       div.textContent = text;
       triggerFakeMutation(div, {});
 

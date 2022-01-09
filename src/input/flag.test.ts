@@ -98,7 +98,7 @@ test('@persona/src/input/flag', init => {
   test('el', () => {
     should('update values correctly', () => {
       const rootEl = _.tester.createElement(HOST);
-      const element = getEl(rootEl, 'el')!;
+      const element = getEl(rootEl, '#el')!;
       element.setAttribute('attr', '');
       element.removeAttribute('attr');
 

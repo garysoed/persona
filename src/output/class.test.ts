@@ -122,7 +122,7 @@ test('@persona/src/output/class', init => {
       const element = _.tester.createElement(SHADOW);
 
       $hostValue$.get(_.tester.vine).next(true);
-      triggerFakeMutation(getEl(element, 'deps')!, {});
+      triggerFakeMutation(getEl(element, '#deps')!, {});
       assert($shadowValue$.get(_.tester.vine)).to.emitSequence([false, true]);
     });
   });

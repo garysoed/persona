@@ -101,7 +101,7 @@ test('@persona/src/input/attr', init => {
     should('update values correctly', () => {
       const value = 'value';
       const rootEl = _.tester.createElement(HOST);
-      const element = getEl(rootEl, 'el')!;
+      const element = getEl(rootEl, '#el')!;
       element.setAttribute('attr', value);
       element.removeAttribute('attr');
 

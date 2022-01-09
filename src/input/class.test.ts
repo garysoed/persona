@@ -100,7 +100,7 @@ test('@persona/src/input/class', init => {
   test('el', () => {
     should('update values correctly', () => {
       const rootEl = _.tester.createElement(HOST);
-      const element = getEl(rootEl, 'el')!;
+      const element = getEl(rootEl, '#el')!;
       element.setAttribute('class', CLASS_NAME);
       element.removeAttribute('class');
 
@@ -113,10 +113,10 @@ test('@persona/src/input/class', init => {
       const element = _.tester.createElement(SHADOW);
 
       $shadowValue$.get(_.tester.vine).next(true);
-      triggerFakeMutation(getEl(element, 'deps')!, {});
+      triggerFakeMutation(getEl(element, '#deps')!, {});
 
       $shadowValue$.get(_.tester.vine).next(false);
-      triggerFakeMutation(getEl(element, 'deps')!, {});
+      triggerFakeMutation(getEl(element, '#deps')!, {});
 
       assert($hostValue$.get(_.tester.vine)).to.emitSequence([false, true, false]);
     });
