@@ -1,5 +1,6 @@
 import {instanceofType} from 'gs-types';
 
+import {triggerFakeMutation} from '../fake-mutation-observer';
 import {setBoundingClientRect} from '../fake-rect';
 import {dispatchResizeEvent} from '../fake-resize-observer';
 
@@ -56,6 +57,10 @@ export class ElementHarness<E extends Element> extends EventTargetHarness<E> {
     }
 
     return {enters, over};
+  }
+
+  simulateMutation(record: {} = {}): void {
+    triggerFakeMutation(this.target, record);
   }
 
   simulateResize(newRect: DOMRect): Event {

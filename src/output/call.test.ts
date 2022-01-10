@@ -8,7 +8,8 @@ import {take} from 'rxjs/operators';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {id} from '../selector/id';
-import {getEl} from '../testing/get-el';
+import {ElementHarness} from '../testing/harness/element-harness';
+import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -54,7 +55,7 @@ test('@persona/src/output/call', init => {
       const host = _.tester.createElement(HOST);
 
       const eventName = 'event-name';
-      const el = getEl(host, '#el')!;
+      const el = getHarness(host, '#el', ElementHarness).target;
       const spy = createSpySubject(fromEvent(el, eventName));
 
       const event = new CustomEvent(eventName);

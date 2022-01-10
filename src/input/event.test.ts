@@ -7,7 +7,8 @@ import {Observable, ReplaySubject} from 'rxjs';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {id} from '../selector/id';
-import {getEl} from '../testing/get-el';
+import {ElementHarness} from '../testing/harness/element-harness';
+import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -57,7 +58,7 @@ test('@persona/src/input/event', init => {
   test('el', () => {
     should('listen to events correctly', () => {
       const rootEl = _.tester.createElement(HOST);
-      const element = getEl(rootEl, '#el')!;
+      const element = getHarness(rootEl, '#el', ElementHarness).target;
       const event = new CustomEvent(EVENT_NAME);
       element.dispatchEvent(event);
 
@@ -67,7 +68,7 @@ test('@persona/src/input/event', init => {
 
     should('ignore events that do not match the target if matchTarget is true', () => {
       const rootEl = _.tester.createElement(HOST);
-      const element = getEl(rootEl, '#sub')!;
+      const element = getHarness(rootEl, '#sub', ElementHarness).target;
       const event = new CustomEvent(EVENT_NAME, {bubbles: true});
       element.dispatchEvent(event);
 
@@ -77,7 +78,7 @@ test('@persona/src/input/event', init => {
 
     should('ignore events that do not match the type', () => {
       const rootEl = _.tester.createElement(HOST);
-      const element = getEl(rootEl, '#sub')!;
+      const element = getHarness(rootEl, '#sub', ElementHarness).target;
       const event = new KeyboardEvent(EVENT_NAME, {bubbles: true});
       element.dispatchEvent(event);
 

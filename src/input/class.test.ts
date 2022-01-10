@@ -7,8 +7,8 @@ import {tap} from 'rxjs/operators';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {id} from '../selector/id';
-import {triggerFakeMutation} from '../testing/fake-mutation-observer';
-import {getEl} from '../testing/get-el';
+import {ElementHarness} from '../testing/harness/element-harness';
+import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -100,7 +100,7 @@ test('@persona/src/input/class', init => {
   test('el', () => {
     should('update values correctly', () => {
       const rootEl = _.tester.createElement(HOST);
-      const element = getEl(rootEl, '#el')!;
+      const element = getHarness(rootEl, '#el', ElementHarness).target;
       element.setAttribute('class', CLASS_NAME);
       element.removeAttribute('class');
 
@@ -113,10 +113,10 @@ test('@persona/src/input/class', init => {
       const element = _.tester.createElement(SHADOW);
 
       $shadowValue$.get(_.tester.vine).next(true);
-      triggerFakeMutation(getEl(element, '#deps')!, {});
+      getHarness(element, '#deps', ElementHarness).simulateMutation();
 
       $shadowValue$.get(_.tester.vine).next(false);
-      triggerFakeMutation(getEl(element, '#deps')!, {});
+      getHarness(element, '#deps', ElementHarness).simulateMutation();
 
       assert($hostValue$.get(_.tester.vine)).to.emitSequence([false, true, false]);
     });

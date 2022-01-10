@@ -7,7 +7,8 @@ import {tap} from 'rxjs/operators';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {id} from '../selector/id';
-import {getEl} from '../testing/get-el';
+import {ElementHarness} from '../testing/harness/element-harness';
+import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -98,7 +99,7 @@ test('@persona/src/input/flag', init => {
   test('el', () => {
     should('update values correctly', () => {
       const rootEl = _.tester.createElement(HOST);
-      const element = getEl(rootEl, '#el')!;
+      const element = getHarness(rootEl, '#el', ElementHarness).target;
       element.setAttribute('attr', '');
       element.removeAttribute('attr');
 

@@ -8,7 +8,8 @@ import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {id} from '../selector/id';
 import {triggerFakeMutation} from '../testing/fake-mutation-observer';
-import {getEl} from '../testing/get-el';
+import {ElementHarness} from '../testing/harness/element-harness';
+import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -71,7 +72,7 @@ test('@persona/src/input/text', init => {
     should('emit values on sets', () => {
       const element = _.tester.createElement(HOST);
       const text = 'text';
-      const div = getEl(element, '#div')!;
+      const div = getHarness(element, '#div', ElementHarness).target;
       div.textContent = text;
       triggerFakeMutation(div, {});
 

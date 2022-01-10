@@ -8,8 +8,8 @@ import {tap} from 'rxjs/operators';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {id} from '../selector/id';
-import {triggerFakeMutation} from '../testing/fake-mutation-observer';
-import {getEl} from '../testing/get-el';
+import {ElementHarness} from '../testing/harness/element-harness';
+import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -122,7 +122,7 @@ test('@persona/src/output/class', init => {
       const element = _.tester.createElement(SHADOW);
 
       $hostValue$.get(_.tester.vine).next(true);
-      triggerFakeMutation(getEl(element, '#deps')!, {});
+      getHarness(element, '#deps', ElementHarness).simulateMutation();
       assert($shadowValue$.get(_.tester.vine)).to.emitSequence([false, true]);
     });
   });

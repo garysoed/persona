@@ -1,4 +1,3 @@
-export {getEl} from '../src/testing/get-el';
 export {getHarness} from '../src/testing/harness/get-harness';
 export {ElementHarness} from '../src/testing/harness/element-harness';
 export {InputHarness} from '../src/testing/harness/input-harness';

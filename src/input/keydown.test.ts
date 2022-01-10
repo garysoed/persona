@@ -97,7 +97,7 @@ test('@persona/src/input/keydown', init => {
   test('el', () => {
     should('match the key correctly', () => {
       const element = _.tester.createElement(HOST);
-      const harness = getHarness(element, 'el', ElementHarness);
+      const harness = getHarness(element, '#el', ElementHarness);
 
       const event = harness.simulateKeydown(KEY);
       harness.simulateKeydown('other');
@@ -107,7 +107,7 @@ test('@persona/src/input/keydown', init => {
 
     should('match the alt correctly', () => {
       const element = _.tester.createElement(HOST);
-      const harness = getHarness(element, 'el', ElementHarness);
+      const harness = getHarness(element, '#el', ElementHarness);
 
       // alt === true
       const altEvent = harness.simulateKeydown(KEY, {altKey: true});
@@ -125,7 +125,7 @@ test('@persona/src/input/keydown', init => {
 
     should('match the ctrl correctly', () => {
       const element = _.tester.createElement(HOST);
-      const harness = getHarness(element, 'el', ElementHarness);
+      const harness = getHarness(element, '#el', ElementHarness);
 
       // ctrl === true
       const ctrlEvent = harness.simulateKeydown(KEY, {ctrlKey: true});
@@ -143,7 +143,7 @@ test('@persona/src/input/keydown', init => {
 
     should('match the meta correctly', () => {
       const element = _.tester.createElement(HOST);
-      const harness = getHarness(element, 'el', ElementHarness);
+      const harness = getHarness(element, '#el', ElementHarness);
 
       // meta === true
       const metaEvent = harness.simulateKeydown(KEY, {metaKey: true});
@@ -161,7 +161,7 @@ test('@persona/src/input/keydown', init => {
 
     should('match the shift correctly', () => {
       const element = _.tester.createElement(HOST);
-      const harness = getHarness(element, 'el', ElementHarness);
+      const harness = getHarness(element, '#el', ElementHarness);
 
       // shift === true
       const shiftEvent = harness.simulateKeydown(KEY, {shiftKey: true});
@@ -179,7 +179,7 @@ test('@persona/src/input/keydown', init => {
 
     should('ignore if event is not KeyboardEvent', () => {
       const element = _.tester.createElement(HOST);
-      const harness = getHarness(element, 'el', ElementHarness);
+      const harness = getHarness(element, '#el', ElementHarness);
 
       harness.target.dispatchEvent(new CustomEvent<unknown>('keydown'));
       assert($noOption$.get(_.tester.vine)).toNot.emit();
