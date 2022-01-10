@@ -50,6 +50,7 @@ export {RenderTextNodeSpec, renderTextNode} from '../src/render/types/render-tex
 export {applyDecorators, Decorator} from '../src/render/decorators/apply-decorators';
 
 // Util
+export {customElementType} from '../src/util/custom-element-type';
 export {mediaQueryObservable} from '../src/util/media-query-observable';
 export {mutationObservable} from '../src/util/mutation-observable';
 export {resizeObservable} from '../src/util/resize-observable';
