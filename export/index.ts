@@ -28,6 +28,12 @@ export {otext} from '../src/output/text';
 
 export {BUTTON} from '../src/html/button';
 export {DIV} from '../src/html/div';
+export {H1} from '../src/html/h1';
+export {H2} from '../src/html/h2';
+export {H3} from '../src/html/h3';
+export {H4} from '../src/html/h4';
+export {H5} from '../src/html/h5';
+export {H6} from '../src/html/h6';
 export {INPUT, AutocompleteType, InputType} from '../src/html/input';
 export {LABEL} from '../src/html/label';
 export {P} from '../src/html/p';
@@ -36,6 +42,7 @@ export {SECTION} from '../src/html/section';
 export {SLOT} from '../src/html/slot';
 export {SPAN} from '../src/html/span';
 export {TABLE} from '../src/html/table';
+export {TBODY} from '../src/html/tbody';
 
 export {RenderSpec} from '../src/render/types/render-spec';
 export {RenderSpecType} from '../src/render/types/render-spec-type';
