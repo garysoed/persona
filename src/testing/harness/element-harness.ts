@@ -27,14 +27,14 @@ export class ElementHarness<E extends Element> extends EventTargetHarness<E> {
     super(target);
   }
 
-  simulateMouseOut(): MouseOutEvents {
-    const out = new MouseEvent('mouseout');
+  simulateMouseOut(options: MouseEventInit = {}): MouseOutEvents {
+    const out = new MouseEvent('mouseout', {bubbles: true, ...options});
     this.target.dispatchEvent(out);
 
     const leaves: MouseEvent[] = [];
     let curr: Element|null = this.target;
     while(curr !== null) {
-      const enter = new MouseEvent('mouseleave');
+      const enter = new MouseEvent('mouseleave', options);
       curr.dispatchEvent(enter);
       leaves.push(enter);
       curr = curr.parentElement;
@@ -44,7 +44,7 @@ export class ElementHarness<E extends Element> extends EventTargetHarness<E> {
   }
 
   simulateMouseOver(options: MouseEventInit = {}): MouseOverEvents {
-    const over = new MouseEvent('mouseover');
+    const over = new MouseEvent('mouseover', {bubbles: true, ...options});
     this.target.dispatchEvent(over);
 
     const enters: MouseEvent[] = [];

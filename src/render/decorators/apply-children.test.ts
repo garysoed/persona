@@ -55,11 +55,11 @@ test('@persona/src/render/decorators/apply-children', init => {
   should('delete the children correctly', () => {
     const child1 = renderTextNode({
       id: {},
-      textContent: 'child1',
+      textContent: of('child1'),
     });
     const child2 = renderTextNode({
       id: {},
-      textContent: 'child2',
+      textContent: of('child2'),
     });
 
     const element = _.tester.createElement(HOST);
@@ -78,11 +78,11 @@ test('@persona/src/render/decorators/apply-children', init => {
   should('insert the children correctly', () => {
     const child1 = renderTextNode({
       id: {},
-      textContent: 'child1',
+      textContent: of('child1'),
     });
     const child2 = renderTextNode({
       id: {},
-      textContent: 'child2',
+      textContent: of('child2'),
     });
 
     const element = _.tester.createElement(HOST);
@@ -101,11 +101,11 @@ test('@persona/src/render/decorators/apply-children', init => {
   should('set the children correctly', () => {
     const child1 = renderTextNode({
       id: {},
-      textContent: 'child1',
+      textContent: of('child1'),
     });
     const child2 = renderTextNode({
       id: {},
-      textContent: 'child2',
+      textContent: of('child2'),
     });
 
     const element = _.tester.createElement(HOST);

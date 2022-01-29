@@ -2,7 +2,7 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
@@ -32,7 +32,7 @@ class HostCtrl implements Ctrl {
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $text.get(this.$.vine).pipe(
-          map(textContent => renderTextNode({id: {}, textContent})),
+          map(textContent => renderTextNode({id: {}, textContent: of(textContent)})),
           this.$.shadow.el.value(),
       ),
     ];

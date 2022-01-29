@@ -19,23 +19,23 @@ export class EventTargetHarness<E extends EventTarget> implements Harness<E> {
   ) { }
 
   simulateClick(options: ClickOptions = {}): ClickEvents {
-    const down = new MouseEvent('mousedown', options);
+    const down = new MouseEvent('mousedown', {composed: true, ...options});
     this.target.dispatchEvent(down);
-    const up = new MouseEvent('mouseup', options);
+    const up = new MouseEvent('mouseup', {composed: true, ...options});
     this.target.dispatchEvent(up);
-    const click = new MouseEvent('click', options);
+    const click = new MouseEvent('click', {composed: true, ...options});
     this.target.dispatchEvent(click);
     return {down, up, click};
   }
 
-  simulateKeydown(key: string, options: KeyboardEventInit = {}): KeyboardEvent {
-    const event = new KeyboardEvent('keydown', {key, ...options});
+  simulateKeydown(key: string, options: KeyboardEventInit = {composed: true}): KeyboardEvent {
+    const event = new KeyboardEvent('keydown', {composed: true, key, ...options});
     this.target.dispatchEvent(event);
     return event;
   }
 
-  simulateMouseMove(options: MouseEventInit = {}): MouseEvent {
-    const event = new MouseEvent('mousemove', options);
+  simulateMouseMove(options: MouseEventInit = {composed: true}): MouseEvent {
+    const event = new MouseEvent('mousemove', {composed: true, ...options});
     this.target.dispatchEvent(event);
     return event;
   }

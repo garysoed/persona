@@ -10,7 +10,7 @@ import {reverseSpec} from '../util/reverse-spec';
 import {renderElement, Values as ElementValues} from './render-element';
 import {NodeWithId} from './types/node-with-id';
 import {RenderContext} from './types/render-context';
-import {InputsOf, NormalizedInputsOf, OutputsOf, RenderCustomElementSpec} from './types/render-custom-element-spec';
+import {InputsOf, OutputsOf, RenderCustomElementSpec} from './types/render-custom-element-spec';
 import {RenderSpecType} from './types/render-spec-type';
 
 
@@ -51,7 +51,7 @@ export function renderCustomElement<S extends Spec>(
         const onChange$List = [];
 
         const reversed = reverseSpec(renderSpec.registration.spec.host ?? {});
-        const inputs: NormalizedInputsOf<S['host']&{}> = renderSpec.inputs ?? {};
+        const inputs: InputsOf<S['host']&{}> = renderSpec.inputs ?? {};
         for (const key of getOwnPropertyKeys(inputs)) {
           const output = reversed[key as string].resolve(el, context);
           if (output.ioType !== IOType.OUTPUT) {

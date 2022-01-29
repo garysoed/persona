@@ -1,4 +1,4 @@
-import {EMPTY, merge, OperatorFunction} from 'rxjs';
+import {EMPTY, merge, of, OperatorFunction} from 'rxjs';
 import {map, switchMapTo} from 'rxjs/operators';
 
 import {RenderSpec} from '../../export';
@@ -25,7 +25,7 @@ class ResolvedOText implements Resolved<UnresolvedOText> {
       const render$ = value$.pipe(
           map(value => renderTextNode({
             id: value,
-            textContent: value,
+            textContent: of(value),
           })),
           this.singleOutput.update(),
           switchMapTo(EMPTY),
