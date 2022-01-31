@@ -1,10 +1,10 @@
-import {$asArray, $filterNonNull, $pipe, arrayFrom} from 'gs-tools/export/collect';
-import {diffArray} from 'gs-tools/export/rxjs';
+import {$asArray, $filterNonNull, $pipe, diffArray} from 'gs-tools/export/collect';
 import {combineLatest, Observable, of as observableOf} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
 
+import {getContiguousChildNodesWithId} from '../../util/contiguous-nodes-with-id';
 import {render} from '../render';
-import {NodeWithId} from '../types/node-with-id';
+import {equalNodes, NodeWithId} from '../types/node-with-id';
 import {RenderContext} from '../types/render-context';
 import {RenderSpec} from '../types/render-spec';
 
@@ -26,34 +26,19 @@ export function applyChildren(
             map(renderedNodes => $pipe(renderedNodes, $filterNonNull(), $asArray())),
         );
       }),
-      diffArray(),
-      tap(diff => {
-        switch (diff.type) {
-          case 'delete':
-            el.removeChild(diff.value);
-            break;
-          case 'init':
-            for (const child of arrayFrom(el.children)) {
-              el.removeChild(child);
+      tap(nodes => {
+        const existingNodes = getContiguousChildNodesWithId(el);
+        const diffs = diffArray(existingNodes, nodes, equalNodes);
+        for (const diff of diffs) {
+          switch (diff.type) {
+            case 'delete':
+              el.removeChild(diff.value);
+              break;
+            case 'insert': {
+              const insertBefore = existingNodes[diff.index];
+              el.insertBefore(diff.value, insertBefore);
+              break;
             }
-
-            for (const child of diff.value) {
-              el.appendChild(child);
-            }
-            break;
-          case 'insert':{
-            const insertBefore = el.children.item(diff.index);
-            el.insertBefore(diff.value, insertBefore);
-            break;
-          }
-          case 'set':{
-            const toDelete = el.children.item(diff.index);
-            const setBefore = toDelete?.nextSibling || null;
-            if (toDelete) {
-              el.removeChild(toDelete);
-            }
-            el.insertBefore(diff.value, setBefore);
-            break;
           }
         }
       }),

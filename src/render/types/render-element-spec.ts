@@ -8,7 +8,7 @@ interface Input extends BaseRenderSpec<HTMLElement> {
   readonly tag: string;
   readonly attrs?: ReadonlyMap<string, Observable<string|undefined>>;
   readonly children?: Observable<readonly RenderSpec[]>;
-  readonly styles?: Observable<ReadonlyMap<string, string|null>>;
+  readonly styles?: ReadonlyMap<string, Observable<string|null>>;
   readonly textContent?: Observable<string|undefined>;
 }
 
@@ -16,7 +16,7 @@ export interface RenderElementSpec extends Input {
   readonly type: RenderSpecType.ELEMENT;
   readonly attrs?: ReadonlyMap<string, Observable<string|undefined>>;
   readonly children?: Observable<readonly RenderSpec[]>;
-  readonly styles?: Observable<ReadonlyMap<string, string|null>>;
+  readonly styles?: ReadonlyMap<string, Observable<string|null>>;
   readonly textContent?: Observable<string|undefined>;
 }
 

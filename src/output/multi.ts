@@ -1,20 +1,20 @@
-import {$asArray, $filterNonNull, $pipe} from 'gs-tools/export/collect';
-import {diffArray, filterNonNullable} from 'gs-tools/export/rxjs';
-import {assertUnreachable} from 'gs-tools/export/typescript';
-import {combineLatest, EMPTY, merge, NEVER, Observable, of, OperatorFunction} from 'rxjs';
+import {$asArray, $filterNonNull, $pipe, diffArray} from 'gs-tools/export/collect';
+import {filterNonNullable} from 'gs-tools/export/rxjs';
+import {combineLatest, EMPTY, merge, of, OperatorFunction} from 'rxjs';
 import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 
 import {render} from '../render/render';
-import {__id} from '../render/types/node-with-id';
+import {equalNodes} from '../render/types/node-with-id';
 import {RenderContext} from '../render/types/render-context';
 import {RenderSpec} from '../render/types/render-spec';
 import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IOType, OMulti} from '../types/io';
-import {Selectable} from '../types/selectable';
 import {Target} from '../types/target';
+import {getContiguousSiblingNodesWithId} from '../util/contiguous-nodes-with-id';
 import {initSlot} from '../util/init-slot';
 
 
+// TODO: Consolidate with applyChildren.
 class ResolvedOMulti implements Resolved<UnresolvedOMulti> {
   readonly apiType = ApiType.MULTI;
   readonly ioType = IOType.OUTPUT;
@@ -42,30 +42,31 @@ class ResolvedOMulti implements Resolved<UnresolvedOMulti> {
             return combineLatest(node$list);
           }),
           map(nodes => $pipe(nodes, $filterNonNull(), $asArray())),
-          diffArray((a, b) => a[__id] === b[__id]),
           withLatestFrom(slotEl$),
-          tap(([diff, slotNode]) => {
-            if (!slotNode) {
-              return;
-            }
-
-            switch (diff.type) {
-              case 'init':
-                for (let i = 0; i < diff.value.length; i++) {
-                  this.insertEl(this.target, slotNode, diff.value[i], i);
+          tap(([newNodes, slotNode]) => {
+            // Iterate through one diff at a time, since moving nodes doesn't act like an array.
+            let currentNodes = getContiguousSiblingNodesWithId(slotNode);
+            let diffs = diffArray(currentNodes, newNodes, equalNodes);
+            let i = 0;
+            while (diffs.length > 0) {
+              const [diff] = diffs;
+              switch (diff.type) {
+                case 'insert': {
+                  const insertBefore = currentNodes[diff.index] ?? slotNode.nextSibling;
+                  this.target.insertBefore(diff.value, insertBefore);
+                  break;
                 }
+                case 'delete':
+                  this.target.removeChild(currentNodes[diff.index]);
+                  break;
+              }
+
+              currentNodes = getContiguousSiblingNodesWithId(slotNode);
+              diffs = diffArray(currentNodes, newNodes, equalNodes);
+              i++;
+              if (i > 10) {
                 return;
-              case 'insert':
-                this.insertEl(this.target, slotNode, diff.value, diff.index);
-                return;
-              case 'delete':
-                this.deleteEl(this.target, slotNode, diff.index);
-                return;
-              case 'set':
-                this.setEl(this.target, slotNode, diff.value, diff.index);
-                return;
-              default:
-                assertUnreachable(diff);
+              }
             }
           }),
           switchMapTo(EMPTY),
@@ -73,45 +74,6 @@ class ResolvedOMulti implements Resolved<UnresolvedOMulti> {
 
       return merge(specs$, render$);
     };
-  }
-
-  private deleteEl(parentNode: Node, slotNode: Node, index: number): Observable<unknown> {
-    const curr = getNode(slotNode, index);
-
-    if (!curr) {
-      return NEVER;
-    }
-
-    try {
-      parentNode.removeChild(curr);
-    } catch (e) {
-      // ignored
-    }
-
-    return NEVER;
-  }
-
-  private insertEl(
-      parentNode: Selectable,
-      slotNode: Node,
-      node: Node,
-      index: number,
-  ): void {
-    let curr = slotNode.nextSibling;
-    for (let i = 0; i < index && curr !== null; i++) {
-      curr = curr.nextSibling;
-    }
-    parentNode.insertBefore(node, curr);
-  }
-
-  private setEl(
-      parentNode: Selectable,
-      slotNode: Node,
-      node: Node,
-      index: number,
-  ): void {
-    this.deleteEl(parentNode, slotNode, index);
-    this.insertEl(parentNode, slotNode, node, index);
   }
 }
 
@@ -126,15 +88,6 @@ class UnresolvedOMulti implements UnresolvedIO<OMulti> {
   resolve(target: Target, context: RenderContext): ResolvedOMulti {
     return new ResolvedOMulti(this.slotName, target, context);
   }
-}
-
-function getNode(slotNode: Node, index: number): Node|null {
-  let curr = slotNode.nextSibling;
-  for (let i = 0; i < index && curr !== null; i++) {
-    curr = curr.nextSibling;
-  }
-
-  return curr;
 }
 
 export function omulti(refName: string): UnresolvedOMulti {

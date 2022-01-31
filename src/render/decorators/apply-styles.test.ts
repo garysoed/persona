@@ -58,7 +58,8 @@ test('@persona/src/render/decorators/apply-styles', init => {
       id: {},
       node: document.createElement('a'),
       decorators: [
-        applyStyles(of(new Map([['height', '1px'], ['width', '2px']]))),
+        applyStyles('height', of('1px')),
+        applyStyles('width', of('2px')),
       ],
     }));
 
@@ -72,10 +73,8 @@ test('@persona/src/render/decorators/apply-styles', init => {
       id: {},
       node: document.createElement('a'),
       decorators: [
-        applyStyles(of(
-            new Map([['height', '1px'], ['width', '2px']]),
-            new Map([['height', '1px']]),
-        )),
+        applyStyles('height', of('1px')),
+        applyStyles('width', of('2px', null)),
       ],
     }));
 

@@ -68,8 +68,8 @@ export function renderElement(
     decorators.push(applyChildren(spec.children, context));
   }
 
-  if (spec.styles) {
-    decorators.push(applyStyles(spec.styles));
+  for (const [key, styles] of spec.styles ?? new Map()) {
+    decorators.push(applyStyles(key, styles));
   }
 
   if (spec.decorators) {
