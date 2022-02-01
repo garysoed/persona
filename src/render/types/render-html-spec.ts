@@ -1,14 +1,12 @@
 import {Observable} from 'rxjs';
 
-import {ParseType} from '../html-parse-service';
-
 import {BaseRenderSpec} from './base-render-spec';
 import {RenderSpecType} from './render-spec-type';
 
 
 interface Input extends BaseRenderSpec<Element> {
   readonly raw: Observable<string>;
-  readonly parseType: ParseType;
+  readonly parseType: DOMParserSupportedType;
 }
 
 export interface RenderHtmlSpec extends Input {
