@@ -1,4 +1,5 @@
 export {getHarness} from '../src/testing/harness/get-harness';
+export {Harness, HarnessCtor} from '../src/testing/harness/harness';
 export {ElementHarness} from '../src/testing/harness/element-harness';
 export {CustomElementHarness} from '../src/testing/harness/custom-element-harness';
 export {InputHarness} from '../src/testing/harness/input-harness';

@@ -1,4 +1,4 @@
-import {$asArray, $filterNonNull, $pipe, diffArray} from 'gs-tools/export/collect';
+import {$asSet, $filterNonNull, $pipe, diffArray} from 'gs-tools/export/collect';
 import {filterNonNullable} from 'gs-tools/export/rxjs';
 import {combineLatest, EMPTY, merge, of, OperatorFunction} from 'rxjs';
 import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
@@ -41,13 +41,12 @@ class ResolvedOMulti implements Resolved<UnresolvedOMulti> {
 
             return combineLatest(node$list);
           }),
-          map(nodes => $pipe(nodes, $filterNonNull(), $asArray())),
+          map(nodes => [...$pipe(nodes, $filterNonNull(), $asSet())]),
           withLatestFrom(slotEl$),
           tap(([newNodes, slotNode]) => {
             // Iterate through one diff at a time, since moving nodes doesn't act like an array.
             let currentNodes = getContiguousSiblingNodesWithId(slotNode);
             let diffs = diffArray(currentNodes, newNodes, equalNodes);
-            let i = 0;
             while (diffs.length > 0) {
               const [diff] = diffs;
               switch (diff.type) {
@@ -63,10 +62,6 @@ class ResolvedOMulti implements Resolved<UnresolvedOMulti> {
 
               currentNodes = getContiguousSiblingNodesWithId(slotNode);
               diffs = diffArray(currentNodes, newNodes, equalNodes);
-              i++;
-              if (i > 10) {
-                return;
-              }
             }
           }),
           switchMapTo(EMPTY),
