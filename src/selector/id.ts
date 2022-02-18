@@ -1,37 +1,12 @@
-import {RenderContext} from '../render/types/render-context';
-import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedIO} from '../types/ctrl';
-import {IAttr, IClass, IEvent, IFlag, IKeydown, InputOutput, IRect, ITarget, IText, OAttr, OCall, OClass, OFlag, OMulti, OSingle, OStyle, OText} from '../types/io';
+import {ResolvedBindingSpecProvider, Spec} from '../types/ctrl';
 import {Registration} from '../types/registration';
-import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
+import {ReversedSpec} from '../util/reverse-spec';
+
+import {ExtraUnresolvedBindingSpec, query} from './query';
 
 
 type RegistrationWithSpec<S extends Spec> = Pick<Registration<HTMLElement, S>, 'spec'>;
 
-
-function getElement(root: ShadowRoot, id: string): HTMLElement {
-  const el = root.getElementById(id);
-  if (!el) {
-    throw new Error(`Element with ID ${id} cannot be found`);
-  }
-  return el;
-}
-
-
-export type ExtraUnresolvedBindingSpec = Record<
-    string,
-    UnresolvedIO<IAttr>|UnresolvedIO<OAttr>|
-    UnresolvedIO<OCall<any, any>>|
-    UnresolvedIO<IClass>|UnresolvedIO<OClass>|
-    UnresolvedIO<IEvent<any>>|
-    UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|
-    UnresolvedIO<IKeydown>|
-    UnresolvedIO<OMulti>|
-    UnresolvedIO<IRect>|
-    UnresolvedIO<OSingle>|
-    UnresolvedIO<OStyle<any>>|
-    UnresolvedIO<ITarget>|
-    UnresolvedIO<IText>|UnresolvedIO<OText>
->;
 
 export function id<S extends Spec>(
     id: string,
@@ -42,26 +17,14 @@ export function id<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
     registration: RegistrationWithSpec<S>,
     extra: X,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>
-export function id<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
+export function id(
     id: string,
-    registration: RegistrationWithSpec<S>,
-    extra?: X,
-): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X> {
-  const providers: Partial<Record<string, ResolvedProvider<InputOutput>>> = {};
-  const reversed = reverseSpec(registration.spec.host ?? {});
-  for (const key in reversed) {
-    providers[key] = (root: ShadowRoot, context: RenderContext) => reversed[key].resolve(
-        getElement(root, id),
-        context,
-    );
+    registration: RegistrationWithSpec<Spec>,
+    extra?: ExtraUnresolvedBindingSpec,
+): ResolvedBindingSpecProvider<ReversedSpec<Spec['host']&{}> & ExtraUnresolvedBindingSpec> {
+  if (extra) {
+    return query(`#${id}`, registration, extra);
   }
 
-  const normalizedExtra: Record<string, UnresolvedIO<any>> = extra ?? {};
-  for (const key in normalizedExtra) {
-    providers[key] = (root: ShadowRoot, context: RenderContext) => normalizedExtra[key].resolve(
-        getElement(root, id),
-        context,
-    );
-  }
-  return providers as unknown as ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>;
+  return query(`#${id}`, registration);
 }

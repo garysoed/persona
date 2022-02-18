@@ -1,1 +1,1 @@
-export type Target = HTMLElement|ShadowRoot;
+export type Target = Element|ShadowRoot;
