@@ -1,5 +1,7 @@
 import {Type} from 'gs-types';
 
+import {RenderSpec} from '../../export';
+
 import {KeyMatchOptions} from './key-match-options';
 
 export enum IOType {
@@ -13,6 +15,7 @@ export enum ApiType {
   CLASS,
   EVENT,
   FLAG,
+  FOREACH,
   KEYDOWN,
   MEDIA,
   MULTI,
@@ -91,6 +94,17 @@ export interface OFlag {
   readonly apiType: ApiType.FLAG;
   readonly ioType: IOType.OUTPUT;
   readonly attrName: string;
+}
+
+export interface OForeach<T> {
+  readonly apiType: ApiType.FOREACH;
+  readonly ioType: IOType.OUTPUT;
+  readonly slotName: string;
+  readonly valueType: Type<T>;
+}
+
+export interface OForeachConfig<T> {
+  readonly render: (value: T) => RenderSpec;
 }
 
 export interface IKeydown {
@@ -178,6 +192,7 @@ export type InputOutput =
     IClass|OClass|
     IEvent<Event>|OEvent<Event>|
     IFlag|OFlag|
+    OForeach<unknown>|
     IKeydown|
     IMedia|
     OMulti|

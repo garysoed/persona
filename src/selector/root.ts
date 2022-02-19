@@ -1,10 +1,11 @@
 import {RenderContext} from '../render/types/render-context';
 import {ResolvedBindingSpecProvider, ResolvedProvider, UnresolvedBindingSpec, UnresolvedIO} from '../types/ctrl';
-import {InputOutput, OMulti, OSingle, OText} from '../types/io';
+import {InputOutput, OForeach, OMulti, OSingle, OText} from '../types/io';
 
 
 export type ExtraUnresolvedBindingSpec = Record<
     string,
+    UnresolvedIO<OForeach<any>>|
     UnresolvedIO<OMulti>|
     UnresolvedIO<OSingle>|
     UnresolvedIO<OText>

@@ -4,7 +4,7 @@ import {Observable, OperatorFunction} from 'rxjs';
 import {RenderContext} from '../render/types/render-context';
 import {RenderSpec} from '../render/types/render-spec';
 
-import {IAttr, ICall, IClass, IEvent, IFlag, IKeydown, IMedia, InputOutput, IRect, ISlotted, ITarget, IText, IValue, OAttr, OCall, OClass, OEvent, OFlag, OMulti, OSingle, OSlotted, OStyle, OText, OValue} from './io';
+import {IAttr, ICall, IClass, IEvent, IFlag, IKeydown, IMedia, InputOutput, IRect, ISlotted, ITarget, IText, IValue, OAttr, OCall, OClass, OEvent, OFlag, OForeach, OForeachConfig, OMulti, OSingle, OSlotted, OStyle, OText, OValue} from './io';
 import {Target} from './target';
 
 
@@ -32,6 +32,7 @@ export type Resolved<T extends InputOutput> =
     T extends OEvent<infer E> ? OEvent<E>&ResolvedO<E, E, []> :
     T extends IFlag ? IFlag&ResolvedI<boolean> :
     T extends OFlag ? OFlag&ResolvedO<boolean, boolean, []> :
+    T extends OForeach<infer T> ? OForeach<T>&ResolvedO<readonly T[], readonly T[], [OForeachConfig<T>]> :
     T extends IKeydown ? IKeydown&ResolvedI<KeyboardEvent> :
     T extends IMedia ? IMedia&ResolvedI<boolean> :
     T extends OMulti ? OMulti&ResolvedO<readonly RenderSpec[], readonly RenderSpec[], []> :
@@ -64,6 +65,7 @@ export type UnresolvedBindingSpec = {
       UnresolvedIO<IClass>|UnresolvedIO<OClass>|
       UnresolvedIO<IEvent<any>>|UnresolvedIO<OEvent<any>>|
       UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|
+      UnresolvedIO<OForeach<any>>|
       UnresolvedIO<OMulti>|
       UnresolvedIO<OSingle>|
       UnresolvedIO<ISlotted>|UnresolvedIO<OSlotted>|
