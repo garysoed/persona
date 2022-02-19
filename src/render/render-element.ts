@@ -6,7 +6,7 @@ import {Decorator} from './decorators/apply-decorators';
 import {applyStyles} from './decorators/apply-styles';
 import {applyTextContent} from './decorators/apply-text-content';
 import {renderNode} from './render-node';
-import {NodeWithId, __id} from './types/node-with-id';
+import {NodeWithId} from './types/node-with-id';
 import {RenderContext} from './types/render-context';
 import {RenderElementSpec} from './types/render-element-spec';
 import {RenderSpecType} from './types/render-spec-type';
@@ -45,7 +45,7 @@ export interface Values {
 export function renderElement(
     spec: RenderElementSpec,
     context: RenderContext,
-): Observable<HTMLElement&{[__id]: unknown}> {
+): Observable<NodeWithId<HTMLElement>> {
   const decorators: Array<Decorator<NodeWithId<HTMLElement>>> = [];
   const extraAttrs = spec.attrs ?? new Map<string, Observable<string|undefined>>();
   for (const [attrName, attrValue] of extraAttrs) {
