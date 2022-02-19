@@ -1,6 +1,6 @@
 import {Vine} from 'grapevine';
 import {$map, $pipe} from 'gs-tools/export/collect';
-import {BehaviorSubject, combineLatest, defer, EMPTY, merge, Observable, of, OperatorFunction, Subject, timer} from 'rxjs';
+import {BehaviorSubject, combineLatest, defer, EMPTY, merge, Observable, of, Subject, timer} from 'rxjs';
 import {catchError, distinctUntilChanged, mapTo, shareReplay, switchMap} from 'rxjs/operators';
 
 import {RenderContext} from '../render/types/render-context';
@@ -9,7 +9,7 @@ import {ApiType, IOType, IValue, OValue} from '../types/io';
 import {Registration, RegistrationSpec} from '../types/registration';
 import {setValueObservable} from '../util/value-observable';
 
-import {createBinding, createBindings} from './create-bindings';
+import {createBinding, createBindings, OutputBinding} from './create-bindings';
 import {resolveForHost} from './resolve-for-host';
 import {$getTemplate} from './templates-cache';
 
@@ -201,7 +201,7 @@ function createShadowBindings<S extends UnresolvedBindingSpec>(
     shadowRoot: ShadowRoot,
     context: RenderContext,
 ): Bindings<S> {
-  const partial: Partial<Record<string, Observable<unknown>|(() => OperatorFunction<unknown, unknown>)>> = {};
+  const partial: Partial<Record<string, Observable<unknown>|OutputBinding>> = {};
   for (const key in spec) {
     partial[key] = createBinding(spec[key](shadowRoot, context));
   }

@@ -17,7 +17,7 @@ class ResolvedOText implements Resolved<UnresolvedOText> {
 
   constructor(
       readonly target: Target,
-      private readonly singleOutput: ResolvedO<RenderSpec, unknown>,
+      private readonly singleOutput: ResolvedO<RenderSpec, unknown, []>,
   ) {}
 
   update(): OperatorFunction<string, string> {
