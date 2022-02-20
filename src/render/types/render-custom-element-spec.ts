@@ -42,11 +42,8 @@ interface InputRenderSpec<S extends Spec> extends BaseRenderSpec<HTMLElement> {
 
 export interface RenderCustomElementSpec<S extends Spec> extends InputRenderSpec<S> {
   readonly type: RenderSpecType.CUSTOM_ELEMENT;
-  readonly attrs?: ReadonlyMap<string, Observable<string|undefined>>;
-  readonly children?: Observable<readonly RenderSpec[]>;
   readonly inputs: InputsOf<S['host']&{}>;
-  readonly styles?: ReadonlyMap<string, Observable<string|null>>;
-  readonly textContent?: Observable<string>;
+  readonly onOutputs: OutputsOf<S['host']&{}>;
 }
 
 export function renderCustomElement<S extends Spec>(input: InputRenderSpec<S>): RenderCustomElementSpec<S> {

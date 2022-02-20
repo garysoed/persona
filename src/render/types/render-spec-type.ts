@@ -4,4 +4,5 @@ export enum RenderSpecType {
   HTML,
   NODE,
   TEXT_NODE,
+  TEMPLATE,
 }

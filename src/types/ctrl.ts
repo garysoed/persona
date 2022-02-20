@@ -48,7 +48,7 @@ export type Resolved<T extends InputOutput> =
     T extends OValue<infer V, infer P> ? OValue<V, P>&ResolvedO<V, V, []> : never;
 
 export type ResolvedProvider<T extends InputOutput> =
-    (root: ShadowRoot, context: RenderContext) => Resolved<T>;
+    (root: Target, context: RenderContext) => Resolved<T>;
 
 export type UnresolvedIO<B extends InputOutput> = B & {
   resolve(target: Target, context: RenderContext): Resolved<B>;

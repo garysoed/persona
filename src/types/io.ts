@@ -104,7 +104,7 @@ export interface OForeach<T> {
 }
 
 export interface OForeachConfig<T> {
-  readonly render: (value: T) => RenderSpec;
+  readonly render: (value: T, index: number) => RenderSpec;
 }
 
 export interface IKeydown {

@@ -2,12 +2,12 @@ import {$filter, $first, $pipe, arrayFrom} from 'gs-tools/export/collect';
 import {OperatorFunction, pipe} from 'rxjs';
 import {map, startWith, switchMap} from 'rxjs/operators';
 
-import {Selectable} from '../types/selectable';
+import {Target} from '../types/target';
 
 import {mutationObservable} from './mutation-observable';
 
 
-export function initSlot(slotName: string): OperatorFunction<Selectable, Node|null> {
+export function initSlot(slotName: string): OperatorFunction<Target, Node|null> {
   return pipe(
       switchMap(parentEl => {
         return mutationObservable(parentEl, {childList: true})

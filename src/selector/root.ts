@@ -1,6 +1,7 @@
 import {RenderContext} from '../render/types/render-context';
 import {ResolvedBindingSpecProvider, ResolvedProvider, UnresolvedBindingSpec, UnresolvedIO} from '../types/ctrl';
 import {InputOutput, OForeach, OMulti, OSingle, OText} from '../types/io';
+import {Target} from '../types/target';
 
 
 export type ExtraUnresolvedBindingSpec = Record<
@@ -18,7 +19,7 @@ export function root<X extends ExtraUnresolvedBindingSpec&UnresolvedBindingSpec>
 
   const normalizedSpecs: ExtraUnresolvedBindingSpec = specs ?? {};
   for (const key in normalizedSpecs) {
-    providers[key] = (root: ShadowRoot, context: RenderContext) => normalizedSpecs[key].resolve(
+    providers[key] = (root: Target, context: RenderContext) => normalizedSpecs[key].resolve(
         root,
         context,
     );

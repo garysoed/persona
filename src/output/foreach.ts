@@ -72,8 +72,8 @@ class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
     return values$ => {
       const render$ = values$.pipe(
           switchMap(values => {
-            const node$list = values.map(value => {
-              return render(config.render(value), this.context).pipe(
+            const node$list = values.map((value, index) => {
+              return render(config.render(value, index), this.context).pipe(
                   tap(node => {
                     if (!node) {
                       return;
