@@ -69,7 +69,7 @@ const HOST = registerCustomElement({
   template: '<!-- #root --><div id="el"><!-- #ref --></div>',
 });
 
-test('@persona/src/output/multi', init => {
+test('@persona/src/output/foreach', init => {
   const _ = init(() => {
     runEnvironment(new BrowserSnapshotsEnv('src/output/goldens', goldens));
     const tester = setupTest({roots: [HOST]});
@@ -82,7 +82,7 @@ test('@persona/src/output/multi', init => {
 
       $rootValue$.get(_.tester.vine).next(['div1', 'div2', 'div3']);
 
-      assert(element).to.matchSnapshot('multi__root_init.html');
+      assert(element).to.matchSnapshot('foreach__root_init.html');
     });
 
     should('process \'insert\' correctly for index 0', () => {
@@ -96,7 +96,7 @@ test('@persona/src/output/multi', init => {
       const insertNode = 'div0';
       $rootValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
 
-      assert(element).to.matchSnapshot('multi__root_insert_start.html');
+      assert(element).to.matchSnapshot('foreach__root_insert_start.html');
     });
 
     should('process \'insert\' correctly for index 2', () => {
@@ -109,7 +109,7 @@ test('@persona/src/output/multi', init => {
       const insertNode = 'div0';
       $rootValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
 
-      assert(element).to.matchSnapshot('multi__root_insert_middle.html');
+      assert(element).to.matchSnapshot('foreach__root_insert_middle.html');
     });
 
     should('process \'insert\' correctly for large index', () => {
@@ -122,7 +122,7 @@ test('@persona/src/output/multi', init => {
       const insertNode = 'div0';
       $rootValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
 
-      assert(element).to.matchSnapshot('multi__root_insert_end.html');
+      assert(element).to.matchSnapshot('foreach__root_insert_end.html');
     });
 
     should('process \'delete\' correctly', () => {
@@ -134,7 +134,7 @@ test('@persona/src/output/multi', init => {
 
       $rootValue$.get(_.tester.vine).next([node1, node3]);
 
-      assert(element).to.matchSnapshot('multi__root_delete.html');
+      assert(element).to.matchSnapshot('foreach__root_delete.html');
     });
 
     should('ignore node insertions with the same id', () => {
@@ -146,7 +146,7 @@ test('@persona/src/output/multi', init => {
       $rootValue$.get(_.tester.vine).next([node1]);
       $rootValue$.get(_.tester.vine).next([node2]);
 
-      assert(element).to.matchSnapshot('multi__root_same_id.html');
+      assert(element).to.matchSnapshot('foreach__root_same_id.html');
     });
 
     should('handle deleting duplicates', () => {
@@ -156,7 +156,7 @@ test('@persona/src/output/multi', init => {
 
       $rootValue$.get(_.tester.vine).next([]);
 
-      assert(element).to.matchSnapshot('multi__root_delete_duplicate.html');
+      assert(element).to.matchSnapshot('foreach__root_delete_duplicate.html');
     });
 
     should('replace the element correctly for \'set\'', () => {
@@ -169,7 +169,7 @@ test('@persona/src/output/multi', init => {
       const setNode = 'div0';
       $rootValue$.get(_.tester.vine).next([setNode, node2, node3]);
 
-      assert(element).to.matchSnapshot('multi__root_set.html');
+      assert(element).to.matchSnapshot('foreach__root_set.html');
     });
   });
 
@@ -182,7 +182,7 @@ test('@persona/src/output/multi', init => {
 
       $elValue$.get(_.tester.vine).next([node1, node2, node3]);
 
-      assert(element).to.matchSnapshot('multi__el_init.html');
+      assert(element).to.matchSnapshot('foreach__el_init.html');
     });
 
     should('process \'insert\' correctly for index 0', () => {
@@ -196,7 +196,7 @@ test('@persona/src/output/multi', init => {
       const insertNode = 'div0';
       $elValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
 
-      assert(element).to.matchSnapshot('multi__el_insert_start.html');
+      assert(element).to.matchSnapshot('foreach__el_insert_start.html');
     });
 
     should('process \'insert\' correctly for index 2', () => {
@@ -209,7 +209,7 @@ test('@persona/src/output/multi', init => {
       const insertNode = 'div0';
       $elValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
 
-      assert(element).to.matchSnapshot('multi__el_insert_middle.html');
+      assert(element).to.matchSnapshot('foreach__el_insert_middle.html');
     });
 
     should('process \'insert\' correctly for large index', () => {
@@ -222,7 +222,7 @@ test('@persona/src/output/multi', init => {
       const insertNode = 'div0';
       $elValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
 
-      assert(element).to.matchSnapshot('multi__el_insert_end.html');
+      assert(element).to.matchSnapshot('foreach__el_insert_end.html');
     });
 
     should('process \'delete\' correctly', () => {
@@ -234,7 +234,7 @@ test('@persona/src/output/multi', init => {
 
       $elValue$.get(_.tester.vine).next([node1, node3]);
 
-      assert(element).to.matchSnapshot('multi__el_delete.html');
+      assert(element).to.matchSnapshot('foreach__el_delete.html');
     });
 
     should('ignore node insertions with the same id', () => {
@@ -247,7 +247,7 @@ test('@persona/src/output/multi', init => {
       $elValue$.get(_.tester.vine).next([node1]);
       $elValue$.get(_.tester.vine).next([node2]);
 
-      assert(element).to.matchSnapshot('multi__el_same_id.html');
+      assert(element).to.matchSnapshot('foreach__el_same_id.html');
     });
 
     should('handle deleting duplicates', () => {
@@ -257,7 +257,7 @@ test('@persona/src/output/multi', init => {
 
       $elValue$.get(_.tester.vine).next([]);
 
-      assert(element).to.matchSnapshot('multi__el_delete_duplicate.html');
+      assert(element).to.matchSnapshot('foreach__el_delete_duplicate.html');
     });
 
     should('replace the element correctly for \'set\'', () => {
@@ -270,7 +270,7 @@ test('@persona/src/output/multi', init => {
       const setNode = 'div0';
       $elValue$.get(_.tester.vine).next([setNode, node2, node3]);
 
-      assert(element).to.matchSnapshot('multi__el_set.html');
+      assert(element).to.matchSnapshot('foreach__el_set.html');
     });
   });
 });
