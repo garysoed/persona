@@ -1,18 +1,55 @@
-import {$asSet, $filterNonNull, $pipe, diffArray} from 'gs-tools/export/collect';
+import {arrayFrom} from 'gs-testing/src/util/flatten-node';
+import {$asSet, $filterNonNull, $pipe, diffArray, $map, $flat, $asArray} from 'gs-tools/export/collect';
 import {filterNonNullable} from 'gs-tools/export/rxjs';
-import {Type} from 'gs-types';
+import {hasPropertiesType, instanceofType, intersectType, notType, Type, undefinedType} from 'gs-types';
 import {combineLatest, EMPTY, merge, of, OperatorFunction} from 'rxjs';
 import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 
 import {render} from '../render/render';
-import {equalNodes} from '../render/types/node-with-id';
 import {RenderContext} from '../render/types/render-context';
 import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IOType, OForeach, OForeachConfig} from '../types/io';
 import {Target} from '../types/target';
-import {getContiguousSiblingNodesWithId} from '../util/contiguous-nodes-with-id';
 import {initSlot} from '../util/init-slot';
 
+
+const __id = Symbol('id');
+const __subId = Symbol('subid');
+
+interface NodeWithId extends Node {
+  [__id]?: unknown;
+  [__subId]?: number;
+}
+const NODE_WITH_ID_TYPE = intersectType([
+  instanceofType(Node),
+  hasPropertiesType({
+    [__id]: notType(undefinedType),
+  }),
+]);
+
+export function equalNodes(a: NodeWithId, b: NodeWithId): boolean {
+  return a[__id] === b[__id] && a[__subId] === b[__subId];
+}
+
+function setId(target: NodeWithId, id: unknown, subId?: number): void {
+  target[__id] = id;
+  if (subId !== undefined) {
+    target[__subId] = subId;
+  }
+}
+
+function getContiguousSiblingNodesWithId(start: Node): readonly NodeWithId[] {
+  const children: NodeWithId[] = [];
+  for (let current = start.nextSibling; current !== null; current = current.nextSibling) {
+    if (!NODE_WITH_ID_TYPE.check(current)) {
+      break;
+    }
+
+    children.push(current);
+  }
+
+  return children;
+}
 
 // TODO: Consolidate with applyChildren.
 class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
@@ -35,7 +72,24 @@ class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
     return values$ => {
       const render$ = values$.pipe(
           switchMap(values => {
-            const node$list = values.map(value => render(config.render(value), this.context));
+            const node$list = values.map(value => {
+              return render(config.render(value), this.context).pipe(
+                  tap(node => {
+                    if (!node) {
+                      return;
+                    }
+
+                    if (!(node instanceof DocumentFragment)) {
+                      setId(node, value);
+                      return;
+                    }
+
+                    for (let i = 0; i < node.childNodes.length; i++) {
+                      setId(node.childNodes.item(i), value, i);
+                    }
+                  }),
+              );
+            });
             if (node$list.length <= 0) {
               return of([]);
             }
@@ -45,9 +99,24 @@ class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
           map(nodes => [...$pipe(nodes, $filterNonNull(), $asSet())]),
           withLatestFrom(slotEl$),
           tap(([newNodes, slotNode]) => {
+            // Flatten the new nodes
+            const flattenedNewNodes = $pipe(
+                newNodes,
+                $map(node => {
+                  if (!(node instanceof DocumentFragment)) {
+                    return [node];
+                  }
+
+                  return arrayFrom(node.childNodes);
+                }),
+                $flat(),
+                $asArray(),
+            );
+
             // Iterate through one diff at a time, since moving nodes doesn't act like an array.
             let currentNodes = getContiguousSiblingNodesWithId(slotNode);
-            let diffs = diffArray(currentNodes, newNodes, equalNodes);
+            let diffs = diffArray<Node>(currentNodes, flattenedNewNodes, equalNodes);
+            let i = 0;
             while (diffs.length > 0) {
               const [diff] = diffs;
               switch (diff.type) {
@@ -62,7 +131,11 @@ class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
               }
 
               currentNodes = getContiguousSiblingNodesWithId(slotNode);
-              diffs = diffArray(currentNodes, newNodes, equalNodes);
+              diffs = diffArray(currentNodes, flattenedNewNodes, equalNodes);
+              i++;
+              if (i >= 100) {
+                return;
+              }
             }
           }),
           switchMapTo(EMPTY),

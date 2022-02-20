@@ -18,13 +18,17 @@ import {oforeach} from './foreach';
 import goldens from './goldens/goldens.json';
 
 
-interface IdContainer {
-  id: unknown;
+interface Renderer {
+  render: (tag: string) => RenderSpec;
 }
 
 const $elValue$ = source(() => new Subject<readonly string[]>());
 const $rootValue$ = source(() => new Subject<readonly string[]>());
-const $id = source<IdContainer>(() => ({id: null}));
+const $renderer = source<Renderer>(() => ({
+  render: (tag: string): RenderSpec => {
+    return renderNode({id: {}, node: document.createElement(tag)});
+  },
+}));
 
 
 const $host = {
@@ -58,7 +62,7 @@ class HostCtrl implements Ctrl {
   }
 
   renderNode(tag: string): RenderSpec {
-    return renderNode({id: $id.get(this.$.vine).id ?? {}, node: document.createElement(tag)});
+    return $renderer.get(this.$.vine).render(tag);
   }
 }
 
@@ -140,9 +144,8 @@ test('@persona/src/output/foreach', init => {
     should('ignore node insertions with the same id', () => {
       const element = _.tester.createElement(HOST);
       const node1 = 'div1';
-      const node2 = 'div2';
+      const node2 = 'div1';
 
-      $id.get(_.tester.vine).id = '1';
       $rootValue$.get(_.tester.vine).next([node1]);
       $rootValue$.get(_.tester.vine).next([node2]);
 
@@ -170,6 +173,25 @@ test('@persona/src/output/foreach', init => {
       $rootValue$.get(_.tester.vine).next([setNode, node2, node3]);
 
       assert(element).to.matchSnapshot('foreach__root_set.html');
+    });
+
+    should('handle insertion and deletions of renders with multiple nodes', () => {
+      $renderer.get(_.tester.vine).render = value => {
+        const node = document.createDocumentFragment();
+        node.appendChild(document.createElement(value));
+        node.appendChild(document.createElement(value));
+        node.appendChild(document.createElement(value));
+        return renderNode({id: {}, node});
+      };
+
+      const element = _.tester.createElement(HOST);
+      const id = 'div';
+
+      $rootValue$.get(_.tester.vine).next([id]);
+      assert(element).to.matchSnapshot('foreach__root_multi_insert.html');
+
+      $rootValue$.get(_.tester.vine).next([]);
+      assert(element).to.matchSnapshot('foreach__root_multi_delete.html');
     });
   });
 
@@ -240,10 +262,8 @@ test('@persona/src/output/foreach', init => {
     should('ignore node insertions with the same id', () => {
       const element = _.tester.createElement(HOST);
       const node1 = 'div1';
-      const node2 = 'div2';
+      const node2 = 'div1';
 
-
-      $id.get(_.tester.vine).id = '1';
       $elValue$.get(_.tester.vine).next([node1]);
       $elValue$.get(_.tester.vine).next([node2]);
 
@@ -271,6 +291,25 @@ test('@persona/src/output/foreach', init => {
       $elValue$.get(_.tester.vine).next([setNode, node2, node3]);
 
       assert(element).to.matchSnapshot('foreach__el_set.html');
+    });
+
+    should('handle insertion and deletions of renders with multiple nodes', () => {
+      $renderer.get(_.tester.vine).render = value => {
+        const node = document.createDocumentFragment();
+        node.appendChild(document.createElement(value));
+        node.appendChild(document.createElement(value));
+        node.appendChild(document.createElement(value));
+        return renderNode({id: {}, node});
+      };
+
+      const element = _.tester.createElement(HOST);
+      const id = 'div';
+
+      $elValue$.get(_.tester.vine).next([id]);
+      assert(element).to.matchSnapshot('foreach__el_multi_insert.html');
+
+      $elValue$.get(_.tester.vine).next([]);
+      assert(element).to.matchSnapshot('foreach__el_multi_delete.html');
     });
   });
 });
