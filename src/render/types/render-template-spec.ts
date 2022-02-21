@@ -20,7 +20,7 @@ export type TemplateBindings<O> = {
 }
 
 interface InputRenderSpec<S extends TemplateBindingSpec> extends BaseRenderSpec<Node> {
-  readonly template: HTMLTemplateElement;
+  readonly template$: Observable<HTMLTemplateElement>;
   readonly spec: S;
   readonly runs?: (bindings: TemplateBindings<S>) => ReadonlyArray<Observable<unknown>>;
 }

@@ -23,7 +23,7 @@ export {oclass} from '../src/output/class';
 export {oevent} from '../src/output/event';
 export {oflag} from '../src/output/flag';
 export {oforeach} from '../src/output/foreach';
-// export {omulti} from '../src/output/multi';
+export {omulti} from '../src/output/multi';
 export {osingle} from '../src/output/single';
 export {ostyle} from '../src/output/style';
 export {otext} from '../src/output/text';
@@ -45,6 +45,7 @@ export {SECTION} from '../src/html/section';
 export {SLOT} from '../src/html/slot';
 export {SPAN} from '../src/html/span';
 export {TABLE} from '../src/html/table';
+export {TEMPLATE} from '../src/html/template';
 export {TBODY} from '../src/html/tbody';
 
 export {RenderSpec} from '../src/render/types/render-spec';
@@ -53,6 +54,7 @@ export {renderCustomElement, RenderCustomElementSpec} from '../src/render/types/
 export {renderElement, RenderElementSpec} from '../src/render/types/render-element-spec';
 export {renderHtml, RenderHtmlSpec} from '../src/render/types/render-html-spec';
 export {renderNode, RenderNodeSpec} from '../src/render/types/render-node-spec';
+export {renderTemplate, RenderTemplateSpec} from '../src/render/types/render-template-spec';
 export {RenderTextNodeSpec, renderTextNode} from '../src/render/types/render-text-node-spec';
 
 

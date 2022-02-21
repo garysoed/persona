@@ -103,9 +103,7 @@ export interface OForeach<T> {
   readonly valueType: Type<T>;
 }
 
-export interface OForeachConfig<T> {
-  readonly render: (value: T, index: number) => RenderSpec;
-}
+export type OForeachInput<T> = (value: T, index: number) => RenderSpec;
 
 export interface IKeydown {
   readonly apiType: ApiType.KEYDOWN;

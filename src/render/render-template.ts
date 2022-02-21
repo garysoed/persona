@@ -1,4 +1,4 @@
-import {defer, EMPTY, merge, Observable, of} from 'rxjs';
+import {EMPTY, merge, Observable, of} from 'rxjs';
 import {switchMap, switchMapTo} from 'rxjs/operators';
 
 import {createBinding, OutputBinding} from '../core/create-bindings';
@@ -16,25 +16,25 @@ export function renderTemplate<S extends TemplateBindingSpec>(
     renderSpec: RenderTemplateSpec<S>,
     context: RenderContext,
 ): Observable<NodeWithId<Node>> {
-  return defer(() => {
-    const content: DocumentFragment = renderSpec.template.content.cloneNode(true) as DocumentFragment;
-    return renderNode({
-      node: content,
-      type: RenderSpecType.NODE,
-      id: renderSpec.id,
-    });
-  })
-      .pipe(
-          switchMap(target => {
-            const bindings = createTemplateBindingObjects(renderSpec.spec, target, context);
-            const obsList = renderSpec.runs(bindings);
+  return renderSpec.template$.pipe(
+      switchMap(template => {
+        const content: DocumentFragment = template.content.cloneNode(true) as DocumentFragment;
+        return renderNode({
+          node: content,
+          type: RenderSpecType.NODE,
+          id: renderSpec.id,
+        });
+      }),
+      switchMap(target => {
+        const bindings = createTemplateBindingObjects(renderSpec.spec, target, context);
+        const obsList = renderSpec.runs(bindings);
 
-            return merge(
-                of(target),
-                merge(...obsList).pipe(switchMapTo(EMPTY)),
-            );
-          }),
-      );
+        return merge(
+            of(target),
+            merge(...obsList).pipe(switchMapTo(EMPTY)),
+        );
+      }),
+  );
 }
 
 // TODO: Consolidate this with the one for shadow in in upgrade-element.

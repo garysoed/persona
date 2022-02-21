@@ -8,7 +8,7 @@ import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 import {render} from '../render/render';
 import {RenderContext} from '../render/types/render-context';
 import {Resolved, UnresolvedIO} from '../types/ctrl';
-import {ApiType, IOType, OForeach, OForeachConfig} from '../types/io';
+import {ApiType, IOType, OForeach, OForeachInput} from '../types/io';
 import {Target} from '../types/target';
 import {initSlot} from '../util/init-slot';
 
@@ -63,7 +63,7 @@ class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
       private readonly context: RenderContext,
   ) {}
 
-  update(config: OForeachConfig<T>): OperatorFunction<readonly T[], readonly T[]> {
+  update(renderFn: OForeachInput<T>): OperatorFunction<readonly T[], readonly T[]> {
     const slotEl$ = of(this.target).pipe(
         initSlot(this.slotName),
         filterNonNullable(),
@@ -73,7 +73,7 @@ class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
       const render$ = values$.pipe(
           switchMap(values => {
             const node$list = values.map((value, index) => {
-              return render(config.render(value, index), this.context).pipe(
+              return render(renderFn(value, index), this.context).pipe(
                   tap(node => {
                     if (!node) {
                       return;

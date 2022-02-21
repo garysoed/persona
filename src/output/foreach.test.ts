@@ -49,14 +49,10 @@ class HostCtrl implements Ctrl {
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $elValue$.get(this.$.vine).pipe(
-          this.$.shadow.el.value({
-            render: value => this.renderNode(value),
-          }),
+          this.$.shadow.el.value(value => this.renderNode(value)),
       ),
       $rootValue$.get(this.$.vine).pipe(
-          this.$.shadow.root.value({
-            render: value => this.renderNode(value),
-          }),
+          this.$.shadow.root.value(value => this.renderNode(value)),
       ),
     ];
   }

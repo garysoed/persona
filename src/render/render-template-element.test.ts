@@ -3,7 +3,7 @@ import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
 import {forwardTo} from 'gs-tools/export/rxjs';
-import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
@@ -64,7 +64,7 @@ test('@persona/src/render/render-template', init => {
     const text$ = new BehaviorSubject<string>('text');
     const attr$ = new ReplaySubject<string|null>();
     $spec.get(_.tester.vine).next(renderTemplate({
-      template: _.templateEl,
+      template$: of(_.templateEl),
       spec: {
         div: query('div', DIV, {
           text: otext(),
@@ -89,7 +89,7 @@ test('@persona/src/render/render-template', init => {
     const text$ = new BehaviorSubject<string>('text');
     const attr$ = new ReplaySubject<string|null>();
     $spec.get(_.tester.vine).next(renderTemplate({
-      template: _.templateEl,
+      template$: of(_.templateEl),
       spec: {
         div: query('div', DIV, {
           text: otext(),
@@ -115,7 +115,7 @@ test('@persona/src/render/render-template', init => {
     const text$ = new BehaviorSubject<string>('text');
     const attr$ = new ReplaySubject<string|null>();
     $spec.get(_.tester.vine).next(renderTemplate({
-      template: _.templateEl,
+      template$: of(_.templateEl),
       spec: {
         div: query('div', DIV, {
           text: otext(),

@@ -47,6 +47,7 @@ class ResolvedOMulti implements Resolved<UnresolvedOMulti> {
             // Iterate through one diff at a time, since moving nodes doesn't act like an array.
             let currentNodes = getContiguousSiblingNodesWithId(slotNode);
             let diffs = diffArray(currentNodes, newNodes, equalNodes);
+            let i = 0;
             while (diffs.length > 0) {
               const [diff] = diffs;
               switch (diff.type) {
@@ -62,6 +63,11 @@ class ResolvedOMulti implements Resolved<UnresolvedOMulti> {
 
               currentNodes = getContiguousSiblingNodesWithId(slotNode);
               diffs = diffArray(currentNodes, newNodes, equalNodes);
+              if (i > 100) {
+                return;
+              }
+
+              i++;
             }
           }),
           switchMapTo(EMPTY),
