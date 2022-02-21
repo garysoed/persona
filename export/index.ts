@@ -52,6 +52,7 @@ export {RenderSpec} from '../src/render/types/render-spec';
 export {RenderSpecType} from '../src/render/types/render-spec-type';
 export {renderCustomElement, RenderCustomElementSpec} from '../src/render/types/render-custom-element-spec';
 export {renderElement, RenderElementSpec} from '../src/render/types/render-element-spec';
+export {renderFragment, RenderFragmentSpec} from '../src/render/types/render-fragment-spec';
 export {renderHtml, RenderHtmlSpec} from '../src/render/types/render-html-spec';
 export {renderNode, RenderNodeSpec} from '../src/render/types/render-node-spec';
 export {renderTemplate, RenderTemplateSpec} from '../src/render/types/render-template-spec';
