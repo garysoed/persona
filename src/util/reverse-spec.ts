@@ -14,7 +14,7 @@ import {oflag} from '../output/flag';
 import {otext} from '../output/text';
 import {ovalue} from '../output/value';
 import {UnresolvedBindingSpec} from '../types/ctrl';
-import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, ISlotted, IText, IValue, OAttr, OCall, OCase, OClass, OEvent, OFlag, OForeach, OMulti, OSingle, OSlotted, OText, OValue} from '../types/io';
+import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, ISlotted, IText, IValue, OAttr, OCall, OCase, OClass, OEvent, OFlag, OForeach, OSlotted, OText, OValue} from '../types/io';
 
 
 type ReversedIO<T> =
@@ -44,8 +44,6 @@ type ReversableIO =
     OEvent<any>|IEvent<any>|
     IFlag|OFlag|
     OForeach<any>|
-    OMulti|
-    OSingle|
     ISlotted|OSlotted|
     IText|OText|
     IValue<any, any>|OValue<any, any>;
@@ -105,10 +103,6 @@ function reverseIO(io: ReversableIO): InputOutput {
       }
       break;
     case ApiType.FOREACH:
-      throw new Error(`Unsupported reversal for ${io.apiType}`);
-    case ApiType.MULTI:
-      throw new Error(`Unsupported reversal for ${io.apiType}`);
-    case ApiType.SINGLE:
       throw new Error(`Unsupported reversal for ${io.apiType}`);
     case ApiType.SLOTTED:
       switch (io.ioType) {

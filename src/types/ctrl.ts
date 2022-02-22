@@ -2,9 +2,8 @@ import {Vine} from 'grapevine';
 import {Observable, OperatorFunction} from 'rxjs';
 
 import {RenderContext} from '../render/types/render-context';
-import {RenderSpec} from '../render/types/render-spec';
 
-import {IAttr, ICall, IClass, IEvent, IFlag, IKeydown, IMedia, InputOutput, IRect, ISlotted, ITarget, IText, IValue, OAttr, OCall, OClass, OEvent, OFlag, OForeach, RenderValuesFn, OMulti, OSingle, OSlotted, OStyle, OText, OValue, RenderValueFn, OCase} from './io';
+import {IAttr, ICall, IClass, IEvent, IFlag, IKeydown, IMedia, InputOutput, IRect, ISlotted, ITarget, IText, IValue, OAttr, OCall, OCase, OClass, OEvent, OFlag, OForeach, OSlotted, OStyle, OText, OValue, RenderValueFn, RenderValuesFn} from './io';
 import {Target} from './target';
 
 
@@ -36,9 +35,7 @@ export type Resolved<T extends InputOutput> =
     T extends OForeach<infer V> ? OForeach<V>&ResolvedO<readonly V[], readonly V[], [RenderValuesFn<V>]> :
     T extends IKeydown ? IKeydown&ResolvedI<KeyboardEvent> :
     T extends IMedia ? IMedia&ResolvedI<boolean> :
-    T extends OMulti ? OMulti&ResolvedO<readonly RenderSpec[], readonly RenderSpec[], []> :
     T extends IRect ? IRect&ResolvedI<DOMRect> :
-    T extends OSingle ? OSingle&ResolvedO<RenderSpec|null, RenderSpec|null, []> :
     T extends ISlotted ? ISlotted&ResolvedI<readonly Node[]> :
     T extends OSlotted ? OSlotted&ResolvedO<readonly Node[], readonly Node[], []> :
     T extends OStyle<infer S> ? OStyle<S>&ResolvedO<CSSStyleDeclaration[S], CSSStyleDeclaration[S], []> :
@@ -68,8 +65,6 @@ export type UnresolvedBindingSpec = {
       UnresolvedIO<IEvent<any>>|UnresolvedIO<OEvent<any>>|
       UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|
       UnresolvedIO<OForeach<any>>|
-      UnresolvedIO<OMulti>|
-      UnresolvedIO<OSingle>|
       UnresolvedIO<ISlotted>|UnresolvedIO<OSlotted>|
       UnresolvedIO<IText>|UnresolvedIO<OText>|
       UnresolvedIO<IValue<unknown, any>>|UnresolvedIO<OValue<any, any>>;

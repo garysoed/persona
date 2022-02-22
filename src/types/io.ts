@@ -20,9 +20,7 @@ export enum ApiType {
   FOREACH,
   KEYDOWN,
   MEDIA,
-  MULTI,
   RECT,
-  SINGLE,
   SLOTTED,
   STYLE,
   TARGET,
@@ -129,21 +127,9 @@ export interface IMedia {
   readonly query: string;
 }
 
-export interface OMulti {
-  readonly apiType: ApiType.MULTI;
-  readonly ioType: IOType.OUTPUT;
-  readonly slotName: string;
-}
-
 export interface IRect {
   readonly apiType: ApiType.RECT;
   readonly ioType: IOType.INPUT;
-}
-
-export interface OSingle {
-  readonly apiType: ApiType.SINGLE;
-  readonly ioType: IOType.OUTPUT;
-  readonly slotName: string|null;
 }
 
 export interface ISlotted {
@@ -205,9 +191,7 @@ export type InputOutput =
     OForeach<unknown>|
     IKeydown|
     IMedia|
-    OMulti|
     IRect|
-    OSingle|
     ISlotted|OSlotted|
     OStyle<keyof CSSStyleDeclaration>|
     ITarget|

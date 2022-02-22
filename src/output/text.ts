@@ -1,14 +1,14 @@
+import {stringType} from 'gs-types';
 import {EMPTY, merge, of, OperatorFunction} from 'rxjs';
-import {map, switchMapTo} from 'rxjs/operators';
+import {switchMapTo} from 'rxjs/operators';
 
-import {RenderSpec} from '../../export';
 import {RenderContext} from '../render/types/render-context';
 import {renderTextNode} from '../render/types/render-text-node-spec';
 import {Resolved, ResolvedO, UnresolvedIO} from '../types/ctrl';
-import {ApiType, IOType, OText} from '../types/io';
+import {ApiType, IOType, OText, RenderValueFn} from '../types/io';
 import {Target} from '../types/target';
 
-import {osingle} from './single';
+import {ocase} from './case';
 
 
 class ResolvedOText implements Resolved<UnresolvedOText> {
@@ -17,17 +17,16 @@ class ResolvedOText implements Resolved<UnresolvedOText> {
 
   constructor(
       readonly target: Target,
-      private readonly singleOutput: ResolvedO<RenderSpec, unknown, []>,
+      private readonly caseOutput: ResolvedO<string, string, [RenderValueFn<string>]>,
   ) {}
 
   update(): OperatorFunction<string, string> {
     return value$ => {
       const render$ = value$.pipe(
-          map(value => renderTextNode({
+          this.caseOutput.update(value => of(renderTextNode({
             id: value,
             textContent: of(value),
-          })),
-          this.singleOutput.update(),
+          }))),
           switchMapTo(EMPTY),
       );
       return merge(render$, value$);
@@ -40,7 +39,7 @@ class UnresolvedOText implements UnresolvedIO<OText> {
   readonly ioType = IOType.OUTPUT;
 
   resolve(target: Target, context: RenderContext): ResolvedOText {
-    return new ResolvedOText(target, osingle().resolve(target, context));
+    return new ResolvedOText(target, ocase(stringType).resolve(target, context));
   }
 }
 

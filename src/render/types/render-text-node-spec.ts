@@ -15,8 +15,7 @@ export interface RenderTextNodeSpec extends Input {
 
 export function renderTextNode(input: Input): RenderTextNodeSpec {
   return {
-    ...input,
     type: RenderSpecType.TEXT_NODE,
-    textContent: input.textContent,
+    ...input,
   };
 }

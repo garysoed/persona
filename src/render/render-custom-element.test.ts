@@ -2,13 +2,13 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
-import {numberType} from 'gs-types';
+import {numberType, unknownType} from 'gs-types';
 import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {iattr} from '../input/attr';
 import {iflag} from '../input/flag';
-import {osingle} from '../output/single';
+import {ocase} from '../output/case';
 import {ovalue} from '../output/value';
 import {root} from '../selector/root';
 import {setupTest} from '../testing/setup-test';
@@ -52,7 +52,7 @@ const $spec = source(() => new Subject<RenderSpec|null>());
 const $host = {
   shadow: {
     root: root({
-      value: osingle('#ref'),
+      value: ocase('#ref', unknownType),
     }),
   },
 };
@@ -63,7 +63,7 @@ class HostCtrl implements Ctrl {
   @cache()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
-      $spec.get(this.$.vine).pipe(this.$.shadow.root.value()),
+      of({}).pipe(this.$.shadow.root.value(() => $spec.get(this.$.vine))),
     ];
   }
 }

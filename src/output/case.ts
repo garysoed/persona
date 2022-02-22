@@ -38,8 +38,19 @@ function setId(target: NodeWithId, id: unknown, subId?: number): void {
 }
 
 function getContiguousSiblingNodesWithId(start: Node|null, parent: Node): readonly NodeWithId[] {
+  if (!start) {
+    const children: NodeWithId[] = [];
+    for (let current = parent.lastChild; current !== null; current = current?.previousSibling) {
+      if (!NODE_WITH_ID_TYPE.check(current)) {
+        break;
+      }
+
+      children.push(current);
+    }
+    return children.reverse();
+  }
   const children: NodeWithId[] = [];
-  for (let current = start?.nextSibling ?? parent.firstChild; current !== null; current = current.nextSibling) {
+  for (let current = start.nextSibling ?? parent.firstChild; current !== null; current = current.nextSibling) {
     if (!NODE_WITH_ID_TYPE.check(current)) {
       break;
     }
