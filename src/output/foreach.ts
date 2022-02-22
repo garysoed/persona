@@ -74,7 +74,7 @@ export class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
           switchMap(values => {
             const node$list = values.map((value, index) => {
               return renderFn(value, index).pipe(
-                  switchMap(spec => render(spec, this.context)),
+                  switchMap(spec => spec ? render(spec, this.context) : of(null)),
                   tap(node => {
                     if (!node) {
                       return;

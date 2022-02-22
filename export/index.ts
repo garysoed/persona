@@ -24,8 +24,8 @@ export {oclass} from '../src/output/class';
 export {oevent} from '../src/output/event';
 export {oflag} from '../src/output/flag';
 export {oforeach} from '../src/output/foreach';
-export {omulti} from '../src/output/multi';
-export {osingle} from '../src/output/single';
+// export {omulti} from '../src/output/multi';
+// export {osingle} from '../src/output/single';
 export {ostyle} from '../src/output/style';
 export {otext} from '../src/output/text';
 

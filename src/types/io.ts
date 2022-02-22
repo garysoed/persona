@@ -31,7 +31,7 @@ export enum ApiType {
 }
 
 export type RenderValueFn<T> = (value: T) => Observable<RenderSpec|null>;
-export type RenderValuesFn<T> = (value: T, index: number) => Observable<RenderSpec>;
+export type RenderValuesFn<T> = (value: T, index: number) => Observable<RenderSpec|null>;
 
 export interface IAttr {
   readonly apiType: ApiType.ATTR;
