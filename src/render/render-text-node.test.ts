@@ -33,7 +33,7 @@ class HostCtrl implements Ctrl {
     return [
       $text.get(this.$.vine).pipe(
           this.$.shadow.el.value(textContent => {
-            return of(renderTextNode({id: {}, textContent: of(textContent)}));
+            return of(renderTextNode({textContent: of(textContent)}));
           }),
       ),
     ];

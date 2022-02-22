@@ -90,7 +90,6 @@ test('@persona/src/render/render-custom-element', init => {
         a: of('avalue'),
         b: of(true),
       },
-      id: 'id',
     }));
 
     assert(element).to.matchSnapshot('render-custom-element__emit.html');
@@ -104,7 +103,6 @@ test('@persona/src/render/render-custom-element', init => {
         a: of('a1', 'a2'),
         b: of(true, false),
       },
-      id: 'id',
     }));
 
     assert(element).to.matchSnapshot('render-custom-element__update.html');
@@ -119,7 +117,6 @@ test('@persona/src/render/render-custom-element', init => {
         b: of(true),
       },
       attrs: new Map([['c', of('c1', 'c2')]]),
-      id: 'id',
     }));
 
     assert(element).to.matchSnapshot('render-custom-element__extra_attr.html');
@@ -134,7 +131,6 @@ test('@persona/src/render/render-custom-element', init => {
         b: of(true),
       },
       textContent: of('text1', 'text2'),
-      id: 'id',
     }));
 
     assert(element).to.matchSnapshot('render-custom-element__text.html');
@@ -147,7 +143,6 @@ test('@persona/src/render/render-custom-element', init => {
       registration: CHILD,
       onOutputs: {c: c$},
       textContent: of('text1', 'text2'),
-      id: 'id',
     }));
 
     const subject = $c.get(_.tester.vine);

@@ -37,8 +37,7 @@ class HostCtrl implements Ctrl {
           map(value => [value]),
           this.$.shadow.el.value(value => {
             return of(renderFragment({
-              nodes: value.map(text => renderTextNode({textContent: of(text), id: text})),
-              id: value,
+              nodes: value.map(text => renderTextNode({textContent: of(text)})),
             }));
           }),
       ),

@@ -32,7 +32,7 @@ class HostCtrl implements Ctrl {
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $elValue.get(this.$.vine).pipe(
-          this.$.shadow.el.value(node => of(!node ? null : renderNode({id: node, node}))),
+          this.$.shadow.el.value(node => of(!node ? null : renderNode({node}))),
       ),
     ];
   }

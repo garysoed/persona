@@ -60,7 +60,6 @@ test('@persona/src/render/decorators/apply-text-content', init => {
     const text2 = 'text2';
 
     $spec.get(_.tester.vine).next(renderNode({
-      id: {},
       node: document.createElement('a'),
       decorators: [
         applyTextContent(of(text1, text2)),

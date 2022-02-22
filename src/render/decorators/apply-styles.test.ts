@@ -56,7 +56,6 @@ test('@persona/src/render/decorators/apply-styles', init => {
     const element = _.tester.createElement(HOST);
 
     $spec.get(_.tester.vine).next(renderNode({
-      id: {},
       node: document.createElement('a'),
       decorators: [
         applyStyles('height', of('1px')),
@@ -71,7 +70,6 @@ test('@persona/src/render/decorators/apply-styles', init => {
     const element = _.tester.createElement(HOST);
 
     $spec.get(_.tester.vine).next(renderNode({
-      id: {},
       node: document.createElement('a'),
       decorators: [
         applyStyles('height', of('1px')),

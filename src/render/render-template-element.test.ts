@@ -78,7 +78,6 @@ test('@persona/src/render/render-template', init => {
           $.div.attr.pipe(forwardTo(attr$)),
         ];
       },
-      id: 'id',
     }));
 
     assert(element).to.matchSnapshot('render-template__emit.html');
@@ -103,7 +102,6 @@ test('@persona/src/render/render-template', init => {
           $.div.attr.pipe(forwardTo(attr$)),
         ];
       },
-      id: 'id',
     }));
 
     const newValue = 'newValue';
@@ -129,7 +127,6 @@ test('@persona/src/render/render-template', init => {
           $.div.attr.pipe(forwardTo(attr$)),
         ];
       },
-      id: 'id',
     }));
 
     text$.next('new text');

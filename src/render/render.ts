@@ -9,7 +9,6 @@ import {renderHtml} from './render-html';
 import {renderNode} from './render-node';
 import {renderTemplate} from './render-template';
 import {renderTextNode} from './render-text-node';
-import {NodeWithId} from './types/node-with-id';
 import {RenderContext} from './types/render-context';
 import {RenderCustomElementSpec} from './types/render-custom-element-spec';
 import {RenderElementSpec} from './types/render-element-spec';
@@ -22,15 +21,15 @@ import {RenderTemplateSpec, TemplateBindingSpec} from './types/render-template-s
 import {RenderTextNodeSpec} from './types/render-text-node-spec';
 
 
-export function render(spec: RenderCustomElementSpec<UnresolvedBindingSpec>, context: RenderContext): Observable<NodeWithId<Element>>;
-export function render(spec: RenderFragmentSpec, context: RenderContext): Observable<NodeWithId<DocumentFragment>>;
-export function render(spec: RenderElementSpec, context: RenderContext): Observable<NodeWithId<Element>>;
-export function render(spec: RenderHtmlSpec, context: RenderContext): Observable<NodeWithId<Element>>;
-export function render(spec: RenderNodeSpec<Node>, context: RenderContext): Observable<NodeWithId<Node>>;
-export function render(spec: RenderTextNodeSpec, context: RenderContext): Observable<NodeWithId<Text>>;
-export function render(spec: RenderSpec, context: RenderContext): Observable<NodeWithId<Node>|null>;
-export function render(spec: RenderTemplateSpec<TemplateBindingSpec>, context: RenderContext): Observable<NodeWithId<Node>>;
-export function render(spec: RenderSpec, context: RenderContext): Observable<NodeWithId<Node>|null> {
+export function render(spec: RenderCustomElementSpec<UnresolvedBindingSpec>, context: RenderContext): Observable<Element>;
+export function render(spec: RenderFragmentSpec, context: RenderContext): Observable<DocumentFragment>;
+export function render(spec: RenderElementSpec, context: RenderContext): Observable<Element>;
+export function render(spec: RenderHtmlSpec, context: RenderContext): Observable<Element>;
+export function render(spec: RenderNodeSpec<Node>, context: RenderContext): Observable<Node>;
+export function render(spec: RenderTextNodeSpec, context: RenderContext): Observable<Text>;
+export function render(spec: RenderSpec, context: RenderContext): Observable<Node|null>;
+export function render(spec: RenderTemplateSpec<TemplateBindingSpec>, context: RenderContext): Observable<Node>;
+export function render(spec: RenderSpec, context: RenderContext): Observable<Node|null> {
   switch (spec.type) {
     case RenderSpecType.CUSTOM_ELEMENT:
       return renderCustomElement(spec, context);

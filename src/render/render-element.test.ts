@@ -59,7 +59,6 @@ test('@persona/src/render/render-element', init => {
     $spec.get(_.tester.vine).next(renderElement({
       tag: TAG,
       attrs: new Map([['a', of(a)]]),
-      id: 'id',
     }));
 
     assert(element).to.matchSnapshot('render-element__emit.html');
@@ -72,7 +71,6 @@ test('@persona/src/render/render-element', init => {
     $spec.get(_.tester.vine).next(renderElement({
       tag: TAG,
       attrs: new Map([['b', of(b1, b2)]]),
-      id: 'id',
     }));
 
     assert(element).to.matchSnapshot('render-element__attribute_update.html');
@@ -83,7 +81,6 @@ test('@persona/src/render/render-element', init => {
     $spec.get(_.tester.vine).next(renderElement({
       tag: TAG,
       attrs: new Map([['b', of('bValue', undefined)]]),
-      id: 'id',
     }));
 
     assert(element).to.matchSnapshot('render-element__attribute_undefined.html');
@@ -96,66 +93,8 @@ test('@persona/src/render/render-element', init => {
     $spec.get(_.tester.vine).next(renderElement({
       tag: TAG,
       textContent: of(text1, text2),
-      id: 'id',
     }));
 
     assert(element).to.matchSnapshot('render-element__text_content.html');
-  });
-
-  should('delete the children', () => {
-    const child1 = renderElement({
-      tag: 'div',
-      id: {},
-    });
-    const child2 = renderElement({
-      tag: 'input',
-      id: {},
-    });
-    const element = _.tester.createElement(HOST);
-    $spec.get(_.tester.vine).next(renderElement({
-      tag: TAG,
-      children: of([child1, child2], [child1]),
-      id: 'id',
-    }));
-
-    assert(element).to.matchSnapshot('render-element__delete_children.html');
-  });
-
-  should('insert the children', () => {
-    const child1 = renderElement({
-      tag: 'div',
-      id: {},
-    });
-    const child2 = renderElement({
-      tag: 'input',
-      id: {},
-    });
-    const element = _.tester.createElement(HOST);
-    $spec.get(_.tester.vine).next(renderElement({
-      tag: TAG,
-      children: of([child2], [child1, child2]),
-      id: 'id',
-    }));
-
-    assert(element).to.matchSnapshot('render-element__insert_children.html');
-  });
-
-  should('set the children', () => {
-    const child1 = renderElement({
-      tag: 'div',
-      id: {},
-    });
-    const child2 = renderElement({
-      tag: 'input',
-      id: {},
-    });
-    const element = _.tester.createElement(HOST);
-    $spec.get(_.tester.vine).next(renderElement({
-      tag: TAG,
-      children: of([child2], [child1]),
-      id: 'id',
-    }));
-
-    assert(element).to.matchSnapshot('render-element__set_children.html');
   });
 });

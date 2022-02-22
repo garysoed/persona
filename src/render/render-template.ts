@@ -6,7 +6,6 @@ import {Bindings, BindingSpec, ResolvedBindingSpecProvider, UnresolvedBindingSpe
 import {Target} from '../types/target';
 
 import {renderNode} from './render-node';
-import {NodeWithId} from './types/node-with-id';
 import {RenderContext} from './types/render-context';
 import {RenderSpecType} from './types/render-spec-type';
 import {RenderTemplateSpec, TemplateBindings, TemplateBindingSpec} from './types/render-template-spec';
@@ -15,14 +14,13 @@ import {RenderTemplateSpec, TemplateBindings, TemplateBindingSpec} from './types
 export function renderTemplate<S extends TemplateBindingSpec>(
     renderSpec: RenderTemplateSpec<S>,
     context: RenderContext,
-): Observable<NodeWithId<Node>> {
+): Observable<Node> {
   return renderSpec.template$.pipe(
       switchMap(template => {
         const content: DocumentFragment = template.content.cloneNode(true) as DocumentFragment;
         return renderNode({
           node: content,
           type: RenderSpecType.NODE,
-          id: renderSpec.id,
         });
       }),
       switchMap(target => {

@@ -66,7 +66,6 @@ test('@persona/src/render/render-html', init => {
     $spec.get(_.tester.vine).next(renderHtml({
       raw: of(el.outerHTML),
       parseType: SUPPORTED_TYPE,
-      id: 'id',
     }));
 
     assert(element).to.matchSnapshot('render-html.html');

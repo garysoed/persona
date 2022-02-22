@@ -3,7 +3,6 @@ import {switchMap} from 'rxjs/operators';
 
 import {render} from './render';
 import {renderNode} from './render-node';
-import {NodeWithId} from './types/node-with-id';
 import {RenderContext} from './types/render-context';
 import {RenderFragmentSpec} from './types/render-fragment-spec';
 import {RenderSpecType} from './types/render-spec-type';
@@ -12,9 +11,7 @@ import {RenderSpecType} from './types/render-spec-type';
 export function renderFragment(
     spec: RenderFragmentSpec,
     context: RenderContext,
-): Observable<NodeWithId<DocumentFragment>> {
-  // DO NOT use applyChildren since the children are applied too late, and because the root node
-  // disappeared.
+): Observable<DocumentFragment> {
   const children$List = spec.nodes.length > 0
     ? combineLatest(spec.nodes.map(spec => render(spec, context)))
     : of([]);

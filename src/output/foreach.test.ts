@@ -26,7 +26,7 @@ const $elValue$ = source(() => new Subject<readonly string[]>());
 const $rootValue$ = source(() => new Subject<readonly string[]>());
 const $renderer = source<Renderer>(() => ({
   render: (tag: string): RenderSpec => {
-    return renderNode({id: {}, node: document.createElement(tag)});
+    return renderNode({node: document.createElement(tag)});
   },
 }));
 
@@ -177,7 +177,7 @@ test('@persona/src/output/foreach', init => {
         node.appendChild(document.createElement(value));
         node.appendChild(document.createElement(value));
         node.appendChild(document.createElement(value));
-        return renderNode({id: {}, node});
+        return renderNode({node});
       };
 
       const element = _.tester.createElement(HOST);
@@ -295,7 +295,7 @@ test('@persona/src/output/foreach', init => {
         node.appendChild(document.createElement(value));
         node.appendChild(document.createElement(value));
         node.appendChild(document.createElement(value));
-        return renderNode({id: {}, node});
+        return renderNode({node});
       };
 
       const element = _.tester.createElement(HOST);

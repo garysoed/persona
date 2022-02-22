@@ -24,7 +24,6 @@ class ResolvedOText implements Resolved<UnresolvedOText> {
     return value$ => {
       const render$ = value$.pipe(
           this.caseOutput.update(value => of(renderTextNode({
-            id: value,
             textContent: of(value),
           }))),
           switchMapTo(EMPTY),

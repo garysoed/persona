@@ -1,12 +1,10 @@
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {applyChildren} from './decorators/apply-children';
 import {Decorator} from './decorators/apply-decorators';
 import {applyStyles} from './decorators/apply-styles';
 import {applyTextContent} from './decorators/apply-text-content';
 import {renderNode} from './render-node';
-import {NodeWithId} from './types/node-with-id';
 import {RenderContext} from './types/render-context';
 import {RenderElementSpec} from './types/render-element-spec';
 import {RenderSpecType} from './types/render-spec-type';
@@ -45,8 +43,8 @@ export interface Values {
 export function renderElement(
     spec: RenderElementSpec,
     context: RenderContext,
-): Observable<NodeWithId<HTMLElement>> {
-  const decorators: Array<Decorator<NodeWithId<HTMLElement>>> = [];
+): Observable<HTMLElement> {
+  const decorators: Array<Decorator<HTMLElement>> = [];
   const extraAttrs = spec.attrs ?? new Map<string, Observable<string|undefined>>();
   for (const [attrName, attrValue] of extraAttrs) {
     decorators.push(el => attrValue.pipe(
@@ -62,10 +60,6 @@ export function renderElement(
 
   if (spec.textContent) {
     decorators.push(applyTextContent(spec.textContent));
-  }
-
-  if (spec.children) {
-    decorators.push(applyChildren(spec.children, context));
   }
 
   for (const [key, styles] of spec.styles ?? new Map()) {

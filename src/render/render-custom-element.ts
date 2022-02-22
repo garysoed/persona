@@ -8,7 +8,6 @@ import {IOType} from '../types/io';
 import {reverseSpec} from '../util/reverse-spec';
 
 import {renderElement, Values as ElementValues} from './render-element';
-import {NodeWithId} from './types/node-with-id';
 import {RenderContext} from './types/render-context';
 import {InputsOf, OutputsOf, RenderCustomElementSpec} from './types/render-custom-element-spec';
 import {RenderSpecType} from './types/render-spec-type';
@@ -40,7 +39,7 @@ export interface Values<S extends UnresolvedBindingSpec> extends ElementValues {
 export function renderCustomElement<S extends Spec>(
     renderSpec: RenderCustomElementSpec<S>,
     context: RenderContext,
-): Observable<NodeWithId<HTMLElement>> {
+): Observable<HTMLElement> {
   const elementSpec = {
     ...renderSpec,
     tag: renderSpec.registration.tag,
