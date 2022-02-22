@@ -4,7 +4,7 @@ import {Observable, OperatorFunction} from 'rxjs';
 import {RenderContext} from '../render/types/render-context';
 import {RenderSpec} from '../render/types/render-spec';
 
-import {IAttr, ICall, IClass, IEvent, IFlag, IKeydown, IMedia, InputOutput, IRect, ISlotted, ITarget, IText, IValue, OAttr, OCall, OClass, OEvent, OFlag, OForeach, OForeachInput, OMulti, OSingle, OSlotted, OStyle, OText, OValue} from './io';
+import {IAttr, ICall, IClass, IEvent, IFlag, IKeydown, IMedia, InputOutput, IRect, ISlotted, ITarget, IText, IValue, OAttr, OCall, OClass, OEvent, OFlag, OForeach, RenderValuesFn, OMulti, OSingle, OSlotted, OStyle, OText, OValue, RenderValueFn, OCase} from './io';
 import {Target} from './target';
 
 
@@ -26,13 +26,14 @@ export type Resolved<T extends InputOutput> =
     T extends OAttr ? OAttr&ResolvedO<string|null, string|null, []> :
     T extends ICall<infer A, infer M> ? ICall<A, M>&ResolvedI<A> :
     T extends OCall<infer A, infer M> ? OCall<A, M>&ResolvedO<A, A, []> :
+    T extends OCase<infer V> ? OCase<V>&ResolvedO<V, V, [RenderValueFn<V>]> :
     T extends IClass ? IClass&ResolvedI<boolean> :
     T extends OClass ? OClass&ResolvedO<boolean, boolean, []> :
     T extends IEvent<infer E> ? IEvent<E>&ResolvedI<E> :
     T extends OEvent<infer E> ? OEvent<E>&ResolvedO<E, E, []> :
     T extends IFlag ? IFlag&ResolvedI<boolean> :
     T extends OFlag ? OFlag&ResolvedO<boolean, boolean, []> :
-    T extends OForeach<infer T> ? OForeach<T>&ResolvedO<readonly T[], readonly T[], [OForeachInput<T>]> :
+    T extends OForeach<infer V> ? OForeach<V>&ResolvedO<readonly V[], readonly V[], [RenderValuesFn<V>]> :
     T extends IKeydown ? IKeydown&ResolvedI<KeyboardEvent> :
     T extends IMedia ? IMedia&ResolvedI<boolean> :
     T extends OMulti ? OMulti&ResolvedO<readonly RenderSpec[], readonly RenderSpec[], []> :
@@ -62,6 +63,7 @@ export type UnresolvedBindingSpec = {
   readonly [key: string]:
       UnresolvedIO<IAttr>|UnresolvedIO<OAttr>|
       UnresolvedIO<ICall<unknown, any>>|
+      UnresolvedIO<OCase<any>>|
       UnresolvedIO<IClass>|UnresolvedIO<OClass>|
       UnresolvedIO<IEvent<any>>|UnresolvedIO<OEvent<any>>|
       UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|

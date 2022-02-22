@@ -1,4 +1,5 @@
 import {Type} from 'gs-types';
+import {Observable} from 'rxjs';
 
 import {RenderSpec} from '../../export';
 
@@ -12,6 +13,7 @@ export enum IOType {
 export enum ApiType {
   ATTR,
   CALL,
+  CASE,
   CLASS,
   EVENT,
   FLAG,
@@ -27,6 +29,9 @@ export enum ApiType {
   TEXT,
   VALUE,
 }
+
+export type RenderValueFn<T> = (value: T) => Observable<RenderSpec|null>;
+export type RenderValuesFn<T> = (value: T, index: number) => Observable<RenderSpec>;
 
 export interface IAttr {
   readonly apiType: ApiType.ATTR;
@@ -52,6 +57,13 @@ export interface OCall<T, M extends string> {
   readonly ioType: IOType.OUTPUT;
   readonly methodName: M;
   readonly argType: Type<T>;
+}
+
+export interface OCase<T> {
+  readonly apiType: ApiType.CASE;
+  readonly ioType: IOType.OUTPUT;
+  readonly slotName: string|null;
+  readonly valueType: Type<T>;
 }
 
 export interface IClass {
@@ -103,7 +115,6 @@ export interface OForeach<T> {
   readonly valueType: Type<T>;
 }
 
-export type OForeachInput<T> = (value: T, index: number) => RenderSpec;
 
 export interface IKeydown {
   readonly apiType: ApiType.KEYDOWN;
@@ -187,6 +198,7 @@ export type Resolver = (host: HTMLElement) => HTMLElement;
 export type InputOutput =
     IAttr|OAttr|
     ICall<unknown, string>|OCall<unknown, string>|
+    OCase<unknown>|
     IClass|OClass|
     IEvent<Event>|OEvent<Event>|
     IFlag|OFlag|

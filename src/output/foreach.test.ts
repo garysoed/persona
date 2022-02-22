@@ -3,7 +3,7 @@ import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
 import {stringType} from 'gs-types';
-import {Observable, Subject} from 'rxjs';
+import {Observable, of, Subject} from 'rxjs';
 
 import {RenderSpec} from '../../export';
 import {registerCustomElement} from '../core/register-custom-element';
@@ -57,8 +57,8 @@ class HostCtrl implements Ctrl {
     ];
   }
 
-  renderNode(tag: string): RenderSpec {
-    return $renderer.get(this.$.vine).render(tag);
+  renderNode(tag: string): Observable<RenderSpec> {
+    return of($renderer.get(this.$.vine).render(tag));
   }
 }
 

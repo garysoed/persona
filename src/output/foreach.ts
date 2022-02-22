@@ -1,5 +1,5 @@
 import {arrayFrom} from 'gs-testing/src/util/flatten-node';
-import {$asSet, $filterNonNull, $pipe, diffArray, $map, $flat, $asArray} from 'gs-tools/export/collect';
+import {$asArray, $asSet, $filterNonNull, $flat, $map, $pipe, diffArray} from 'gs-tools/export/collect';
 import {filterNonNullable} from 'gs-tools/export/rxjs';
 import {hasPropertiesType, instanceofType, intersectType, notType, Type, undefinedType} from 'gs-types';
 import {combineLatest, EMPTY, merge, of, OperatorFunction} from 'rxjs';
@@ -8,7 +8,7 @@ import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 import {render} from '../render/render';
 import {RenderContext} from '../render/types/render-context';
 import {Resolved, UnresolvedIO} from '../types/ctrl';
-import {ApiType, IOType, OForeach, OForeachInput} from '../types/io';
+import {ApiType, IOType, OForeach, RenderValuesFn} from '../types/io';
 import {Target} from '../types/target';
 import {initSlot} from '../util/init-slot';
 
@@ -52,7 +52,7 @@ function getContiguousSiblingNodesWithId(start: Node): readonly NodeWithId[] {
 }
 
 // TODO: Consolidate with applyChildren.
-class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
+export class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
   readonly apiType = ApiType.FOREACH;
   readonly ioType = IOType.OUTPUT;
 
@@ -63,7 +63,7 @@ class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
       private readonly context: RenderContext,
   ) {}
 
-  update(renderFn: OForeachInput<T>): OperatorFunction<readonly T[], readonly T[]> {
+  update(renderFn: RenderValuesFn<T>): OperatorFunction<readonly T[], readonly T[]> {
     const slotEl$ = of(this.target).pipe(
         initSlot(this.slotName),
         filterNonNullable(),
@@ -73,7 +73,8 @@ class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
       const render$ = values$.pipe(
           switchMap(values => {
             const node$list = values.map((value, index) => {
-              return render(renderFn(value, index), this.context).pipe(
+              return renderFn(value, index).pipe(
+                  switchMap(spec => render(spec, this.context)),
                   tap(node => {
                     if (!node) {
                       return;
