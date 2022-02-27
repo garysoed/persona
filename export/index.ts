@@ -48,6 +48,8 @@ export {SPAN} from '../src/html/span';
 export {TABLE} from '../src/html/table';
 export {TEMPLATE} from '../src/html/template';
 export {TBODY} from '../src/html/tbody';
+export {TD} from '../src/html/td';
+export {TR} from '../src/html/tr';
 
 export {RenderSpec} from '../src/render/types/render-spec';
 export {RenderSpecType} from '../src/render/types/render-spec-type';
