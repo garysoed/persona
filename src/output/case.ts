@@ -119,7 +119,7 @@ class ResolvedOCase<T> implements Resolved<UnresolvedOCase<T>> {
               const [diff] = diffs;
               switch (diff.type) {
                 case 'insert': {
-                  const insertBefore = currentNodes[diff.index] ?? slotNode?.nextSibling;
+                  const insertBefore = getInsertBeforeTarget(diff.index, currentNodes, slotNode);
                   this.target.insertBefore(diff.value, insertBefore);
                   break;
                 }
@@ -142,6 +142,26 @@ class ResolvedOCase<T> implements Resolved<UnresolvedOCase<T>> {
       return merge(value$, render$);
     };
   }
+}
+
+function getInsertBeforeTarget(
+    index: number,
+    currentNodes: readonly Node[],
+    slotNode: Node|null,
+): Node|null {
+  // Try the specified node first.
+  const targetNode = currentNodes[index];
+  if (targetNode) {
+    return targetNode;
+  }
+
+  // If not available, return the next sibling after the slot node if there are no current node
+  const lastNode = currentNodes[currentNodes.length - 1];
+  if (lastNode) {
+    return lastNode.nextSibling;
+  }
+
+  return slotNode?.nextSibling ?? null;
 }
 
 class UnresolvedOCase<T> implements UnresolvedIO<OCase<T>> {

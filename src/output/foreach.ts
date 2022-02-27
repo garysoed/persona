@@ -122,7 +122,7 @@ export class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
               const [diff] = diffs;
               switch (diff.type) {
                 case 'insert': {
-                  const insertBefore = currentNodes[diff.index] ?? slotNode.nextSibling;
+                  const insertBefore = getInsertBeforeTarget(diff.index, currentNodes, slotNode);
                   this.target.insertBefore(diff.value, insertBefore);
                   break;
                 }
@@ -134,7 +134,9 @@ export class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
               currentNodes = getContiguousSiblingNodesWithId(slotNode);
               diffs = diffArray(currentNodes, flattenedNewNodes, equalNodes);
               i++;
-              if (i >= 100) {
+              if (i >= 500) {
+                // eslint-disable-next-line no-console
+                console.warn('Infinite loop for foreach detected');
                 return;
               }
             }
@@ -145,6 +147,26 @@ export class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
       return merge(values$, render$);
     };
   }
+}
+
+function getInsertBeforeTarget(
+    index: number,
+    currentNodes: readonly Node[],
+    slotNode: Node|null,
+): Node|null {
+  // Try the specified node first.
+  const targetNode = currentNodes[index];
+  if (targetNode) {
+    return targetNode;
+  }
+
+  // If not available, return the next sibling after the slot node if there are no current node
+  const lastNode = currentNodes[currentNodes.length - 1];
+  if (lastNode) {
+    return lastNode.nextSibling;
+  }
+
+  return slotNode?.nextSibling ?? null;
 }
 
 class UnresolvedOForeach<T> implements UnresolvedIO<OForeach<T>> {

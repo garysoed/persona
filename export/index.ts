@@ -24,13 +24,13 @@ export {oclass} from '../src/output/class';
 export {oevent} from '../src/output/event';
 export {oflag} from '../src/output/flag';
 export {oforeach} from '../src/output/foreach';
-// export {omulti} from '../src/output/multi';
-// export {osingle} from '../src/output/single';
 export {ostyle} from '../src/output/style';
 export {otext} from '../src/output/text';
 
 export {BUTTON} from '../src/html/button';
+export {CODE} from '../src/html/code';
 export {DIV} from '../src/html/div';
+export {FIGURE} from '../src/html/figure';
 export {H1} from '../src/html/h1';
 export {H2} from '../src/html/h2';
 export {H3} from '../src/html/h3';

@@ -113,6 +113,10 @@ export interface OForeach<T> {
   readonly valueType: Type<T>;
 }
 
+export interface OForeachConfig<T> {
+  readonly render?: RenderValuesFn<T>;
+  readonly getId?: (value: T) => unknown;
+}
 
 export interface IKeydown {
   readonly apiType: ApiType.KEYDOWN;
