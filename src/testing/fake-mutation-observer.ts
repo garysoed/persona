@@ -1,4 +1,5 @@
 import {fake, spy} from 'gs-testing';
+import {getOrigFn} from 'gs-testing/src/spy/spy';
 
 const FAKE_MUTATION_EVENT = 'pr-fake-mutation';
 
@@ -81,11 +82,13 @@ export function installFakeMutationObserver(): () => void {
         triggerFakeMutation(this, record);
       });
 
-  const origAppendChild = Node.prototype.appendChild;
-  fake(spy(Node.prototype, 'appendChild'))
+  const spyAppendChild = spy(Node.prototype, 'appendChild');
+  fake(spyAppendChild)
       .always()
       .call(function(this: Node, node: Node): Node {
-        const newNode = origAppendChild.call(this, node);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const origFn = getOrigFn(spyAppendChild)!;
+        const newNode = origFn.call(this, node);
         const record = {
           addedNodes: createFakeNodeList([node]),
           removedNodes: createFakeNodeList([]),
@@ -95,11 +98,12 @@ export function installFakeMutationObserver(): () => void {
         return newNode;
       });
 
-  const origInsertBefore = Node.prototype.insertBefore;
-  fake(spy(Node.prototype, 'insertBefore'))
+  const spyInsertBefore = spy(Node.prototype, 'insertBefore');
+  fake(spyInsertBefore)
       .always()
       .call(function(this: Node, node: Node, refChild: Node|null): Node {
-        const newNode = origInsertBefore.call(this, node, refChild);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const newNode = getOrigFn(spyInsertBefore)!.call(this, node, refChild);
         const record = {
           addedNodes: createFakeNodeList([node]),
           removedNodes: createFakeNodeList([]),

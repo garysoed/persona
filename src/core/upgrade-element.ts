@@ -178,6 +178,9 @@ function createShadow(
     element: HTMLElement,
     vine: Vine,
 ): ShadowRoot {
+  if (element.shadowRoot) {
+    return element.shadowRoot;
+  }
   const root = element.attachShadow({mode: 'open'});
   root.appendChild($getTemplate.get(vine)(registrationSpec).content.cloneNode(true));
   return root;

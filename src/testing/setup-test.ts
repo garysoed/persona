@@ -1,5 +1,7 @@
 import {Config as VineConfig, Vine} from 'grapevine';
 import {fake, FakeTime, mockTime, runEnvironment, spy} from 'gs-testing';
+import {getOrigFn} from 'gs-testing/src/spy/spy';
+import {arrayFrom} from 'gs-tools/export/collect';
 
 import {installCustomElements} from '../core/install-custom-elements';
 import {Spec} from '../types/ctrl';
@@ -72,8 +74,40 @@ export function setupTest(spec: TestSpec): Tester {
           return createElement(tag);
         }
       });
+
+  const spyAppendChild = spy(Node.prototype, 'appendChild');
+  fake(spyAppendChild)
+      .always()
+      .call(function(this: Node, node: Node): Node {
+        recursiveUpgradeNode(node, customElementRegistry);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const newNode = getOrigFn(spyAppendChild)!.call(this, node);
+
+        return newNode;
+      });
+
+  const spyInsertBefore = spy(Node.prototype, 'insertBefore');
+  fake(spyInsertBefore)
+      .always()
+      .call(function(this: Node, node: Node, child: Node|null): Node {
+        recursiveUpgradeNode(node, customElementRegistry);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const newNode = getOrigFn(spyInsertBefore)!.call(this, node, child);
+
+        return newNode;
+      });
   mockMatchMedia(window);
   runEnvironment(new PersonaTesterEnvironment());
 
   return tester;
+}
+
+function recursiveUpgradeNode(node: Node, fakeRegistry: FakeCustomElementRegistry): void {
+  if (node instanceof HTMLElement) {
+    fakeRegistry.upgradeElement(node);
+  }
+
+  for (const child of arrayFrom(node.childNodes)) {
+    recursiveUpgradeNode(child, fakeRegistry);
+  }
 }

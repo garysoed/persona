@@ -14,11 +14,11 @@ import {mutationObservable} from '../util/mutation-observable';
 
 
 type Listener = (value: CustomElementConstructor) => void;
-const __upgraded = Symbol('upgraded');
+export const __upgraded = Symbol('upgraded');
 
 type UpgradedElement = HTMLElement & {
   attributeChangedCallback?: (attrName: string) => void;
-  [__upgraded]?: boolean
+  [__upgraded]?: boolean;
 };
 
 export class FakeCustomElementRegistry implements CustomElementRegistry {
@@ -56,8 +56,12 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     return el;
   }
 
-  upgrade(): void {
-    throw new Error('Method not implemented.');
+  upgrade(node: Node): void {
+    if (!(node instanceof HTMLElement)) {
+      return;
+    }
+
+    this.upgradeElement(node);
   }
 
   async whenDefined(tag: string): Promise<CustomElementConstructor> {
@@ -75,7 +79,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     });
   }
 
-  private upgradeElement(el: UpgradedElement): void {
+  upgradeElement(el: UpgradedElement): void {
     if (el[__upgraded]) {
       // Already upgraded, so ignore it.
       return;
