@@ -7,7 +7,7 @@ import {tap} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
-import {id} from '../selector/id';
+import {query} from '../selector/query';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -25,7 +25,7 @@ const $host = {
     value: oflag('has-attr'),
   },
   shadow: {
-    el: id('el', DIV, {
+    el: query('#el', DIV, {
       value: oflag('has-attr'),
     }),
   },
@@ -52,7 +52,7 @@ const HOST = registerCustomElement({
 
 const $shadow = {
   shadow: {
-    deps: id('deps', HOST),
+    deps: query('#deps', HOST),
   },
 };
 

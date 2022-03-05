@@ -6,7 +6,7 @@ import {tap} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
-import {id} from '../selector/id';
+import {query} from '../selector/query';
 import {ElementHarness} from '../testing/harness/element-harness';
 import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
@@ -29,7 +29,7 @@ const KEY = 'key';
 
 const $host = {
   shadow: {
-    el: id('el', DIV, {
+    el: query('#el', DIV, {
       altTrue: ikeydown(KEY, {alt: true}),
       altFalse: ikeydown(KEY, {alt: false}),
       ctrlTrue: ikeydown(KEY, {ctrl: true}),

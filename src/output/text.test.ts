@@ -6,7 +6,7 @@ import {Observable, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
-import {id} from '../selector/id';
+import {query} from '../selector/query';
 import {root} from '../selector/root';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
@@ -24,7 +24,7 @@ const $host = {
     root: root({
       value: otext(),
     }),
-    el: id('el', DIV, {
+    el: query('#el', DIV, {
       value: otext(),
     }),
   },

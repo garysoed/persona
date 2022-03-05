@@ -3,7 +3,6 @@ export {installCustomElements} from '../src/core/install-custom-elements';
 export {registerCustomElement} from '../src/core/register-custom-element';
 export {Registration} from '../src/types/registration';
 
-export {id} from '../src/selector/id';
 export {query} from '../src/selector/query';
 export {root} from '../src/selector/root';
 

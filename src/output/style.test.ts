@@ -6,7 +6,7 @@ import {Observable, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
-import {id} from '../selector/id';
+import {query} from '../selector/query';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -18,7 +18,7 @@ const $elValue$ = source(() => new Subject<string>());
 
 const $host = {
   shadow: {
-    el: id('el', DIV, {
+    el: query('#el', DIV, {
       value: ostyle('height'),
     }),
   },

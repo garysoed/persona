@@ -9,7 +9,7 @@ import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {RenderSpec} from '../render/types/render-spec';
 import {renderTextNode} from '../render/types/render-text-node-spec';
-import {id} from '../selector/id';
+import {query} from '../selector/query';
 import {root} from '../selector/root';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
@@ -30,7 +30,7 @@ const $host = {
       slotted: ocase('#root', unionType([stringType, nullType])),
       value: ocase(unionType([stringType, nullType])),
     }),
-    el: id('el', DIV, {
+    el: query('#el', DIV, {
       slotted: ocase('#ref', unionType([stringType, nullType])),
       value: ocase(unionType([stringType, nullType])),
     }),

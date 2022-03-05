@@ -7,7 +7,7 @@ import {take} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
-import {id} from '../selector/id';
+import {query} from '../selector/query';
 import {ElementHarness} from '../testing/harness/element-harness';
 import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
@@ -20,7 +20,7 @@ const $elValue$ = source(() => new Subject<Event>());
 
 const $host = {
   shadow: {
-    el: id('el', DIV, {
+    el: query('#el', DIV, {
       fn: ocall('dispatchEvent', instanceofType(Event)),
     }),
   },

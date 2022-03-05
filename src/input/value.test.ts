@@ -6,7 +6,7 @@ import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
-import {id} from '../selector/id';
+import {query} from '../selector/query';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 import {setValueObservable} from '../util/value-observable';
@@ -57,7 +57,7 @@ const HOST = registerCustomElement<typeof $host>({
 
 const $shadow = {
   shadow: {
-    deps: id('deps', HOST),
+    deps: query('#deps', HOST),
   },
 };
 

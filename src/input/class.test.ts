@@ -6,7 +6,7 @@ import {tap} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
-import {id} from '../selector/id';
+import {query} from '../selector/query';
 import {ElementHarness} from '../testing/harness/element-harness';
 import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
@@ -26,7 +26,7 @@ const $host = {
     value: iclass(CLASS_NAME),
   },
   shadow: {
-    el: id('el', DIV, {
+    el: query('#el', DIV, {
       value: iclass(CLASS_NAME),
     }),
   },
@@ -57,7 +57,7 @@ const HOST = registerCustomElement({
 
 const $shadow = {
   shadow: {
-    deps: id('deps', HOST),
+    deps: query('#deps', HOST),
   },
 };
 

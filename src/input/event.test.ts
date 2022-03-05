@@ -6,7 +6,7 @@ import {Observable, ReplaySubject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
-import {id} from '../selector/id';
+import {query} from '../selector/query';
 import {ElementHarness} from '../testing/harness/element-harness';
 import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
@@ -22,7 +22,7 @@ const EVENT_NAME = 'event-name';
 
 const $host = {
   shadow: {
-    el: id('el', DIV, {
+    el: query('#el', DIV, {
       event: ievent(EVENT_NAME, CustomEvent),
       eventStrict: ievent(EVENT_NAME, CustomEvent, {matchTarget: true}),
     }),

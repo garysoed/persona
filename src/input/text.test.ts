@@ -6,7 +6,7 @@ import {Observable, ReplaySubject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
-import {id} from '../selector/id';
+import {query} from '../selector/query';
 import {triggerFakeMutation} from '../testing/fake-mutation-observer';
 import {ElementHarness} from '../testing/harness/element-harness';
 import {getHarness} from '../testing/harness/get-harness';
@@ -25,7 +25,7 @@ const $host = {
     text: itext(),
   },
   shadow: {
-    div: id('div', DIV, {
+    div: query('#div', DIV, {
       text: itext(),
     }),
   },

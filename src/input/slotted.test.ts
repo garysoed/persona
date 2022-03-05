@@ -6,7 +6,7 @@ import {tap} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {SLOT} from '../html/slot';
-import {id} from '../selector/id';
+import {query} from '../selector/query';
 import {getHarness} from '../testing/harness/get-harness';
 import {SlotHarness} from '../testing/harness/slot-harness';
 import {setupTest} from '../testing/setup-test';
@@ -18,7 +18,7 @@ const $elValue$ = source(() => new ReplaySubject<readonly Node[]>());
 
 const $host = {
   shadow: {
-    slot: id('slot', SLOT),
+    slot: query('#slot', SLOT),
   },
 };
 

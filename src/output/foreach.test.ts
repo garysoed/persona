@@ -9,7 +9,7 @@ import {RenderSpec} from '../../export';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {renderNode} from '../render/types/render-node-spec';
-import {id} from '../selector/id';
+import {query} from '../selector/query';
 import {root} from '../selector/root';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
@@ -36,7 +36,7 @@ const $host = {
     root: root({
       value: oforeach('#root', stringType),
     }),
-    el: id('el', DIV, {
+    el: query('#el', DIV, {
       value: oforeach('#ref', stringType),
     }),
   },
