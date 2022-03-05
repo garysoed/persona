@@ -2,6 +2,7 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
+import {forwardTo} from 'gs-tools/export/rxjs';
 import {numberType, unknownType} from 'gs-types';
 import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 
@@ -86,10 +87,10 @@ test('@persona/src/render/render-custom-element', init => {
     const element = _.tester.createElement(HOST);
     $spec.get(_.tester.vine).next(renderCustomElement({
       registration: CHILD,
-      inputs: {
-        a: of('avalue'),
-        b: of(true),
-      },
+      runs: $ => [
+        of('avalue').pipe($.a()),
+        of(true).pipe($.b()),
+      ],
     }));
 
     assert(element).to.matchSnapshot('render-custom-element__emit.html');
@@ -99,10 +100,10 @@ test('@persona/src/render/render-custom-element', init => {
     const element = _.tester.createElement(HOST);
     $spec.get(_.tester.vine).next(renderCustomElement({
       registration: CHILD,
-      inputs: {
-        a: of('a1', 'a2'),
-        b: of(true, false),
-      },
+      runs: $ => [
+        of('a1', 'a2').pipe($.a()),
+        of(true, false).pipe($.b()),
+      ],
     }));
 
     assert(element).to.matchSnapshot('render-custom-element__update.html');
@@ -112,10 +113,10 @@ test('@persona/src/render/render-custom-element', init => {
     const element = _.tester.createElement(HOST);
     $spec.get(_.tester.vine).next(renderCustomElement({
       registration: CHILD,
-      inputs: {
-        a: of('a'),
-        b: of(true),
-      },
+      runs: $ => [
+        of('a').pipe($.a()),
+        of(true).pipe($.b()),
+      ],
       attrs: new Map([['c', of('c1', 'c2')]]),
     }));
 
@@ -126,10 +127,10 @@ test('@persona/src/render/render-custom-element', init => {
     const element = _.tester.createElement(HOST);
     $spec.get(_.tester.vine).next(renderCustomElement({
       registration: CHILD,
-      inputs: {
-        a: of('a'),
-        b: of(true),
-      },
+      runs: $ => [
+        of('a').pipe($.a()),
+        of(true).pipe($.b()),
+      ],
       textContent: of('text1', 'text2'),
     }));
 
@@ -141,7 +142,9 @@ test('@persona/src/render/render-custom-element', init => {
     const c$ = new ReplaySubject<number>();
     $spec.get(_.tester.vine).next(renderCustomElement({
       registration: CHILD,
-      onOutputs: {c: c$},
+      runs: $ => [
+        $.c.pipe(forwardTo(c$)),
+      ],
       textContent: of('text1', 'text2'),
     }));
 

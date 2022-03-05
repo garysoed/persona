@@ -1,29 +1,16 @@
-import {forwardTo} from 'gs-tools/export/rxjs';
-import {getOwnPropertyKeys} from 'gs-tools/export/typescript';
-import {EMPTY, merge, Observable, of, Subject} from 'rxjs';
+import {EMPTY, merge, Observable, of} from 'rxjs';
 import {switchMap, switchMapTo} from 'rxjs/operators';
 
-import {Spec, UnresolvedBindingSpec} from '../types/ctrl';
-import {IOType} from '../types/io';
+import {createBindings} from '../core/create-bindings';
+import {resolveForHost} from '../core/resolve-for-host';
+import {Spec} from '../types/ctrl';
 import {reverseSpec} from '../util/reverse-spec';
 
-import {renderElement, Values as ElementValues} from './render-element';
+import {renderElement} from './render-element';
 import {RenderContext} from './types/render-context';
-import {InputsOf, OutputsOf, RenderCustomElementSpec} from './types/render-custom-element-spec';
+import {RenderCustomElementSpec} from './types/render-custom-element-spec';
 import {RenderSpecType} from './types/render-spec-type';
 
-
-/**
- * Values to use for rendering the custom element.
- *
- * @thHidden
- */
-export interface Values<S extends UnresolvedBindingSpec> extends ElementValues {
-  /**
-   * Inputs to the custom element.
-   */
-  readonly inputs?: InputsOf<S>;
-}
 
 /**
  * Renders a custom element given the specs and values.
@@ -47,32 +34,17 @@ export function renderCustomElement<S extends Spec>(
   };
   return renderElement(elementSpec, context).pipe(
       switchMap(el => {
-        const onChange$List = [];
-
-        const reversed = reverseSpec(renderSpec.registration.spec.host ?? {});
-        const inputs: InputsOf<S['host']&{}> = renderSpec.inputs ?? {};
-        for (const key of getOwnPropertyKeys(inputs)) {
-          const output = reversed[key as string].resolve(el, context);
-          if (output.ioType !== IOType.OUTPUT) {
-            continue;
-          }
-          onChange$List.push((inputs[key] as Observable<any>).pipe(output.update()));
-        }
-
-        const outputs: OutputsOf<S['host']&{}> = renderSpec.onOutputs ?? {};
-        for (const key of getOwnPropertyKeys(outputs)) {
-          const input = reversed[key as string].resolve(el, context);
-          if (input.ioType !== IOType.INPUT) {
-            continue;
-          }
-          onChange$List.push((input.value$ as Observable<any>).pipe(
-              forwardTo(outputs[key] ?? new Subject()),
-          ));
-        }
+        const reversed = resolveForHost(
+            reverseSpec<S['host']&{}>(renderSpec.registration.spec.host ?? {}),
+            el,
+            context,
+        );
+        const bindings = createBindings(reversed);
+        const runs = renderSpec.runs(bindings);
 
         return merge(
             of(el),
-            merge(...onChange$List).pipe(switchMapTo(EMPTY)),
+            merge(...runs).pipe(switchMapTo(EMPTY)),
         );
       }),
   );

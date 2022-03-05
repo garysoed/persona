@@ -10,10 +10,7 @@ export function resolveForHost<S extends UnresolvedBindingSpec>(
   const bindings: Partial<Record<keyof S, Resolved<InputOutput>>> = {};
   for (const key in spec) {
     const io = spec[key];
-    bindings[key] = io.resolve(
-        target,
-        context,
-    );
+    bindings[key] = io.resolve(target, context);
   }
   return bindings as ResolvedBindingSpec<S>;
 }
