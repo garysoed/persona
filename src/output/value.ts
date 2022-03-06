@@ -37,7 +37,7 @@ class ResolvedOValue<T, P extends string> implements Resolved<UnresolvedOValue<T
   }
 }
 
-class UnresolvedOValue<T, P extends string> implements UnresolvedIO<OValue<T, P>> {
+class UnresolvedOValue<T, P extends string> implements UnresolvedIO<HTMLElement, OValue<T, P>> {
   readonly apiType = ApiType.VALUE;
   readonly ioType = IOType.OUTPUT;
 

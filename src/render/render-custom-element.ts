@@ -35,7 +35,7 @@ export function renderCustomElement<S extends Spec>(
   return renderElement(elementSpec, context).pipe(
       switchMap(el => {
         const reversed = resolveForHost(
-            reverseSpec<S['host']&{}>(renderSpec.registration.spec.host ?? {}),
+            reverseSpec<HTMLElement, S['host']&{}>(renderSpec.registration.spec.host ?? {}),
             el,
             context,
         );

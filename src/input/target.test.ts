@@ -11,11 +11,12 @@ import {ElementHarness} from '../testing/harness/element-harness';
 import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
+import {Target} from '../types/target';
 
 import {itarget} from './target';
 
 
-const $elValue$ = source(() => new ReplaySubject<Element>());
+const $elValue$ = source(() => new ReplaySubject<Target>());
 
 const $host = {
   shadow: {

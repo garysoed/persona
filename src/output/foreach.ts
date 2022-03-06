@@ -169,7 +169,7 @@ function getInsertBeforeTarget(
   return slotNode?.nextSibling ?? null;
 }
 
-class UnresolvedOForeach<T> implements UnresolvedIO<OForeach<T>> {
+class UnresolvedOForeach<T> implements UnresolvedIO<Target, OForeach<T>> {
   readonly apiType = ApiType.FOREACH;
   readonly ioType = IOType.OUTPUT;
 

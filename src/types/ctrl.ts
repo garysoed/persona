@@ -47,32 +47,32 @@ export type Resolved<T> =
     T extends IValue<infer V, infer P> ? IValue<V, P>&ResolvedI<V> :
     T extends OValue<infer V, infer P> ? OValue<V, P>&ResolvedO<V, V, []> : never;
 
-export type ResolvedProvider<T> =
-    (root: Target, context: RenderContext) => Resolved<T>;
+export type ResolvedProvider<T extends Target, V> =
+    (root: T, context: RenderContext) => Resolved<V>;
 
-export type UnresolvedIO<B> = B & {
-  resolve(target: Target, context: RenderContext): Resolved<B>;
+export type UnresolvedIO<T extends Target, B> = B & {
+  resolve(target: T, context: RenderContext): Resolved<B>;
 };
 
 export type BindingSpec = {
   readonly [key: string]: unknown;
 }
 
-export type UnresolvedBindingSpec = {
-  readonly [key: string]: UnresolvedIO<InputOutput>;
+export type UnresolvedBindingSpec<T extends Target> = {
+  readonly [key: string]: UnresolvedIO<T, InputOutput>;
 }
 
-export type ResolvedBindingSpec<S extends UnresolvedBindingSpec> = {
+export type ResolvedBindingSpec<T extends Target, S extends UnresolvedBindingSpec<T>> = {
   readonly [K in keyof S]: Resolved<S[K]>
 };
 
-export type ResolvedBindingSpecProvider<S extends UnresolvedBindingSpec> = {
-  readonly [K in keyof S]: ResolvedProvider<S[K]>;
+export type ResolvedBindingSpecProvider<T extends Target, S extends UnresolvedBindingSpec<Target>> = {
+  readonly [K in keyof S]: ResolvedProvider<T, S[K]>;
 }
 
 export type Spec = {
-  readonly host?: UnresolvedBindingSpec;
-  readonly shadow?: Record<string, ResolvedBindingSpecProvider<UnresolvedBindingSpec>>;
+  readonly host?: UnresolvedBindingSpec<HTMLElement>;
+  readonly shadow?: Record<string, ResolvedBindingSpecProvider<ShadowRoot, UnresolvedBindingSpec<ShadowRoot>>>;
 };
 
 export type Binding<T> =
@@ -85,7 +85,7 @@ export type Bindings<S extends BindingSpec> = {
 };
 
 export type ShadowBindings<O> = {
-  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<infer S> ? Bindings<S> : never;
+  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<ShadowRoot, infer S> ? Bindings<S> : never;
 };
 
 export interface Context<S extends Spec> {

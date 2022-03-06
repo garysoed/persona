@@ -164,7 +164,7 @@ function getInsertBeforeTarget(
   return slotNode?.nextSibling ?? null;
 }
 
-class UnresolvedOCase<T> implements UnresolvedIO<OCase<T>> {
+class UnresolvedOCase<T> implements UnresolvedIO<Target, OCase<T>> {
   readonly apiType = ApiType.CASE;
   readonly ioType = IOType.OUTPUT;
 

@@ -38,7 +38,7 @@ export function renderTemplate<S extends TemplateBindingSpec>(
 // TODO: Consolidate this with the one for shadow in in upgrade-element.
 function createTemplateBindingObjects<O extends TemplateBindingSpec>(
     spec: O,
-    target: Target,
+    target: DocumentFragment,
     context: RenderContext,
 ): TemplateBindings<O> {
   const partial: Record<string, Bindings<BindingSpec>> = {};
@@ -48,9 +48,9 @@ function createTemplateBindingObjects<O extends TemplateBindingSpec>(
   return partial as TemplateBindings<O>;
 }
 
-function createTemplateBindings<S extends UnresolvedBindingSpec>(
-    spec: ResolvedBindingSpecProvider<S>,
-    target: Target,
+function createTemplateBindings<S extends UnresolvedBindingSpec<Target>>(
+    spec: ResolvedBindingSpecProvider<DocumentFragment, S>,
+    target: DocumentFragment,
     context: RenderContext,
 ): Bindings<S> {
   const partial: Partial<Record<string, Observable<unknown>|OutputBinding>> = {};

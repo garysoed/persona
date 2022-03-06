@@ -41,7 +41,7 @@ class ResolvedOCall<T, M extends string> implements Resolved<UnresolvedOCall<T, 
   }
 }
 
-class UnresolvedOCall<T, M extends string> implements UnresolvedIO<OCall<T, M>> {
+class UnresolvedOCall<T, M extends string> implements UnresolvedIO<HTMLElement, OCall<T, M>> {
   readonly apiType = ApiType.CALL;
   readonly ioType = IOType.OUTPUT;
 

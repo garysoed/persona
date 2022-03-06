@@ -27,7 +27,7 @@ class ResolvedOFlag implements Resolved<UnresolvedOFlag> {
   }
 }
 
-class UnresolvedOFlag implements UnresolvedIO<OFlag> {
+class UnresolvedOFlag implements UnresolvedIO<HTMLElement, OFlag> {
   readonly apiType = ApiType.FLAG;
   readonly ioType = IOType.OUTPUT;
 

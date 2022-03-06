@@ -24,7 +24,7 @@ class ResolvedOEvent<E extends Event> implements Resolved<UnresolvedOEvent<E>> {
   }
 }
 
-class UnresolvedOEvent<E extends Event> implements UnresolvedIO<OEvent<E>> {
+class UnresolvedOEvent<E extends Event> implements UnresolvedIO<HTMLElement, OEvent<E>> {
   readonly apiType = ApiType.EVENT;
   readonly ioType = IOType.OUTPUT;
 

@@ -1,19 +1,18 @@
 import {RenderContext} from '../render/types/render-context';
 import {ResolvedBindingSpecProvider, ResolvedProvider, UnresolvedBindingSpec} from '../types/ctrl';
-import {Target} from '../types/target';
 
 
-export function root<X extends UnresolvedBindingSpec>(
+export function root<X extends UnresolvedBindingSpec<ShadowRoot>>(
     specs: X,
-): ResolvedBindingSpecProvider<X> {
-  const providers: Partial<Record<string, ResolvedProvider<any>>> = {};
+): ResolvedBindingSpecProvider<ShadowRoot, X> {
+  const providers: Partial<Record<string, ResolvedProvider<ShadowRoot, any>>> = {};
 
-  const normalizedSpecs: UnresolvedBindingSpec = specs ?? {};
+  const normalizedSpecs: UnresolvedBindingSpec<ShadowRoot> = specs ?? {};
   for (const key in normalizedSpecs) {
-    providers[key] = (root: Target, context: RenderContext) => normalizedSpecs[key].resolve(
+    providers[key] = (root: ShadowRoot, context: RenderContext) => normalizedSpecs[key].resolve(
         root,
         context,
     );
   }
-  return providers as ResolvedBindingSpecProvider<X>;
+  return providers as ResolvedBindingSpecProvider<ShadowRoot, X>;
 }

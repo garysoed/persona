@@ -26,7 +26,7 @@ class ResolvedOStyle<S extends StringPropertyKeys<CSSStyleDeclaration>> implemen
   }
 }
 
-class UnresolvedOStyle<S extends StringPropertyKeys<CSSStyleDeclaration>> implements UnresolvedIO<OStyle<S>> {
+class UnresolvedOStyle<S extends StringPropertyKeys<CSSStyleDeclaration>> implements UnresolvedIO<HTMLElement, OStyle<S>> {
   readonly apiType = ApiType.STYLE;
   readonly ioType = IOType.OUTPUT;
 

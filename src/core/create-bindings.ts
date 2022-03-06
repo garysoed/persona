@@ -2,11 +2,12 @@ import {Observable, OperatorFunction} from 'rxjs';
 
 import {Bindings, ResolvedBindingSpec, ResolvedI, ResolvedO, UnresolvedBindingSpec} from '../types/ctrl';
 import {IOType} from '../types/io';
+import {Target} from '../types/target';
 
 
 export type OutputBinding = (...args: readonly unknown[]) => OperatorFunction<unknown, unknown>;
 
-export function createBindings<S extends UnresolvedBindingSpec>(spec: ResolvedBindingSpec<S>): Bindings<S> {
+export function createBindings<S extends UnresolvedBindingSpec<Target>>(spec: ResolvedBindingSpec<Target, S>): Bindings<S> {
   const bindings: Partial<Record<string, Observable<unknown>|OutputBinding>> = {};
   for (const key in spec) {
     const io = spec[key];

@@ -1,21 +1,13 @@
-import {Observable, OperatorFunction, Subject} from 'rxjs';
+import {Observable} from 'rxjs';
 
-import {Binding, Bindings, ResolvedBindingSpecProvider, UnresolvedBindingSpec} from '../../types/ctrl';
+import {Bindings, ResolvedBindingSpecProvider, UnresolvedBindingSpec} from '../../types/ctrl';
 
 import {RenderSpecType} from './render-spec-type';
 
 
-export type InputsOf<S extends UnresolvedBindingSpec> = Partial<{
-  readonly [K in keyof S]: Binding<S[K]> extends Observable<infer T> ? Observable<T> : never;
-}>;
-export type OutputsOf<S extends UnresolvedBindingSpec> = Partial<{
-  readonly [K in keyof S]: Binding<S[K]> extends () => OperatorFunction<infer T, unknown> ?
-      Subject<T> : never;
-}>;
-
-export type TemplateBindingSpec = Record<string, ResolvedBindingSpecProvider<UnresolvedBindingSpec>>;
+export type TemplateBindingSpec = Record<string, ResolvedBindingSpecProvider<DocumentFragment, UnresolvedBindingSpec<DocumentFragment>>>;
 export type TemplateBindings<O> = {
-  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<infer S> ? Bindings<S> : never;
+  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<HTMLElement, infer S> ? Bindings<S> : never;
 }
 
 interface InputRenderSpec<S extends TemplateBindingSpec> {

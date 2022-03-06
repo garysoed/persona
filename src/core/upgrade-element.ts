@@ -7,6 +7,7 @@ import {RenderContext} from '../render/types/render-context';
 import {Bindings, BindingSpec, ResolvedBindingSpecProvider, ShadowBindings, Spec, UnresolvedBindingSpec} from '../types/ctrl';
 import {ApiType, IOType, IValue, OValue} from '../types/io';
 import {Registration, RegistrationSpec} from '../types/registration';
+import {Target} from '../types/target';
 import {setValueObservable} from '../util/value-observable';
 
 import {createBinding, createBindings, OutputBinding} from './create-bindings';
@@ -186,7 +187,7 @@ function createShadow(
   return root;
 }
 
-type ShadowBindingRecord = Record<string, ResolvedBindingSpecProvider<UnresolvedBindingSpec>>;
+type ShadowBindingRecord = Record<string, ResolvedBindingSpecProvider<ShadowRoot, UnresolvedBindingSpec<Target>>>;
 function createShadowBindingObjects<O extends ShadowBindingRecord>(
     spec: O,
     shadowRoot: ShadowRoot,
@@ -199,8 +200,8 @@ function createShadowBindingObjects<O extends ShadowBindingRecord>(
   return partial as ShadowBindings<O>;
 }
 
-function createShadowBindings<S extends UnresolvedBindingSpec>(
-    spec: ResolvedBindingSpecProvider<S>,
+function createShadowBindings<S extends UnresolvedBindingSpec<Target>>(
+    spec: ResolvedBindingSpecProvider<ShadowRoot, S>,
     shadowRoot: ShadowRoot,
     context: RenderContext,
 ): Bindings<S> {

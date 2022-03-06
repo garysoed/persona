@@ -42,7 +42,7 @@ class ResolvedIValue<T, P extends string> implements Resolved<UnresolvedIValue<T
   }
 }
 
-export class UnresolvedIValue<T, P extends string> implements UnresolvedIO<IValue<T, P>> {
+export class UnresolvedIValue<T, P extends string> implements UnresolvedIO<HTMLElement, IValue<T, P>> {
   readonly apiType = ApiType.VALUE;
   readonly ioType = IOType.INPUT;
 

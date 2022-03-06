@@ -55,7 +55,7 @@ class ResolvedIKeydown implements Resolved<UnresolvedIKeydown> {
   }
 }
 
-export class UnresolvedIKeydown implements UnresolvedIO<IKeydown> {
+export class UnresolvedIKeydown implements UnresolvedIO<HTMLElement, IKeydown> {
   readonly apiType = ApiType.KEYDOWN;
   readonly ioType = IOType.INPUT;
 

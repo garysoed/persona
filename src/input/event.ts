@@ -41,7 +41,7 @@ class ResolvedIEvent<E extends Event> implements Resolved<UnresolvedIEvent<E>> {
   }
 }
 
-export class UnresolvedIEvent<E extends Event> implements UnresolvedIO<IEvent<E>> {
+export class UnresolvedIEvent<E extends Event> implements UnresolvedIO<HTMLElement, IEvent<E>> {
   readonly apiType = ApiType.EVENT;
   readonly ioType = IOType.INPUT;
 

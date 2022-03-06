@@ -18,23 +18,23 @@ function getElement(target: Target, query: string): Element {
 }
 
 
-export type ExtraUnresolvedBindingSpec = Record<string, UnresolvedIO<InputOutput>>;
+type ExtraUnresolvedBindingSpec = Record<string, UnresolvedIO<Element, InputOutput>>;
 
 export function query<S extends Spec>(
     query: string,
     registration: RegistrationWithSpec<S>,
-): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>>;
+): ResolvedBindingSpecProvider<Target, ReversedSpec<Target, S['host']&{}>>;
 export function query<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
     query: string,
     registration: RegistrationWithSpec<S>,
     extra: X,
-): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>
+): ResolvedBindingSpecProvider<Target, ReversedSpec<Target, S['host']&{}> & X>
 export function query<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
     query: string,
     registration: RegistrationWithSpec<S>,
     extra?: X,
-): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X> {
-  const providers: Partial<Record<string, ResolvedProvider<any>>> = {};
+): ResolvedBindingSpecProvider<Target, ReversedSpec<Target, S['host']&{}> & X> {
+  const providers: Partial<Record<string, ResolvedProvider<Target, any>>> = {};
   const reversed = reverseSpec(registration.spec.host ?? {});
   for (const key in reversed) {
     providers[key] = (root: Target, context: RenderContext) => reversed[key].resolve(
@@ -43,12 +43,12 @@ export function query<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
     );
   }
 
-  const normalizedExtra: Record<string, UnresolvedIO<any>> = extra ?? {};
+  const normalizedExtra: Record<string, UnresolvedIO<Target, any>> = extra ?? {};
   for (const key in normalizedExtra) {
     providers[key] = (root: Target, context: RenderContext) => normalizedExtra[key].resolve(
         getElement(root, query),
         context,
     );
   }
-  return providers as ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>;
+  return providers as ResolvedBindingSpecProvider<Target, ReversedSpec<Target, S['host']&{}> & X>;
 }

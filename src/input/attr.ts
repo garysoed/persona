@@ -40,7 +40,7 @@ class ResolvedIAttr implements Resolved<UnresolvedIAttr> {
   }
 }
 
-class UnresolvedIAttr implements UnresolvedIO<IAttr> {
+class UnresolvedIAttr implements UnresolvedIO<HTMLElement, IAttr> {
   readonly apiType = ApiType.ATTR;
   readonly ioType = IOType.INPUT;
 

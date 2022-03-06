@@ -3,6 +3,7 @@ import {switchMapTo} from 'rxjs/operators';
 
 import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IOType, OSlotted} from '../types/io';
+import {Target} from '../types/target';
 
 
 class ResolvedOSlotted implements Resolved<UnresolvedOSlotted> {
@@ -19,7 +20,7 @@ class ResolvedOSlotted implements Resolved<UnresolvedOSlotted> {
 }
 
 
-class UnresolvedOSlotted implements UnresolvedIO<OSlotted> {
+class UnresolvedOSlotted implements UnresolvedIO<Target, OSlotted> {
   readonly apiType = ApiType.SLOTTED;
   readonly ioType = IOType.OUTPUT;
 

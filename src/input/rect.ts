@@ -24,7 +24,7 @@ class ResolvedIRect implements Resolved<UnresolvedIRect> {
   }
 }
 
-export class UnresolvedIRect implements UnresolvedIO<IRect> {
+export class UnresolvedIRect implements UnresolvedIO<HTMLElement, IRect> {
   readonly apiType = ApiType.RECT;
   readonly ioType = IOType.INPUT;
 

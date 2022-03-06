@@ -40,7 +40,7 @@ class ResolvedIFlag implements Resolved<UnresolvedIFlag> {
   }
 }
 
-class UnresolvedIFlag implements UnresolvedIO<IFlag> {
+class UnresolvedIFlag implements UnresolvedIO<HTMLElement, IFlag> {
   readonly apiType = ApiType.FLAG;
   readonly ioType = IOType.INPUT;
 

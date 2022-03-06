@@ -19,7 +19,7 @@ class ResolvedITarget implements Resolved<UnresolvedITarget> {
   }
 }
 
-export class UnresolvedITarget implements UnresolvedIO<ITarget> {
+export class UnresolvedITarget implements UnresolvedIO<HTMLElement, ITarget> {
   readonly apiType = ApiType.TARGET;
   readonly ioType = IOType.INPUT;
 

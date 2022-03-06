@@ -27,7 +27,7 @@ class ResolvedOAttr implements Resolved<UnresolvedOAttr> {
   }
 }
 
-class UnresolvedOAttr implements UnresolvedIO<OAttr> {
+class UnresolvedOAttr implements UnresolvedIO<HTMLElement, OAttr> {
   readonly apiType = ApiType.ATTR;
   readonly ioType = IOType.OUTPUT;
 

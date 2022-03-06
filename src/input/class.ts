@@ -28,7 +28,7 @@ class ResolvedIClass implements Resolved<UnresolvedIClass> {
   }
 }
 
-class UnresolvedIClass implements UnresolvedIO<IClass> {
+class UnresolvedIClass implements UnresolvedIO<HTMLElement, IClass> {
   readonly apiType = ApiType.CLASS;
   readonly ioType = IOType.INPUT;
 

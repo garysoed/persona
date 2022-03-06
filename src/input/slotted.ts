@@ -28,7 +28,7 @@ class ResolvedISlotted implements Resolved<UnresolvedISlotted> {
   }
 }
 
-class UnresolvedISlotted implements UnresolvedIO<ISlotted> {
+class UnresolvedISlotted implements UnresolvedIO<HTMLSlotElement, ISlotted> {
   readonly apiType = ApiType.SLOTTED;
   readonly ioType = IOType.INPUT;
 

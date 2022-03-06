@@ -33,7 +33,7 @@ class ResolvedOText implements Resolved<UnresolvedOText> {
   }
 }
 
-class UnresolvedOText implements UnresolvedIO<OText> {
+class UnresolvedOText implements UnresolvedIO<Target, OText> {
   readonly apiType = ApiType.TEXT;
   readonly ioType = IOType.OUTPUT;
 

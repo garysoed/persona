@@ -25,7 +25,7 @@ class ResolvedIText implements Resolved<UnresolvedIText> {
   }
 }
 
-class UnresolvedIText implements UnresolvedIO<IText> {
+class UnresolvedIText implements UnresolvedIO<HTMLElement, IText> {
   readonly apiType = ApiType.TEXT;
   readonly ioType = IOType.INPUT;
 
