@@ -3,7 +3,7 @@ import {Observable, OperatorFunction} from 'rxjs';
 
 import {RenderContext} from '../render/types/render-context';
 
-import {IAttr, ICall, IClass, IEvent, IFlag, IKeydown, IMedia, InputOutput, IRect, ISlotted, ITarget, IText, IValue, OAttr, OCall, OCase, OClass, OEvent, OFlag, OForeach, OSlotted, OStyle, OText, OValue, RenderValueFn, RenderValuesFn} from './io';
+import {IAttr, ICall, IClass, IEvent, IFlag, IKeydown, IMedia, InputOutput, IOType, IRect, ISlotted, ITarget, IText, IValue, OAttr, OCall, OCase, OClass, OEvent, OFlag, OForeach, OSlotted, OStyle, OText, OValue, RenderValueFn, RenderValuesFn} from './io';
 import {Target} from './target';
 
 
@@ -13,14 +13,16 @@ export interface Ctrl {
 
 // TODO(#8): Remove exports of ResolvedI and ResolvedO
 export type ResolvedI<T> = {
+  readonly ioType: IOType.INPUT;
   readonly value$: Observable<T>;
 };
 
 export type ResolvedO<T, U, A extends readonly unknown[]> = {
   update: (...args: A) => OperatorFunction<T, U>;
+  readonly ioType: IOType.OUTPUT;
 };
 
-export type Resolved<T extends InputOutput> =
+export type Resolved<T> =
     T extends IAttr ? IAttr&ResolvedI<string|null> :
     T extends OAttr ? OAttr&ResolvedO<string|null, string|null, []> :
     T extends ICall<infer A, infer M> ? ICall<A, M>&ResolvedI<A> :
@@ -45,15 +47,15 @@ export type Resolved<T extends InputOutput> =
     T extends IValue<infer V, infer P> ? IValue<V, P>&ResolvedI<V> :
     T extends OValue<infer V, infer P> ? OValue<V, P>&ResolvedO<V, V, []> : never;
 
-export type ResolvedProvider<T extends InputOutput> =
+export type ResolvedProvider<T> =
     (root: Target, context: RenderContext) => Resolved<T>;
 
-export type UnresolvedIO<B extends InputOutput> = B & {
+export type UnresolvedIO<B> = B & {
   resolve(target: Target, context: RenderContext): Resolved<B>;
 };
 
 export type BindingSpec = {
-  readonly [key: string]: InputOutput;
+  readonly [key: string]: unknown;
 }
 
 export type UnresolvedBindingSpec = {
@@ -61,15 +63,11 @@ export type UnresolvedBindingSpec = {
 }
 
 export type ResolvedBindingSpec<S extends UnresolvedBindingSpec> = {
-  readonly [K in keyof S]:
-      S[K] extends InputOutput ? Resolved<S[K]> :
-      never;
+  readonly [K in keyof S]: Resolved<S[K]>
 };
 
 export type ResolvedBindingSpecProvider<S extends UnresolvedBindingSpec> = {
-  readonly [K in keyof S]:
-      S[K] extends InputOutput ? ResolvedProvider<S[K]> :
-      never;
+  readonly [K in keyof S]: ResolvedProvider<S[K]>;
 }
 
 export type Spec = {
@@ -77,7 +75,7 @@ export type Spec = {
   readonly shadow?: Record<string, ResolvedBindingSpecProvider<UnresolvedBindingSpec>>;
 };
 
-export type Binding<T extends InputOutput> =
+export type Binding<T> =
     Resolved<T> extends ResolvedI<infer V> ? Observable<V> :
     Resolved<T> extends ResolvedO<infer V, infer T, infer A> ? (...args: A) => OperatorFunction<V, T> :
     never;

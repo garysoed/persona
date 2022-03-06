@@ -1,7 +1,8 @@
 import {Observable, OperatorFunction} from 'rxjs';
 
 import {Bindings, ResolvedBindingSpec, ResolvedI, ResolvedO, UnresolvedBindingSpec} from '../types/ctrl';
-import {InputOutput, IOType} from '../types/io';
+import {IOType} from '../types/io';
+
 
 export type OutputBinding = (...args: readonly unknown[]) => OperatorFunction<unknown, unknown>;
 
@@ -15,13 +16,12 @@ export function createBindings<S extends UnresolvedBindingSpec>(spec: ResolvedBi
 }
 
 export function createBinding(
-    io: InputOutput&(ResolvedI<unknown>|ResolvedO<any, any, any>),
+    io: ResolvedI<unknown>|ResolvedO<any, any, any>,
 ): Observable<unknown>|OutputBinding {
   switch (io.ioType) {
-    // TODO(#8): Remove casts, only breaks outside VSCode
     case IOType.INPUT:
-      return (io as ResolvedI<unknown>).value$;
+      return io.value$;
     case IOType.OUTPUT:
-      return (...args: readonly unknown[]) => (io as ResolvedO<unknown, unknown, unknown[]>).update(...args);
+      return (...args: readonly unknown[]) => io.update(...args);
   }
 }

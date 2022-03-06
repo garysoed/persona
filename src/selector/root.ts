@@ -1,13 +1,12 @@
 import {RenderContext} from '../render/types/render-context';
 import {ResolvedBindingSpecProvider, ResolvedProvider, UnresolvedBindingSpec} from '../types/ctrl';
-import {InputOutput} from '../types/io';
 import {Target} from '../types/target';
 
 
 export function root<X extends UnresolvedBindingSpec>(
     specs: X,
 ): ResolvedBindingSpecProvider<X> {
-  const providers: Partial<Record<string, ResolvedProvider<InputOutput>>> = {};
+  const providers: Partial<Record<string, ResolvedProvider<any>>> = {};
 
   const normalizedSpecs: UnresolvedBindingSpec = specs ?? {};
   for (const key in normalizedSpecs) {
@@ -16,5 +15,5 @@ export function root<X extends UnresolvedBindingSpec>(
         context,
     );
   }
-  return providers as unknown as ResolvedBindingSpecProvider<X>;
+  return providers as ResolvedBindingSpecProvider<X>;
 }

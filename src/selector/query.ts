@@ -1,6 +1,6 @@
 import {RenderContext} from '../render/types/render-context';
 import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedIO} from '../types/ctrl';
-import {IAttr, IClass, IEvent, IFlag, IKeydown, InputOutput, IRect, ITarget, IText, OAttr, OCall, OCase, OClass, OFlag, OForeach, OStyle, OText} from '../types/io';
+import {IAttr, IClass, IEvent, IFlag, IKeydown, IRect, ITarget, IText, OAttr, OCall, OCase, OClass, OFlag, OForeach, OStyle, OText} from '../types/io';
 import {Registration} from '../types/registration';
 import {Target} from '../types/target';
 import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
@@ -48,7 +48,7 @@ export function query<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
     registration: RegistrationWithSpec<S>,
     extra?: X,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X> {
-  const providers: Partial<Record<string, ResolvedProvider<InputOutput>>> = {};
+  const providers: Partial<Record<string, ResolvedProvider<any>>> = {};
   const reversed = reverseSpec(registration.spec.host ?? {});
   for (const key in reversed) {
     providers[key] = (root: Target, context: RenderContext) => reversed[key].resolve(
@@ -64,5 +64,5 @@ export function query<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
         context,
     );
   }
-  return providers as unknown as ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>;
+  return providers as ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>;
 }

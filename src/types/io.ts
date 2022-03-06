@@ -185,6 +185,7 @@ export interface OValue<T, P extends string> {
 
 export type Resolver = (host: HTMLElement) => HTMLElement;
 
+// TODO: Only used in reverse spec?
 export type InputOutput =
     IAttr|OAttr|
     ICall<any, string>|OCall<any, string>|

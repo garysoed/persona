@@ -37,7 +37,7 @@ export type ReversedSpec<U extends UnresolvedBindingSpec> = UnresolvedBindingSpe
 };
 
 export function reverseSpec<U extends UnresolvedBindingSpec>(spec: U): ReversedSpec<U> {
-  const reversed: Partial<Record<keyof U, InputOutput>> = {};
+  const reversed: Partial<Record<keyof U, any>> = {};
 
   for (const key in spec) {
     reversed[key] = reverseIO(spec[key]);
