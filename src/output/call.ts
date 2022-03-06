@@ -55,6 +55,6 @@ class UnresolvedOCall<T, M extends string> implements UnresolvedIO<OCall<T, M>> 
   }
 }
 
-export function ocall<M extends string>(methodName: M, argType: Type<unknown>): UnresolvedOCall<unknown, M> {
+export function ocall<T, M extends string>(methodName: M, argType: Type<T>): UnresolvedOCall<T, M> {
   return new UnresolvedOCall(methodName, argType);
 }

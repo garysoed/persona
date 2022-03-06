@@ -14,7 +14,7 @@ import {oflag} from '../output/flag';
 import {otext} from '../output/text';
 import {ovalue} from '../output/value';
 import {UnresolvedBindingSpec} from '../types/ctrl';
-import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, ISlotted, IText, IValue, OAttr, OCall, OCase, OClass, OEvent, OFlag, OForeach, OSlotted, OText, OValue} from '../types/io';
+import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, ISlotted, IValue, OAttr, OCall, OClass, OEvent, OFlag, OSlotted, OValue} from '../types/io';
 
 
 type ReversedIO<T> =
@@ -36,20 +36,8 @@ export type ReversedSpec<U extends UnresolvedBindingSpec> = UnresolvedBindingSpe
   readonly [K in keyof U]: ReversedIO<U[K]>;
 };
 
-type ReversableIO =
-    IAttr|OAttr|
-    ICall<any, any>|OCall<any, any>|
-    OCase<any>|
-    IClass|OClass|
-    OEvent<any>|IEvent<any>|
-    IFlag|OFlag|
-    OForeach<any>|
-    ISlotted|OSlotted|
-    IText|OText|
-    IValue<any, any>|OValue<any, any>;
-
 export function reverseSpec<U extends UnresolvedBindingSpec>(spec: U): ReversedSpec<U> {
-  const reversed: Partial<Record<keyof U, ReversableIO>> = {};
+  const reversed: Partial<Record<keyof U, InputOutput>> = {};
 
   for (const key in spec) {
     reversed[key] = reverseIO(spec[key]);
@@ -57,8 +45,8 @@ export function reverseSpec<U extends UnresolvedBindingSpec>(spec: U): ReversedS
   return reversed as ReversedSpec<U>;
 }
 
-function reverseIO<T extends ReversableIO>(io: T): ReversedIO<T>;
-function reverseIO(io: ReversableIO): InputOutput {
+function reverseIO<T extends InputOutput>(io: T): ReversedIO<T>;
+function reverseIO(io: InputOutput): InputOutput {
   switch (io.apiType) {
     case ApiType.ATTR:
       switch (io.ioType) {
@@ -104,6 +92,12 @@ function reverseIO(io: ReversableIO): InputOutput {
       break;
     case ApiType.FOREACH:
       throw new Error(`Unsupported reversal for ${io.apiType}`);
+    case ApiType.KEYDOWN:
+      throw new Error(`Unsupported reversal for ${io.apiType}`);
+    case ApiType.MEDIA:
+      throw new Error(`Unsupported reversal for ${io.apiType}`);
+    case ApiType.RECT:
+      throw new Error(`Unsupported reversal for ${io.apiType}`);
     case ApiType.SLOTTED:
       switch (io.ioType) {
         case IOType.INPUT:
@@ -112,6 +106,10 @@ function reverseIO(io: ReversableIO): InputOutput {
           return islotted();
       }
       break;
+    case ApiType.STYLE:
+      throw new Error(`Unsupported reversal for ${io.apiType}`);
+    case ApiType.TARGET:
+      throw new Error(`Unsupported reversal for ${io.apiType}`);
     case ApiType.TEXT:
       switch (io.ioType) {
         case IOType.INPUT:

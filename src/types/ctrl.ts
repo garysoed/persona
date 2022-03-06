@@ -57,17 +57,7 @@ export type BindingSpec = {
 }
 
 export type UnresolvedBindingSpec = {
-  readonly [key: string]:
-      UnresolvedIO<IAttr>|UnresolvedIO<OAttr>|
-      UnresolvedIO<ICall<unknown, any>>|
-      UnresolvedIO<OCase<any>>|
-      UnresolvedIO<IClass>|UnresolvedIO<OClass>|
-      UnresolvedIO<IEvent<any>>|UnresolvedIO<OEvent<any>>|
-      UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|
-      UnresolvedIO<OForeach<any>>|
-      UnresolvedIO<ISlotted>|UnresolvedIO<OSlotted>|
-      UnresolvedIO<IText>|UnresolvedIO<OText>|
-      UnresolvedIO<IValue<unknown, any>>|UnresolvedIO<OValue<any, any>>;
+  readonly [key: string]: UnresolvedIO<InputOutput>;
 }
 
 export type ResolvedBindingSpec<S extends UnresolvedBindingSpec> = {

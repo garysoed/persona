@@ -187,12 +187,12 @@ export type Resolver = (host: HTMLElement) => HTMLElement;
 
 export type InputOutput =
     IAttr|OAttr|
-    ICall<unknown, string>|OCall<unknown, string>|
-    OCase<unknown>|
+    ICall<any, string>|OCall<any, string>|
+    OCase<any>|
     IClass|OClass|
-    IEvent<Event>|OEvent<Event>|
+    IEvent<any>|OEvent<any>|
     IFlag|OFlag|
-    OForeach<unknown>|
+    OForeach<any>|
     IKeydown|
     IMedia|
     IRect|
@@ -200,4 +200,4 @@ export type InputOutput =
     OStyle<keyof CSSStyleDeclaration>|
     ITarget|
     IText|OText|
-    IValue<unknown, string>|OValue<unknown, string>;
+    IValue<any, string>|OValue<any, string>;
