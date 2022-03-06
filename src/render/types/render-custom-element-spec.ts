@@ -4,7 +4,6 @@ import {Bindings, Spec} from '../../types/ctrl';
 import {ReversedSpec} from '../../util/reverse-spec';
 
 import {BaseRenderSpec} from './base-render-spec';
-import {RenderSpec} from './render-spec';
 import {RenderSpecType} from './render-spec-type';
 
 
@@ -17,11 +16,7 @@ interface LiteRegistration<S extends Spec> {
 
 interface InputRenderSpec<S extends Spec> extends BaseRenderSpec<HTMLElement> {
   readonly registration: LiteRegistration<S>;
-  readonly attrs?: ReadonlyMap<string, Observable<string|undefined>>;
-  readonly children?: Observable<readonly RenderSpec[]>;
   readonly runs?: (bindings: ReversedBindings<S>) => ReadonlyArray<Observable<unknown>>;
-  readonly styles?: ReadonlyMap<string, Observable<string|null>>;
-  readonly textContent?: Observable<string>;
 }
 
 export interface RenderCustomElementSpec<S extends Spec> extends InputRenderSpec<S> {

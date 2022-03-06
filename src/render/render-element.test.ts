@@ -54,47 +54,11 @@ test('@persona/src/render/render-element', init => {
   });
 
   should('emit the element', () => {
-    const a = 'avalue';
     const element = _.tester.createElement(HOST);
     $spec.get(_.tester.vine).next(renderElement({
       tag: TAG,
-      attrs: new Map([['a', of(a)]]),
     }));
 
     assert(element).to.matchSnapshot('render-element__emit.html');
-  });
-
-  should('update the attributes', () => {
-    const b1 = 'b1';
-    const b2 = 'b2';
-    const element = _.tester.createElement(HOST);
-    $spec.get(_.tester.vine).next(renderElement({
-      tag: TAG,
-      attrs: new Map([['b', of(b1, b2)]]),
-    }));
-
-    assert(element).to.matchSnapshot('render-element__attribute_update.html');
-  });
-
-  should('delete the attribute if the value is undefined', () => {
-    const element = _.tester.createElement(HOST);
-    $spec.get(_.tester.vine).next(renderElement({
-      tag: TAG,
-      attrs: new Map([['b', of('bValue', undefined)]]),
-    }));
-
-    assert(element).to.matchSnapshot('render-element__attribute_undefined.html');
-  });
-
-  should('update the text context', () => {
-    const text1 = 'text1';
-    const text2 = 'text2';
-    const element = _.tester.createElement(HOST);
-    $spec.get(_.tester.vine).next(renderElement({
-      tag: TAG,
-      textContent: of(text1, text2),
-    }));
-
-    assert(element).to.matchSnapshot('render-element__text_content.html');
   });
 });

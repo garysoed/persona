@@ -1,9 +1,6 @@
 import {Observable} from 'rxjs';
-import {tap} from 'rxjs/operators';
 
 import {Decorator} from './decorators/apply-decorators';
-import {applyStyles} from './decorators/apply-styles';
-import {applyTextContent} from './decorators/apply-text-content';
 import {renderNode} from './render-node';
 import {RenderContext} from './types/render-context';
 import {RenderElementSpec} from './types/render-element-spec';
@@ -45,26 +42,6 @@ export function renderElement(
     context: RenderContext,
 ): Observable<HTMLElement> {
   const decorators: Array<Decorator<HTMLElement>> = [];
-  const extraAttrs = spec.attrs ?? new Map<string, Observable<string|undefined>>();
-  for (const [attrName, attrValue] of extraAttrs) {
-    decorators.push(el => attrValue.pipe(
-        tap(value => {
-          if (value === undefined) {
-            el.removeAttribute(attrName);
-          } else {
-            el.setAttribute(attrName, value);
-          }
-        }),
-    ));
-  }
-
-  if (spec.textContent) {
-    decorators.push(applyTextContent(spec.textContent));
-  }
-
-  for (const [key, styles] of spec.styles ?? new Map()) {
-    decorators.push(applyStyles(key, styles));
-  }
 
   if (spec.decorators) {
     decorators.push(...spec.decorators);

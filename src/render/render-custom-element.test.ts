@@ -2,9 +2,8 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
-import {forwardTo} from 'gs-tools/export/rxjs';
 import {numberType, unknownType} from 'gs-types';
-import {Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {Observable, of, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {iattr} from '../input/attr';
@@ -107,52 +106,5 @@ test('@persona/src/render/render-custom-element', init => {
     }));
 
     assert(element).to.matchSnapshot('render-custom-element__update.html');
-  });
-
-  should('update the extra attributes', () => {
-    const element = _.tester.createElement(HOST);
-    $spec.get(_.tester.vine).next(renderCustomElement({
-      registration: CHILD,
-      runs: $ => [
-        of('a').pipe($.a()),
-        of(true).pipe($.b()),
-      ],
-      attrs: new Map([['c', of('c1', 'c2')]]),
-    }));
-
-    assert(element).to.matchSnapshot('render-custom-element__extra_attr.html');
-  });
-
-  should('update the text context', () => {
-    const element = _.tester.createElement(HOST);
-    $spec.get(_.tester.vine).next(renderCustomElement({
-      registration: CHILD,
-      runs: $ => [
-        of('a').pipe($.a()),
-        of(true).pipe($.b()),
-      ],
-      textContent: of('text1', 'text2'),
-    }));
-
-    assert(element).to.matchSnapshot('render-custom-element__text.html');
-  });
-
-  should('apply the bindings correctly', () => {
-    _.tester.createElement(HOST);
-    const c$ = new ReplaySubject<number>();
-    $spec.get(_.tester.vine).next(renderCustomElement({
-      registration: CHILD,
-      runs: $ => [
-        $.c.pipe(forwardTo(c$)),
-      ],
-      textContent: of('text1', 'text2'),
-    }));
-
-    const subject = $c.get(_.tester.vine);
-    subject.next(1);
-    subject.next(2);
-    subject.next(3);
-
-    assert(c$).to.emitSequence([DEFAULT_C, 1, 2, 3]);
   });
 });
