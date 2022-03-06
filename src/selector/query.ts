@@ -1,6 +1,6 @@
 import {RenderContext} from '../render/types/render-context';
 import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedIO} from '../types/ctrl';
-import {IAttr, IClass, IEvent, IFlag, IKeydown, IRect, ITarget, IText, OAttr, OCall, OCase, OClass, OFlag, OForeach, OStyle, OText} from '../types/io';
+import {InputOutput} from '../types/io';
 import {Registration} from '../types/registration';
 import {Target} from '../types/target';
 import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
@@ -18,21 +18,7 @@ function getElement(target: Target, query: string): Element {
 }
 
 
-export type ExtraUnresolvedBindingSpec = Record<
-    string,
-    UnresolvedIO<IAttr>|UnresolvedIO<OAttr>|
-    UnresolvedIO<OCall<any, any>>|
-    UnresolvedIO<OCase<any>>|
-    UnresolvedIO<IClass>|UnresolvedIO<OClass>|
-    UnresolvedIO<IEvent<any>>|
-    UnresolvedIO<IFlag>|UnresolvedIO<OFlag>|
-    UnresolvedIO<OForeach<any>>|
-    UnresolvedIO<IKeydown>|
-    UnresolvedIO<IRect>|
-    UnresolvedIO<OStyle<any>>|
-    UnresolvedIO<ITarget>|
-    UnresolvedIO<IText>|UnresolvedIO<OText>
->;
+export type ExtraUnresolvedBindingSpec = Record<string, UnresolvedIO<InputOutput>>;
 
 export function query<S extends Spec>(
     query: string,

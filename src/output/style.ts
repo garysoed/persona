@@ -4,8 +4,11 @@ import {tap} from 'rxjs/operators';
 import {Resolved, UnresolvedIO} from '../types/ctrl';
 import {ApiType, IOType, OStyle} from '../types/io';
 
+type StringPropertyKeys<S> = {
+  readonly [K in keyof S]: S[K] extends string ? K : never;
+}[keyof S];
 
-class ResolvedOStyle<S extends keyof CSSStyleDeclaration> implements Resolved<UnresolvedOStyle<S>> {
+class ResolvedOStyle<S extends StringPropertyKeys<CSSStyleDeclaration>> implements Resolved<UnresolvedOStyle<S>> {
   readonly apiType = ApiType.STYLE;
   readonly ioType = IOType.OUTPUT;
 
@@ -14,7 +17,7 @@ class ResolvedOStyle<S extends keyof CSSStyleDeclaration> implements Resolved<Un
       readonly target: HTMLElement,
   ) {}
 
-  update(): OperatorFunction<CSSStyleDeclaration[S], CSSStyleDeclaration[S]> {
+  update(): OperatorFunction<string, string> {
     return pipe(
         tap(newValue => {
           this.target.style[this.propertyName] = newValue;
@@ -23,7 +26,7 @@ class ResolvedOStyle<S extends keyof CSSStyleDeclaration> implements Resolved<Un
   }
 }
 
-class UnresolvedOStyle<S extends keyof CSSStyleDeclaration> implements UnresolvedIO<OStyle<S>> {
+class UnresolvedOStyle<S extends StringPropertyKeys<CSSStyleDeclaration>> implements UnresolvedIO<OStyle<S>> {
   readonly apiType = ApiType.STYLE;
   readonly ioType = IOType.OUTPUT;
 
@@ -36,6 +39,6 @@ class UnresolvedOStyle<S extends keyof CSSStyleDeclaration> implements Unresolve
   }
 }
 
-export function ostyle<S extends keyof CSSStyleDeclaration>(propertyName: S): UnresolvedOStyle<S> {
+export function ostyle<S extends StringPropertyKeys<CSSStyleDeclaration>>(propertyName: S): UnresolvedOStyle<S> {
   return new UnresolvedOStyle<S>(propertyName);
 }

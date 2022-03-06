@@ -40,7 +40,7 @@ export type Resolved<T> =
     T extends IRect ? IRect&ResolvedI<DOMRect> :
     T extends ISlotted ? ISlotted&ResolvedI<readonly Node[]> :
     T extends OSlotted ? OSlotted&ResolvedO<readonly Node[], readonly Node[], []> :
-    T extends OStyle<infer S> ? OStyle<S>&ResolvedO<CSSStyleDeclaration[S], CSSStyleDeclaration[S], []> :
+    T extends OStyle<infer S> ? OStyle<S>&ResolvedO<string, string, []> :
     T extends ITarget ? ITarget&ResolvedI<HTMLElement> :
     T extends IText ? IText&ResolvedI<string> :
     T extends OText ? OText&ResolvedO<string, string, []> :
