@@ -1,8 +1,7 @@
-import {BaseRenderSpec} from './base-render-spec';
 import {RenderSpecType} from './render-spec-type';
 
 
-interface Input extends BaseRenderSpec<HTMLElement> {
+interface Input {
   readonly tag: string;
 }
 

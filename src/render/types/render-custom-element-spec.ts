@@ -3,7 +3,6 @@ import {Observable} from 'rxjs';
 import {Bindings, Spec} from '../../types/ctrl';
 import {ReversedSpec} from '../../util/reverse-spec';
 
-import {BaseRenderSpec} from './base-render-spec';
 import {RenderSpecType} from './render-spec-type';
 
 
@@ -14,7 +13,7 @@ interface LiteRegistration<S extends Spec> {
   readonly tag: string;
 }
 
-interface InputRenderSpec<S extends Spec> extends BaseRenderSpec<HTMLElement> {
+interface InputRenderSpec<S extends Spec> {
   readonly registration: LiteRegistration<S>;
   readonly runs?: (bindings: ReversedBindings<S>) => ReadonlyArray<Observable<unknown>>;
 }

@@ -2,7 +2,6 @@ import {Observable, OperatorFunction, Subject} from 'rxjs';
 
 import {Binding, Bindings, ResolvedBindingSpecProvider, UnresolvedBindingSpec} from '../../types/ctrl';
 
-import {BaseRenderSpec} from './base-render-spec';
 import {RenderSpecType} from './render-spec-type';
 
 
@@ -19,7 +18,7 @@ export type TemplateBindings<O> = {
   readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<infer S> ? Bindings<S> : never;
 }
 
-interface InputRenderSpec<S extends TemplateBindingSpec> extends BaseRenderSpec<Node> {
+interface InputRenderSpec<S extends TemplateBindingSpec> {
   readonly template$: Observable<HTMLTemplateElement>;
   readonly spec: S;
   readonly runs?: (bindings: TemplateBindings<S>) => ReadonlyArray<Observable<unknown>>;

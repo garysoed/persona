@@ -1,10 +1,9 @@
 import {Observable} from 'rxjs';
 
-import {BaseRenderSpec} from './base-render-spec';
 import {RenderSpecType} from './render-spec-type';
 
 
-interface Input extends BaseRenderSpec<Text> {
+interface Input {
   readonly textContent: Observable<string>;
 }
 

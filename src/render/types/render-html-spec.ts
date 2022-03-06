@@ -1,22 +1,25 @@
-import {Observable} from 'rxjs';
+import {Observable, OperatorFunction} from 'rxjs';
+import {tap} from 'rxjs/operators';
 
-import {BaseRenderSpec} from './base-render-spec';
 import {RenderSpecType} from './render-spec-type';
 
 
-interface Input extends BaseRenderSpec<Element> {
+interface Input {
   readonly raw: Observable<string>;
   readonly parseType: DOMParserSupportedType;
+  readonly decorator?: OperatorFunction<Element, unknown>;
 }
 
 export interface RenderHtmlSpec extends Input {
   readonly type: RenderSpecType.HTML;
   readonly raw: Observable<string>
+  readonly decorator: OperatorFunction<Element, unknown>;
 }
 
 export function renderHtml(input: Input): RenderHtmlSpec {
   return {
-    ...input,
     type: RenderSpecType.HTML,
+    decorator: tap(),
+    ...input,
   };
 }

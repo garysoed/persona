@@ -1,6 +1,5 @@
 import {Observable} from 'rxjs';
 
-import {Decorator} from './decorators/apply-decorators';
 import {renderNode} from './render-node';
 import {RenderContext} from './types/render-context';
 import {RenderElementSpec} from './types/render-element-spec';
@@ -41,16 +40,9 @@ export function renderElement(
     spec: RenderElementSpec,
     context: RenderContext,
 ): Observable<HTMLElement> {
-  const decorators: Array<Decorator<HTMLElement>> = [];
-
-  if (spec.decorators) {
-    decorators.push(...spec.decorators);
-  }
-
   return renderNode({
     ...spec,
     type: RenderSpecType.NODE,
     node: context.document.createElement(spec.tag),
-    decorators,
   });
 }

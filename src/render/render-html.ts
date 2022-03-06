@@ -1,5 +1,5 @@
-import {Observable, of as observableOf} from 'rxjs';
-import {switchMap} from 'rxjs/operators';
+import {EMPTY, merge, Observable, of as observableOf} from 'rxjs';
+import {switchMap, switchMapTo} from 'rxjs/operators';
 
 import {$htmlParseService} from './html-parse-service';
 import {renderNode} from './render-node';
@@ -31,11 +31,16 @@ export function renderHtml(
               return observableOf(null);
             }
 
-            return renderNode({
+            const node$ = renderNode({
               ...spec,
               type: RenderSpecType.NODE,
               node: el.cloneNode(true) as Element,
             });
+
+            return merge(
+                node$.pipe(spec.decorator, switchMapTo(EMPTY)),
+                node$,
+            );
           }),
       );
 }

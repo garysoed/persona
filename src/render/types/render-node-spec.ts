@@ -1,7 +1,6 @@
-import {BaseRenderSpec} from './base-render-spec';
 import {RenderSpecType} from './render-spec-type';
 
-interface Input<N extends Node> extends BaseRenderSpec<N> {
+interface Input<N extends Node> {
   readonly node: N;
 }
 

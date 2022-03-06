@@ -61,9 +61,6 @@ export {renderTemplate, RenderTemplateSpec} from '../src/render/types/render-tem
 export {RenderTextNodeSpec, renderTextNode} from '../src/render/types/render-text-node-spec';
 
 
-// Core
-export {applyDecorators, Decorator} from '../src/render/decorators/apply-decorators';
-
 // Util
 export {customElementType} from '../src/util/custom-element-type';
 export {mediaQueryObservable} from '../src/util/media-query-observable';

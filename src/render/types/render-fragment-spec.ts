@@ -1,9 +1,8 @@
-import {BaseRenderSpec} from './base-render-spec';
 import {RenderSpec} from './render-spec';
 import {RenderSpecType} from './render-spec-type';
 
 
-interface Input extends BaseRenderSpec<DocumentFragment> {
+interface Input {
   // This cannot be observable since the DocumentFragment disappears.
   readonly nodes: readonly RenderSpec[];
 }

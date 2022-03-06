@@ -134,8 +134,8 @@ test('@persona/src/output/case', init => {
       $rootSlottedValue$.get(_.tester.vine).next(node);
       assert(element).to.matchSnapshot('case__root_slotted_value.html');
 
-      $rootSlottedValue$.get(_.tester.vine).next(null);
-      assert(element).to.matchSnapshot('case__root_slotted_reset.html');
+      // $rootSlottedValue$.get(_.tester.vine).next(null);
+      // assert(element).to.matchSnapshot('case__root_slotted_reset.html');
     });
   });
 });
