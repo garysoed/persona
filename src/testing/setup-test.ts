@@ -5,7 +5,7 @@ import {arrayFrom} from 'gs-tools/export/collect';
 
 import {installCustomElements} from '../core/install-custom-elements';
 import {Spec} from '../types/ctrl';
-import {Registration} from '../types/registration';
+import {CustomElementRegistration, Registration} from '../types/registration';
 
 import {FakeCustomElementRegistry} from './fake-custom-element-registry';
 import {FakeMediaQuery, mockMatchMedia} from './mock-match-media';
@@ -13,7 +13,7 @@ import {PersonaTesterEnvironment} from './persona-tester-environment';
 
 
 export interface TestSpec {
-  readonly roots?: ReadonlyArray<Registration<HTMLElement, any>>;
+  readonly roots?: ReadonlyArray<CustomElementRegistration<HTMLElement, any>>;
   readonly overrides?: VineConfig['overrides'];
 }
 
@@ -46,7 +46,7 @@ export function setupTest(spec: TestSpec): Tester {
     return origCreateElement.call(document, tag);
   }
   const fakeTime = mockTime(window);
-  const registrationMap = new Map<string, Registration<HTMLElement, Spec>>();
+  const registrationMap = new Map<string, CustomElementRegistration<HTMLElement, Spec>>();
   const customElementRegistry = new FakeCustomElementRegistry(
       createElement,
       registrationMap,

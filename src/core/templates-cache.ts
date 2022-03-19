@@ -1,12 +1,12 @@
 import {source} from 'grapevine';
 
 import {Spec} from '../types/ctrl';
-import {RegistrationSpec} from '../types/registration';
+import {CustomElementRegistration} from '../types/registration';
 
 
 const $templateCache = source(() => new Map<string, HTMLTemplateElement>());
 export const $getTemplate = source(vine => {
-  return (spec: RegistrationSpec<Spec>) => {
+  return (spec: CustomElementRegistration<HTMLElement, Spec>) => {
     const templateCache = $templateCache.get(vine);
     const template = templateCache.get(spec.tag);
     if (template) {

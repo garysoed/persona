@@ -1,9 +1,10 @@
 import {Vine} from 'grapevine';
 
 import {Spec} from '../types/ctrl';
-import {Registration} from '../types/registration';
+import {CustomElementRegistration} from '../types/registration';
 
-type GenericRegistration = Registration<HTMLElement, Spec>;
+
+type GenericRegistration = CustomElementRegistration<HTMLElement, Spec>;
 
 export interface InstallSpec {
   readonly customElementRegistry: CustomElementRegistry;

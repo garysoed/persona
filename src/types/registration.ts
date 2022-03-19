@@ -10,9 +10,17 @@ interface CustomElementCtor<E extends HTMLElement> {
 export interface Registration<
     E extends HTMLElement,
     S extends Spec,
-> extends RegistrationSpec<S> {
+> {
   readonly configure: (vine: Vine) => void;
+  readonly spec: S;
+  readonly tag: string;
   readonly $ctor: Source<CustomElementCtor<E>>;
+}
+
+export interface CustomElementRegistration<E extends HTMLElement, S extends Spec> extends Registration<E, S> {
+  readonly ctrl: new (context: Context<S>) => Ctrl;
+  readonly deps: ReadonlyArray<CustomElementRegistration<HTMLElement, any>>;
+  readonly template: string;
 }
 
 export interface RegistrationSpec<S extends Spec> {
@@ -20,6 +28,6 @@ export interface RegistrationSpec<S extends Spec> {
   readonly ctrl: new (context: Context<S>) => Ctrl;
   readonly spec: S;
   readonly template: string;
-  readonly deps?: ReadonlyArray<Registration<HTMLElement, any>>,
+  readonly deps?: ReadonlyArray<CustomElementRegistration<HTMLElement, any>>,
   readonly configure?: (vine: Vine) => void;
 }

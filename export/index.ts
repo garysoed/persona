@@ -1,7 +1,7 @@
 export {Bindings, Context, Ctrl, Spec as ElementSpec} from '../src/types/ctrl';
 export {installCustomElements} from '../src/core/install-custom-elements';
 export {registerCustomElement} from '../src/core/register-custom-element';
-export {Registration} from '../src/types/registration';
+export {CustomElementRegistration, Registration} from '../src/types/registration';
 
 export {query} from '../src/selector/query';
 export {root} from '../src/selector/root';

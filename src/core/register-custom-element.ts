@@ -4,7 +4,7 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import {Spec} from '../types/ctrl';
 import {AttributeChangedEvent} from '../types/event';
 import {ICall, IValue, OValue} from '../types/io';
-import {Registration, RegistrationSpec} from '../types/registration';
+import {CustomElementRegistration, RegistrationSpec} from '../types/registration';
 import {setAttributeChangeObservable} from '../util/attribute-change-observable';
 
 import {getObservedAttributes} from './get-observed-attributes';
@@ -63,7 +63,7 @@ export type ApiAsProperties<S extends Spec> = (ApiReadable<S['host']>&ApiReadonl
 
 export function registerCustomElement<S extends Spec>(
     spec: RegistrationSpec<S>,
-): Registration<ApiAsProperties<S>&HTMLElement, S> {
+): CustomElementRegistration<ApiAsProperties<S>&HTMLElement, S> {
   const $ctor = source(vine => {
     const elementClass = class extends HTMLElement {
       private readonly onAttributeChanged$ = new Subject<AttributeChangedEvent>();
@@ -96,9 +96,10 @@ export function registerCustomElement<S extends Spec>(
   });
 
   const registration = {
-    ...spec,
+    deps: [],
     $ctor,
     configure: spec.configure ?? (() => undefined),
+    ...spec,
   };
 
   return registration;

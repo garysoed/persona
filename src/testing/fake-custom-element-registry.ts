@@ -8,7 +8,7 @@ import {getObservedAttributes} from '../core/get-observed-attributes';
 import {upgradeElement} from '../core/upgrade-element';
 import {Spec} from '../types/ctrl';
 import {AttributeChangedEvent} from '../types/event';
-import {Registration} from '../types/registration';
+import {CustomElementRegistration} from '../types/registration';
 import {setAttributeChangeObservable} from '../util/attribute-change-observable';
 import {mutationObservable} from '../util/mutation-observable';
 
@@ -28,7 +28,7 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
   constructor(
       // Do not use document.createElement since it will be faked.
       private readonly createElement: (tag: string) => HTMLElement,
-      private readonly registrationMap: ReadonlyMap<string, Registration<HTMLElement, Spec>>,
+      private readonly registrationMap: ReadonlyMap<string, CustomElementRegistration<HTMLElement, Spec>>,
       private readonly vine: Vine,
   ) { }
 

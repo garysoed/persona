@@ -6,7 +6,7 @@ import {catchError, distinctUntilChanged, mapTo, shareReplay, switchMap} from 'r
 import {RenderContext} from '../render/types/render-context';
 import {Bindings, BindingSpec, ResolvedBindingSpecProvider, ShadowBindings, Spec, UnresolvedBindingSpec} from '../types/ctrl';
 import {ApiType, IOType, IValue, OValue} from '../types/io';
-import {Registration, RegistrationSpec} from '../types/registration';
+import {CustomElementRegistration, RegistrationSpec} from '../types/registration';
 import {Target} from '../types/target';
 import {setValueObservable} from '../util/value-observable';
 
@@ -23,7 +23,7 @@ type DecoratedHtmlElement = HTMLElement & {
 };
 
 export function upgradeElement(
-    registration: Registration<HTMLElement, Spec>,
+    registration: CustomElementRegistration<HTMLElement, Spec>,
     element: DecoratedHtmlElement,
     isConnected$: Subject<boolean>,
     vine: Vine,
@@ -36,7 +36,7 @@ export function upgradeElement(
 }
 
 function createCtrl(
-    registrationSpec: RegistrationSpec<Spec>,
+    registrationSpec: CustomElementRegistration<HTMLElement, Spec>,
     element: HTMLElement,
     shadowRoot: ShadowRoot,
     vine: Vine,
@@ -175,7 +175,7 @@ function createDescriptorForProperty<T>(
 }
 
 function createShadow(
-    registrationSpec: RegistrationSpec<Spec>,
+    registrationSpec: CustomElementRegistration<HTMLElement, Spec>,
     element: HTMLElement,
     vine: Vine,
 ): ShadowRoot {
