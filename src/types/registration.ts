@@ -10,8 +10,9 @@ interface CustomElementCtor<E extends HTMLElement> {
 export interface Registration<
     E extends HTMLElement,
     S extends Spec,
-> extends Source<CustomElementCtor<E>>, RegistrationSpec<S> {
+> extends RegistrationSpec<S> {
   readonly configure: (vine: Vine) => void;
+  readonly $ctor: Source<CustomElementCtor<E>>;
 }
 
 export interface RegistrationSpec<S extends Spec> {

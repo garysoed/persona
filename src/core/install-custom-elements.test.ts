@@ -42,7 +42,7 @@ test('@persona/src/core/install-custom-elements', init => {
     const element = _.tester.createElement(TEST_CLASS);
     const depsEl = _.tester.createElement(DEPS_CLASS);
 
-    assert(element).to.beAnInstanceOf(TEST_CLASS.get(_.tester.vine));
-    assert(depsEl).to.beAnInstanceOf(DEPS_CLASS.get(_.tester.vine));
+    assert(element).to.beAnInstanceOf(TEST_CLASS.$ctor.get(_.tester.vine));
+    assert(depsEl).to.beAnInstanceOf(DEPS_CLASS.$ctor.get(_.tester.vine));
   });
 });

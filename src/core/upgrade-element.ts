@@ -32,7 +32,7 @@ export function upgradeElement(
   createProperties(registration, element);
   createMethods(registration, element);
   createCtrl(registration, element, shadowRoot, vine, isConnected$);
-  Object.setPrototypeOf(element, registration.get(vine).prototype);
+  Object.setPrototypeOf(element, registration.$ctor.get(vine).prototype);
 }
 
 function createCtrl(

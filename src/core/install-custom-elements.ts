@@ -16,7 +16,7 @@ export function installCustomElements(spec: InstallSpec): ReadonlyMap<string, Ge
   const registrations = getAllRegistrations(spec.roots);
   for (const [tag, registration] of registrations) {
     registration.configure(spec.vine);
-    spec.customElementRegistry.define(tag, registration.get(spec.vine));
+    spec.customElementRegistry.define(tag, registration.$ctor.get(spec.vine));
   }
 
   return registrations;

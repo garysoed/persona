@@ -64,7 +64,7 @@ export type ApiAsProperties<S extends Spec> = (ApiReadable<S['host']>&ApiReadonl
 export function registerCustomElement<S extends Spec>(
     spec: RegistrationSpec<S>,
 ): Registration<ApiAsProperties<S>&HTMLElement, S> {
-  const base = source(vine => {
+  const $ctor = source(vine => {
     const elementClass = class extends HTMLElement {
       private readonly onAttributeChanged$ = new Subject<AttributeChangedEvent>();
       private readonly isConnected$ = new BehaviorSubject<boolean>(false);
@@ -95,11 +95,11 @@ export function registerCustomElement<S extends Spec>(
     return elementClass as unknown as Typeof<ApiAsProperties<S>&HTMLElement>;
   });
 
-  const registration = Object.assign(base,
-      {
-        ...spec,
-        configure: spec.configure ?? (() => undefined),
-      });
+  const registration = {
+    ...spec,
+    $ctor,
+    configure: spec.configure ?? (() => undefined),
+  };
 
   return registration;
 }
