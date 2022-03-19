@@ -1,6 +1,9 @@
 import {iattr} from '../input/attr';
 import {iflag} from '../input/flag';
 
+import {createDomRegistration} from './create-dom-registration';
+import {ELEMENT} from './element';
+
 
 export enum AutocompleteType {
   ADDITIONAL_NAME = 'additional-name',
@@ -28,17 +31,15 @@ export enum InputType {
   URL = 'url',
 }
 
-export const INPUT = {
+export const INPUT = createDomRegistration({
+  ctor: HTMLInputElement,
   spec: {
-    host: {
-      autocomplete: iattr('autocomplete'),
-      autofocus: iflag('autofocus'),
-      disabled: iflag('disabled'),
-      max: iattr('max'),
-      min: iattr('min'),
-      step: iattr('step'),
-      type: iattr('type'),
-    },
+    autocomplete: iattr('autocomplete'),
+    autofocus: iflag('autofocus'),
+    disabled: iflag('disabled'),
+    max: iattr('max'),
+    min: iattr('min'),
+    step: iattr('step'),
+    type: iattr('type'),
   },
-  tag: 'input',
-};
+}, ELEMENT);

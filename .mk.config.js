@@ -2,7 +2,6 @@ set_vars({
   vars: {
     goldens: [
       'src/output/goldens',
-      'src/render/decorators/goldens',
       'src/render/goldens',
     ],
   },

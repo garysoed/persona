@@ -1,10 +1,11 @@
 import {oslotted} from '../output/slotted';
 
-export const SLOT = {
+import {createDomRegistration} from './create-dom-registration';
+import {ELEMENT} from './element';
+
+export const SLOT = createDomRegistration({
+  ctor: HTMLSlotElement,
   spec: {
-    host: {
-      slotted: oslotted(),
-    },
+    slotted: oslotted(),
   },
-  tag: 'slot',
-};
+}, ELEMENT);

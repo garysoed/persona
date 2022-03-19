@@ -1,7 +1,7 @@
 import {createDomRegistration} from './create-dom-registration';
 import {ELEMENT} from './element';
 
-export const TEMPLATE = createDomRegistration({
-  ctor: HTMLTemplateElement,
+export const HEADING = createDomRegistration({
+  ctor: HTMLHeadingElement,
   spec: {},
 }, ELEMENT);

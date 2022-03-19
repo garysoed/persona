@@ -5,7 +5,7 @@ import {arrayFrom} from 'gs-tools/export/collect';
 
 import {installCustomElements} from '../core/install-custom-elements';
 import {Spec} from '../types/ctrl';
-import {CustomElementRegistration, Registration} from '../types/registration';
+import {CustomElementRegistration} from '../types/registration';
 
 import {FakeCustomElementRegistry} from './fake-custom-element-registry';
 import {FakeMediaQuery, mockMatchMedia} from './mock-match-media';
@@ -24,7 +24,7 @@ export class Tester {
       private readonly customElementRegistry: FakeCustomElementRegistry,
   ) { }
 
-  createElement<E extends HTMLElement, S extends Spec>(spec: Registration<E, S>): E {
+  createElement<E extends HTMLElement, S extends Spec>(spec: CustomElementRegistration<E, S>): E {
     return this.customElementRegistry.create(spec.tag) as E;
   }
 
