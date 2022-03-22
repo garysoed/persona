@@ -1,7 +1,6 @@
 import {Observable} from 'rxjs';
 
-import {UnresolvedBindingSpec} from '../types/ctrl';
-import {Target} from '../types/target';
+import {ResolvedBindingSpec} from '../types/ctrl';
 
 import {renderCustomElement} from './render-custom-element';
 import {renderElement} from './render-element';
@@ -22,7 +21,7 @@ import {RenderTemplateSpec, TemplateBindingSpec} from './types/render-template-s
 import {RenderTextNodeSpec} from './types/render-text-node-spec';
 
 
-export function render(spec: RenderCustomElementSpec<UnresolvedBindingSpec<Target>>, context: RenderContext): Observable<Element>;
+export function render(spec: RenderCustomElementSpec<ResolvedBindingSpec>, context: RenderContext): Observable<Element>;
 export function render(spec: RenderFragmentSpec, context: RenderContext): Observable<DocumentFragment>;
 export function render(spec: RenderElementSpec, context: RenderContext): Observable<Element>;
 export function render(spec: RenderHtmlSpec, context: RenderContext): Observable<Element>;

@@ -18,18 +18,18 @@ function getElement(target: Target, query: string): Element {
 }
 
 
-type ExtraUnresolvedBindingSpec = Record<string, Resolved<InputOutput>>;
+type ExtraBindingSpec = Record<string, Resolved<InputOutput>>;
 
 export function query<E extends HTMLElement, S extends Spec>(
     query: string,
     registration: Registration<E, S>,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>>;
-export function query<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
+export function query<S extends Spec, X extends ExtraBindingSpec>(
     query: string,
     registration: RegistrationWithSpec<S>,
     extra: X,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>
-export function query<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
+export function query<S extends Spec, X extends ExtraBindingSpec>(
     query: string,
     registration: RegistrationWithSpec<S>,
     extra?: X,

@@ -49,16 +49,8 @@ export type Resolved<O> =
 
 export type ResolvedProvider<V> = (root: Target, context: RenderContext) => Binding<V>;
 
-export type UnresolvedIO<T extends Target, B> = B & {
-  resolve(target: T, context: RenderContext): Resolved<B>;
-};
-
 export type BindingSpec = {
   readonly [key: string]: unknown;
-}
-
-export type UnresolvedBindingSpec<T extends Target> = {
-  readonly [key: string]: UnresolvedIO<T, InputOutput>;
 }
 
 export type ResolvedBindingSpec = {
