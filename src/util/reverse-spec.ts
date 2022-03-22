@@ -13,9 +13,8 @@ import {oevent} from '../output/event';
 import {oflag} from '../output/flag';
 import {otext} from '../output/text';
 import {ovalue} from '../output/value';
-import {UnresolvedBindingSpec} from '../types/ctrl';
+import {ResolvedBindingSpec} from '../types/ctrl';
 import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, ISlotted, IValue, OAttr, OCall, OClass, OEvent, OFlag, OSlotted, OValue} from '../types/io';
-import {Target} from '../types/target';
 
 
 type ReversedIO<T> =
@@ -33,17 +32,17 @@ type ReversedIO<T> =
     T extends OValue<infer V, infer P> ? IValue<V, P> :
     never;
 
-export type ReversedSpec<T extends Target, U extends UnresolvedBindingSpec<T>> = UnresolvedBindingSpec<T> & {
+export type ReversedSpec<U extends ResolvedBindingSpec> = ResolvedBindingSpec & {
   readonly [K in keyof U]: ReversedIO<U[K]>;
 };
 
-export function reverseSpec<T extends Target, U extends UnresolvedBindingSpec<T>>(spec: U): ReversedSpec<T, U> {
+export function reverseSpec<U extends ResolvedBindingSpec>(spec: U): ReversedSpec<U> {
   const reversed: Partial<Record<keyof U, any>> = {};
 
   for (const key in spec) {
     reversed[key] = reverseIO(spec[key]);
   }
-  return reversed as ReversedSpec<T, U>;
+  return reversed as ReversedSpec<U>;
 }
 
 function reverseIO<T extends InputOutput>(io: T): ReversedIO<T>;

@@ -25,6 +25,7 @@ export {oflag} from '../src/output/flag';
 export {oforeach} from '../src/output/foreach';
 export {ostyle} from '../src/output/style';
 export {otext} from '../src/output/text';
+export {ovalue} from '../src/output/value';
 
 export {BUTTON} from '../src/html/button';
 export {DIV} from '../src/html/div';

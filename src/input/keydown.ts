@@ -1,27 +1,24 @@
-import {cache} from 'gs-tools/export/data';
 import {filterByType} from 'gs-tools/export/rxjs';
 import {booleanType, instanceofType} from 'gs-types';
 import {fromEvent, Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 
-import {Resolved, UnresolvedIO} from '../types/ctrl';
+import {Resolved} from '../types/ctrl';
 import {ApiType, IKeydown, IOType} from '../types/io';
 import {KeyMatchOptions} from '../types/key-match-options';
 
 
-class ResolvedIKeydown implements Resolved<UnresolvedIKeydown> {
+class ResolvedIKeydown implements Resolved<IKeydown> {
   readonly apiType = ApiType.KEYDOWN;
   readonly ioType = IOType.INPUT;
 
   constructor(
     readonly key: string,
     readonly matchOptions: KeyMatchOptions,
-    readonly target: HTMLElement,
   ) {}
 
-  @cache()
-  get value$(): Observable<KeyboardEvent> {
-    return fromEvent(this.target, 'keydown').pipe(
+  resolve(target: HTMLElement): Observable<KeyboardEvent> {
+    return fromEvent(target, 'keydown').pipe(
         filterByType(instanceofType(KeyboardEvent)),
         filter(event => {
           if (event.key !== this.key) {
@@ -55,20 +52,6 @@ class ResolvedIKeydown implements Resolved<UnresolvedIKeydown> {
   }
 }
 
-export class UnresolvedIKeydown implements UnresolvedIO<HTMLElement, IKeydown> {
-  readonly apiType = ApiType.KEYDOWN;
-  readonly ioType = IOType.INPUT;
-
-  constructor(
-      readonly key: string,
-      readonly matchOptions: KeyMatchOptions,
-  ) {}
-
-  resolve(target: HTMLElement): ResolvedIKeydown {
-    return new ResolvedIKeydown(this.key, this.matchOptions, target);
-  }
-}
-
-export function ikeydown(key: string, matchOptions: KeyMatchOptions = {}): UnresolvedIKeydown {
-  return new UnresolvedIKeydown(key, matchOptions);
+export function ikeydown(key: string, matchOptions: KeyMatchOptions = {}): ResolvedIKeydown {
+  return new ResolvedIKeydown(key, matchOptions);
 }

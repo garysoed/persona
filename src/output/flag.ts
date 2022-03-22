@@ -1,48 +1,31 @@
 import {OperatorFunction, pipe} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {Resolved, UnresolvedIO} from '../types/ctrl';
+import {Resolved} from '../types/ctrl';
 import {ApiType, IOType, OFlag} from '../types/io';
 
 
-class ResolvedOFlag implements Resolved<UnresolvedOFlag> {
+class ResolvedOFlag implements Resolved<OFlag> {
   readonly apiType = ApiType.FLAG;
   readonly ioType = IOType.OUTPUT;
 
   constructor(
       readonly attrName: string,
-      readonly target: HTMLElement,
   ) {}
 
-  update(): OperatorFunction<boolean, boolean> {
-    return pipe(
+  resolve(target: HTMLElement): () => OperatorFunction<boolean, boolean> {
+    return () => pipe(
         tap(hasAttribute => {
           if (!hasAttribute) {
-            this.target.removeAttribute(this.attrName);
+            target.removeAttribute(this.attrName);
           } else {
-            this.target.setAttribute(this.attrName, '');
+            target.setAttribute(this.attrName, '');
           }
         }),
     );
   }
 }
 
-class UnresolvedOFlag implements UnresolvedIO<HTMLElement, OFlag> {
-  readonly apiType = ApiType.FLAG;
-  readonly ioType = IOType.OUTPUT;
-
-  constructor(
-      readonly attrName: string,
-  ) {}
-
-  resolve(target: HTMLElement): ResolvedOFlag {
-    return new ResolvedOFlag(
-        this.attrName,
-        target,
-    );
-  }
-}
-
-export function oflag(attrName: string): UnresolvedOFlag {
-  return new UnresolvedOFlag(attrName);
+export function oflag(attrName: string): ResolvedOFlag {
+  return new ResolvedOFlag(attrName);
 }

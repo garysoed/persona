@@ -1,5 +1,5 @@
 import {RenderContext} from '../render/types/render-context';
-import {ResolvedBindingSpecProvider, ResolvedProvider, Spec, UnresolvedIO} from '../types/ctrl';
+import {InputBinding, OutputBinding, Resolved, ResolvedBindingSpecProvider, Spec} from '../types/ctrl';
 import {InputOutput} from '../types/io';
 import {Registration} from '../types/registration';
 import {Target} from '../types/target';
@@ -7,7 +7,7 @@ import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
 
 
 type RegistrationWithSpec<S extends Spec> = Pick<Registration<HTMLElement, S>, 'spec'>;
-
+type BindingProvider = (root: Target, context: RenderContext) => InputBinding<any>|OutputBinding<any, any, any[]>;
 
 function getElement(target: Target, query: string): Element {
   const el = target.querySelector(query);
@@ -18,23 +18,23 @@ function getElement(target: Target, query: string): Element {
 }
 
 
-type ExtraUnresolvedBindingSpec<T extends Target> = Record<string, UnresolvedIO<T, InputOutput>>;
+type ExtraUnresolvedBindingSpec = Record<string, Resolved<InputOutput>>;
 
 export function query<E extends HTMLElement, S extends Spec>(
     query: string,
     registration: Registration<E, S>,
-): ResolvedBindingSpecProvider<Target, ReversedSpec<Target, S['host']&{}>>;
-export function query<E extends HTMLElement, S extends Spec, X extends ExtraUnresolvedBindingSpec<E>>(
+): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>>;
+export function query<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
     query: string,
     registration: RegistrationWithSpec<S>,
     extra: X,
-): ResolvedBindingSpecProvider<Target, ReversedSpec<Target, S['host']&{}> & X>
-export function query<E extends HTMLElement, S extends Spec, X extends ExtraUnresolvedBindingSpec<E>>(
+): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>
+export function query<S extends Spec, X extends ExtraUnresolvedBindingSpec>(
     query: string,
     registration: RegistrationWithSpec<S>,
     extra?: X,
-): ResolvedBindingSpecProvider<Target, ReversedSpec<Target, S['host']&{}> & X> {
-  const providers: Partial<Record<string, ResolvedProvider<Target, any>>> = {};
+): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X> {
+  const providers: Record<string, BindingProvider> = {};
   const reversed = reverseSpec(registration.spec.host ?? {});
   for (const key in reversed) {
     providers[key] = (root: Target, context: RenderContext) => reversed[key].resolve(
@@ -43,12 +43,12 @@ export function query<E extends HTMLElement, S extends Spec, X extends ExtraUnre
     );
   }
 
-  const normalizedExtra: Record<string, UnresolvedIO<Target, any>> = extra ?? {};
+  const normalizedExtra: Record<string, Resolved<any>> = extra ?? {};
   for (const key in normalizedExtra) {
     providers[key] = (root: Target, context: RenderContext) => normalizedExtra[key].resolve(
         getElement(root, query),
         context,
     );
   }
-  return providers as ResolvedBindingSpecProvider<Target, ReversedSpec<Target, S['host']&{}> & X>;
+  return providers as ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>;
 }

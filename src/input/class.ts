@@ -1,46 +1,30 @@
-import {cache} from 'gs-tools/export/data';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
-import {Resolved, UnresolvedIO} from '../types/ctrl';
+import {Resolved} from '../types/ctrl';
 import {ApiType, IClass, IOType} from '../types/io';
 import {mutationObservable} from '../util/mutation-observable';
 
 
-class ResolvedIClass implements Resolved<UnresolvedIClass> {
+class ResolvedIClass implements Resolved<IClass> {
   readonly apiType = ApiType.CLASS;
   readonly ioType = IOType.INPUT;
 
   constructor(
     readonly className: string,
-    readonly target: HTMLElement,
   ) {}
 
-  @cache()
-  get value$(): Observable<boolean> {
+  resolve(target: HTMLElement): Observable<boolean> {
     return mutationObservable(
-        this.target,
+        target,
         {attributes: true, attributeFilter: ['class']},
     ).pipe(
         startWith({}),
-        map(() => this.target.classList.contains(this.className)),
+        map(() => target.classList.contains(this.className)),
     );
   }
 }
 
-class UnresolvedIClass implements UnresolvedIO<HTMLElement, IClass> {
-  readonly apiType = ApiType.CLASS;
-  readonly ioType = IOType.INPUT;
-
-  constructor(
-      readonly className: string,
-  ) {}
-
-  resolve(target: HTMLElement): ResolvedIClass {
-    return new ResolvedIClass(this.className, target);
-  }
-}
-
-export function iclass(className: string): UnresolvedIClass {
-  return new UnresolvedIClass(className);
+export function iclass(className: string): ResolvedIClass {
+  return new ResolvedIClass(className);
 }

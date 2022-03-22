@@ -109,7 +109,7 @@ test('@persona/src/input/call', init => {
     const input = icall(key, numberType);
     const tag = 'tag';
     const target = document.createElement(tag);
-    const value$ = createSpySubject(input.resolve(target).value$);
+    const value$ = createSpySubject(input.resolve(target));
 
     const value = 123;
     const valueSubject = new BehaviorSubject(value);

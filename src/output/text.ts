@@ -4,44 +4,36 @@ import {switchMapTo} from 'rxjs/operators';
 
 import {RenderContext} from '../render/types/render-context';
 import {renderTextNode} from '../render/types/render-text-node-spec';
-import {Resolved, ResolvedO, UnresolvedIO} from '../types/ctrl';
+import {Resolved, ResolvedO} from '../types/ctrl';
 import {ApiType, IOType, OText, RenderValueFn} from '../types/io';
 import {Target} from '../types/target';
 
 import {ocase} from './case';
 
 
-class ResolvedOText implements Resolved<UnresolvedOText> {
+class ResolvedOText implements Resolved<OText> {
   readonly apiType = ApiType.TEXT;
   readonly ioType = IOType.OUTPUT;
 
   constructor(
-      readonly target: Target,
       private readonly caseOutput: ResolvedO<string, string, [RenderValueFn<string>]>,
   ) {}
 
-  update(): OperatorFunction<string, string> {
-    return value$ => {
-      const render$ = value$.pipe(
-          this.caseOutput.update(value => of(renderTextNode({
-            textContent: of(value),
-          }))),
-          switchMapTo(EMPTY),
-      );
-      return merge(render$, value$);
+  resolve(target: Target, context: RenderContext): () => OperatorFunction<string, string> {
+    return () => {
+      return value$ => {
+        const render$ = value$.pipe(
+            this.caseOutput.resolve(target, context)(value => of(renderTextNode({
+              textContent: of(value),
+            }))),
+            switchMapTo(EMPTY),
+        );
+        return merge(render$, value$);
+      };
     };
   }
 }
 
-class UnresolvedOText implements UnresolvedIO<Target, OText> {
-  readonly apiType = ApiType.TEXT;
-  readonly ioType = IOType.OUTPUT;
-
-  resolve(target: Target, context: RenderContext): ResolvedOText {
-    return new ResolvedOText(target, ocase(stringType).resolve(target, context));
-  }
-}
-
-export function otext(): UnresolvedOText {
-  return new UnresolvedOText();
+export function otext(): ResolvedOText {
+  return new ResolvedOText(ocase(stringType));
 }

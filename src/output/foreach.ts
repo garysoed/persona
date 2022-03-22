@@ -7,7 +7,7 @@ import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 
 import {render} from '../render/render';
 import {RenderContext} from '../render/types/render-context';
-import {Resolved, UnresolvedIO} from '../types/ctrl';
+import {Resolved} from '../types/ctrl';
 import {ApiType, IOType, OForeach, RenderValuesFn} from '../types/io';
 import {Target} from '../types/target';
 import {initSlot} from '../util/init-slot';
@@ -52,99 +52,99 @@ function getContiguousSiblingNodesWithId(start: Node): readonly NodeWithId[] {
 }
 
 // TODO: Consolidate with applyChildren.
-export class ResolvedOForeach<T> implements Resolved<UnresolvedOForeach<T>> {
+export class ResolvedOForeach<T> implements Resolved<OForeach<T>> {
   readonly apiType = ApiType.FOREACH;
   readonly ioType = IOType.OUTPUT;
 
   constructor(
       readonly slotName: string,
       readonly valueType: Type<T>,
-      readonly target: Target,
-      private readonly context: RenderContext,
   ) {}
 
-  update(renderFn: RenderValuesFn<T>): OperatorFunction<readonly T[], readonly T[]> {
-    const slotEl$ = of(this.target).pipe(
-        initSlot(this.slotName),
-        filterNonNullable(),
-    );
-
-    return values$ => {
-      const render$ = values$.pipe(
-          switchMap(values => {
-            const node$list = values.map((value, index) => {
-              return renderFn(value, index).pipe(
-                  switchMap(spec => spec ? render(spec, this.context) : of(null)),
-                  tap(node => {
-                    if (!node) {
-                      return;
-                    }
-
-                    if (!(node instanceof DocumentFragment)) {
-                      setId(node, value);
-                      return;
-                    }
-
-                    for (let i = 0; i < node.childNodes.length; i++) {
-                      setId(node.childNodes.item(i), value, i);
-                    }
-                  }),
-              );
-            });
-            if (node$list.length <= 0) {
-              return of([]);
-            }
-
-            return combineLatest(node$list);
-          }),
-          map(nodes => [...$pipe(nodes, $filterNonNull(), $asSet())]),
-          withLatestFrom(slotEl$),
-          tap(([newNodes, slotNode]) => {
-            // Flatten the new nodes
-            const flattenedNewNodes = $pipe(
-                newNodes,
-                $map(node => {
-                  if (!(node instanceof DocumentFragment)) {
-                    return [node];
-                  }
-
-                  return arrayFrom(node.childNodes);
-                }),
-                $flat(),
-                $asArray(),
-            );
-
-            // Iterate through one diff at a time, since moving nodes doesn't act like an array.
-            let currentNodes = getContiguousSiblingNodesWithId(slotNode);
-            let diffs = diffArray<Node>(currentNodes, flattenedNewNodes, equalNodes);
-            let i = 0;
-            while (diffs.length > 0) {
-              const [diff] = diffs;
-              switch (diff.type) {
-                case 'insert': {
-                  const insertBefore = getInsertBeforeTarget(diff.index, currentNodes, slotNode);
-                  this.target.insertBefore(diff.value, insertBefore);
-                  break;
-                }
-                case 'delete':
-                  this.target.removeChild(currentNodes[diff.index]);
-                  break;
-              }
-
-              currentNodes = getContiguousSiblingNodesWithId(slotNode);
-              diffs = diffArray(currentNodes, flattenedNewNodes, equalNodes);
-              i++;
-              if (i >= 500) {
-                // eslint-disable-next-line no-console
-                console.warn('Infinite loop for foreach detected');
-                return;
-              }
-            }
-          }),
-          switchMapTo(EMPTY),
+  resolve(target: Target, context: RenderContext): (renderFn: RenderValuesFn<T>) => OperatorFunction<readonly T[], readonly T[]> {
+    return (renderFn: RenderValuesFn<T>) => {
+      const slotEl$ = of(target).pipe(
+          initSlot(this.slotName),
+          filterNonNullable(),
       );
 
-      return merge(values$, render$);
+      return values$ => {
+        const render$ = values$.pipe(
+            switchMap(values => {
+              const node$list = values.map((value, index) => {
+                return renderFn(value, index).pipe(
+                    switchMap(spec => spec ? render(spec, context) : of(null)),
+                    tap(node => {
+                      if (!node) {
+                        return;
+                      }
+
+                      if (!(node instanceof DocumentFragment)) {
+                        setId(node, value);
+                        return;
+                      }
+
+                      for (let i = 0; i < node.childNodes.length; i++) {
+                        setId(node.childNodes.item(i), value, i);
+                      }
+                    }),
+                );
+              });
+              if (node$list.length <= 0) {
+                return of([]);
+              }
+
+              return combineLatest(node$list);
+            }),
+            map(nodes => [...$pipe(nodes, $filterNonNull(), $asSet())]),
+            withLatestFrom(slotEl$),
+            tap(([newNodes, slotNode]) => {
+            // Flatten the new nodes
+              const flattenedNewNodes = $pipe(
+                  newNodes,
+                  $map(node => {
+                    if (!(node instanceof DocumentFragment)) {
+                      return [node];
+                    }
+
+                    return arrayFrom(node.childNodes);
+                  }),
+                  $flat(),
+                  $asArray(),
+              );
+
+              // Iterate through one diff at a time, since moving nodes doesn't act like an array.
+              let currentNodes = getContiguousSiblingNodesWithId(slotNode);
+              let diffs = diffArray<Node>(currentNodes, flattenedNewNodes, equalNodes);
+              let i = 0;
+              while (diffs.length > 0) {
+                const [diff] = diffs;
+                switch (diff.type) {
+                  case 'insert': {
+                    const insertBefore = getInsertBeforeTarget(diff.index, currentNodes, slotNode);
+                    target.insertBefore(diff.value, insertBefore);
+                    break;
+                  }
+                  case 'delete':
+                    target.removeChild(currentNodes[diff.index]);
+                    break;
+                }
+
+                currentNodes = getContiguousSiblingNodesWithId(slotNode);
+                diffs = diffArray(currentNodes, flattenedNewNodes, equalNodes);
+                i++;
+                if (i >= 500) {
+                // eslint-disable-next-line no-console
+                  console.warn('Infinite loop for foreach detected');
+                  return;
+                }
+              }
+            }),
+            switchMapTo(EMPTY),
+        );
+
+        return merge(values$, render$);
+      };
     };
   }
 }
@@ -169,21 +169,7 @@ function getInsertBeforeTarget(
   return slotNode?.nextSibling ?? null;
 }
 
-class UnresolvedOForeach<T> implements UnresolvedIO<Target, OForeach<T>> {
-  readonly apiType = ApiType.FOREACH;
-  readonly ioType = IOType.OUTPUT;
-
-  constructor(
-      readonly slotName: string,
-      readonly valueType: Type<T>,
-  ) {}
-
-  resolve(target: Target, context: RenderContext): ResolvedOForeach<T> {
-    return new ResolvedOForeach(this.slotName, this.valueType, target, context);
-  }
-}
-
-export function oforeach<T>(slotName: string, valueType: Type<T>): UnresolvedOForeach<T> {
-  return new UnresolvedOForeach(slotName, valueType);
+export function oforeach<T>(slotName: string, valueType: Type<T>): ResolvedOForeach<T> {
+  return new ResolvedOForeach(slotName, valueType);
 }
 

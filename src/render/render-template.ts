@@ -1,9 +1,7 @@
 import {EMPTY, merge, Observable, of} from 'rxjs';
 import {switchMap, switchMapTo} from 'rxjs/operators';
 
-import {createBinding, OutputBinding} from '../core/create-bindings';
-import {Bindings, BindingSpec, ResolvedBindingSpecProvider, UnresolvedBindingSpec} from '../types/ctrl';
-import {Target} from '../types/target';
+import {Bindings, BindingSpec, OutputBinding, ResolvedBindingSpec, ResolvedBindingSpecProvider} from '../types/ctrl';
 
 import {renderNode} from './render-node';
 import {RenderContext} from './types/render-context';
@@ -48,14 +46,14 @@ function createTemplateBindingObjects<O extends TemplateBindingSpec>(
   return partial as TemplateBindings<O>;
 }
 
-function createTemplateBindings<S extends UnresolvedBindingSpec<Target>>(
-    spec: ResolvedBindingSpecProvider<DocumentFragment, S>,
+function createTemplateBindings<S extends ResolvedBindingSpec>(
+    spec: ResolvedBindingSpecProvider<S>,
     target: DocumentFragment,
     context: RenderContext,
 ): Bindings<S> {
-  const partial: Partial<Record<string, Observable<unknown>|OutputBinding>> = {};
+  const partial: Partial<Record<string, Observable<unknown>|OutputBinding<any, any, any[]>>> = {};
   for (const key in spec) {
-    partial[key] = createBinding(spec[key](target, context));
+    partial[key] = spec[key](target, context);
   }
   return partial as Bindings<S>;
 }

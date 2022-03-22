@@ -134,7 +134,7 @@ test('@persona/src/output/value', init => {
     const target = document.createElement(tag);
 
     const value = 123;
-    const onUpdate = of(456, value).pipe(output.resolve(target).update(), take(1)).toPromise();
+    const onUpdate = of(456, value).pipe(output.resolve(target)(), take(1)).toPromise();
 
     const value$ = new ReplaySubject();
     setValueObservable(target, key, value$);

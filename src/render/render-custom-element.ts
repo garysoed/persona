@@ -2,9 +2,8 @@ import {EMPTY, merge, Observable, of} from 'rxjs';
 import {switchMap, switchMapTo} from 'rxjs/operators';
 
 import {createBindings} from '../core/create-bindings';
-import {resolveForHost} from '../core/resolve-for-host';
 import {Spec} from '../types/ctrl';
-import {reverseSpec} from '../util/reverse-spec';
+import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
 
 import {renderElement} from './render-element';
 import {RenderContext} from './types/render-context';
@@ -34,12 +33,11 @@ export function renderCustomElement<S extends Spec>(
   };
   return renderElement(elementSpec, context).pipe(
       switchMap(el => {
-        const reversed = resolveForHost(
-            reverseSpec<HTMLElement, S['host']&{}>(renderSpec.registration.spec.host ?? {}),
+        const bindings = createBindings<ReversedSpec<S['host']&{}>>(
+            reverseSpec<S['host']&{}>(renderSpec.registration.spec.host ?? {}),
             el,
             context,
         );
-        const bindings = createBindings(reversed);
         const runs = renderSpec.runs(bindings);
 
         return merge(

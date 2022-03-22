@@ -1,13 +1,13 @@
 import {Observable} from 'rxjs';
 
-import {Bindings, ResolvedBindingSpecProvider, UnresolvedBindingSpec} from '../../types/ctrl';
+import {Bindings, ResolvedBindingSpec, ResolvedBindingSpecProvider} from '../../types/ctrl';
 
 import {RenderSpecType} from './render-spec-type';
 
 
-export type TemplateBindingSpec = Record<string, ResolvedBindingSpecProvider<DocumentFragment, UnresolvedBindingSpec<DocumentFragment>>>;
+export type TemplateBindingSpec = Record<string, ResolvedBindingSpecProvider<ResolvedBindingSpec>>;
 export type TemplateBindings<O> = {
-  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<HTMLElement, infer S> ? Bindings<S> : never;
+  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<infer S> ? Bindings<S> : never;
 }
 
 interface InputRenderSpec<S extends TemplateBindingSpec> {

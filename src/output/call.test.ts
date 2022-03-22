@@ -75,7 +75,7 @@ test('@persona/src/output/call', init => {
       const target = document.createElement(tag);
 
       const value = 123;
-      const onUpdate = of(456, value).pipe(output.resolve(target).update(), take(1)).toPromise();
+      const onUpdate = of(456, value).pipe(output.resolve(target)(), take(1)).toPromise();
 
       const calledSpy = createSpy(`${key}Spy`);
       (target as any)[key] = calledSpy;
