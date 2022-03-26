@@ -12,40 +12,40 @@ export interface Ctrl {
 }
 
 // TODO(#8): Remove exports of ResolvedI and ResolvedO
-export type ResolvedI<T> = {
+export type ReferenceI<T> = {
   readonly ioType: IOType.INPUT;
   resolve(target: Target, context: RenderContext): Observable<T>;
 };
 
-export type ResolvedO<T, U, A extends readonly unknown[]> = {
+export type ReferenceO<T, U, A extends readonly unknown[]> = {
   resolve(target: Target, context: RenderContext): (...args: A) => OperatorFunction<T, U>;
   readonly ioType: IOType.OUTPUT;
 };
 
-export type Resolved<O> =
-    O extends IAttr ? IAttr&ResolvedI<string|null> :
-    O extends OAttr ? OAttr&ResolvedO<string|null, string|null, []> :
-    O extends ICall<infer A, infer M> ? ICall<A, M>&ResolvedI<A> :
-    O extends OCall<infer A, infer M> ? OCall<A, M>&ResolvedO<A, A, []> :
-    O extends OCase<infer V> ? OCase<V>&ResolvedO<V, V, [RenderValueFn<V>]> :
-    O extends IClass ? IClass&ResolvedI<boolean> :
-    O extends OClass ? OClass&ResolvedO<boolean, boolean, []> :
-    O extends IEvent<infer E> ? IEvent<E>&ResolvedI<E> :
-    O extends OEvent<infer E> ? OEvent<E>&ResolvedO<E, E, []> :
-    O extends IFlag ? IFlag&ResolvedI<boolean> :
-    O extends OFlag ? OFlag&ResolvedO<boolean, boolean, []> :
-    O extends OForeach<infer V> ? OForeach<V>&ResolvedO<readonly V[], readonly V[], [RenderValuesFn<V>]> :
-    O extends IKeydown ? IKeydown&ResolvedI<KeyboardEvent> :
-    O extends IMedia ? IMedia&ResolvedI<boolean> :
-    O extends IRect ? IRect&ResolvedI<DOMRect> :
-    O extends ISlotted ? ISlotted&ResolvedI<readonly Node[]> :
-    O extends OSlotted ? OSlotted&ResolvedO<readonly Node[], readonly Node[], []> :
-    O extends OStyle<infer S> ? OStyle<S>&ResolvedO<string, string, []> :
-    O extends ITarget ? ITarget&ResolvedI<HTMLElement> :
-    O extends IText ? IText&ResolvedI<string> :
-    O extends OText ? OText&ResolvedO<string, string, []> :
-    O extends IValue<infer V, infer P> ? IValue<V, P>&ResolvedI<V> :
-    O extends OValue<infer V, infer P> ? OValue<V, P>&ResolvedO<V, V, []> : never;
+export type Reference<O> =
+    O extends IAttr ? IAttr&ReferenceI<string|null> :
+    O extends OAttr ? OAttr&ReferenceO<string|null, string|null, []> :
+    O extends ICall<infer A, infer M> ? ICall<A, M>&ReferenceI<A> :
+    O extends OCall<infer A, infer M> ? OCall<A, M>&ReferenceO<A, A, []> :
+    O extends OCase<infer V> ? OCase<V>&ReferenceO<V, V, [RenderValueFn<V>]> :
+    O extends IClass ? IClass&ReferenceI<boolean> :
+    O extends OClass ? OClass&ReferenceO<boolean, boolean, []> :
+    O extends IEvent<infer E> ? IEvent<E>&ReferenceI<E> :
+    O extends OEvent<infer E> ? OEvent<E>&ReferenceO<E, E, []> :
+    O extends IFlag ? IFlag&ReferenceI<boolean> :
+    O extends OFlag ? OFlag&ReferenceO<boolean, boolean, []> :
+    O extends OForeach<infer V> ? OForeach<V>&ReferenceO<readonly V[], readonly V[], [RenderValuesFn<V>]> :
+    O extends IKeydown ? IKeydown&ReferenceI<KeyboardEvent> :
+    O extends IMedia ? IMedia&ReferenceI<boolean> :
+    O extends IRect ? IRect&ReferenceI<DOMRect> :
+    O extends ISlotted ? ISlotted&ReferenceI<readonly Node[]> :
+    O extends OSlotted ? OSlotted&ReferenceO<readonly Node[], readonly Node[], []> :
+    O extends OStyle<infer S> ? OStyle<S>&ReferenceO<string, string, []> :
+    O extends ITarget ? ITarget&ReferenceI<HTMLElement> :
+    O extends IText ? IText&ReferenceI<string> :
+    O extends OText ? OText&ReferenceO<string, string, []> :
+    O extends IValue<infer V, infer P> ? IValue<V, P>&ReferenceI<V> :
+    O extends OValue<infer V, infer P> ? OValue<V, P>&ReferenceO<V, V, []> : never;
 
 export type ResolvedProvider<V> = (root: Target, context: RenderContext) => Binding<V>;
 
@@ -54,7 +54,7 @@ export type BindingSpec = {
 }
 
 export type ResolvedBindingSpec = {
-  readonly [key: string]: Resolved<InputOutput>
+  readonly [key: string]: Reference<InputOutput>
 };
 
 export type ResolvedBindingSpecProvider<S extends ResolvedBindingSpec> = {
@@ -69,8 +69,8 @@ export type Spec = {
 export type InputBinding<V> = Observable<V>;
 export type OutputBinding<T, U, A extends readonly unknown[]> = (...args: A) => OperatorFunction<T, U>;
 export type Binding<O> =
-    Resolved<O> extends ResolvedI<infer V> ? InputBinding<V> :
-    Resolved<O> extends ResolvedO<infer V, infer T, infer A> ? OutputBinding<V, T, A> :
+    Reference<O> extends ReferenceI<infer V> ? InputBinding<V> :
+    Reference<O> extends ReferenceO<infer V, infer T, infer A> ? OutputBinding<V, T, A> :
     never;
 
 export type Bindings<S extends BindingSpec> = {

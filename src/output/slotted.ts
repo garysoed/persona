@@ -1,11 +1,11 @@
 import {OperatorFunction, throwError} from 'rxjs';
 import {switchMapTo} from 'rxjs/operators';
 
-import {Resolved} from '../types/ctrl';
+import {Reference} from '../types/ctrl';
 import {ApiType, IOType, OSlotted} from '../types/io';
 
 
-class ResolvedOSlotted implements Resolved<OSlotted> {
+class ResolvedOSlotted implements Reference<OSlotted> {
   readonly apiType = ApiType.SLOTTED;
   readonly ioType = IOType.OUTPUT;
 

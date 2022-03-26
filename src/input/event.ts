@@ -3,7 +3,7 @@ import {instanceofType} from 'gs-types';
 import {fromEvent, Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 
-import {Resolved} from '../types/ctrl';
+import {Reference} from '../types/ctrl';
 import {ApiType, EventCtor, IEvent, IOType} from '../types/io';
 
 
@@ -15,7 +15,7 @@ const DEFAULT_OPTIONS: Options = {
   matchTarget: false,
 };
 
-class ResolvedIEvent<E extends Event> implements Resolved<IEvent<E>> {
+class ResolvedIEvent<E extends Event> implements Reference<IEvent<E>> {
   readonly apiType = ApiType.EVENT;
   readonly ioType = IOType.INPUT;
 

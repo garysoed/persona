@@ -1,7 +1,7 @@
 import {OperatorFunction, pipe} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {Resolved} from '../types/ctrl';
+import {Reference} from '../types/ctrl';
 import {ApiType, IOType, OStyle} from '../types/io';
 
 
@@ -9,7 +9,7 @@ type StringPropertyKeys<S> = {
   readonly [K in keyof S]: S[K] extends string ? K : never;
 }[keyof S];
 
-class ResolvedOStyle<S extends StringPropertyKeys<CSSStyleDeclaration>> implements Resolved<OStyle<S>> {
+class ResolvedOStyle<S extends StringPropertyKeys<CSSStyleDeclaration>> implements Reference<OStyle<S>> {
   readonly apiType = ApiType.STYLE;
   readonly ioType = IOType.OUTPUT;
 

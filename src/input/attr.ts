@@ -1,13 +1,13 @@
 import {defer, Observable} from 'rxjs';
 import {filter, map, startWith} from 'rxjs/operators';
 
-import {Resolved} from '../types/ctrl';
+import {Reference} from '../types/ctrl';
 import {ApiType, IAttr, IOType} from '../types/io';
 import {getAttributeChangeObservable} from '../util/attribute-change-observable';
 import {mutationObservable} from '../util/mutation-observable';
 
 
-class ResolvedIAttr implements Resolved<IAttr> {
+class ResolvedIAttr implements Reference<IAttr> {
   readonly apiType = ApiType.ATTR;
   readonly ioType = IOType.INPUT;
 

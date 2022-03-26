@@ -1,5 +1,5 @@
 import {RenderContext} from '../render/types/render-context';
-import {InputBinding, OutputBinding, Resolved, ResolvedBindingSpecProvider, Spec} from '../types/ctrl';
+import {InputBinding, OutputBinding, Reference, ResolvedBindingSpecProvider, Spec} from '../types/ctrl';
 import {InputOutput} from '../types/io';
 import {Registration} from '../types/registration';
 import {Target} from '../types/target';
@@ -18,7 +18,7 @@ function getElement(target: Target, query: string): Element {
 }
 
 
-type ExtraBindingSpec = Record<string, Resolved<InputOutput>>;
+type ExtraBindingSpec = Record<string, Reference<InputOutput>>;
 
 export function query<E extends HTMLElement, S extends Spec>(
     query: string,
@@ -43,7 +43,7 @@ export function query<S extends Spec, X extends ExtraBindingSpec>(
     );
   }
 
-  const normalizedExtra: Record<string, Resolved<any>> = extra ?? {};
+  const normalizedExtra: Record<string, Reference<any>> = extra ?? {};
   for (const key in normalizedExtra) {
     providers[key] = (root: Target, context: RenderContext) => normalizedExtra[key].resolve(
         getElement(root, query),

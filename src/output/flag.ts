@@ -1,11 +1,11 @@
 import {OperatorFunction, pipe} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {Resolved} from '../types/ctrl';
+import {Reference} from '../types/ctrl';
 import {ApiType, IOType, OFlag} from '../types/io';
 
 
-class ResolvedOFlag implements Resolved<OFlag> {
+class ResolvedOFlag implements Reference<OFlag> {
   readonly apiType = ApiType.FLAG;
   readonly ioType = IOType.OUTPUT;
 

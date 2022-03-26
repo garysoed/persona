@@ -7,7 +7,7 @@ import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 
 import {render} from '../render/render';
 import {RenderContext} from '../render/types/render-context';
-import {Resolved} from '../types/ctrl';
+import {Reference} from '../types/ctrl';
 import {ApiType, IOType, OForeach, RenderValuesFn} from '../types/io';
 import {Target} from '../types/target';
 import {initSlot} from '../util/init-slot';
@@ -52,7 +52,7 @@ function getContiguousSiblingNodesWithId(start: Node): readonly NodeWithId[] {
 }
 
 // TODO: Consolidate with applyChildren.
-export class ResolvedOForeach<T> implements Resolved<OForeach<T>> {
+export class ResolvedOForeach<T> implements Reference<OForeach<T>> {
   readonly apiType = ApiType.FOREACH;
   readonly ioType = IOType.OUTPUT;
 

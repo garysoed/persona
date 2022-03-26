@@ -2,13 +2,13 @@ import {Type, undefinedType, unionType} from 'gs-types';
 import {defer, Observable, throwError} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {Resolved} from '../types/ctrl';
+import {Reference} from '../types/ctrl';
 import {ApiType, IOType, IValue} from '../types/io';
 import {retryWhenDefined} from '../util/retry-when-defined';
 import {createMissingValueObservableError, getValueObservable} from '../util/value-observable';
 
 
-class ResolvedIValue<T, P extends string> implements Resolved<IValue<T, P>> {
+class ResolvedIValue<T, P extends string> implements Reference<IValue<T, P>> {
   readonly apiType = ApiType.VALUE;
   readonly ioType = IOType.INPUT;
 

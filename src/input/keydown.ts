@@ -3,12 +3,12 @@ import {booleanType, instanceofType} from 'gs-types';
 import {fromEvent, Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 
-import {Resolved} from '../types/ctrl';
+import {Reference} from '../types/ctrl';
 import {ApiType, IKeydown, IOType} from '../types/io';
 import {KeyMatchOptions} from '../types/key-match-options';
 
 
-class ResolvedIKeydown implements Resolved<IKeydown> {
+class ResolvedIKeydown implements Reference<IKeydown> {
   readonly apiType = ApiType.KEYDOWN;
   readonly ioType = IOType.INPUT;
 

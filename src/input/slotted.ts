@@ -1,11 +1,11 @@
 import {fromEvent, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
-import {Resolved} from '../types/ctrl';
+import {Reference} from '../types/ctrl';
 import {ApiType, IOType, ISlotted} from '../types/io';
 
 
-class ResolvedISlotted implements Resolved<ISlotted> {
+class ResolvedISlotted implements Reference<ISlotted> {
   readonly apiType = ApiType.SLOTTED;
   readonly ioType = IOType.INPUT;
 

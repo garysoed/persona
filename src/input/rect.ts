@@ -1,12 +1,12 @@
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
-import {Resolved} from '../types/ctrl';
+import {Reference} from '../types/ctrl';
 import {ApiType, IOType, IRect} from '../types/io';
 import {resizeObservable} from '../util/resize-observable';
 
 
-class ResolvedIRect implements Resolved<IRect> {
+class ResolvedIRect implements Reference<IRect> {
   readonly apiType = ApiType.RECT;
   readonly ioType = IOType.INPUT;
 
