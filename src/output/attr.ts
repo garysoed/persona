@@ -1,11 +1,10 @@
 import {OperatorFunction, pipe} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {Reference} from '../types/ctrl';
 import {ApiType, IOType, OAttr} from '../types/io';
 
 
-class ResolvedOAttr implements Reference<OAttr> {
+class ResolvedOAttr implements OAttr {
   readonly apiType = ApiType.ATTR;
   readonly ioType = IOType.OUTPUT;
 

@@ -1,13 +1,12 @@
 import {defer, Observable} from 'rxjs';
 import {filter, map, startWith} from 'rxjs/operators';
 
-import {Reference} from '../types/ctrl';
 import {ApiType, IFlag, IOType} from '../types/io';
 import {getAttributeChangeObservable} from '../util/attribute-change-observable';
 import {mutationObservable} from '../util/mutation-observable';
 
 
-class ResolvedIFlag implements Reference<IFlag> {
+class ResolvedIFlag implements IFlag {
   readonly apiType = ApiType.FLAG;
   readonly ioType = IOType.INPUT;
 

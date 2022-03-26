@@ -2,13 +2,12 @@ import {Type} from 'gs-types';
 import {defer, Observable, throwError} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {Reference} from '../types/ctrl';
 import {ApiType, ICall, IOType} from '../types/io';
 import {retryWhenDefined} from '../util/retry-when-defined';
 import {createMissingValueObservableError, getValueObservable} from '../util/value-observable';
 
 
-class ResolvedICall<T, M extends string> implements Reference<ICall<T, M>> {
+class ResolvedICall<T, M extends string> implements ICall<T, M> {
   readonly apiType = ApiType.CALL;
   readonly ioType = IOType.INPUT;
 

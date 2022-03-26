@@ -1,10 +1,9 @@
 import {Observable, of} from 'rxjs';
 
-import {Reference} from '../types/ctrl';
 import {ApiType, IOType, ITarget} from '../types/io';
 
 
-class ResolvedITarget implements Reference<ITarget> {
+class ResolvedITarget implements ITarget {
   readonly apiType = ApiType.TARGET;
   readonly ioType = IOType.INPUT;
 

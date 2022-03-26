@@ -1,12 +1,11 @@
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
-import {Reference} from '../types/ctrl';
 import {ApiType, IClass, IOType} from '../types/io';
 import {mutationObservable} from '../util/mutation-observable';
 
 
-class ResolvedIClass implements Reference<IClass> {
+class ResolvedIClass implements IClass {
   readonly apiType = ApiType.CLASS;
   readonly ioType = IOType.INPUT;
 

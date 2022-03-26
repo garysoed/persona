@@ -4,14 +4,13 @@ import {switchMapTo} from 'rxjs/operators';
 
 import {RenderContext} from '../render/types/render-context';
 import {renderTextNode} from '../render/types/render-text-node-spec';
-import {Reference, ReferenceO} from '../types/ctrl';
-import {ApiType, IOType, OText, RenderValueFn} from '../types/io';
+import {ApiType, IOType, OText, ReferenceO, RenderValueFn} from '../types/io';
 import {Target} from '../types/target';
 
 import {ocase} from './case';
 
 
-class ResolvedOText implements Reference<OText> {
+class ResolvedOText implements OText {
   readonly apiType = ApiType.TEXT;
   readonly ioType = IOType.OUTPUT;
 

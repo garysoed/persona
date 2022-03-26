@@ -2,7 +2,6 @@ import {instanceofType, Type} from 'gs-types';
 import {of, OperatorFunction, pipe} from 'rxjs';
 import {switchMap, tap} from 'rxjs/operators';
 
-import {Reference} from '../types/ctrl';
 import {ApiType, IOType, OCall} from '../types/io';
 import {retryWhenDefined} from '../util/retry-when-defined';
 
@@ -12,7 +11,7 @@ interface MaybeHtmlElement extends HTMLElement {
 }
 
 
-class ResolvedOCall<T, M extends string> implements Reference<OCall<T, M>> {
+class ResolvedOCall<T, M extends string> implements OCall<T, M> {
   readonly apiType = ApiType.CALL;
   readonly ioType = IOType.OUTPUT;
 

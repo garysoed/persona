@@ -1,11 +1,10 @@
 import {OperatorFunction, pipe} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
-import {Reference} from '../types/ctrl';
 import {ApiType, EventCtor, IOType, OEvent} from '../types/io';
 
 
-class ResolvedOEvent<E extends Event> implements Reference<OEvent<E>> {
+class ResolvedOEvent<E extends Event> implements OEvent<E> {
   readonly apiType = ApiType.EVENT;
   readonly ioType = IOType.OUTPUT;
 

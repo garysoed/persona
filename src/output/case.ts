@@ -6,7 +6,6 @@ import {switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 
 import {render} from '../render/render';
 import {RenderContext} from '../render/types/render-context';
-import {Reference} from '../types/ctrl';
 import {ApiType, IOType, OCase, RenderValueFn} from '../types/io';
 import {Target} from '../types/target';
 import {initSlot} from '../util/init-slot';
@@ -61,7 +60,7 @@ function getContiguousSiblingNodesWithId(start: Node|null, parent: Node): readon
   return children;
 }
 
-class ResolvedOCase<T> implements Reference<OCase<T>> {
+class ResolvedOCase<T> implements OCase<T> {
   readonly apiType = ApiType.CASE;
   readonly ioType = IOType.OUTPUT;
 
