@@ -7,11 +7,11 @@ export function createBindings<S extends ResolvedBindingSpec>(
     spec: Record<string, InputOutputThatResolvesWith<Element>>,
     target: Element,
     context: RenderContext,
-): Bindings<S> {
+): Bindings<S, Element> {
   const bindings: Record<string, InputBinding<any>|OutputBinding<any, any, any[]>> = {};
   for (const key in spec) {
     const io = spec[key];
     bindings[key] = io.resolve(target, context);
   }
-  return bindings as Bindings<S>;
+  return bindings as Bindings<S, Element>;
 }

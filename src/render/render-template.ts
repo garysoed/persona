@@ -39,7 +39,7 @@ function createTemplateBindingObjects<O extends TemplateBindingSpec>(
     target: DocumentFragment,
     context: RenderContext,
 ): TemplateBindings<O> {
-  const partial: Record<string, Bindings<BindingSpec>> = {};
+  const partial: Record<string, Bindings<BindingSpec, unknown>> = {};
   for (const key in spec) {
     partial[key] = createTemplateBindings(spec[key], target, context);
   }
@@ -47,13 +47,13 @@ function createTemplateBindingObjects<O extends TemplateBindingSpec>(
 }
 
 function createTemplateBindings<S extends ResolvedBindingSpec>(
-    spec: ResolvedBindingSpecProvider<S>,
+    spec: ResolvedBindingSpecProvider<S, unknown>,
     target: DocumentFragment,
     context: RenderContext,
-): Bindings<S> {
+): Bindings<S, unknown> {
   const partial: Partial<Record<string, Observable<unknown>|OutputBinding<any, any, any[]>>> = {};
   for (const key in spec) {
     partial[key] = spec[key](target, context);
   }
-  return partial as Bindings<S>;
+  return partial as Bindings<S, unknown>;
 }

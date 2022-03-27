@@ -179,13 +179,13 @@ function createShadow(
   return root;
 }
 
-type ShadowBindingRecord = Record<string, ResolvedBindingSpecProvider<ResolvedBindingSpec>>;
+type ShadowBindingRecord = Record<string, ResolvedBindingSpecProvider<ResolvedBindingSpec, any>>;
 function createShadowBindingObjects<O extends ShadowBindingRecord>(
     spec: O,
     shadowRoot: ShadowRoot,
     context: RenderContext,
 ): ShadowBindings<O> {
-  const partial: Record<string, Bindings<BindingSpec>> = {};
+  const partial: Record<string, Bindings<BindingSpec, any>> = {};
   for (const key in spec) {
     partial[key] = createShadowBindings(spec[key], shadowRoot, context);
   }
@@ -193,13 +193,13 @@ function createShadowBindingObjects<O extends ShadowBindingRecord>(
 }
 
 function createShadowBindings<S extends ResolvedBindingSpec>(
-    spec: ResolvedBindingSpecProvider<S>,
+    spec: ResolvedBindingSpecProvider<S, any>,
     shadowRoot: ShadowRoot,
     context: RenderContext,
-): Bindings<S> {
+): Bindings<S, any> {
   const partial: Partial<Record<string, Observable<unknown>|OutputBinding<any, any, any[]>>> = {};
   for (const key in spec) {
     partial[key] = spec[key](shadowRoot, context);
   }
-  return partial as Bindings<S>;
+  return partial as Bindings<S, any>;
 }

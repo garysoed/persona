@@ -24,17 +24,17 @@ interface ExtraBindingSpec<T> {
 export function query<E extends Element, S extends Spec>(
     query: string,
     registration: Registration<E, S>,
-): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>>;
+): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>, E>;
 export function query<E extends Element, S extends Spec, X extends ExtraBindingSpec<E>>(
     query: string,
     registration: Registration<E, S>,
     extra: X,
-): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>
+): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X, E>
 export function query<S extends Spec, X extends ExtraBindingSpec<Element>>(
     query: string,
     registration: Registration<Element, S>,
     extra?: ExtraBindingSpec<Element>,
-): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X> {
+): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X, Element> {
   const providers: Record<string, BindingProvider> = {};
   const reversed = reverseSpec(registration.spec.host ?? {});
   for (const key in reversed) {
@@ -51,5 +51,5 @@ export function query<S extends Spec, X extends ExtraBindingSpec<Element>>(
         context,
     );
   }
-  return providers as ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>;
+  return providers as ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X, Element>;
 }

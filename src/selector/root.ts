@@ -10,7 +10,7 @@ type ExtraBindings = {
 };
 export function root<X extends ExtraBindings>(
     specs: X,
-): ResolvedBindingSpecProvider<X> {
+): ResolvedBindingSpecProvider<X, Target> {
   const providers: Record<string, Binding> = {};
 
   const normalizedSpecs: ExtraBindings = specs ?? {};
@@ -20,5 +20,5 @@ export function root<X extends ExtraBindings>(
         context,
     );
   }
-  return providers as ResolvedBindingSpecProvider<X>;
+  return providers as ResolvedBindingSpecProvider<X, Target>;
 }

@@ -6,7 +6,7 @@ import {ReversedSpec} from '../../util/reverse-spec';
 import {RenderSpecType} from './render-spec-type';
 
 
-type ReversedBindings<S extends Spec> = Bindings<ReversedSpec<S['host']&{}>>;
+type ReversedBindings<S extends Spec> = Bindings<ReversedSpec<S['host']&{}>, unknown>;
 
 interface LiteRegistration<S extends Spec> {
   readonly spec: S;
