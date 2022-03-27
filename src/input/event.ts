@@ -24,7 +24,7 @@ class ResolvedIEvent<E extends Event> implements IEvent<E> {
     private readonly options: Options,
   ) {}
 
-  resolve(target: HTMLElement): Observable<E> {
+  resolve(target: Element): Observable<E> {
     return fromEvent(target, this.eventName).pipe(
         filter(event => {
           if (this.options.matchTarget && event.target !== target) {

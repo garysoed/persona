@@ -1,15 +1,19 @@
 import {RenderContext} from '../render/types/render-context';
-import {InputBinding, OutputBinding, ResolvedBindingSpec, ResolvedBindingSpecProvider} from '../types/ctrl';
+import {InputBinding, OutputBinding, ResolvedBindingSpecProvider} from '../types/ctrl';
+import {InputOutputThatResolvesWith} from '../types/io';
 import {Target} from '../types/target';
 
 type Binding = (root: Target, context: RenderContext) => InputBinding<any>|OutputBinding<any, any, any[]>;
 
-export function root<X extends ResolvedBindingSpec>(
+type ExtraBindings = {
+  readonly [key: string]: InputOutputThatResolvesWith<Target>;
+};
+export function root<X extends ExtraBindings>(
     specs: X,
 ): ResolvedBindingSpecProvider<X> {
   const providers: Record<string, Binding> = {};
 
-  const normalizedSpecs: ResolvedBindingSpec = specs ?? {};
+  const normalizedSpecs: ExtraBindings = specs ?? {};
   for (const key in normalizedSpecs) {
     providers[key] = (root: Target, context: RenderContext) => normalizedSpecs[key].resolve(
         root,

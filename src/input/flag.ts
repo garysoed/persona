@@ -14,7 +14,7 @@ class ResolvedIFlag implements IFlag {
       readonly attrName: string,
   ) {}
 
-  resolve(target: HTMLElement): Observable<boolean> {
+  resolve(target: Element): Observable<boolean> {
     // Only start checking on subscription.
     return defer(() => {
       const obs$ = getAttributeChangeObservable(target);

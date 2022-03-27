@@ -1,10 +1,11 @@
 import {source} from 'grapevine';
 
 import {ResolvedBindingSpec} from '../types/ctrl';
+import {InputOutputThatResolvesWith} from '../types/io';
 import {Registration} from '../types/registration';
 
 
-type DomRegistration<E extends HTMLElement, S extends ResolvedBindingSpec> =
+type DomRegistration<E extends HTMLElement, S extends Record<string, InputOutputThatResolvesWith<Element>>> =
     Registration<E, {host: S}>;
 
 interface Input<E extends HTMLElement, S extends ResolvedBindingSpec> {
@@ -14,8 +15,8 @@ interface Input<E extends HTMLElement, S extends ResolvedBindingSpec> {
 
 export function createDomRegistration<
   E extends HTMLElement,
-  S extends ResolvedBindingSpec,
-  P extends ResolvedBindingSpec
+  S extends Record<string, InputOutputThatResolvesWith<Element>>,
+  P extends Record<string, InputOutputThatResolvesWith<Element>>
 >(
     input: Input<E, S>,
     parentRegistration?: DomRegistration<HTMLElement, P>,

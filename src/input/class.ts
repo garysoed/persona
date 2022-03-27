@@ -13,7 +13,7 @@ class ResolvedIClass implements IClass {
     readonly className: string,
   ) {}
 
-  resolve(target: HTMLElement): Observable<boolean> {
+  resolve(target: Element): Observable<boolean> {
     return mutationObservable(
         target,
         {attributes: true, attributeFilter: ['class']},

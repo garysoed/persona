@@ -1,11 +1,11 @@
 import {RenderContext} from '../render/types/render-context';
 import {Bindings, InputBinding, OutputBinding, ResolvedBindingSpec} from '../types/ctrl';
-import {Target} from '../types/target';
+import {InputOutputThatResolvesWith} from '../types/io';
 
 
 export function createBindings<S extends ResolvedBindingSpec>(
-    spec: ResolvedBindingSpec,
-    target: Target,
+    spec: Record<string, InputOutputThatResolvesWith<Element>>,
+    target: Element,
     context: RenderContext,
 ): Bindings<S> {
   const bindings: Record<string, InputBinding<any>|OutputBinding<any, any, any[]>> = {};

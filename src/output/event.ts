@@ -13,7 +13,7 @@ class ResolvedOEvent<E extends Event> implements OEvent<E> {
       readonly eventType: EventCtor<E>,
   ) {}
 
-  resolve(target: HTMLElement): () => OperatorFunction<E, E> {
+  resolve(target: Element): () => OperatorFunction<E, E> {
     return () => pipe(
         tap(newValue => {
           target.dispatchEvent(newValue);

@@ -12,7 +12,7 @@ class ResolvedOClass implements OClass {
       readonly className: string,
   ) {}
 
-  resolve(target: HTMLElement): () => OperatorFunction<boolean, boolean> {
+  resolve(target: Element): () => OperatorFunction<boolean, boolean> {
     return () => pipe(
         tap(newValue => {
           if (!newValue) {

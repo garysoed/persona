@@ -3,12 +3,12 @@ import {Source, Vine} from 'grapevine';
 import {Context, Ctrl, Spec} from './ctrl';
 
 
-interface CustomElementCtor<E extends HTMLElement> {
+interface CustomElementCtor<E extends Element> {
   new (...params: any[]): E;
 }
 
 export interface Registration<
-    E extends HTMLElement,
+    E extends Element,
     S extends Spec,
 > {
   readonly configure: (vine: Vine) => void;

@@ -12,7 +12,7 @@ class ResolvedOFlag implements OFlag {
       readonly attrName: string,
   ) {}
 
-  resolve(target: HTMLElement): () => OperatorFunction<boolean, boolean> {
+  resolve(target: Element): () => OperatorFunction<boolean, boolean> {
     return () => pipe(
         tap(hasAttribute => {
           if (!hasAttribute) {

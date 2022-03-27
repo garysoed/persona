@@ -14,7 +14,7 @@ class ResolvedIAttr implements IAttr {
       readonly attrName: string,
   ) {}
 
-  resolve(target: HTMLElement): Observable<string|null> {
+  resolve(target: Element): Observable<string|null> {
     // Only start checking on subscription.
     return defer(() => {
       const obs$ = getAttributeChangeObservable(target);

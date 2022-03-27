@@ -10,7 +10,6 @@
       "es2015"
     ],
     "module": "commonjs",
-    "noEmitOnError": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,

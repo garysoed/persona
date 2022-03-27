@@ -8,7 +8,7 @@ class ResolvedISlotted implements ISlotted {
   readonly apiType = ApiType.SLOTTED;
   readonly ioType = IOType.INPUT;
 
-  resolve(target: HTMLElement): Observable<readonly Node[]> {
+  resolve(target: Element): Observable<readonly Node[]> {
     return fromEvent(target, 'slotchange').pipe(
         startWith({}),
         map(() => {

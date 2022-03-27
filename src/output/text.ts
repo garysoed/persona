@@ -15,7 +15,7 @@ class ResolvedOText implements OText {
   readonly ioType = IOType.OUTPUT;
 
   constructor(
-      private readonly caseOutput: ReferenceO<string, string, [RenderValueFn<string>]>,
+      private readonly caseOutput: ReferenceO<string, string, [RenderValueFn<string>], Target>,
   ) {}
 
   resolve(target: Target, context: RenderContext): () => OperatorFunction<string, string> {

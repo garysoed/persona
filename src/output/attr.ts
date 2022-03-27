@@ -12,7 +12,7 @@ class ResolvedOAttr implements OAttr {
       readonly attrName: string,
   ) {}
 
-  resolve(target: HTMLElement): () => OperatorFunction<string|null, string|null> {
+  resolve(target: Element): () => OperatorFunction<string|null, string|null> {
     return () => pipe(
         tap(newValue => {
           if (!newValue) {

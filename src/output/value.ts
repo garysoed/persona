@@ -17,7 +17,7 @@ class ResolvedOValue<T, P extends string> implements OValue<T, P> {
       readonly valueType: Type<T>,
   ) {}
 
-  resolve(target: HTMLElement): () => OperatorFunction<T, T> {
+  resolve(target: Element): () => OperatorFunction<T, T> {
     return () => pipe(
         switchMap(newValue => {
           return of(newValue).pipe(

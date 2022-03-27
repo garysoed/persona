@@ -7,7 +7,7 @@ class ResolvedITarget implements ITarget {
   readonly apiType = ApiType.TARGET;
   readonly ioType = IOType.INPUT;
 
-  resolve(target: HTMLElement): Observable<HTMLElement> {
+  resolve(target: Element): Observable<Element> {
     return of(target);
   }
 }

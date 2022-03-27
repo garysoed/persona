@@ -17,7 +17,7 @@ class ResolvedIValue<T, P extends string> implements IValue<T, P> {
       readonly valueType: Type<T>,
   ) {}
 
-  resolve(target: HTMLElement): Observable<T> {
+  resolve(target: Element): Observable<T> {
     // Defer so we have time to upgrade the dependencies
     return defer(() => {
       const value$ = getValueObservable(target, this.key);

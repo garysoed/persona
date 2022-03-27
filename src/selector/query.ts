@@ -1,12 +1,11 @@
 import {RenderContext} from '../render/types/render-context';
 import {InputBinding, OutputBinding, ResolvedBindingSpecProvider, Spec} from '../types/ctrl';
-import {InputOutput} from '../types/io';
+import {InputOutputThatResolvesWith} from '../types/io';
 import {Registration} from '../types/registration';
 import {Target} from '../types/target';
 import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
 
 
-type RegistrationWithSpec<S extends Spec> = Pick<Registration<HTMLElement, S>, 'spec'>;
 type BindingProvider = (root: Target, context: RenderContext) => InputBinding<any>|OutputBinding<any, any, any[]>;
 
 function getElement(target: Target, query: string): Element {
@@ -18,21 +17,23 @@ function getElement(target: Target, query: string): Element {
 }
 
 
-type ExtraBindingSpec = Record<string, InputOutput>;
+interface ExtraBindingSpec<T> {
+  readonly [key: string]: InputOutputThatResolvesWith<T>;
+}
 
-export function query<E extends HTMLElement, S extends Spec>(
+export function query<E extends Element, S extends Spec>(
     query: string,
     registration: Registration<E, S>,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>>;
-export function query<S extends Spec, X extends ExtraBindingSpec>(
+export function query<E extends Element, S extends Spec, X extends ExtraBindingSpec<E>>(
     query: string,
-    registration: RegistrationWithSpec<S>,
+    registration: Registration<E, S>,
     extra: X,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X>
-export function query<S extends Spec, X extends ExtraBindingSpec>(
+export function query<S extends Spec, X extends ExtraBindingSpec<Element>>(
     query: string,
-    registration: RegistrationWithSpec<S>,
-    extra?: X,
+    registration: Registration<Element, S>,
+    extra?: ExtraBindingSpec<Element>,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X> {
   const providers: Record<string, BindingProvider> = {};
   const reversed = reverseSpec(registration.spec.host ?? {});
@@ -43,7 +44,7 @@ export function query<S extends Spec, X extends ExtraBindingSpec>(
     );
   }
 
-  const normalizedExtra: Record<string, InputOutput> = extra ?? {};
+  const normalizedExtra: Record<string, InputOutputThatResolvesWith<Element>> = extra ?? {};
   for (const key in normalizedExtra) {
     providers[key] = (root: Target, context: RenderContext) => normalizedExtra[key].resolve(
         getElement(root, query),

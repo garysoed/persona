@@ -9,7 +9,7 @@ class ResolvedIText implements IText {
   readonly apiType = ApiType.TEXT;
   readonly ioType = IOType.INPUT;
 
-  resolve(target: HTMLElement): Observable<string> {
+  resolve(target: Element): Observable<string> {
     return mutationObservable(target, {characterData: true, childList: true, subtree: true})
         .pipe(
             startWith({}),

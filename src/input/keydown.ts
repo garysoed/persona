@@ -16,7 +16,7 @@ class ResolvedIKeydown implements IKeydown {
     readonly matchOptions: KeyMatchOptions,
   ) {}
 
-  resolve(target: HTMLElement): Observable<KeyboardEvent> {
+  resolve(target: Element): Observable<KeyboardEvent> {
     return fromEvent(target, 'keydown').pipe(
         filterByType(instanceofType(KeyboardEvent)),
         filter(event => {

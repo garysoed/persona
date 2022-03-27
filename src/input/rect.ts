@@ -9,7 +9,7 @@ class ResolvedIRect implements IRect {
   readonly apiType = ApiType.RECT;
   readonly ioType = IOType.INPUT;
 
-  resolve(target: HTMLElement): Observable<DOMRect> {
+  resolve(target: Element): Observable<DOMRect> {
     return resizeObservable(target, {}).pipe(
         startWith({}),
         map(() => target.getBoundingClientRect()),

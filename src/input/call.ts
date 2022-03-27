@@ -16,7 +16,7 @@ class ResolvedICall<T, M extends string> implements ICall<T, M> {
       readonly argType: Type<T>,
   ) {}
 
-  resolve(target: HTMLElement): Observable<T> {
+  resolve(target: Element): Observable<T> {
     // Defer so we have time to upgrade the dependencies
     return defer(() => {
       const value$ = getValueObservable(target, this.methodName);

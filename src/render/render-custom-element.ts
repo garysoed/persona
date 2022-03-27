@@ -33,11 +33,8 @@ export function renderCustomElement<S extends Spec>(
   };
   return renderElement(elementSpec, context).pipe(
       switchMap(el => {
-        const bindings = createBindings<ReversedSpec<S['host']&{}>>(
-            reverseSpec<S['host']&{}>(renderSpec.registration.spec.host ?? {}),
-            el,
-            context,
-        );
+        const reversed = reverseSpec(renderSpec.registration.spec.host ?? {});
+        const bindings = createBindings<ReversedSpec<S['host']&{}>>(reversed, el, context);
         const runs = renderSpec.runs(bindings);
 
         return merge(
