@@ -3,7 +3,7 @@ import {assert, createSpy, createSpySubject, fake, should, spy, test} from 'gs-t
 import {cache} from 'gs-tools/export/data';
 import {instanceofType, numberType} from 'gs-types';
 import {fromEvent, Observable, of, Subject} from 'rxjs';
-import {take} from 'rxjs/operators';
+import {map, take} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
@@ -21,7 +21,7 @@ const $elValue$ = source(() => new Subject<Event>());
 const $host = {
   shadow: {
     el: query('#el', DIV, {
-      fn: ocall('dispatchEvent', instanceofType(Event)),
+      fn: ocall('dispatchEvent', [instanceofType(Event)]),
     }),
   },
 };
@@ -32,7 +32,10 @@ class HostCtrl implements Ctrl {
   @cache()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
-      $elValue$.get(this.context.vine).pipe(this.context.shadow.el.fn()),
+      $elValue$.get(this.context.vine).pipe(
+          map(el => [el]),
+          this.context.shadow.el.fn(),
+      ),
     ];
   }
 }
@@ -70,12 +73,12 @@ test('@persona/src/output/call', init => {
           .return(onWhenDefined$ as any);
 
       const key = 'key';
-      const output = ocall(key, numberType);
+      const output = ocall(key, [numberType]);
       const tag = 'tag';
       const target = document.createElement(tag);
 
       const value = 123;
-      const onUpdate = of(456, value).pipe(output.resolve(target)(), take(1)).toPromise();
+      const onUpdate = of([456], [value]).pipe(output.resolve(target)(), take(1)).toPromise();
 
       const calledSpy = createSpy(`${key}Spy`);
       (target as any)[key] = calledSpy;

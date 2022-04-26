@@ -55,18 +55,21 @@ export interface OAttr extends ReferenceO<string|null, string|null, [], Element>
   readonly attrName: string;
 }
 
-export interface ICall<T, M extends string> extends ReferenceI<T, Element> {
+
+export type TypeOfArray<T extends readonly unknown[]> = {readonly [K in keyof T]: Type<T[K]>};
+
+export interface ICall<A extends readonly unknown[], M extends string> extends ReferenceI<A, Element> {
   readonly apiType: ApiType.CALL;
   readonly ioType: IOType.INPUT;
   readonly methodName: M;
-  readonly argType: Type<T>;
+  readonly argTypes: TypeOfArray<A>;
 }
 
-export interface OCall<T, M extends string> extends ReferenceO<T, T, [], Element> {
+export interface OCall<A extends readonly unknown[], M extends string> extends ReferenceO<A, A, [], Element> {
   readonly apiType: ApiType.CALL;
   readonly ioType: IOType.OUTPUT;
   readonly methodName: M;
-  readonly argType: Type<T>;
+  readonly argTypes: TypeOfArray<A>;
 }
 
 export interface OCase<T> extends ReferenceO<T, T, [RenderValueFn<T>], Target> {

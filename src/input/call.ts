@@ -1,22 +1,23 @@
-import {Type} from 'gs-types';
+import {tupleOfType} from 'gs-types';
 import {defer, Observable, throwError} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {ApiType, ICall, IOType} from '../types/io';
+import {ApiType, ICall, IOType, TypeOfArray} from '../types/io';
 import {retryWhenDefined} from '../util/retry-when-defined';
 import {createMissingValueObservableError, getValueObservable} from '../util/value-observable';
 
 
-class ResolvedICall<T, M extends string> implements ICall<T, M> {
+class ResolvedICall<T extends readonly unknown[], M extends string> implements ICall<T, M> {
   readonly apiType = ApiType.CALL;
   readonly ioType = IOType.INPUT;
 
   constructor(
       readonly methodName: M,
-      readonly argType: Type<T>,
+      readonly argTypes: TypeOfArray<T>,
   ) {}
 
   resolve(target: Element): Observable<T> {
+    const argType = tupleOfType<T>(this.argTypes);
     // Defer so we have time to upgrade the dependencies
     return defer(() => {
       const value$ = getValueObservable(target, this.methodName);
@@ -29,8 +30,8 @@ class ResolvedICall<T, M extends string> implements ICall<T, M> {
         .pipe(
             retryWhenDefined(target.tagName),
             map(value => {
-              if (!this.argType.check(value)) {
-                throw new Error(`Arg of method ${this.methodName} is not of type ${this.argType}`);
+              if (!argType.check(value)) {
+                throw new Error(`Arg of method ${this.methodName} is not of type ${argType}`);
               }
 
               return value;
@@ -39,6 +40,10 @@ class ResolvedICall<T, M extends string> implements ICall<T, M> {
   }
 }
 
-export function icall<T, M extends string>(methodName: M, argType: Type<T>): ResolvedICall<T, M> {
-  return new ResolvedICall(methodName, argType);
+
+export function icall<A extends readonly unknown[], M extends string>(
+    methodName: M,
+    argTypes: TypeOfArray<A>,
+): ResolvedICall<A, M> {
+  return new ResolvedICall(methodName, argTypes);
 }

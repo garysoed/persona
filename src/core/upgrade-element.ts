@@ -108,8 +108,8 @@ function createMethods(
     }
 
     const value$ = new Subject<unknown>();
-    methodRecord[io.methodName] = (arg: unknown) => {
-      value$.next(arg);
+    methodRecord[io.methodName] = (...args: readonly unknown[]) => {
+      value$.next(args);
     };
     setValueObservable(element, io.methodName, value$);
   }

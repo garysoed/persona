@@ -1,8 +1,8 @@
-import {instanceofType, Type} from 'gs-types';
+import {instanceofType} from 'gs-types';
 import {of, OperatorFunction, pipe} from 'rxjs';
 import {switchMap, tap} from 'rxjs/operators';
 
-import {ApiType, IOType, OCall} from '../types/io';
+import {ApiType, IOType, OCall, TypeOfArray} from '../types/io';
 import {retryWhenDefined} from '../util/retry-when-defined';
 
 
@@ -11,16 +11,16 @@ interface MaybeElement extends Element {
 }
 
 
-class ResolvedOCall<T, M extends string> implements OCall<T, M> {
+class ResolvedOCall<A extends readonly unknown[], M extends string> implements OCall<A, M> {
   readonly apiType = ApiType.CALL;
   readonly ioType = IOType.OUTPUT;
 
   constructor(
       readonly methodName: M,
-      readonly argType: Type<T>,
+      readonly argTypes: TypeOfArray<A>,
   ) {}
 
-  resolve(target: Element): () => OperatorFunction<T, T> {
+  resolve(target: Element): () => OperatorFunction<A, A> {
     return () => pipe(
         switchMap(newValue => {
           return of(newValue).pipe(
@@ -30,7 +30,7 @@ class ResolvedOCall<T, M extends string> implements OCall<T, M> {
                   throw new Error(`Property ${this.methodName} is not a function`);
                 }
 
-                method.call(target, newValue);
+                method.call(target, ...newValue);
               }),
               retryWhenDefined(target.tagName),
           );
@@ -39,6 +39,10 @@ class ResolvedOCall<T, M extends string> implements OCall<T, M> {
   }
 }
 
-export function ocall<T, M extends string>(methodName: M, argType: Type<T>): ResolvedOCall<T, M> {
-  return new ResolvedOCall(methodName, argType);
+
+export function ocall<A extends readonly unknown[], M extends string>(
+    methodName: M,
+    argTypes: TypeOfArray<A>,
+): ResolvedOCall<A, M> {
+  return new ResolvedOCall(methodName, argTypes);
 }

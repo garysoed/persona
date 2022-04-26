@@ -1,9 +1,9 @@
 import {source} from 'grapevine';
-import {assert, createSpySubject, fake, should, spy, test} from 'gs-testing';
+import {arrayThat, assert, createSpySubject, fake, should, spy, test} from 'gs-testing';
 import {cache} from 'gs-tools/export/data';
 import {numberType} from 'gs-types';
 import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {query} from '../selector/query';
@@ -19,7 +19,7 @@ const $shadowValue$ = source(() => new Subject<number>());
 
 const $host = {
   host: {
-    fn: icall('callFn', numberType),
+    fn: icall('callFn', [numberType]),
   },
 };
 
@@ -32,7 +32,7 @@ class HostCtrl implements Ctrl {
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       this.context.host.fn.pipe(
-          tap(value => $hostValue$.get(this.context.vine).next(value)),
+          tap(([value]) => $hostValue$.get(this.context.vine).next(value)),
       ),
     ];
   }
@@ -57,7 +57,10 @@ class ShadowCtrl implements Ctrl {
   @cache()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
-      $shadowValue$.get(this.context.vine).pipe(this.context.shadow.deps.fn()),
+      $shadowValue$.get(this.context.vine).pipe(
+          map(value => [value]),
+          this.context.shadow.deps.fn(),
+      ),
     ];
   }
 }
@@ -106,16 +109,16 @@ test('@persona/src/input/call', init => {
         .return(onWhenDefined$ as any);
 
     const key = 'key';
-    const input = icall(key, numberType);
+    const input = icall(key, [numberType]);
     const tag = 'tag';
     const target = document.createElement(tag);
     const value$ = createSpySubject(input.resolve(target));
 
     const value = 123;
-    const valueSubject = new BehaviorSubject(value);
+    const valueSubject = new BehaviorSubject([value]);
     setValueObservable(target, key, valueSubject);
     onWhenDefined$.next(HTMLElement);
 
-    assert(value$).to.emitSequence([value]);
+    assert(value$).to.emitSequence([arrayThat<number>().haveExactElements([value])]);
   });
 });

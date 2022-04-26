@@ -59,9 +59,9 @@ function reverseIO(io: InputOutput): InputOutput {
     case ApiType.CALL:
       switch (io.ioType) {
         case IOType.INPUT:
-          return ocall(io.methodName, io.argType);
+          return ocall(io.methodName, io.argTypes);
         case IOType.OUTPUT:
-          return icall(io.methodName, io.argType);
+          return icall(io.methodName, io.argTypes);
       }
       break;
     case ApiType.CASE:
