@@ -28,19 +28,22 @@ export {otext} from '../src/output/text';
 export {ovalue} from '../src/output/value';
 
 export {BUTTON} from '../src/html/button';
+export {CODE} from '../src/html/code';
 export {DIV} from '../src/html/div';
 export {ELEMENT_SPEC as ELEMENT} from '../src/html/element';
 export {H1, H2, H3, H4, H5, H6} from '../src/html/heading';
 export {INPUT, AutocompleteType, InputType} from '../src/html/input';
+export {KBD} from '../src/html/keyboard';
 export {LABEL} from '../src/html/label';
-export {PARAGRAPH} from '../src/html/paragraph';
+export {P} from '../src/html/paragraph';
 export {PRE} from '../src/html/pre';
+export {SECTION} from '../src/html/section';
 export {SLOT} from '../src/html/slot';
 export {SPAN} from '../src/html/span';
 export {SVG} from '../src/html/svg';
 export {TABLE} from '../src/html/table';
-export {TABLE_CELL} from '../src/html/table-cell';
-export {TABLE_ROW} from '../src/html/table-row';
+export {TD} from '../src/html/table-cell';
+export {TR} from '../src/html/table-row';
 export {TBODY, THEAD} from '../src/html/table-section';
 export {TEMPLATE} from '../src/html/template';
 

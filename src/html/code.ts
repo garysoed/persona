@@ -1,8 +1,8 @@
 import {createDomRegistration} from './create-dom-registration';
 import {ELEMENT_SPEC} from './element';
 
-export const TD = createDomRegistration({
-  ctor: HTMLTableCellElement,
+export const CODE = createDomRegistration({
+  ctor: HTMLElement,
   spec: ELEMENT_SPEC,
-  tag: 'td',
+  tag: 'code',
 });
