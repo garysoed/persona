@@ -1,4 +1,5 @@
 {
+  "render-custom-element__dom.html": "<test-host><gst-fake-shadow><!-- #ref --><button autofocus=\"\"></button></gst-fake-shadow></test-host>",
   "render-custom-element__emit.html": "<test-host><gst-fake-shadow><!-- #ref --><pr-test a=\"avalue\" b=\"\"><gst-fake-shadow><div>child<slot></slot></div></gst-fake-shadow></pr-test></gst-fake-shadow></test-host>",
   "render-custom-element__update.html": "<test-host><gst-fake-shadow><!-- #ref --><pr-test a=\"a2\"><gst-fake-shadow><div>child<slot></slot></div></gst-fake-shadow></pr-test></gst-fake-shadow></test-host>",
   "render-element__attribute_undefined.html": "<test-host><gst-fake-shadow><!-- #ref --><pr-test></pr-test></gst-fake-shadow></test-host>",

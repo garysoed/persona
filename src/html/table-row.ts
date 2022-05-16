@@ -1,7 +1,8 @@
 import {createDomRegistration} from './create-dom-registration';
-import {ELEMENT} from './element';
+import {ELEMENT_SPEC} from './element';
 
 export const TABLE_ROW = createDomRegistration({
   ctor: HTMLTableRowElement,
-  spec: {},
-}, ELEMENT);
+  spec: ELEMENT_SPEC,
+  tag: 'tr',
+});

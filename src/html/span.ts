@@ -1,7 +1,8 @@
 import {createDomRegistration} from './create-dom-registration';
-import {ELEMENT} from './element';
+import {ELEMENT_SPEC} from './element';
 
 export const SPAN = createDomRegistration({
   ctor: HTMLSpanElement,
-  spec: {},
-}, ELEMENT);
+  spec: ELEMENT_SPEC,
+  tag: 'span',
+});

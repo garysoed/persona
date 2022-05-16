@@ -13,13 +13,13 @@ export interface Registration<
 > {
   readonly configure: (vine: Vine) => void;
   readonly spec: S;
+  readonly tag: string;
   readonly $ctor: Source<CustomElementCtor<E>>;
 }
 
 export interface CustomElementRegistration<E extends HTMLElement, S extends Spec> extends Registration<E, S> {
   readonly ctrl: new (context: Context<S>) => Ctrl;
   readonly deps: ReadonlyArray<CustomElementRegistration<HTMLElement, any>>;
-  readonly tag: string;
   readonly template: string;
 }
 

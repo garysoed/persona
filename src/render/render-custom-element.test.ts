@@ -6,6 +6,7 @@ import {numberType, unknownType} from 'gs-types';
 import {Observable, of, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
+import {BUTTON} from '../html/button';
 import {iattr} from '../input/attr';
 import {iflag} from '../input/flag';
 import {ocase} from '../output/case';
@@ -106,5 +107,17 @@ test('@persona/src/render/render-custom-element', init => {
     }));
 
     assert(element).to.matchSnapshot('render-custom-element__update.html');
+  });
+
+  should('work with DOM elements', () => {
+    const element = _.tester.createElement(HOST);
+    $spec.get(_.tester.vine).next(renderCustomElement({
+      registration: BUTTON,
+      runs: $ => [
+        of(true).pipe($.autofocus()),
+      ],
+    }));
+
+    assert(element).to.matchSnapshot('render-custom-element__dom.html');
   });
 });

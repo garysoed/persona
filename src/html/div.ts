@@ -1,7 +1,8 @@
 import {createDomRegistration} from './create-dom-registration';
-import {ELEMENT} from './element';
+import {ELEMENT_SPEC} from './element';
 
 export const DIV = createDomRegistration({
   ctor: HTMLDivElement,
-  spec: {},
-}, ELEMENT);
+  tag: 'div',
+  spec: ELEMENT_SPEC,
+});

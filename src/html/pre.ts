@@ -1,7 +1,8 @@
 import {createDomRegistration} from './create-dom-registration';
-import {ELEMENT} from './element';
+import {ELEMENT_SPEC} from './element';
 
 export const PRE = createDomRegistration({
   ctor: HTMLPreElement,
-  spec: {},
-}, ELEMENT);
+  spec: ELEMENT_SPEC,
+  tag: 'pre',
+});

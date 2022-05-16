@@ -2,7 +2,7 @@ import {iattr} from '../input/attr';
 import {iflag} from '../input/flag';
 
 import {createDomRegistration} from './create-dom-registration';
-import {ELEMENT} from './element';
+import {ELEMENT_SPEC} from './element';
 
 
 export enum AutocompleteType {
@@ -34,6 +34,7 @@ export enum InputType {
 export const INPUT = createDomRegistration({
   ctor: HTMLInputElement,
   spec: {
+    ...ELEMENT_SPEC,
     autocomplete: iattr('autocomplete'),
     autofocus: iflag('autofocus'),
     disabled: iflag('disabled'),
@@ -42,4 +43,5 @@ export const INPUT = createDomRegistration({
     step: iattr('step'),
     type: iattr('type'),
   },
-}, ELEMENT);
+  tag: 'input',
+});
