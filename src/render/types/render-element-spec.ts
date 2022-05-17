@@ -20,17 +20,17 @@ interface InputRenderSpec<S extends Spec, X extends ExtraSpec> {
   readonly runs?: (bindings: Bindings<ReversedSpec<S['host']&{}>&(X&{}), unknown>) => ReadonlyArray<Observable<unknown>>;
 }
 
-export interface RenderCustomElementSpec<S extends Spec, X extends ExtraSpec> extends InputRenderSpec<S, X> {
-  readonly type: RenderSpecType.CUSTOM_ELEMENT;
+export interface RenderElementSpec<S extends Spec, X extends ExtraSpec> extends InputRenderSpec<S, X> {
+  readonly type: RenderSpecType.ELEMENT;
   readonly runs: (bindings: Bindings<ReversedSpec<S['host']&{}>&X, unknown>) => ReadonlyArray<Observable<unknown>>;
 }
 
-export function renderCustomElement<S extends Spec, X extends ExtraSpec>(
+export function renderElement<S extends Spec, X extends ExtraSpec>(
     input: InputRenderSpec<S, X>,
-): RenderCustomElementSpec<S, X> {
+): RenderElementSpec<S, X> {
   return {
     runs: input.runs ?? (() => []),
-    type: RenderSpecType.CUSTOM_ELEMENT,
+    type: RenderSpecType.ELEMENT,
     ...input,
   };
 }

@@ -17,7 +17,7 @@ import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import goldens from './goldens/goldens.json';
-import {renderCustomElement} from './types/render-custom-element-spec';
+import {renderElement} from './types/render-element-spec';
 import {RenderSpec} from './types/render-spec';
 
 
@@ -77,7 +77,7 @@ const HOST = registerCustomElement({
   template: '<!-- #ref -->',
 });
 
-test('@persona/src/render/render-custom-element', init => {
+test('@persona/src/render/render-element', init => {
   const _ = init(() => {
     runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));
     const tester = setupTest({roots: [HOST, CHILD]});
@@ -86,7 +86,7 @@ test('@persona/src/render/render-custom-element', init => {
 
   should('emit the custom element', () => {
     const element = _.tester.createElement(HOST);
-    $spec.get(_.tester.vine).next(renderCustomElement({
+    $spec.get(_.tester.vine).next(renderElement({
       registration: CHILD,
       spec: {},
       runs: $ => [
@@ -95,12 +95,12 @@ test('@persona/src/render/render-custom-element', init => {
       ],
     }));
 
-    assert(element).to.matchSnapshot('render-custom-element__emit.html');
+    assert(element).to.matchSnapshot('render-element__emit.html');
   });
 
   should('update the inputs', () => {
     const element = _.tester.createElement(HOST);
-    $spec.get(_.tester.vine).next(renderCustomElement({
+    $spec.get(_.tester.vine).next(renderElement({
       registration: CHILD,
       spec: {},
       runs: $ => [
@@ -109,12 +109,12 @@ test('@persona/src/render/render-custom-element', init => {
       ],
     }));
 
-    assert(element).to.matchSnapshot('render-custom-element__update.html');
+    assert(element).to.matchSnapshot('render-element__update.html');
   });
 
   should('work with DOM elements', () => {
     const element = _.tester.createElement(HOST);
-    $spec.get(_.tester.vine).next(renderCustomElement({
+    $spec.get(_.tester.vine).next(renderElement({
       registration: BUTTON,
       spec: {
         text: otext(),
@@ -125,6 +125,6 @@ test('@persona/src/render/render-custom-element', init => {
       ],
     }));
 
-    assert(element).to.matchSnapshot('render-custom-element__dom.html');
+    assert(element).to.matchSnapshot('render-element__dom.html');
   });
 });

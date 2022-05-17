@@ -7,7 +7,7 @@ import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
 
 import {renderNode} from './render-node';
 import {RenderContext} from './types/render-context';
-import {ExtraSpec, RenderCustomElementSpec} from './types/render-custom-element-spec';
+import {ExtraSpec, RenderElementSpec as RenderElementSpec} from './types/render-element-spec';
 import {RenderSpecType} from './types/render-spec-type';
 
 
@@ -22,8 +22,8 @@ import {RenderSpecType} from './types/render-spec-type';
  *
  * @thModule render
  */
-export function renderCustomElement<S extends Spec, X extends ExtraSpec>(
-    renderSpec: RenderCustomElementSpec<S, X>,
+export function renderElement<S extends Spec, X extends ExtraSpec>(
+    renderSpec: RenderElementSpec<S, X>,
     context: RenderContext,
 ): Observable<HTMLElement> {
   const nodeSpec = {
