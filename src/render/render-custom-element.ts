@@ -5,7 +5,7 @@ import {createBindings} from '../core/create-bindings';
 import {Spec} from '../types/ctrl';
 import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
 
-import {renderElement} from './render-element';
+import {renderNode} from './render-node';
 import {RenderContext} from './types/render-context';
 import {ExtraSpec, RenderCustomElementSpec} from './types/render-custom-element-spec';
 import {RenderSpecType} from './types/render-spec-type';
@@ -26,25 +26,26 @@ export function renderCustomElement<S extends Spec, X extends ExtraSpec>(
     renderSpec: RenderCustomElementSpec<S, X>,
     context: RenderContext,
 ): Observable<HTMLElement> {
-  const elementSpec = {
+  const nodeSpec = {
     ...renderSpec,
-    tag: renderSpec.registration.tag,
-    type: RenderSpecType.ELEMENT as const,
+    type: RenderSpecType.NODE as const,
+    node: context.document.createElement(renderSpec.registration.tag),
   };
-  return renderElement(elementSpec, context).pipe(
-      switchMap(el => {
-        const reversed = reverseSpec(renderSpec.registration.spec.host ?? {});
-        const bindings = createBindings<ReversedSpec<S['host']&{}>&X>(
-            {...reversed, ...renderSpec.spec},
-            el,
-            context,
-        );
-        const runs = renderSpec.runs(bindings);
+  return renderNode(nodeSpec)
+      .pipe(
+          switchMap(el => {
+            const reversed = reverseSpec(renderSpec.registration.spec.host ?? {});
+            const bindings = createBindings<ReversedSpec<S['host']&{}>&X>(
+                {...reversed, ...renderSpec.spec},
+                el,
+                context,
+            );
+            const runs = renderSpec.runs(bindings);
 
-        return merge(
-            of(el),
-            merge(...runs).pipe(switchMapTo(EMPTY)),
-        );
-      }),
-  );
+            return merge(
+                of(el),
+                merge(...runs).pipe(switchMapTo(EMPTY)),
+            );
+          }),
+      );
 }
