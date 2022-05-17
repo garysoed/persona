@@ -7,7 +7,7 @@ import {RenderTemplateSpec} from './render-template-spec';
 import {RenderTextNodeSpec} from './render-text-node-spec';
 
 
-export type RenderSpec = RenderCustomElementSpec<any>|
+export type RenderSpec = RenderCustomElementSpec<any, any>|
     RenderElementSpec|
     RenderFragmentSpec|
     RenderHtmlSpec|

@@ -21,7 +21,7 @@ import {RenderTemplateSpec, TemplateBindingSpec} from './types/render-template-s
 import {RenderTextNodeSpec} from './types/render-text-node-spec';
 
 
-export function render(spec: RenderCustomElementSpec<ResolvedBindingSpec>, context: RenderContext): Observable<Element>;
+export function render(spec: RenderCustomElementSpec<ResolvedBindingSpec, {}>, context: RenderContext): Observable<Element>;
 export function render(spec: RenderFragmentSpec, context: RenderContext): Observable<DocumentFragment>;
 export function render(spec: RenderElementSpec, context: RenderContext): Observable<Element>;
 export function render(spec: RenderHtmlSpec, context: RenderContext): Observable<Element>;

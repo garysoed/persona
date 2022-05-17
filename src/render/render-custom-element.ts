@@ -7,7 +7,7 @@ import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
 
 import {renderElement} from './render-element';
 import {RenderContext} from './types/render-context';
-import {RenderCustomElementSpec} from './types/render-custom-element-spec';
+import {ExtraSpec, RenderCustomElementSpec} from './types/render-custom-element-spec';
 import {RenderSpecType} from './types/render-spec-type';
 
 
@@ -22,8 +22,8 @@ import {RenderSpecType} from './types/render-spec-type';
  *
  * @thModule render
  */
-export function renderCustomElement<S extends Spec>(
-    renderSpec: RenderCustomElementSpec<S>,
+export function renderCustomElement<S extends Spec, X extends ExtraSpec>(
+    renderSpec: RenderCustomElementSpec<S, X>,
     context: RenderContext,
 ): Observable<HTMLElement> {
   const elementSpec = {
@@ -34,7 +34,11 @@ export function renderCustomElement<S extends Spec>(
   return renderElement(elementSpec, context).pipe(
       switchMap(el => {
         const reversed = reverseSpec(renderSpec.registration.spec.host ?? {});
-        const bindings = createBindings<ReversedSpec<S['host']&{}>>(reversed, el, context);
+        const bindings = createBindings<ReversedSpec<S['host']&{}>&X>(
+            {...reversed, ...renderSpec.spec},
+            el,
+            context,
+        );
         const runs = renderSpec.runs(bindings);
 
         return merge(

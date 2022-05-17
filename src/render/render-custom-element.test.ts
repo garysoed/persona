@@ -10,6 +10,7 @@ import {BUTTON} from '../html/button';
 import {iattr} from '../input/attr';
 import {iflag} from '../input/flag';
 import {ocase} from '../output/case';
+import {otext} from '../output/text';
 import {ovalue} from '../output/value';
 import {root} from '../selector/root';
 import {setupTest} from '../testing/setup-test';
@@ -87,6 +88,7 @@ test('@persona/src/render/render-custom-element', init => {
     const element = _.tester.createElement(HOST);
     $spec.get(_.tester.vine).next(renderCustomElement({
       registration: CHILD,
+      spec: {},
       runs: $ => [
         of('avalue').pipe($.a()),
         of(true).pipe($.b()),
@@ -100,6 +102,7 @@ test('@persona/src/render/render-custom-element', init => {
     const element = _.tester.createElement(HOST);
     $spec.get(_.tester.vine).next(renderCustomElement({
       registration: CHILD,
+      spec: {},
       runs: $ => [
         of('a1', 'a2').pipe($.a()),
         of(true, false).pipe($.b()),
@@ -113,8 +116,12 @@ test('@persona/src/render/render-custom-element', init => {
     const element = _.tester.createElement(HOST);
     $spec.get(_.tester.vine).next(renderCustomElement({
       registration: BUTTON,
+      spec: {
+        text: otext(),
+      },
       runs: $ => [
         of(true).pipe($.autofocus()),
+        of('button').pipe($.text()),
       ],
     }));
 
