@@ -124,7 +124,7 @@ export interface OFlag extends ReferenceO<boolean, boolean, [], Element> {
 export interface OForeach<T> extends ReferenceO<readonly T[], readonly T[], [RenderValuesFn<T>], Target> {
   readonly apiType: ApiType.FOREACH;
   readonly ioType: IOType.OUTPUT;
-  readonly slotName: string;
+  readonly slotName: string|null;
   readonly valueType: Type<T>;
 }
 

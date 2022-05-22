@@ -7,7 +7,7 @@ import {Target} from '../types/target';
 import {mutationObservable} from './mutation-observable';
 
 
-export function initSlot(slotName: string): OperatorFunction<Target, Node|null> {
+export function initSlot(slotName: string|null): OperatorFunction<Target, Node|null> {
   return pipe(
       switchMap(parentEl => {
         return mutationObservable(parentEl, {childList: true})
@@ -16,7 +16,12 @@ export function initSlot(slotName: string): OperatorFunction<Target, Node|null> 
                 startWith(parentEl.childNodes),
             );
       }),
-      map(childNodes => findCommentNode(arrayFrom(childNodes), slotName)),
+      map(childNodes => {
+        if (!slotName) {
+          return null;
+        }
+        return findCommentNode(arrayFrom(childNodes), slotName);
+      }),
   );
 }
 

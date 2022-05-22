@@ -1,7 +1,6 @@
 import {arrayFrom} from 'gs-testing/src/util/flatten-node';
 import {$asArray, $asSet, $filterNonNull, $flat, $map, $pipe, diffArray} from 'gs-tools/export/collect';
-import {filterNonNullable} from 'gs-tools/export/rxjs';
-import {hasPropertiesType, instanceofType, intersectType, notType, Type, undefinedType} from 'gs-types';
+import {hasPropertiesType, instanceofType, intersectType, notType, stringType, Type, undefinedType} from 'gs-types';
 import {combineLatest, EMPTY, merge, of, OperatorFunction} from 'rxjs';
 import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 
@@ -50,13 +49,25 @@ function getContiguousSiblingNodesWithId(start: Node): readonly NodeWithId[] {
   return children;
 }
 
+function getCurrentNodes(parentNode: Node, start: Node|null): readonly NodeWithId[] {
+  if (start) {
+    return getContiguousSiblingNodesWithId(start);
+  }
+
+  const guessStart = parentNode.firstChild;
+  if (!NODE_WITH_ID_TYPE.check(guessStart)) {
+    return [];
+  }
+  return [guessStart, ...getContiguousSiblingNodesWithId(guessStart)];
+}
+
 // TODO: Consolidate with applyChildren.
 export class ResolvedOForeach<T> implements OForeach<T> {
   readonly apiType = ApiType.FOREACH;
   readonly ioType = IOType.OUTPUT;
 
   constructor(
-      readonly slotName: string,
+      readonly slotName: string|null,
       readonly valueType: Type<T>,
   ) {}
 
@@ -64,7 +75,6 @@ export class ResolvedOForeach<T> implements OForeach<T> {
     return (renderFn: RenderValuesFn<T>) => {
       const slotEl$ = of(target).pipe(
           initSlot(this.slotName),
-          filterNonNullable(),
       );
 
       return values$ => {
@@ -113,14 +123,14 @@ export class ResolvedOForeach<T> implements OForeach<T> {
               );
 
               // Iterate through one diff at a time, since moving nodes doesn't act like an array.
-              let currentNodes = getContiguousSiblingNodesWithId(slotNode);
+              let currentNodes = getCurrentNodes(target, slotNode);
               let diffs = diffArray<Node>(currentNodes, flattenedNewNodes, equalNodes);
               let i = 0;
               while (diffs.length > 0) {
                 const [diff] = diffs;
                 switch (diff.type) {
                   case 'insert': {
-                    const insertBefore = getInsertBeforeTarget(diff.index, currentNodes, slotNode);
+                    const insertBefore = getInsertBeforeTarget(diff.index, currentNodes, slotNode, target);
                     target.insertBefore(diff.value, insertBefore);
                     break;
                   }
@@ -129,7 +139,7 @@ export class ResolvedOForeach<T> implements OForeach<T> {
                     break;
                 }
 
-                currentNodes = getContiguousSiblingNodesWithId(slotNode);
+                currentNodes = getCurrentNodes(target, slotNode);
                 diffs = diffArray(currentNodes, flattenedNewNodes, equalNodes);
                 i++;
                 if (i >= 500) {
@@ -152,6 +162,7 @@ function getInsertBeforeTarget(
     index: number,
     currentNodes: readonly Node[],
     slotNode: Node|null,
+    target: Target,
 ): Node|null {
   // Try the specified node first.
   const targetNode = currentNodes[index];
@@ -165,10 +176,23 @@ function getInsertBeforeTarget(
     return lastNode.nextSibling;
   }
 
-  return slotNode?.nextSibling ?? null;
+  if (!slotNode) {
+    return target.firstChild;
+  }
+
+  return slotNode.nextSibling ?? null;
 }
 
-export function oforeach<T>(slotName: string, valueType: Type<T>): ResolvedOForeach<T> {
-  return new ResolvedOForeach(slotName, valueType);
+export function oforeach<T>(valueType: Type<T>): ResolvedOForeach<T>;
+export function oforeach<T>(slotName: string, valueType: Type<T>): ResolvedOForeach<T>;
+export function oforeach<T>(slotNameOrType: string|Type<T>, valueType?: Type<T>): ResolvedOForeach<T> {
+  if (stringType.check(slotNameOrType)) {
+    if (!valueType) {
+      throw new Error('Unsupported');
+    }
+
+    return new ResolvedOForeach(slotNameOrType, valueType);
+  }
+  return new ResolvedOForeach(null, slotNameOrType);
 }
 

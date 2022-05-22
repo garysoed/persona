@@ -23,7 +23,9 @@ interface Renderer {
 }
 
 const $elValue$ = source(() => new Subject<readonly string[]>());
+const $elSlotlessValue$ = source(() => new Subject<readonly string[]>());
 const $rootValue$ = source(() => new Subject<readonly string[]>());
+const $rootSlotlessValue$ = source(() => new Subject<readonly string[]>());
 const $renderer = source<Renderer>(() => ({
   render: (tag: string): RenderSpec => {
     return renderNode({node: document.createElement(tag)});
@@ -35,9 +37,11 @@ const $host = {
   shadow: {
     root: root({
       value: oforeach('#root', stringType),
+      slotless: oforeach(stringType),
     }),
     el: query('#el', DIV, {
       value: oforeach('#ref', stringType),
+      slotless: oforeach(stringType),
     }),
   },
 };
@@ -51,8 +55,14 @@ class HostCtrl implements Ctrl {
       $elValue$.get(this.$.vine).pipe(
           this.$.shadow.el.value(value => this.renderNode(value)),
       ),
+      $elSlotlessValue$.get(this.$.vine).pipe(
+          this.$.shadow.el.slotless(value => this.renderNode(value)),
+      ),
       $rootValue$.get(this.$.vine).pipe(
           this.$.shadow.root.value(value => this.renderNode(value)),
+      ),
+      $rootSlotlessValue$.get(this.$.vine).pipe(
+          this.$.shadow.root.slotless(value => this.renderNode(value)),
       ),
     ];
   }
@@ -191,6 +201,121 @@ test('@persona/src/output/foreach', init => {
     });
   });
 
+  test('root slotless', _, () => {
+    should('process \'init\' correctly', () => {
+      const element = _.tester.createElement(HOST);
+
+      $rootSlotlessValue$.get(_.tester.vine).next(['div1', 'div2', 'div3']);
+
+      assert(element).to.matchSnapshot('foreach__root_slotless_init.html');
+    });
+
+    should('process \'insert\' correctly for index 0', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+
+      $rootSlotlessValue$.get(_.tester.vine).next(['node1', node2, node3]);
+
+      const insertNode = 'div0';
+      $rootSlotlessValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
+
+      assert(element).to.matchSnapshot('foreach__root_slotless_insert_start.html');
+    });
+
+    should('process \'insert\' correctly for index 2', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+      $rootSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      const insertNode = 'div0';
+      $rootSlotlessValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
+
+      assert(element).to.matchSnapshot('foreach__root_slotless_insert_middle.html');
+    });
+
+    should('process \'insert\' correctly for large index', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+      $rootSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      const insertNode = 'div0';
+      $rootSlotlessValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
+
+      assert(element).to.matchSnapshot('foreach__root_slotless_insert_end.html');
+    });
+
+    should('process \'delete\' correctly', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+      $rootSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      $rootSlotlessValue$.get(_.tester.vine).next([node1, node3]);
+
+      assert(element).to.matchSnapshot('foreach__root_slotless_delete.html');
+    });
+
+    should('ignore node insertions with the same id', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div1';
+
+      $rootSlotlessValue$.get(_.tester.vine).next([node1]);
+      $rootSlotlessValue$.get(_.tester.vine).next([node2]);
+
+      assert(element).to.matchSnapshot('foreach__root_slotless_same_id.html');
+    });
+
+    should('handle deleting duplicates', () => {
+      const element = _.tester.createElement(HOST);
+      const node = 'div';
+      $rootSlotlessValue$.get(_.tester.vine).next([node, node]);
+
+      $rootSlotlessValue$.get(_.tester.vine).next([]);
+
+      assert(element).to.matchSnapshot('foreach__root_slotless_delete_duplicate.html');
+    });
+
+    should('replace the element correctly for \'set\'', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+      $rootSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      const setNode = 'div0';
+      $rootSlotlessValue$.get(_.tester.vine).next([setNode, node2, node3]);
+
+      assert(element).to.matchSnapshot('foreach__root_slotless_set.html');
+    });
+
+    should('handle insertion and deletions of renders with multiple nodes', () => {
+      $renderer.get(_.tester.vine).render = value => {
+        const node = document.createDocumentFragment();
+        node.appendChild(document.createElement(value));
+        node.appendChild(document.createElement(value));
+        node.appendChild(document.createElement(value));
+        return renderNode({node});
+      };
+
+      const element = _.tester.createElement(HOST);
+      const id = 'div';
+
+      $rootSlotlessValue$.get(_.tester.vine).next([id]);
+      assert(element).to.matchSnapshot('foreach__root_slotless_multi_insert.html');
+
+      $rootSlotlessValue$.get(_.tester.vine).next([]);
+      assert(element).to.matchSnapshot('foreach__root_slotless_multi_delete.html');
+    });
+  });
+
   test('el', () => {
     should('process \'init\' correctly', () => {
       const element = _.tester.createElement(HOST);
@@ -306,6 +431,124 @@ test('@persona/src/output/foreach', init => {
 
       $elValue$.get(_.tester.vine).next([]);
       assert(element).to.matchSnapshot('foreach__el_multi_delete.html');
+    });
+  });
+
+  test('el slotless', () => {
+    should('process \'init\' correctly', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+
+      $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      assert(element).to.matchSnapshot('foreach__el_slotless_init.html');
+    });
+
+    should('process \'insert\' correctly for index 0', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+
+      $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      const insertNode = 'div0';
+      $elSlotlessValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
+
+      assert(element).to.matchSnapshot('foreach__el_slotless_insert_start.html');
+    });
+
+    should('process \'insert\' correctly for index 2', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+      $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      const insertNode = 'div0';
+      $elSlotlessValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
+
+      assert(element).to.matchSnapshot('foreach__el_slotless_insert_middle.html');
+    });
+
+    should('process \'insert\' correctly for large index', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+      $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      const insertNode = 'div0';
+      $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
+
+      assert(element).to.matchSnapshot('foreach__el_slotless_insert_end.html');
+    });
+
+    should('process \'delete\' correctly', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+      $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      $elSlotlessValue$.get(_.tester.vine).next([node1, node3]);
+
+      assert(element).to.matchSnapshot('foreach__el_slotless_delete.html');
+    });
+
+    should('ignore node insertions with the same id', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div1';
+
+      $elSlotlessValue$.get(_.tester.vine).next([node1]);
+      $elSlotlessValue$.get(_.tester.vine).next([node2]);
+
+      assert(element).to.matchSnapshot('foreach__el_slotless_same_id.html');
+    });
+
+    should('handle deleting duplicates', () => {
+      const element = _.tester.createElement(HOST);
+      const node = 'div';
+      $elSlotlessValue$.get(_.tester.vine).next([node, node]);
+
+      $elSlotlessValue$.get(_.tester.vine).next([]);
+
+      assert(element).to.matchSnapshot('foreach__el_slotless_delete_duplicate.html');
+    });
+
+    should('replace the element correctly for \'set\'', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+      $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
+
+      const setNode = 'div0';
+      $elSlotlessValue$.get(_.tester.vine).next([setNode, node2, node3]);
+
+      assert(element).to.matchSnapshot('foreach__el_slotless_set.html');
+    });
+
+    should('handle insertion and deletions of renders with multiple nodes', () => {
+      $renderer.get(_.tester.vine).render = value => {
+        const node = document.createDocumentFragment();
+        node.appendChild(document.createElement(value));
+        node.appendChild(document.createElement(value));
+        node.appendChild(document.createElement(value));
+        return renderNode({node});
+      };
+
+      const element = _.tester.createElement(HOST);
+      const id = 'div';
+
+      $elSlotlessValue$.get(_.tester.vine).next([id]);
+      assert(element).to.matchSnapshot('foreach__el_slotless_multi_insert.html');
+
+      $elSlotlessValue$.get(_.tester.vine).next([]);
+      assert(element).to.matchSnapshot('foreach__el_slotless_multi_delete.html');
     });
   });
 });
