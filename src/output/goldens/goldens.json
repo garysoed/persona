@@ -1,5 +1,8 @@
 {
   "attr__el_empty.html": "<test-host><gst-fake-shadow><div id=\"el\"></div></gst-fake-shadow></test-host>",
+  "attr__el_integer_empty.html": "<test-host><gst-fake-shadow><div id=\"el\"></div></gst-fake-shadow></test-host>",
+  "attr__el_integer_reset.html": "<test-host><gst-fake-shadow><div id=\"el\"></div></gst-fake-shadow></test-host>",
+  "attr__el_integer_value.html": "<test-host><gst-fake-shadow><div id=\"el\" attr-int=\"12\"></div></gst-fake-shadow></test-host>",
   "attr__el_reset.html": "<test-host><gst-fake-shadow><div id=\"el\"></div></gst-fake-shadow></test-host>",
   "attr__el_value.html": "<test-host><gst-fake-shadow><div id=\"el\" attr=\"value\"></div></gst-fake-shadow></test-host>",
   "case__el_empty.html": "<test-host><gst-fake-shadow>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div></gst-fake-shadow></test-host>",

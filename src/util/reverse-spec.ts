@@ -1,3 +1,5 @@
+import {reverse} from 'nabu';
+
 import {iattr} from '../input/attr';
 import {icall} from '../input/call';
 import {iclass} from '../input/class';
@@ -18,8 +20,8 @@ import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, ISlot
 
 
 type ReversedIO<T> =
-    T extends IAttr ? OAttr :
-    T extends OAttr ? IAttr :
+    T extends IAttr<infer D> ? OAttr<D> :
+    T extends OAttr<infer D> ? IAttr<D> :
     T extends ICall<infer A, infer M> ? OCall<A, M> :
     T extends IClass ? OClass :
     T extends OClass ? IClass :
@@ -51,9 +53,9 @@ function reverseIO(io: InputOutput): InputOutput {
     case ApiType.ATTR:
       switch (io.ioType) {
         case IOType.INPUT:
-          return oattr(io.attrName);
+          return oattr(io.attrName, reverse(io.converter));
         case IOType.OUTPUT:
-          return iattr(io.attrName);
+          return iattr(io.attrName, reverse(io.converter));
       }
       break;
     case ApiType.CALL:

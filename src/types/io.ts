@@ -1,4 +1,5 @@
 import {Type} from 'gs-types';
+import {Converter} from 'nabu';
 import {Observable, OperatorFunction} from 'rxjs';
 
 import {RenderSpec} from '../../export';
@@ -43,16 +44,18 @@ export interface ReferenceO<V, U, A extends readonly unknown[], T> {
   readonly ioType: IOType.OUTPUT;
 }
 
-export interface IAttr extends ReferenceI<string|null, Element> {
+export interface IAttr<T> extends ReferenceI<T|null, Element> {
   readonly apiType: ApiType.ATTR;
   readonly ioType: IOType.INPUT;
   readonly attrName: string;
+  readonly converter: Converter<string|null, T|null>;
 }
 
-export interface OAttr extends ReferenceO<string|null, string|null, [], Element> {
+export interface OAttr<T> extends ReferenceO<T|null, T|null, [], Element> {
   readonly apiType: ApiType.ATTR;
   readonly ioType: IOType.OUTPUT;
   readonly attrName: string;
+  readonly converter: Converter<T|null, string|null>;
 }
 
 
@@ -202,7 +205,7 @@ export type Resolver = (host: HTMLElement) => HTMLElement;
 
 // TODO: Only used in reverse spec?
 export type InputOutput =
-    IAttr|OAttr|
+    IAttr<any>|OAttr<any>|
     ICall<any, string>|OCall<any, string>|
     OCase<any>|
     IClass|OClass|
