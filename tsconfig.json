@@ -30,7 +30,6 @@
   "include": [
     "src/**/*.json",
     "src/**/*.ts",
-    "src/**/*.ts",
     "node_modules/devbase/ts/typings/*.d.ts",
     "export/*.ts",
   ]

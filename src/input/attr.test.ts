@@ -8,7 +8,7 @@ import {tap} from 'rxjs/operators';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {query} from '../selector/query';
-import {integer} from '../stringify/number';
+import {integer} from '../stringify/integer';
 import {ElementHarness} from '../testing/harness/element-harness';
 import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';

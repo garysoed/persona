@@ -8,7 +8,7 @@ import {tap} from 'rxjs/operators';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {query} from '../selector/query';
-import {integer} from '../stringify/number';
+import {integer} from '../stringify/integer';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
