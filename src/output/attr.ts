@@ -11,7 +11,7 @@ class ResolvedOAttr<T> implements OAttr<T> {
 
   constructor(
       readonly attrName: string,
-      readonly converter: Converter<T|null, string|null>,
+      readonly converter: Converter<T, string>,
   ) {}
 
   resolve(target: Element): () => OperatorFunction<T|null, T|null> {
@@ -34,8 +34,8 @@ class ResolvedOAttr<T> implements OAttr<T> {
 }
 
 export function oattr(attrName: string): ResolvedOAttr<string>;
-export function oattr<T>(attrName: string, converter: Converter<T|null, string|null>): ResolvedOAttr<T>;
-export function oattr<T>(attrName: string, converter?: Converter<T|null, string|null>): ResolvedOAttr<any> {
+export function oattr<T>(attrName: string, converter: Converter<T, string>): ResolvedOAttr<T>;
+export function oattr<T>(attrName: string, converter?: Converter<T, string>): ResolvedOAttr<any> {
   if (converter) {
     return new ResolvedOAttr(attrName, converter);
   }

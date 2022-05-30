@@ -7,8 +7,8 @@ import {tap} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
+import {integerParser} from '../parser/integer-parser';
 import {query} from '../selector/query';
-import {integer} from '../stringify/integer';
 import {ElementHarness} from '../testing/harness/element-harness';
 import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
@@ -28,12 +28,12 @@ const $shadowIntegerValue$ = source(() => new Subject<number|null>());
 const $host = {
   host: {
     value: iattr('attr'),
-    valueInt: iattr('attr-int', reverse(integer())),
+    valueInt: iattr('attr-int', reverse(integerParser())),
   },
   shadow: {
     el: query('#el', DIV, {
       value: iattr('attr'),
-      valueInt: iattr('attr-int', reverse(integer())),
+      valueInt: iattr('attr-int', reverse(integerParser())),
     }),
   },
 };

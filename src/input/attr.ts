@@ -1,4 +1,4 @@
-import {Converter, identity, mapForward} from 'nabu';
+import {Converter, failure, firstSuccess, identity, mapForward, Result, success} from 'nabu';
 import {defer, Observable, throwError} from 'rxjs';
 import {filter, map, startWith} from 'rxjs/operators';
 
@@ -13,7 +13,7 @@ class ResolvedIAttr<T> implements IAttr<T> {
 
   constructor(
       readonly attrName: string,
-      readonly converter: Converter<string|null, T|null>,
+      readonly converter: Converter<string, T>,
   ) {}
 
   resolve(target: Element): Observable<T|null> {
@@ -35,7 +35,26 @@ class ResolvedIAttr<T> implements IAttr<T> {
             startWith({}),
             map(() => target.getAttribute(this.attrName)),
             mapForward(
-                this.converter,
+                firstSuccess(
+                    {
+                      convertBackward(value: T|null): Result<string|null> {
+                        if (value === null) {
+                          return success(null);
+                        }
+
+                        return failure();
+                      },
+
+                      convertForward(value: string|null): Result<T|null> {
+                        if (value === null) {
+                          return success(null);
+                        }
+
+                        return failure();
+                      },
+                    },
+                    this.converter,
+                ),
                 value => throwError(`Invalid value of attribute ${this.attrName}: ${value}`),
             ),
         );
@@ -43,8 +62,8 @@ class ResolvedIAttr<T> implements IAttr<T> {
 }
 
 export function iattr(attrName: string): ResolvedIAttr<string>;
-export function iattr<T>(attrName: string, converter: Converter<string|null, T|null>): ResolvedIAttr<T>;
-export function iattr<T>(attrName: string, converter?: Converter<string|null, T|null>): ResolvedIAttr<any> {
+export function iattr<T>(attrName: string, converter: Converter<string, T>): ResolvedIAttr<T>;
+export function iattr<T>(attrName: string, converter?: Converter<string, T>): ResolvedIAttr<any> {
   if (converter) {
     return new ResolvedIAttr(attrName, converter);
   }

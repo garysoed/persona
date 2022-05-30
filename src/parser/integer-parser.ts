@@ -1,12 +1,8 @@
 import {Converter, Result} from 'nabu';
 
-export function integer(radix?: number): Converter<number|null, string|null> {
+export function integerParser(radix?: number): Converter<number, string> {
   return {
-    convertBackward(value: string|null): Result<number|null> {
-      if (value === null) {
-        return {result: null, success: true};
-      }
-
+    convertBackward(value: string): Result<number> {
       const result = Number.parseInt(value, radix);
       if (Number.isNaN(result)) {
         return {success: false};
@@ -15,7 +11,7 @@ export function integer(radix?: number): Converter<number|null, string|null> {
       return {result, success: true};
     },
 
-    convertForward(input: number): Result<string|null> {
+    convertForward(input: number): Result<string> {
       return {result: `${input}`, success: true};
     },
   };

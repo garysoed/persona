@@ -7,8 +7,8 @@ import {tap} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
+import {integerParser} from '../parser/integer-parser';
 import {query} from '../selector/query';
-import {integer} from '../stringify/integer';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -28,12 +28,12 @@ const $shadowIntegerValue$ = source(() => new ReplaySubject<number|null>());
 const $host = {
   host: {
     value: oattr('attr'),
-    valueInt: oattr('attr-int', integer()),
+    valueInt: oattr('attr-int', integerParser()),
   },
   shadow: {
     el: query('#el', DIV, {
       value: oattr('attr'),
-      valueInt: oattr('attr-int', integer()),
+      valueInt: oattr('attr-int', integerParser()),
     }),
   },
 };

@@ -48,14 +48,14 @@ export interface IAttr<T> extends ReferenceI<T|null, Element> {
   readonly apiType: ApiType.ATTR;
   readonly ioType: IOType.INPUT;
   readonly attrName: string;
-  readonly converter: Converter<string|null, T|null>;
+  readonly converter: Converter<string, T>;
 }
 
 export interface OAttr<T> extends ReferenceO<T|null, T|null, [], Element> {
   readonly apiType: ApiType.ATTR;
   readonly ioType: IOType.OUTPUT;
   readonly attrName: string;
-  readonly converter: Converter<T|null, string|null>;
+  readonly converter: Converter<T, string>;
 }
 
 
