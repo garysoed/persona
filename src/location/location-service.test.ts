@@ -1,7 +1,7 @@
 import {assert, objectThat, run, should, spy, test} from 'gs-testing';
 
+import {integerParser} from '../parser/integer-parser';
 import {createFakeWindow} from '../testing/fake-window';
-import {integerParser} from '../util/parsers';
 
 import {fromPattern} from './location-converter';
 import {LocationService, Route} from './location-service';

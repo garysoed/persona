@@ -1,7 +1,8 @@
 import {assert, objectThat, should, test} from 'gs-testing';
-import {Result} from 'nabu';
+import {identity, Result} from 'nabu';
 
-import {integerParser, stringParser} from '../util/parsers';
+import {integerParser} from '../parser/integer-parser';
+
 
 import {fromPattern} from './location-converter';
 
@@ -9,7 +10,7 @@ test('@persona/src/location/location-converter', () => {
   test('fromPattern', () => {
     test('convertBackward', () => {
       should('pass if the location has the correct type', () => {
-        const converter = fromPattern('/:a/:b', {a: integerParser(), b: stringParser()});
+        const converter = fromPattern('/:a/:b', {a: integerParser(), b: identity<string>()});
         assert(converter.convertBackward({a: 1, b: 'blah'})).to.equal(
             objectThat<Result<string>>().haveProperties({
               success: true,
@@ -26,7 +27,7 @@ test('@persona/src/location/location-converter', () => {
       }
 
       should('parse the URL correctly', () => {
-        const converter = fromPattern('/:a/:b', {a: integerParser(), b: stringParser()});
+        const converter = fromPattern('/:a/:b', {a: integerParser(), b: identity<string>()});
         assert(converter.convertForward('/1/blah')).to.equal(
             objectThat<Result<TestData>>().haveProperties({
               success: true,
@@ -36,14 +37,14 @@ test('@persona/src/location/location-converter', () => {
       });
 
       should('fail if one of the params cannot be converted', () => {
-        const converter = fromPattern('/:a/:b', {a: integerParser(), b: stringParser()});
+        const converter = fromPattern('/:a/:b', {a: integerParser(), b: identity<string>()});
         assert(converter.convertForward('/a/blah')).to.equal(
             objectThat<Result<TestData>>().haveProperties({success: false}),
         );
       });
 
       should('match optional params', () => {
-        const converter = fromPattern('/:a/:b?', {a: integerParser(), b: stringParser()});
+        const converter = fromPattern('/:a/:b?', {a: integerParser(), b: identity<string>()});
         assert(converter.convertForward('/1/blah')).to.equal(
             objectThat<Result<TestData>>().haveProperties({
               success: true,
@@ -53,7 +54,7 @@ test('@persona/src/location/location-converter', () => {
       });
 
       should('match optional param when omitted', () => {
-        const converter = fromPattern('/:a/:b?', {a: integerParser(), b: stringParser()});
+        const converter = fromPattern('/:a/:b?', {a: integerParser(), b: identity<string>()});
         assert(converter.convertForward('/1/')).to.equal(
             objectThat<Result<TestData>>().haveProperties({
               success: true,
@@ -63,7 +64,7 @@ test('@persona/src/location/location-converter', () => {
       });
 
       should('fail if it does not match', () => {
-        const converter = fromPattern('/:a/:b', {a: integerParser(), b: stringParser()});
+        const converter = fromPattern('/:a/:b', {a: integerParser(), b: identity<string>()});
         assert(converter.convertForward('/1/')).to.equal(
             objectThat<Result<TestData>>().haveProperties({success: false}),
         );
