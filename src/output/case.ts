@@ -2,7 +2,7 @@ import {arrayFrom, diffArray} from 'gs-tools/export/collect';
 import {filterNonNullable} from 'gs-tools/export/rxjs';
 import {hasPropertiesType, instanceofType, intersectType, notType, Type, undefinedType} from 'gs-types';
 import {EMPTY, merge, of, OperatorFunction} from 'rxjs';
-import {switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
+import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 
 import {render} from '../render/render';
 import {RenderContext} from '../render/types/render-context';
@@ -80,14 +80,12 @@ class ResolvedOCase<T> implements OCase<T> {
 
       return value$ => {
         const render$ = value$.pipe(
-            switchMap(value => {
-              return renderFn(value).pipe(
-                  switchMap(spec => {
-                    if (!spec) {
-                      return of(null);
-                    }
-                    return render(spec, context);
-                  }),
+            map(value => ({spec: renderFn(value), value})),
+            switchMap(({spec, value}) => {
+              if (!spec) {
+                return of(null);
+              }
+              return render(spec, context).pipe(
                   tap(node => {
                     if (!node) {
                       return;

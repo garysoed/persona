@@ -58,8 +58,8 @@ class HostCtrl implements Ctrl {
     ];
   }
 
-  private render(text: string|null): Observable<RenderSpec|null> {
-    return of(!text ? null : renderTextNode({textContent: of(text)}));
+  private render(text: string|null): RenderSpec|null {
+    return !text ? null : renderTextNode({textContent: of(text)});
   }
 }
 

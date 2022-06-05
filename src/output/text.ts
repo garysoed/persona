@@ -22,9 +22,9 @@ class ResolvedOText implements OText {
     return () => {
       return value$ => {
         const render$ = value$.pipe(
-            this.caseOutput.resolve(target, context)(value => of(renderTextNode({
+            this.caseOutput.resolve(target, context)(value => renderTextNode({
               textContent: of(value),
-            }))),
+            })),
             switchMapTo(EMPTY),
         );
         return merge(render$, value$);

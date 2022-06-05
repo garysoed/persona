@@ -3,7 +3,7 @@ import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
 import {instanceofType, nullableType} from 'gs-types';
-import {Observable, of, Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {ocase} from '../output/case';
@@ -32,7 +32,7 @@ class HostCtrl implements Ctrl {
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $elValue.get(this.$.vine).pipe(
-          this.$.shadow.el.value(node => of(!node ? null : renderNode({node}))),
+          this.$.shadow.el.value(node => !node ? null : renderNode({node})),
       ),
     ];
   }

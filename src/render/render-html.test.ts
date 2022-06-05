@@ -2,7 +2,7 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
-import {unknownType} from 'gs-types';
+import {Type, ValidationResult} from 'gs-types';
 import {Observable, of, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
@@ -16,12 +16,23 @@ import {renderHtml} from './types/render-html-spec';
 import {RenderSpec} from './types/render-spec';
 
 
+const RENDER_SPEC_TYPE: Type<RenderSpec|null> = {
+  assert (target: unknown): asserts target is RenderSpec | null {
+    return;
+  },
+  check (target: unknown): target is RenderSpec | null {
+    return true;
+  },
+  validate (target: unknown): ValidationResult<RenderSpec | null> {
+    return {passes: true, value: target as RenderSpec|null};
+  },
+};
 const $spec = source(() => new Subject<RenderSpec|null>());
 
 const $host = {
   shadow: {
     root: root({
-      value: ocase('#ref', unknownType),
+      value: ocase('#ref', RENDER_SPEC_TYPE),
     }),
   },
 };
@@ -32,7 +43,7 @@ class HostCtrl implements Ctrl {
   @cache()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
-      of({}).pipe(this.$.shadow.root.value(() => $spec.get(this.$.vine))),
+      $spec.get(this.$.vine).pipe(this.$.shadow.root.value(spec => spec)),
     ];
   }
 }
