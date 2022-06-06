@@ -2,7 +2,7 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
-import {numberType, Type, ValidationResult} from 'gs-types';
+import {numberType} from 'gs-types';
 import {Observable, of, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
@@ -51,21 +51,10 @@ const CHILD = registerCustomElement({
 });
 
 const $spec = source(() => new Subject<RenderSpec|null>());
-const RENDER_SPEC_TYPE: Type<RenderSpec|null> = {
-  assert (target: unknown): asserts target is RenderSpec | null {
-    return;
-  },
-  check (target: unknown): target is RenderSpec | null {
-    return true;
-  },
-  validate (target: unknown): ValidationResult<RenderSpec | null> {
-    return {passes: true, value: target as RenderSpec|null};
-  },
-};
 const $host = {
   shadow: {
     root: root({
-      value: ocase('#ref', RENDER_SPEC_TYPE),
+      value: ocase<RenderSpec|null>('#ref'),
     }),
   },
 };

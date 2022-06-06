@@ -79,7 +79,6 @@ export interface OCase<T> extends ReferenceO<T, T, [RenderValueFn<T>], Target> {
   readonly apiType: ApiType.CASE;
   readonly ioType: IOType.OUTPUT;
   readonly slotName: string|null;
-  readonly valueType: Type<T>;
 }
 
 export interface IClass extends ReferenceI<boolean, Element> {

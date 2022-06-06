@@ -1,4 +1,3 @@
-import {stringType} from 'gs-types';
 import {EMPTY, merge, of, OperatorFunction} from 'rxjs';
 import {switchMapTo} from 'rxjs/operators';
 
@@ -34,5 +33,5 @@ class ResolvedOText implements OText {
 }
 
 export function otext(): ResolvedOText {
-  return new ResolvedOText(ocase(stringType));
+  return new ResolvedOText(ocase<string>());
 }

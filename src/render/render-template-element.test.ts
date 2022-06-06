@@ -3,7 +3,6 @@ import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
 import {forwardTo} from 'gs-tools/export/rxjs';
-import {Type, ValidationResult} from 'gs-types';
 import {BehaviorSubject, Observable, of, ReplaySubject, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
@@ -21,22 +20,11 @@ import {RenderSpec} from './types/render-spec';
 import {renderTemplate} from './types/render-template-spec';
 
 
-const RENDER_SPEC_TYPE: Type<RenderSpec|null> = {
-  assert (target: unknown): asserts target is RenderSpec | null {
-    return;
-  },
-  check (target: unknown): target is RenderSpec | null {
-    return true;
-  },
-  validate (target: unknown): ValidationResult<RenderSpec | null> {
-    return {passes: true, value: target as RenderSpec|null};
-  },
-};
 const $spec = source(() => new Subject<RenderSpec|null>());
 const $host = {
   shadow: {
     root: root({
-      value: ocase('#ref', RENDER_SPEC_TYPE),
+      value: ocase<RenderSpec|null>('#ref'),
     }),
   },
 };

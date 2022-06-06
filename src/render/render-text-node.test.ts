@@ -2,7 +2,6 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
-import {stringType} from 'gs-types';
 import {Observable, of, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
@@ -20,7 +19,7 @@ const $text = source(() => new Subject<string>());
 const $host = {
   shadow: {
     el: root({
-      value: ocase('#ref', stringType),
+      value: ocase<string>('#ref'),
     }),
   },
 };

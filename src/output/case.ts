@@ -1,6 +1,6 @@
 import {arrayFrom, diffArray} from 'gs-tools/export/collect';
 import {filterNonNullable} from 'gs-tools/export/rxjs';
-import {hasPropertiesType, instanceofType, intersectType, notType, Type, undefinedType} from 'gs-types';
+import {hasPropertiesType, instanceofType, intersectType, notType, undefinedType} from 'gs-types';
 import {EMPTY, merge, of, OperatorFunction} from 'rxjs';
 import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 
@@ -66,7 +66,6 @@ class ResolvedOCase<T> implements OCase<T> {
 
   constructor(
       readonly slotName: string|null,
-      readonly valueType: Type<T>,
   ) {}
 
   resolve(target: Target, context: RenderContext): (renderFn: RenderValueFn<T>) => OperatorFunction<T, T> {
@@ -161,17 +160,14 @@ function getInsertBeforeTarget(
   return slotNode?.nextSibling ?? null;
 }
 
-export function ocase<T>(valueType: Type<T>): ResolvedOCase<T>;
-export function ocase<T>(refName: string, valueType: Type<T>): ResolvedOCase<T>;
-export function ocase<T>(refOrType: string|Type<T>, valueType?: Type<T>): ResolvedOCase<T>  {
+export function ocase<T = unknown>(): ResolvedOCase<T>;
+export function ocase<T = unknown>(refName: string): ResolvedOCase<T>;
+export function ocase<T = unknown>(refOrType?: string): ResolvedOCase<T>  {
   if (typeof refOrType === 'string') {
-    if (!valueType) {
-      throw new Error('Missing required valueType');
-    }
-    return new ResolvedOCase(refOrType, valueType);
+    return new ResolvedOCase(refOrType);
   }
 
-  return new ResolvedOCase(null, refOrType);
+  return new ResolvedOCase(null);
 }
 
 function flattenNode(node: Node|null): readonly Node[] {

@@ -2,7 +2,6 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
-import {nullType, stringType, unionType} from 'gs-types';
 import {Observable, of, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
@@ -27,12 +26,12 @@ const $rootSlottedValue$ = source(() => new Subject<string|null>());
 const $host = {
   shadow: {
     root: root({
-      slotted: ocase('#root', unionType([stringType, nullType])),
-      value: ocase(unionType([stringType, nullType])),
+      slotted: ocase<string|null>('#root'),
+      value: ocase<string|null>(),
     }),
     el: query('#el', DIV, {
-      slotted: ocase('#ref', unionType([stringType, nullType])),
-      value: ocase(unionType([stringType, nullType])),
+      slotted: ocase<string|null>('#ref'),
+      value: ocase<string|null>(),
     }),
   },
 };

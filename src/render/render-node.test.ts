@@ -2,7 +2,6 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
-import {instanceofType, nullableType} from 'gs-types';
 import {Observable, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
@@ -20,7 +19,7 @@ const $elValue = source(() => new Subject<Node|null>());
 const $host = {
   shadow: {
     el: root({
-      value: ocase('#ref', nullableType(instanceofType(Node))),
+      value: ocase<Node|null>('#ref'),
     }),
   },
 };
