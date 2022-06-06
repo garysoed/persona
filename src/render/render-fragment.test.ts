@@ -2,7 +2,6 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
-import {arrayOfType, stringType} from 'gs-types';
 import {Observable, of, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -22,7 +21,7 @@ const $value = source(() => new Subject<readonly string[]>());
 const $host = {
   shadow: {
     el: root({
-      value: oforeach('#ref', arrayOfType(stringType)),
+      value: oforeach<readonly string[]>('#ref'),
     }),
   },
 };
@@ -36,9 +35,9 @@ class HostCtrl implements Ctrl {
       $value.get(this.$.vine).pipe(
           map(value => [value]),
           this.$.shadow.el.value(value => {
-            return of(renderFragment({
+            return renderFragment({
               nodes: value.map(text => renderTextNode({textContent: of(text)})),
-            }));
+            });
           }),
       ),
     ];

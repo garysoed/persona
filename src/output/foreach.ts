@@ -1,6 +1,6 @@
 import {arrayFrom} from 'gs-testing/src/util/flatten-node';
 import {$asArray, $asSet, $filterNonNull, $flat, $map, $pipe, diffArray} from 'gs-tools/export/collect';
-import {hasPropertiesType, instanceofType, intersectType, notType, stringType, Type, undefinedType} from 'gs-types';
+import {hasPropertiesType, instanceofType, intersectType, notType, stringType, undefinedType} from 'gs-types';
 import {combineLatest, EMPTY, merge, of, OperatorFunction} from 'rxjs';
 import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 
@@ -68,7 +68,6 @@ export class ResolvedOForeach<T> implements OForeach<T> {
 
   constructor(
       readonly slotName: string|null,
-      readonly valueType: Type<T>,
   ) {}
 
   resolve(target: Target, context: RenderContext): (renderFn: RenderValuesFn<T>) => OperatorFunction<readonly T[], readonly T[]> {
@@ -81,8 +80,8 @@ export class ResolvedOForeach<T> implements OForeach<T> {
         const render$ = values$.pipe(
             switchMap(values => {
               const node$list = values.map((value, index) => {
-                return renderFn(value, index).pipe(
-                    switchMap(spec => spec ? render(spec, context) : of(null)),
+                const spec = renderFn(value, index);
+                return (spec ? render(spec, context) : of(null)).pipe(
                     tap(node => {
                       if (!node) {
                         return;
@@ -183,16 +182,12 @@ function getInsertBeforeTarget(
   return slotNode.nextSibling ?? null;
 }
 
-export function oforeach<T>(valueType: Type<T>): ResolvedOForeach<T>;
-export function oforeach<T>(slotName: string, valueType: Type<T>): ResolvedOForeach<T>;
-export function oforeach<T>(slotNameOrType: string|Type<T>, valueType?: Type<T>): ResolvedOForeach<T> {
+export function oforeach<T = unknown>(): ResolvedOForeach<T>;
+export function oforeach<T = unknown>(slotName: string): ResolvedOForeach<T>;
+export function oforeach<T = unknown>(slotNameOrType?: string): ResolvedOForeach<T> {
   if (stringType.check(slotNameOrType)) {
-    if (!valueType) {
-      throw new Error('Unsupported');
-    }
-
-    return new ResolvedOForeach(slotNameOrType, valueType);
+    return new ResolvedOForeach(slotNameOrType);
   }
-  return new ResolvedOForeach(null, slotNameOrType);
+  return new ResolvedOForeach(null);
 }
 

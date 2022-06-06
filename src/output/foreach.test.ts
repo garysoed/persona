@@ -2,8 +2,7 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
-import {stringType} from 'gs-types';
-import {Observable, of, Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
 import {RenderSpec} from '../../export';
 import {registerCustomElement} from '../core/register-custom-element';
@@ -36,12 +35,12 @@ const $renderer = source<Renderer>(() => ({
 const $host = {
   shadow: {
     root: root({
-      value: oforeach('#root', stringType),
-      slotless: oforeach(stringType),
+      value: oforeach<string>('#root'),
+      slotless: oforeach<string>(),
     }),
     el: query('#el', DIV, {
-      value: oforeach('#ref', stringType),
-      slotless: oforeach(stringType),
+      value: oforeach<string>('#ref'),
+      slotless: oforeach<string>(),
     }),
   },
 };
@@ -67,8 +66,8 @@ class HostCtrl implements Ctrl {
     ];
   }
 
-  renderNode(tag: string): Observable<RenderSpec> {
-    return of($renderer.get(this.$.vine).render(tag));
+  renderNode(tag: string): RenderSpec {
+    return $renderer.get(this.$.vine).render(tag);
   }
 }
 

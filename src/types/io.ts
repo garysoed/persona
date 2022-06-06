@@ -32,7 +32,7 @@ export enum ApiType {
 }
 
 export type RenderValueFn<T> = (value: T) => RenderSpec|null;
-export type RenderValuesFn<T> = (value: T, index: number) => Observable<RenderSpec|null>;
+export type RenderValuesFn<T> = (value: T, index: number) => RenderSpec|null;
 
 export interface ReferenceI<V, T> {
   readonly ioType: IOType.INPUT;
@@ -127,7 +127,6 @@ export interface OForeach<T> extends ReferenceO<readonly T[], readonly T[], [Ren
   readonly apiType: ApiType.FOREACH;
   readonly ioType: IOType.OUTPUT;
   readonly slotName: string|null;
-  readonly valueType: Type<T>;
 }
 
 export interface OForeachConfig<T> {
