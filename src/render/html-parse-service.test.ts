@@ -18,7 +18,7 @@ test('@persona/src/render/html-parse-service', init => {
       fake(_.mockDOMParser.parseFromString).always().return(parsedDoc);
 
       const raw = 'raw';
-      const supportedType = 'text/xml';
+      const supportedType = 'text/html';
       assert(_.service.parse(raw, supportedType)).to.emitWith(mockEl);
       assert(_.mockDOMParser.parseFromString).to.haveBeenCalledWith(raw, supportedType);
 
@@ -31,7 +31,7 @@ test('@persona/src/render/html-parse-service', init => {
       fake(_.mockDOMParser.parseFromString).always().return(parsedDoc);
 
       const raw = 'raw';
-      const supportedType = 'text/xml';
+      const supportedType = 'text/html';
       // Get the initial parse.
       _.service.parse(raw, supportedType);
 

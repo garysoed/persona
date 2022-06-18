@@ -45,7 +45,7 @@ const HOST = registerCustomElement({
 
 
 test('@persona/src/render/render-html', init => {
-  const SUPPORTED_TYPE = 'text/xml';
+  const SUPPORTED_TYPE = 'text/html';
 
   const _ = init(() => {
     runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));

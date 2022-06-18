@@ -8,7 +8,7 @@ import {RenderTextNodeSpec} from './render-text-node-spec';
 
 export type RenderSpec = RenderElementSpec<any, any>|
     RenderFragmentSpec|
-    RenderHtmlSpec|
+    RenderHtmlSpec<any>|
     RenderNodeSpec<any>|
     RenderTextNodeSpec|
     RenderTemplateSpec<any>;

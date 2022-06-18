@@ -1,22 +1,24 @@
 import {Observable, OperatorFunction} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
+import {ParserSupportedType} from '../html-parse-service';
+
 import {RenderSpecType} from './render-spec-type';
 
 
-interface Input {
+interface Input<T extends ParserSupportedType> {
   readonly raw: Observable<string>;
-  readonly parseType: DOMParserSupportedType;
+  readonly parseType: T;
   readonly decorator?: OperatorFunction<Element, unknown>;
 }
 
-export interface RenderHtmlSpec extends Input {
+export interface RenderHtmlSpec<T extends ParserSupportedType> extends Input<T> {
   readonly type: RenderSpecType.HTML;
   readonly raw: Observable<string>
   readonly decorator: OperatorFunction<Element, unknown>;
 }
 
-export function renderHtml(input: Input): RenderHtmlSpec {
+export function renderHtml<T extends ParserSupportedType>(input: Input<T>): RenderHtmlSpec<T> {
   return {
     type: RenderSpecType.HTML,
     decorator: tap(),

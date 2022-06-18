@@ -1,7 +1,7 @@
 import {EMPTY, merge, Observable, of as observableOf} from 'rxjs';
 import {switchMap, switchMapTo} from 'rxjs/operators';
 
-import {$htmlParseService} from './html-parse-service';
+import {$htmlParseService, ElementForType, ParserSupportedType} from './html-parse-service';
 import {renderNode} from './render-node';
 import {RenderContext} from './types/render-context';
 import {RenderHtmlSpec} from './types/render-html-spec';
@@ -18,10 +18,10 @@ import {RenderSpecType} from './types/render-spec-type';
  *
  * @thModule render
  */
-export function renderHtml(
-    spec: RenderHtmlSpec,
+export function renderHtml<T extends ParserSupportedType>(
+    spec: RenderHtmlSpec<T>,
     context: RenderContext,
-): Observable<Element|null> {
+): Observable<ElementForType<T>|null> {
   const service = $htmlParseService.get(context.vine);
   return spec.raw
       .pipe(
@@ -34,7 +34,7 @@ export function renderHtml(
             const node$ = renderNode({
               ...spec,
               type: RenderSpecType.NODE,
-              node: el.cloneNode(true) as Element,
+              node: el.cloneNode(true) as ElementForType<T>,
             });
 
             return merge(

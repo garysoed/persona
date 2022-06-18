@@ -2,6 +2,7 @@ import {Observable} from 'rxjs';
 
 import {ResolvedBindingSpec} from '../types/ctrl';
 
+import {ElementForType, ParserSupportedType} from './html-parse-service';
 import {renderElement} from './render-element';
 import {renderFragment} from './render-fragment';
 import {renderHtml} from './render-html';
@@ -21,7 +22,8 @@ import {RenderTextNodeSpec} from './types/render-text-node-spec';
 
 export function render(spec: RenderElementSpec<ResolvedBindingSpec, {}>, context: RenderContext): Observable<Element>;
 export function render(spec: RenderFragmentSpec, context: RenderContext): Observable<DocumentFragment>;
-export function render(spec: RenderHtmlSpec, context: RenderContext): Observable<Element>;
+export function render<T extends ParserSupportedType>(
+    spec: RenderHtmlSpec<T>, context: RenderContext): Observable<ElementForType<T>>;
 export function render(spec: RenderNodeSpec<Node>, context: RenderContext): Observable<Node>;
 export function render(spec: RenderTextNodeSpec, context: RenderContext): Observable<Text>;
 export function render(spec: RenderSpec, context: RenderContext): Observable<Node|null>;
