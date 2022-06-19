@@ -7,7 +7,7 @@
   "render-fragment__empty.html": "<test-host><gst-fake-shadow><!-- #ref --></gst-fake-shadow></test-host>",
   "render-fragment__reset.html": "<test-host><gst-fake-shadow><!-- #ref --></gst-fake-shadow></test-host>",
   "render-fragment__value.html": "<test-host><gst-fake-shadow><!-- #ref -->onetwothree</gst-fake-shadow></test-host>",
-  "render-html.html": "<test-host><gst-fake-shadow><!-- #ref --><div><div>text content</div></div></gst-fake-shadow></test-host>",
+  "render-html.html": "<test-host><gst-fake-shadow><!-- #ref --><div>text content</div></gst-fake-shadow></test-host>",
   "render-node__el_empty.html": "<test-host><gst-fake-shadow><!-- #ref --></gst-fake-shadow></test-host>",
   "render-node__el_reset.html": "<test-host><gst-fake-shadow><!-- #ref --></gst-fake-shadow></test-host>",
   "render-node__el_value.html": "<test-host><gst-fake-shadow><!-- #ref -->text</gst-fake-shadow></test-host>",

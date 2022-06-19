@@ -8,7 +8,14 @@ import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
 
 type BindingProvider = (root: Target, context: RenderContext) => InputBinding<any>|OutputBinding<any, any, any[]>;
 
-function getElement(target: Target, query: string): Element {
+function getElement(target: Target, query: string|null): Element {
+  if (query === null) {
+    if (!(target instanceof Element)) {
+      throw new Error('Target of "query" is not an Element');
+    }
+    return target;
+  }
+
   const el = target.querySelector(query);
   if (!el) {
     throw new Error(`Element with matching query ${query} cannot be found`);
@@ -22,16 +29,16 @@ interface ExtraBindingSpec<T> {
 }
 
 export function query<E extends Element, S extends Spec>(
-    query: string,
+    query: string|null,
     registration: Registration<E, S>,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>, E>;
 export function query<E extends Element, S extends Spec, X extends ExtraBindingSpec<E>>(
-    query: string,
+    query: string|null,
     registration: Registration<E, S>,
     extra: X,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X, E>
 export function query<S extends Spec, X extends ExtraBindingSpec<Element>>(
-    query: string,
+    query: string|null,
     registration: Registration<Element, S>,
     extra?: ExtraBindingSpec<Element>,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X, Element> {

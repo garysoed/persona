@@ -62,10 +62,10 @@ test('@persona/src/render/render-html', init => {
     const element = _.tester.createElement(HOST);
 
     $spec.get(_.tester.vine).next(renderHtml({
-      raw: of('<div><div></div></div>'),
+      raw: of('<div></div>'),
       parseType: 'application/xhtml+xml',
       spec: {
-        div: query('div', DIV, {
+        div: query(null, DIV, {
           text: otext(),
         }),
       },
