@@ -5,7 +5,10 @@ import {cache} from 'gs-tools/export/data';
 import {Observable, of, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
+import {DIV} from '../html/div';
 import {ocase} from '../output/case';
+import {otext} from '../output/text';
+import {query} from '../selector/query';
 import {root} from '../selector/root';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
@@ -45,8 +48,6 @@ const HOST = registerCustomElement({
 
 
 test('@persona/src/render/render-html', init => {
-  const SUPPORTED_TYPE = 'text/html';
-
   const _ = init(() => {
     runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));
 
@@ -58,13 +59,19 @@ test('@persona/src/render/render-html', init => {
   });
 
   should('emit the parse result', () => {
-    const el = document.createElement('div');
-
     const element = _.tester.createElement(HOST);
 
     $spec.get(_.tester.vine).next(renderHtml({
-      raw: of(el.outerHTML),
-      parseType: SUPPORTED_TYPE,
+      raw: of('<div><div></div></div>'),
+      parseType: 'application/xhtml+xml',
+      spec: {
+        div: query('div', DIV, {
+          text: otext(),
+        }),
+      },
+      runs: $ => [
+        of('text content').pipe($.div.text()),
+      ],
     }));
 
     assert(element).to.matchSnapshot('render-html.html');

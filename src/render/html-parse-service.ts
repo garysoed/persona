@@ -1,5 +1,5 @@
 import {source} from 'grapevine';
-import {Observable, of as observableOf} from 'rxjs';
+import {Observable, of} from 'rxjs';
 
 export type ParserSupportedType = 'application/xhtml+xml'|'image/svg+xml'|'text/html';
 export type ElementForType<T extends ParserSupportedType> =
@@ -21,7 +21,7 @@ export class HtmlParseService {
     }
 
     const xmlDoc = this.domParser.parseFromString(raw, supportedType);
-    const el$ = observableOf(xmlDoc.children.item(0));
+    const el$ = of(xmlDoc.children.item(0));
     this.elMap.set(raw, el$);
     return el$;
   }

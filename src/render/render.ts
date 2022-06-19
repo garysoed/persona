@@ -12,7 +12,7 @@ import {renderTextNode} from './render-text-node';
 import {RenderContext} from './types/render-context';
 import {RenderElementSpec} from './types/render-element-spec';
 import {RenderFragmentSpec} from './types/render-fragment-spec';
-import {RenderHtmlSpec} from './types/render-html-spec';
+import {ExtraSpec, RenderHtmlSpec} from './types/render-html-spec';
 import {RenderNodeSpec} from './types/render-node-spec';
 import {RenderSpec} from './types/render-spec';
 import {RenderSpecType} from './types/render-spec-type';
@@ -23,7 +23,7 @@ import {RenderTextNodeSpec} from './types/render-text-node-spec';
 export function render(spec: RenderElementSpec<ResolvedBindingSpec, {}>, context: RenderContext): Observable<Element>;
 export function render(spec: RenderFragmentSpec, context: RenderContext): Observable<DocumentFragment>;
 export function render<T extends ParserSupportedType>(
-    spec: RenderHtmlSpec<T>, context: RenderContext): Observable<ElementForType<T>>;
+    spec: RenderHtmlSpec<T, ExtraSpec<ElementForType<T>>>, context: RenderContext): Observable<ElementForType<T>>;
 export function render(spec: RenderNodeSpec<Node>, context: RenderContext): Observable<Node>;
 export function render(spec: RenderTextNodeSpec, context: RenderContext): Observable<Text>;
 export function render(spec: RenderSpec, context: RenderContext): Observable<Node|null>;

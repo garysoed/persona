@@ -1,10 +1,12 @@
-import {EMPTY, merge, Observable, of as observableOf} from 'rxjs';
+import {EMPTY, merge, Observable, of} from 'rxjs';
 import {switchMap, switchMapTo} from 'rxjs/operators';
+
+import {Bindings, BindingSpec, OutputBinding, ResolvedBindingSpec, ResolvedBindingSpecProvider} from '../types/ctrl';
 
 import {$htmlParseService, ElementForType, ParserSupportedType} from './html-parse-service';
 import {renderNode} from './render-node';
 import {RenderContext} from './types/render-context';
-import {RenderHtmlSpec} from './types/render-html-spec';
+import {ExtraHtmlBindings, ExtraSpec, RenderHtmlSpec} from './types/render-html-spec';
 import {RenderSpecType} from './types/render-spec-type';
 
 
@@ -19,7 +21,7 @@ import {RenderSpecType} from './types/render-spec-type';
  * @thModule render
  */
 export function renderHtml<T extends ParserSupportedType>(
-    spec: RenderHtmlSpec<T>,
+    spec: RenderHtmlSpec<T, ExtraSpec<ElementForType<T>>>,
     context: RenderContext,
 ): Observable<ElementForType<T>|null> {
   const service = $htmlParseService.get(context.vine);
@@ -28,19 +30,48 @@ export function renderHtml<T extends ParserSupportedType>(
           switchMap(raw => service.parse(raw, spec.parseType)),
           switchMap(el => {
             if (!el) {
-              return observableOf(null);
+              return of(null);
             }
 
+            const target = el.cloneNode(true) as ElementForType<T>;
             const node$ = renderNode({
               ...spec,
               type: RenderSpecType.NODE,
-              node: el.cloneNode(true) as ElementForType<T>,
+              node: target,
             });
 
+            const bindings = createExtraBindingObjects(spec.spec, target, context);
+            const obsList = spec.runs(bindings);
+
             return merge(
-                node$.pipe(spec.decorator, switchMapTo(EMPTY)),
                 node$,
+                merge(...obsList).pipe(switchMapTo(EMPTY)),
             );
           }),
       );
+}
+
+// TODO: Consolidate this with the one for shadow in in upgrade-element.
+function createExtraBindingObjects<O extends ExtraSpec<any>>(
+    spec: O,
+    target: Element,
+    context: RenderContext,
+): ExtraHtmlBindings<O> {
+  const partial: Record<string, Bindings<BindingSpec, unknown>> = {};
+  for (const key in spec) {
+    partial[key] = createExtraBindings(spec[key], target, context);
+  }
+  return partial as ExtraHtmlBindings<O>;
+}
+
+function createExtraBindings<S extends ResolvedBindingSpec>(
+    spec: ResolvedBindingSpecProvider<S, unknown>,
+    target: Element,
+    context: RenderContext,
+): Bindings<S, unknown> {
+  const partial: Partial<Record<string, Observable<unknown>|OutputBinding<any, any, any[]>>> = {};
+  for (const key in spec) {
+    partial[key] = spec[key](target, context);
+  }
+  return partial as Bindings<S, unknown>;
 }

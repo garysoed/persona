@@ -1,27 +1,34 @@
-import {Observable, OperatorFunction} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 
-import {ParserSupportedType} from '../html-parse-service';
+import {Bindings, ResolvedBindingSpec, ResolvedBindingSpecProvider} from '../../types/ctrl';
+import {ElementForType, ParserSupportedType} from '../html-parse-service';
 
 import {RenderSpecType} from './render-spec-type';
 
-
-interface Input<T extends ParserSupportedType> {
-  readonly raw: Observable<string>;
-  readonly parseType: T;
-  readonly decorator?: OperatorFunction<Element, unknown>;
+export type ExtraSpec<E> = Record<string, ResolvedBindingSpecProvider<ResolvedBindingSpec, E>>;
+export type ExtraHtmlBindings<O> = {
+  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<infer S, infer T> ? Bindings<S, T> : never;
 }
 
-export interface RenderHtmlSpec<T extends ParserSupportedType> extends Input<T> {
+interface Input<T extends ParserSupportedType, X extends ExtraSpec<ElementForType<T>>> {
+  readonly raw: Observable<string>;
+  readonly spec: X;
+  readonly parseType: T;
+  readonly runs?: (bindings: ExtraHtmlBindings<X>) => ReadonlyArray<Observable<unknown>>;
+}
+
+export interface RenderHtmlSpec<T extends ParserSupportedType, X extends ExtraSpec<ElementForType<T>>> extends Input<T, X> {
   readonly type: RenderSpecType.HTML;
   readonly raw: Observable<string>
-  readonly decorator: OperatorFunction<Element, unknown>;
+  readonly runs: (bindings: ExtraHtmlBindings<X>) => ReadonlyArray<Observable<unknown>>;
 }
 
-export function renderHtml<T extends ParserSupportedType>(input: Input<T>): RenderHtmlSpec<T> {
+export function renderHtml<T extends ParserSupportedType, X extends ExtraSpec<ElementForType<T>>>(
+    input: Input<T, X>,
+): RenderHtmlSpec<T, X> {
   return {
     type: RenderSpecType.HTML,
-    decorator: tap(),
+    runs: () => [],
     ...input,
   };
 }
