@@ -1,9 +1,9 @@
 import {source} from 'grapevine';
 import {Observable, of} from 'rxjs';
 
-export type ParserSupportedType = 'application/xhtml+xml'|'image/svg+xml'|'text/html';
+export type ParserSupportedType = 'application/xhtml+xml'|'image/svg+xml';
 export type ElementForType<T extends ParserSupportedType> =
-    T extends 'application/xhtml+xml'|'text/html' ? HTMLElement :
+    T extends 'application/xhtml+xml' ? HTMLElement :
     T extends 'image/svg+xml' ? SVGElement :
     never;
 
