@@ -14,8 +14,8 @@ import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import goldens from './goldens/goldens.json';
-import {renderHtml} from './types/render-html-spec';
 import {RenderSpec} from './types/render-spec';
+import {renderString} from './types/render-string-spec';
 
 
 const $spec = source(() => new Subject<RenderSpec|null>());
@@ -47,7 +47,7 @@ const HOST = registerCustomElement({
 });
 
 
-test('@persona/src/render/render-html', init => {
+test('@persona/src/render/render-string', init => {
   const _ = init(() => {
     runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));
 
@@ -61,7 +61,7 @@ test('@persona/src/render/render-html', init => {
   should('emit the parse result', () => {
     const element = _.tester.createElement(HOST);
 
-    $spec.get(_.tester.vine).next(renderHtml({
+    $spec.get(_.tester.vine).next(renderString({
       raw: of('<div></div>'),
       parseType: 'application/xhtml+xml',
       spec: {
@@ -74,6 +74,6 @@ test('@persona/src/render/render-html', init => {
       ],
     }));
 
-    assert(element).to.matchSnapshot('render-html.html');
+    assert(element).to.matchSnapshot('render-string.html');
   });
 });

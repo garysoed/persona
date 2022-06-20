@@ -6,8 +6,8 @@ import {Bindings, BindingSpec, OutputBinding, ResolvedBindingSpec, ResolvedBindi
 import {$htmlParseService, ElementForType, ParserSupportedType} from './html-parse-service';
 import {renderNode} from './render-node';
 import {RenderContext} from './types/render-context';
-import {ExtraHtmlBindings, ExtraSpec, RenderHtmlSpec} from './types/render-html-spec';
 import {RenderSpecType} from './types/render-spec-type';
+import {ExtraHtmlBindings, ExtraSpec, RenderStringSpec} from './types/render-string-spec';
 
 
 /**
@@ -20,8 +20,8 @@ import {RenderSpecType} from './types/render-spec-type';
  *
  * @thModule render
  */
-export function renderHtml<T extends ParserSupportedType>(
-    spec: RenderHtmlSpec<T, ExtraSpec<ElementForType<T>>>,
+export function renderString<T extends ParserSupportedType>(
+    spec: RenderStringSpec<T, ExtraSpec<ElementForType<T>>>,
     context: RenderContext,
 ): Observable<ElementForType<T>|null> {
   const service = $htmlParseService.get(context.vine);

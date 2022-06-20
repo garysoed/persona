@@ -17,17 +17,17 @@ interface Input<T extends ParserSupportedType, X extends ExtraSpec<ElementForTyp
   readonly runs?: (bindings: ExtraHtmlBindings<X>) => ReadonlyArray<Observable<unknown>>;
 }
 
-export interface RenderHtmlSpec<T extends ParserSupportedType, X extends ExtraSpec<ElementForType<T>>> extends Input<T, X> {
-  readonly type: RenderSpecType.HTML;
+export interface RenderStringSpec<T extends ParserSupportedType, X extends ExtraSpec<ElementForType<T>>> extends Input<T, X> {
+  readonly type: RenderSpecType.STRING;
   readonly raw: Observable<string>
   readonly runs: (bindings: ExtraHtmlBindings<X>) => ReadonlyArray<Observable<unknown>>;
 }
 
-export function renderHtml<T extends ParserSupportedType, X extends ExtraSpec<ElementForType<T>>>(
+export function renderString<T extends ParserSupportedType, X extends ExtraSpec<ElementForType<T>>>(
     input: Input<T, X>,
-): RenderHtmlSpec<T, X> {
+): RenderStringSpec<T, X> {
   return {
-    type: RenderSpecType.HTML,
+    type: RenderSpecType.STRING,
     runs: () => [],
     ...input,
   };

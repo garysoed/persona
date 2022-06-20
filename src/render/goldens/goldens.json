@@ -7,10 +7,10 @@
   "render-fragment__empty.html": "<test-host><gst-fake-shadow><!-- #ref --></gst-fake-shadow></test-host>",
   "render-fragment__reset.html": "<test-host><gst-fake-shadow><!-- #ref --></gst-fake-shadow></test-host>",
   "render-fragment__value.html": "<test-host><gst-fake-shadow><!-- #ref -->onetwothree</gst-fake-shadow></test-host>",
-  "render-html.html": "<test-host><gst-fake-shadow><!-- #ref --><div>text content</div></gst-fake-shadow></test-host>",
   "render-node__el_empty.html": "<test-host><gst-fake-shadow><!-- #ref --></gst-fake-shadow></test-host>",
   "render-node__el_reset.html": "<test-host><gst-fake-shadow><!-- #ref --></gst-fake-shadow></test-host>",
   "render-node__el_value.html": "<test-host><gst-fake-shadow><!-- #ref -->text</gst-fake-shadow></test-host>",
+  "render-string.html": "<test-host><gst-fake-shadow><!-- #ref --><div>text content</div></gst-fake-shadow></test-host>",
   "render-template__emit.html": "<test-host><gst-fake-shadow><!-- #ref --><div attr=\"value\">text</div></gst-fake-shadow></test-host>",
   "render-template__update-output.html": "<test-host><gst-fake-shadow><!-- #ref --><div attr=\"value\">new text</div></gst-fake-shadow></test-host>",
   "render-text-node.html": "<test-host><gst-fake-shadow><!-- #ref -->textContent</gst-fake-shadow></test-host>"

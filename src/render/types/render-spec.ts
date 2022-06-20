@@ -1,14 +1,14 @@
 import {RenderElementSpec} from './render-element-spec';
 import {RenderFragmentSpec} from './render-fragment-spec';
-import {RenderHtmlSpec} from './render-html-spec';
 import {RenderNodeSpec} from './render-node-spec';
+import {RenderStringSpec} from './render-string-spec';
 import {RenderTemplateSpec} from './render-template-spec';
 import {RenderTextNodeSpec} from './render-text-node-spec';
 
 
 export type RenderSpec = RenderElementSpec<any, any>|
     RenderFragmentSpec|
-    RenderHtmlSpec<any, any>|
+    RenderStringSpec<any, any>|
     RenderNodeSpec<any>|
     RenderTextNodeSpec|
     RenderTemplateSpec<any>;

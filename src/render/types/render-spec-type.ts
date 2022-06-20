@@ -1,7 +1,7 @@
 export enum RenderSpecType {
   ELEMENT,
   FRAGMENT,
-  HTML,
+  STRING,
   NODE,
   TEXT_NODE,
   TEMPLATE,
