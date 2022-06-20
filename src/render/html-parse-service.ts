@@ -1,8 +1,12 @@
 import {source} from 'grapevine';
 import {Observable, of} from 'rxjs';
 
-export type ParserSupportedType = 'application/xhtml+xml'|'image/svg+xml';
-export type ElementForType<T extends ParserSupportedType> =
+export enum ParseType {
+  HTML = 'application/xhtml+xml',
+  SVG = 'image/svg+xml',
+}
+
+export type ElementForType<T extends ParseType> =
     T extends 'application/xhtml+xml' ? HTMLElement :
     T extends 'image/svg+xml' ? SVGElement :
     never;
@@ -14,7 +18,7 @@ export class HtmlParseService {
       private readonly domParser: DOMParser = new DOMParser(),
   ) { }
 
-  parse(raw: string, supportedType: ParserSupportedType): Observable<Element|null> {
+  parse(raw: string, supportedType: ParseType): Observable<Element|null> {
     const existingEl$ = this.elMap.get(raw);
     if (existingEl$) {
       return existingEl$;

@@ -47,6 +47,7 @@ export {TR} from '../src/html/table-row';
 export {TBODY, THEAD} from '../src/html/table-section';
 export {TEMPLATE} from '../src/html/template';
 
+export {ParseType} from '../src/render/html-parse-service';
 export {RenderSpec} from '../src/render/types/render-spec';
 export {RenderSpecType} from '../src/render/types/render-spec-type';
 export {renderElement, RenderElementSpec} from '../src/render/types/render-element-spec';

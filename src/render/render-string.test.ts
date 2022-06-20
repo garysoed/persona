@@ -14,6 +14,7 @@ import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import goldens from './goldens/goldens.json';
+import {ParseType} from './html-parse-service';
 import {RenderSpec} from './types/render-spec';
 import {renderString} from './types/render-string-spec';
 
@@ -63,7 +64,7 @@ test('@persona/src/render/render-string', init => {
 
     $spec.get(_.tester.vine).next(renderString({
       raw: of('<div></div>'),
-      parseType: 'application/xhtml+xml',
+      parseType: ParseType.HTML,
       spec: {
         div: query(null, DIV, {
           text: otext(),

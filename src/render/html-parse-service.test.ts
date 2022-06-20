@@ -1,6 +1,6 @@
 import {assert, createSpyInstance, fake, resetCalls, should, test} from 'gs-testing';
 
-import {HtmlParseService} from './html-parse-service';
+import {HtmlParseService, ParseType} from './html-parse-service';
 
 
 test('@persona/src/render/html-parse-service', init => {
@@ -18,7 +18,7 @@ test('@persona/src/render/html-parse-service', init => {
       fake(_.mockDOMParser.parseFromString).always().return(parsedDoc);
 
       const raw = 'raw';
-      const supportedType = 'application/xhtml+xml';
+      const supportedType = ParseType.HTML;
       assert(_.service.parse(raw, supportedType)).to.emitWith(mockEl);
       assert(_.mockDOMParser.parseFromString).to.haveBeenCalledWith(raw, supportedType);
 
@@ -31,7 +31,7 @@ test('@persona/src/render/html-parse-service', init => {
       fake(_.mockDOMParser.parseFromString).always().return(parsedDoc);
 
       const raw = 'raw';
-      const supportedType = 'application/xhtml+xml';
+      const supportedType = ParseType.HTML;
       // Get the initial parse.
       _.service.parse(raw, supportedType);
 

@@ -3,7 +3,7 @@ import {switchMap, switchMapTo} from 'rxjs/operators';
 
 import {Bindings, BindingSpec, OutputBinding, ResolvedBindingSpec, ResolvedBindingSpecProvider} from '../types/ctrl';
 
-import {$htmlParseService, ElementForType, ParserSupportedType} from './html-parse-service';
+import {$htmlParseService, ElementForType, ParseType} from './html-parse-service';
 import {renderNode} from './render-node';
 import {RenderContext} from './types/render-context';
 import {RenderSpecType} from './types/render-spec-type';
@@ -20,7 +20,7 @@ import {ExtraHtmlBindings, ExtraSpec, RenderStringSpec} from './types/render-str
  *
  * @thModule render
  */
-export function renderString<T extends ParserSupportedType>(
+export function renderString<T extends ParseType>(
     spec: RenderStringSpec<T, ExtraSpec<ElementForType<T>>>,
     context: RenderContext,
 ): Observable<ElementForType<T>|null> {
