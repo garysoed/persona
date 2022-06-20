@@ -20,7 +20,7 @@ import {RenderTemplateSpec, TemplateBindingSpec} from './types/render-template-s
 import {RenderTextNodeSpec} from './types/render-text-node-spec';
 
 
-export function render(spec: RenderElementSpec<ResolvedBindingSpec, {}>, context: RenderContext): Observable<Element>;
+export function render<E extends Element>(spec: RenderElementSpec<ResolvedBindingSpec, {}, E>, context: RenderContext): Observable<E>;
 export function render(spec: RenderFragmentSpec, context: RenderContext): Observable<DocumentFragment>;
 export function render<T extends ParseType>(
     spec: RenderStringSpec<T, ExtraSpec<ElementForType<T>>>, context: RenderContext): Observable<ElementForType<T>>;

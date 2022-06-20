@@ -22,8 +22,8 @@ import {RenderSpecType} from './types/render-spec-type';
  *
  * @thModule render
  */
-export function renderElement<S extends Spec, X extends ExtraSpec>(
-    renderSpec: RenderElementSpec<S, X>,
+export function renderElement<S extends Spec, X extends ExtraSpec, E extends Element>(
+    renderSpec: RenderElementSpec<S, X, E>,
     context: RenderContext,
 ): Observable<HTMLElement> {
   const nodeSpec = {
