@@ -148,7 +148,7 @@ export interface IMedia extends ReferenceI<boolean, Target> {
   readonly query: string;
 }
 
-export interface OProperty extends ReferenceO<string, string, [], HTMLElement> {
+export interface OProperty extends ReferenceO<string|null, string|null, [], HTMLElement> {
   readonly apiType: ApiType.PROPERTY;
   readonly ioType: IOType.OUTPUT;
   readonly propertyName: string;
