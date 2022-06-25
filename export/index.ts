@@ -23,6 +23,7 @@ export {oclass} from '../src/output/class';
 export {oevent} from '../src/output/event';
 export {oflag} from '../src/output/flag';
 export {oforeach} from '../src/output/foreach';
+export {oproperty} from '../src/output/property';
 export {ostyle} from '../src/output/style';
 export {otext} from '../src/output/text';
 export {ovalue} from '../src/output/value';

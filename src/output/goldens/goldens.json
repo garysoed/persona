@@ -63,6 +63,7 @@
   "foreach__root_slotless_multi_insert.html": "<test-host><gst-fake-shadow><div></div><div></div><div></div><!-- #root --><div id=\"el\"><!-- #ref --></div></gst-fake-shadow></test-host>",
   "foreach__root_slotless_same_id.html": "<test-host><gst-fake-shadow><div1></div1><!-- #root --><div id=\"el\"><!-- #ref --></div></gst-fake-shadow></test-host>",
   "foreach__root_slotless_set.html": "<test-host><gst-fake-shadow><div0></div0><div2></div2><div3></div3><!-- #root --><div id=\"el\"><!-- #ref --></div></gst-fake-shadow></test-host>",
+  "property.html": "<test-host><gst-fake-shadow><div id=\"el\" style=\"--key:value;\"></div></gst-fake-shadow></test-host>",
   "style__el_empty.html": "<test-host><gst-fake-shadow><div id=\"el\"></div></gst-fake-shadow></test-host>",
   "style__el_value.html": "<test-host><gst-fake-shadow><div id=\"el\" style=\"height: 123px;\"></div></gst-fake-shadow></test-host>",
   "text__el-double.html": "<test-host><gst-fake-shadow>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  text</div></gst-fake-shadow></test-host>",

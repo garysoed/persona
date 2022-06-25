@@ -98,6 +98,8 @@ function reverseIO(io: InputOutput): InputOutput {
       throw new Error(`Unsupported reversal for ${io.apiType}`);
     case ApiType.MEDIA:
       throw new Error(`Unsupported reversal for ${io.apiType}`);
+    case ApiType.PROPERTY:
+      throw new Error(`Unsupported reversal for ${io.apiType}`);
     case ApiType.RECT:
       throw new Error(`Unsupported reversal for ${io.apiType}`);
     case ApiType.SLOTTED:

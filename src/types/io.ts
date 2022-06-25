@@ -23,6 +23,7 @@ export enum ApiType {
   FOREACH,
   KEYDOWN,
   MEDIA,
+  PROPERTY,
   RECT,
   SLOTTED,
   STYLE,
@@ -147,6 +148,12 @@ export interface IMedia extends ReferenceI<boolean, Target> {
   readonly query: string;
 }
 
+export interface OProperty extends ReferenceO<string, string, [], HTMLElement> {
+  readonly apiType: ApiType.PROPERTY;
+  readonly ioType: IOType.OUTPUT;
+  readonly propertyName: string;
+}
+
 export interface IRect extends ReferenceI<DOMRect, Element> {
   readonly apiType: ApiType.RECT;
   readonly ioType: IOType.INPUT;
@@ -212,6 +219,7 @@ export type InputOutput =
     OForeach<any>|
     IKeydown|
     IMedia|
+    OProperty|
     IRect|
     ISlotted|OSlotted|
     OStyle<keyof CSSStyleDeclaration>|
