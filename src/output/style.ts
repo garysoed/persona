@@ -2,6 +2,7 @@ import {OperatorFunction, pipe} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
 import {ApiType, IOType, OStyle} from '../types/io';
+import {Target} from '../types/target';
 
 
 type StringPropertyKeys<S> = {
@@ -16,7 +17,7 @@ class ResolvedOStyle<S extends StringPropertyKeys<CSSStyleDeclaration>> implemen
       readonly propertyName: S,
   ) {}
 
-  resolve(target: HTMLElement): () => OperatorFunction<string, string> {
+  resolve(target: Target&ElementCSSInlineStyle): () => OperatorFunction<string, string> {
     return () => pipe(
         tap(newValue => {
           target.style[this.propertyName] = newValue;

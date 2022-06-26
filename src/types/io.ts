@@ -169,7 +169,7 @@ export interface OSlotted extends ReferenceO<readonly Node[], readonly Node[], [
   readonly ioType: IOType.OUTPUT;
 }
 
-export interface OStyle<S extends keyof CSSStyleDeclaration> extends ReferenceO<string, string, [], HTMLElement> {
+export interface OStyle<S extends keyof CSSStyleDeclaration> extends ReferenceO<string, string, [], Target&ElementCSSInlineStyle> {
   readonly apiType: ApiType.STYLE;
   readonly ioType: IOType.OUTPUT;
   readonly propertyName: S;
