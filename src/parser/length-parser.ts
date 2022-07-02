@@ -1,49 +1,65 @@
-import {Converter, firstSuccess, Result} from 'nabu';
+import {Converter, failure, firstSuccess, Result, success} from 'nabu';
 
 import {numberParser} from './number-parser';
 
 export type Length = number|
-    `${number}cap`|
-    `${number}ch`|
     `${number}em`|
     `${number}ex`|
-    `${number}ic`|
-    `${number}lh`|
+    `${number}ch`|
     `${number}rem`|
-    `${number}rlh`;
+    `${number}vw`|
+    `${number}vh`|
+    `${number}vmin`|
+    `${number}vmax`|
+    `${number}cm`|
+    `${number}mm`|
+    `${number}Q`|
+    `${number}in`|
+    `${number}pc`|
+    `${number}pt`|
+    `${number}px`|
+    `${number}%`;
 
 function lengthWithSuffix<S extends string>(suffix: S): Converter<`${number}${S}`, string> {
   return {
     convertBackward(value: string): Result<`${number}${S}`> {
       if (!value.endsWith(suffix)) {
-        return {success: false};
+        return failure();
       }
 
       const numberSegment = value.substring(0, value.length - suffix.length);
       const result = numberParser().convertBackward(numberSegment);
       if (result.success) {
-        return {success: true, result: value as `${number}${S}`};
+        return success(value as `${number}${S}`);
       }
 
-      return {success: false};
+      return failure();
     },
 
     convertForward(value: `${number}${S}`): Result<string> {
-      return {success: true, result: value};
+      return success(value);
     },
   };
 }
 
 const INSTANCE = firstSuccess<Length, string>(
     numberParser(),
-    lengthWithSuffix('cap'),
-    lengthWithSuffix('ch'),
     lengthWithSuffix('em'),
     lengthWithSuffix('ex'),
-    lengthWithSuffix('ic'),
-    lengthWithSuffix('lh'),
+    lengthWithSuffix('ch'),
     lengthWithSuffix('rem'),
-    lengthWithSuffix('rlh'),
+    lengthWithSuffix('vw'),
+    lengthWithSuffix('vh'),
+    lengthWithSuffix('vmin'),
+    lengthWithSuffix('vmax'),
+    lengthWithSuffix('cm'),
+    lengthWithSuffix('mm'),
+    lengthWithSuffix('Q'),
+    lengthWithSuffix('in'),
+    lengthWithSuffix('pc'),
+    lengthWithSuffix('pt'),
+    lengthWithSuffix('px'),
+    lengthWithSuffix('%'),
 );
 
 export function lengthParser(): Converter<Length, string> {

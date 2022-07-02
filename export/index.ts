@@ -58,6 +58,11 @@ export {renderNode, RenderNodeSpec} from '../src/render/types/render-node-spec';
 export {renderTemplate, RenderTemplateSpec} from '../src/render/types/render-template-spec';
 export {RenderTextNodeSpec, renderTextNode} from '../src/render/types/render-text-node-spec';
 
+// Parsers
+export {integerParser} from '../src/parser/integer-parser';
+export {Length, lengthParser} from '../src/parser/length-parser';
+export {listParser} from '../src/parser/list-parser';
+export {numberParser} from '../src/parser/number-parser';
 
 // Util
 export {customElementType} from '../src/util/custom-element-type';
