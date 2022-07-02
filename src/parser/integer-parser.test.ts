@@ -1,30 +1,23 @@
 import {assert, should, test} from 'gs-testing';
+import {failure, success} from 'nabu';
 
 import {integerParser} from './integer-parser';
 
 
 test('@persona/src/stringify/integer-parser', () => {
   test('convertBackward', () => {
-    should('parse correctly', () => {
-      assert(integerParser(5).convertBackward('12')).to.haveProperties({
-        result: 7,
-        success: true,
-      });
-    });
-
-    should('fail if parse is incorrect', () => {
-      assert(integerParser().convertBackward('abc')).to.haveProperties({
-        success: false,
-      });
+    should('stringify correctly', () => {
+      assert(integerParser().convertBackward(12)).to.haveProperties(success('12'));
     });
   });
 
   test('convertForward', () => {
-    should('stringify correctly', () => {
-      assert(integerParser().convertForward(12)).to.haveProperties({
-        result: '12',
-        success: true,
-      });
+    should('parse correctly', () => {
+      assert(integerParser(5).convertForward('12')).to.haveProperties(success(7));
+    });
+
+    should('fail if parse is incorrect', () => {
+      assert(integerParser().convertForward('abc')).to.haveProperties(failure());
     });
   });
 });

@@ -20,29 +20,29 @@ export type Length = number|
     `${number}px`|
     `${number}%`;
 
-function lengthWithSuffix<S extends string>(suffix: S): Converter<`${number}${S}`, string> {
+function lengthWithSuffix<S extends string>(suffix: S): Converter<string, `${number}${S}`> {
   return {
-    convertBackward(value: string): Result<`${number}${S}`> {
+    convertBackward(value: `${number}${S}`): Result<string> {
+      return success(value);
+    },
+
+    convertForward(value: string): Result<`${number}${S}`> {
       if (!value.endsWith(suffix)) {
         return failure();
       }
 
       const numberSegment = value.substring(0, value.length - suffix.length);
-      const result = numberParser().convertBackward(numberSegment);
+      const result = numberParser().convertForward(numberSegment);
       if (result.success) {
         return success(value as `${number}${S}`);
       }
 
       return failure();
     },
-
-    convertForward(value: `${number}${S}`): Result<string> {
-      return success(value);
-    },
   };
 }
 
-const INSTANCE = firstSuccess<Length, string>(
+const INSTANCE = firstSuccess<string, Length>(
     numberParser(),
     lengthWithSuffix('em'),
     lengthWithSuffix('ex'),
@@ -62,6 +62,6 @@ const INSTANCE = firstSuccess<Length, string>(
     lengthWithSuffix('%'),
 );
 
-export function lengthParser(): Converter<Length, string> {
+export function lengthParser(): Converter<string, Length> {
   return INSTANCE;
 }

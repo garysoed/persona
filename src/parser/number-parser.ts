@@ -1,20 +1,20 @@
-import {Converter, Result} from 'nabu';
+import {Converter, failure, Result, success} from 'nabu';
 
-const INSTANCE: Converter<number, string> = {
-  convertBackward(value: string): Result<number> {
-    const result = Number.parseFloat(value);
-    if (Number.isNaN(result) || `${result}` !== value) {
-      return {success: false};
-    }
-
-    return {result, success: true};
+const INSTANCE: Converter<string, number> = {
+  convertBackward(input: number): Result<string> {
+    return success(`${input}`);
   },
 
-  convertForward(input: number): Result<string> {
-    return {result: `${input}`, success: true};
+  convertForward(value: string): Result<number> {
+    const result = Number.parseFloat(value);
+    if (Number.isNaN(result) || `${result}` !== value) {
+      return failure();
+    }
+
+    return success(result);
   },
 };
 
-export function numberParser(): Converter<number, string> {
+export function numberParser(): Converter<string, number> {
   return INSTANCE;
 }

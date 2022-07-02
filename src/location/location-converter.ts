@@ -3,12 +3,12 @@ import {Converter, Result} from 'nabu';
 export type LocationConverter<T> = Converter<string, T>;
 
 interface Spec {
-  readonly [key: string]: Converter<unknown, string>;
+  readonly [key: string]: Converter<string, unknown>;
 }
 
 type RawSpec<S extends Spec> = Record<keyof S, string>;
 type TypeOf<S extends Spec> = {
-  readonly [K in keyof S]: S[K] extends Converter<infer T, string> ? T : never
+  readonly [K in keyof S]: S[K] extends Converter<string, infer T> ? T : never
 };
 
 /**
@@ -55,7 +55,7 @@ export function fromPattern<S extends Spec>(
       const outValue: Partial<TypeOf<S>> = {};
       for (const key of Object.keys(rawSpec) as Array<keyof RawSpec<S>>) {
         const rawStr = rawSpec[key];
-        const result = spec[key].convertBackward(rawStr);
+        const result = spec[key].convertForward(rawStr);
         if (!result.success) {
           return {success: false};
         }

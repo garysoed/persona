@@ -1,7 +1,6 @@
 import {source} from 'grapevine';
 import {assert, should, test} from 'gs-testing';
 import {cache} from 'gs-tools/export/data';
-import {reverse} from 'nabu';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
@@ -28,12 +27,12 @@ const $shadowIntegerValue$ = source(() => new Subject<number|null>());
 const $host = {
   host: {
     value: iattr('attr'),
-    valueInt: iattr('attr-int', reverse(integerParser())),
+    valueInt: iattr('attr-int', integerParser()),
   },
   shadow: {
     el: query('#el', DIV, {
       value: iattr('attr'),
-      valueInt: iattr('attr-int', reverse(integerParser())),
+      valueInt: iattr('attr-int', integerParser()),
     }),
   },
 };

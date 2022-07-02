@@ -1,5 +1,3 @@
-import {reverse} from 'nabu';
-
 import {iattr} from '../input/attr';
 import {lengthParser} from '../parser/length-parser';
 import {listParser} from '../parser/list-parser';
@@ -12,17 +10,17 @@ export const LINE = createDomRegistration({
   ctor: SVGLineElement,
   spec: {
     ...ELEMENT_SPEC,
-    pathLength: iattr('pathLength', reverse(lengthParser())),
+    pathLength: iattr('pathLength', lengthParser()),
     stroke: iattr('stroke'),
-    strokeDasharray: iattr('stroke-dasharray', reverse(listParser(lengthParser()))),
+    strokeDasharray: iattr('stroke-dasharray', listParser(lengthParser())),
     // TODO: Make stricter
     strokeLinecap: iattr('stroke-linecap'),
-    strokeOpacity: iattr('stroke-opacity', reverse(numberParser())),
-    strokeWidth: iattr('stroke-width', reverse(lengthParser())),
-    x1: iattr('x1', reverse(lengthParser())),
-    x2: iattr('x2', reverse(lengthParser())),
-    y1: iattr('y1', reverse(lengthParser())),
-    y2: iattr('y2', reverse(lengthParser())),
+    strokeOpacity: iattr('stroke-opacity', numberParser()),
+    strokeWidth: iattr('stroke-width', lengthParser()),
+    x1: iattr('x1', lengthParser()),
+    x2: iattr('x2', lengthParser()),
+    y1: iattr('y1', lengthParser()),
+    y2: iattr('y2', lengthParser()),
   },
   tag: 'line',
 });
