@@ -8,7 +8,7 @@ import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import goldens from './goldens/goldens.json';
-import {LINE} from './line';
+import {LINE, LineCap} from './line';
 
 const $test = {
   shadow: {
@@ -27,7 +27,7 @@ class TestElement implements Ctrl {
       of(50).pipe(this.$.shadow.line.y2()),
       of('green').pipe(this.$.shadow.line.stroke()),
       of([10, 10]).pipe(this.$.shadow.line.strokeDasharray()),
-      of('round').pipe(this.$.shadow.line.strokeLinecap()),
+      of(LineCap.ROUND).pipe(this.$.shadow.line.strokeLinecap()),
       of(.5).pipe(this.$.shadow.line.strokeOpacity()),
       of(5).pipe(this.$.shadow.line.strokeWidth()),
     ];

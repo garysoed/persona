@@ -2,9 +2,16 @@ import {iattr} from '../input/attr';
 import {lengthParser} from '../parser/length-parser';
 import {listParser} from '../parser/list-parser';
 import {numberParser} from '../parser/number-parser';
+import {stringEnumParser} from '../parser/string-enum-parser';
 
 import {createDomRegistration} from './create-dom-registration';
 import {ELEMENT_SPEC} from './element';
+
+export enum LineCap {
+  BUTT = 'butt',
+  ROUND = 'round',
+  SQUARE = 'square',
+}
 
 export const LINE = createDomRegistration({
   ctor: SVGLineElement,
@@ -14,7 +21,7 @@ export const LINE = createDomRegistration({
     stroke: iattr('stroke'),
     strokeDasharray: iattr('stroke-dasharray', listParser(lengthParser())),
     // TODO: Make stricter
-    strokeLinecap: iattr('stroke-linecap'),
+    strokeLinecap: iattr('stroke-linecap', stringEnumParser<LineCap>(LineCap)),
     strokeOpacity: iattr('stroke-opacity', numberParser()),
     strokeWidth: iattr('stroke-width', lengthParser()),
     x1: iattr('x1', lengthParser()),
