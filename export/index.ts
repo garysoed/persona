@@ -36,6 +36,7 @@ export {H1, H2, H3, H4, H5, H6} from '../src/html/heading';
 export {INPUT, AutocompleteType, InputType} from '../src/html/input';
 export {KBD} from '../src/html/keyboard';
 export {LABEL} from '../src/html/label';
+export {LINE, LineCap} from '../src/html/line';
 export {P} from '../src/html/paragraph';
 export {PRE} from '../src/html/pre';
 export {SECTION} from '../src/html/section';

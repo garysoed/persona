@@ -20,7 +20,6 @@ export const LINE = createDomRegistration({
     pathLength: iattr('pathLength', lengthParser()),
     stroke: iattr('stroke'),
     strokeDasharray: iattr('stroke-dasharray', listParser(lengthParser())),
-    // TODO: Make stricter
     strokeLinecap: iattr('stroke-linecap', stringEnumParser<LineCap>(LineCap)),
     strokeOpacity: iattr('stroke-opacity', numberParser()),
     strokeWidth: iattr('stroke-width', lengthParser()),
