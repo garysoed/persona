@@ -38,7 +38,6 @@ class FakeMutationObserver extends MutationObserver {
 }
 
 function createFakeNodeList(nodes: Node[]): NodeList {
-  // tslint:disable-next-line: no-object-literal-type-assertion
   const nodeList = {
     forEach: (callbackFn: (value: Node, key: number, parent: NodeList) => void) => {
       nodes.forEach((node, index) => callbackFn(node, index, nodeList));

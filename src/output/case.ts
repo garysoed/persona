@@ -66,6 +66,7 @@ class ResolvedOCase<T> implements OCase<T> {
 
   constructor(
       readonly slotName: string|null,
+      private readonly trackBy: TrackByFn<T>,
   ) {}
 
   resolve(target: Target, context: RenderContext): (renderFn: RenderValueFn<T>) => OperatorFunction<T, T> {
@@ -91,12 +92,12 @@ class ResolvedOCase<T> implements OCase<T> {
                     }
 
                     if (!(node instanceof DocumentFragment)) {
-                      setId(node, value);
+                      setId(node, this.trackBy(value));
                       return;
                     }
 
                     for (let i = 0; i < node.childNodes.length; i++) {
-                      setId(node.childNodes.item(i), value, i);
+                      setId(node.childNodes.item(i), this.trackBy(value), i);
                     }
                   }),
               );
@@ -160,14 +161,15 @@ function getInsertBeforeTarget(
   return slotNode?.nextSibling ?? null;
 }
 
-export function ocase<T = unknown>(): ResolvedOCase<T>;
-export function ocase<T = unknown>(refName: string): ResolvedOCase<T>;
-export function ocase<T = unknown>(refOrType?: string): ResolvedOCase<T>  {
-  if (typeof refOrType === 'string') {
-    return new ResolvedOCase(refOrType);
+type TrackByFn<T> = (value: T) => unknown;
+export function ocase<T = unknown>(trackBy?: TrackByFn<T>): ResolvedOCase<T>;
+export function ocase<T = unknown>(refName: string, trackBy?: TrackByFn<T>): ResolvedOCase<T>;
+export function ocase<T = unknown>(refOrTrackBy?: string|TrackByFn<T>, trackBy?: TrackByFn<T>): ResolvedOCase<T>  {
+  if (typeof refOrTrackBy === 'string') {
+    return new ResolvedOCase(refOrTrackBy, trackBy ?? (value => value));
   }
 
-  return new ResolvedOCase(null);
+  return new ResolvedOCase(null, refOrTrackBy ?? (value => value));
 }
 
 function flattenNode(node: Node|null): readonly Node[] {

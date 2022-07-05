@@ -10,6 +10,8 @@ import {RenderSpec} from '../render/types/render-spec';
 import {renderTextNode} from '../render/types/render-text-node-spec';
 import {query} from '../selector/query';
 import {root} from '../selector/root';
+import {ElementHarness} from '../testing/harness/element-harness';
+import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -21,6 +23,7 @@ const $elValue$ = source(() => new Subject<string|null>());
 const $elSlottedValue$ = source(() => new Subject<string|null>());
 const $rootValue$ = source(() => new Subject<string|null>());
 const $rootSlottedValue$ = source(() => new Subject<string|null>());
+const $withIdValue$ = source(() => new Subject<readonly [string|null]>());
 
 
 const $host = {
@@ -28,6 +31,7 @@ const $host = {
     root: root({
       slotted: ocase<string|null>('#root'),
       value: ocase<string|null>(),
+      withId: ocase<readonly [string|null]>('#withId', ([value]) => value),
     }),
     el: query('#el', DIV, {
       slotted: ocase<string|null>('#ref'),
@@ -54,6 +58,9 @@ class HostCtrl implements Ctrl {
       $rootValue$.get(this.$.vine).pipe(
           this.$.shadow.root.value(value => this.render(value)),
       ),
+      $withIdValue$.get(this.$.vine).pipe(
+          this.$.shadow.root.withId(([value]) => this.render(value)),
+      ),
     ];
   }
 
@@ -71,7 +78,8 @@ const HOST = registerCustomElement({
   <div id="el">
     <!-- #ref -->
     other
-  </div>`,
+  </div>
+  <!-- #withId -->`,
 });
 
 
@@ -135,6 +143,31 @@ test('@persona/src/output/case', init => {
 
       $rootSlottedValue$.get(_.tester.vine).next(null);
       assert(element).to.matchSnapshot('case__root_slotted_reset.html');
+    });
+  });
+
+  test('withId', () => {
+    should('update values correctly if unslotted', () => {
+      const element = _.tester.createElement(HOST);
+
+      assert(element).to.matchSnapshot('case__with_id_empty.html');
+
+      const node = 'text';
+      $withIdValue$.get(_.tester.vine).next([node]);
+      assert(element).to.matchSnapshot('case__with_id_value.html');
+
+      const harness = getHarness(element, ElementHarness);
+      const nodeBefore = harness.target.shadowRoot!.lastChild;
+
+      $withIdValue$.get(_.tester.vine).next([node]);
+      assert(element).to.matchSnapshot('case__with_id_dupe.html');
+      const nodeAfter = harness.target.shadowRoot!.lastChild;
+
+      // The node must be the same.
+      assert(nodeAfter).to.equal(nodeBefore);
+
+      $withIdValue$.get(_.tester.vine).next([null]);
+      assert(element).to.matchSnapshot('case__with_id_reset.html');
     });
   });
 });

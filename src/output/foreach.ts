@@ -68,6 +68,7 @@ export class ResolvedOForeach<T> implements OForeach<T> {
 
   constructor(
       readonly slotName: string|null,
+      private readonly trackByFn: TrackByFn<T>,
   ) {}
 
   resolve(target: Target, context: RenderContext): (renderFn: RenderValuesFn<T>) => OperatorFunction<readonly T[], readonly T[]> {
@@ -88,12 +89,12 @@ export class ResolvedOForeach<T> implements OForeach<T> {
                       }
 
                       if (!(node instanceof DocumentFragment)) {
-                        setId(node, value);
+                        setId(node, this.trackByFn(value));
                         return;
                       }
 
                       for (let i = 0; i < node.childNodes.length; i++) {
-                        setId(node.childNodes.item(i), value, i);
+                        setId(node.childNodes.item(i), this.trackByFn(value), i);
                       }
                     }),
                 );
@@ -182,12 +183,13 @@ function getInsertBeforeTarget(
   return slotNode.nextSibling ?? null;
 }
 
-export function oforeach<T = unknown>(): ResolvedOForeach<T>;
-export function oforeach<T = unknown>(slotName: string): ResolvedOForeach<T>;
-export function oforeach<T = unknown>(slotNameOrType?: string): ResolvedOForeach<T> {
-  if (stringType.check(slotNameOrType)) {
-    return new ResolvedOForeach(slotNameOrType);
+type TrackByFn<T> = (value: T) => unknown;
+export function oforeach<T = unknown>(trackBy?: TrackByFn<T>): ResolvedOForeach<T>;
+export function oforeach<T = unknown>(slotName: string, trackBy?: TrackByFn<T>): ResolvedOForeach<T>;
+export function oforeach<T = unknown>(slotNameOrTrackBy?: string|TrackByFn<T>, trackBy?: TrackByFn<T>): ResolvedOForeach<T> {
+  if (stringType.check(slotNameOrTrackBy)) {
+    return new ResolvedOForeach(slotNameOrTrackBy, trackBy ?? (value => value));
   }
-  return new ResolvedOForeach(null);
+  return new ResolvedOForeach(null, slotNameOrTrackBy ?? (value => value));
 }
 

@@ -8,13 +8,13 @@ const HARNESS_CTOR: Type<HarnessCtor<Element, Harness<Element>>> = intersectType
 ]);
 
 export function getHarness<E extends Element, H extends Harness<E>>(
+  hostElement: E,
+  harnessCtor: HarnessCtor<E, H>,
+): H;
+export function getHarness<E extends Element, H extends Harness<E>>(
     hostElement: Element,
     selector: string,
     harnessCtor: HarnessCtor<E, H>,
-): H;
-export function getHarness<E extends Element, H extends Harness<E>>(
-  hostElement: E,
-  harnessCtor: HarnessCtor<E, H>,
 ): H;
 export function getHarness(
     hostElement: Element,

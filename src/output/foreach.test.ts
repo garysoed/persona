@@ -10,6 +10,8 @@ import {DIV} from '../html/div';
 import {renderNode} from '../render/types/render-node-spec';
 import {query} from '../selector/query';
 import {root} from '../selector/root';
+import {ElementHarness} from '../testing/harness/element-harness';
+import {getHarness} from '../testing/harness/get-harness';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
@@ -25,6 +27,8 @@ const $elValue$ = source(() => new Subject<readonly string[]>());
 const $elSlotlessValue$ = source(() => new Subject<readonly string[]>());
 const $rootValue$ = source(() => new Subject<readonly string[]>());
 const $rootSlotlessValue$ = source(() => new Subject<readonly string[]>());
+const $withIdValue$ = source(() => new Subject<ReadonlyArray<readonly string[]>>());
+
 const $renderer = source<Renderer>(() => ({
   render: (tag: string): RenderSpec => {
     return renderNode({node: document.createElement(tag)});
@@ -37,6 +41,7 @@ const $host = {
     root: root({
       value: oforeach<string>('#root'),
       slotless: oforeach<string>(),
+      withId: oforeach<readonly string[]>('#withId', ([value]) => value),
     }),
     el: query('#el', DIV, {
       value: oforeach<string>('#ref'),
@@ -63,6 +68,9 @@ class HostCtrl implements Ctrl {
       $rootSlotlessValue$.get(this.$.vine).pipe(
           this.$.shadow.root.slotless(value => this.renderNode(value)),
       ),
+      $withIdValue$.get(this.$.vine).pipe(
+          this.$.shadow.root.withId(([value]) => this.renderNode(value)),
+      ),
     ];
   }
 
@@ -75,7 +83,7 @@ const HOST = registerCustomElement({
   tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
-  template: '<!-- #root --><div id="el"><!-- #ref --></div>',
+  template: '<!-- #root --><div id="el"><!-- #ref --></div><!-- #withId -->',
 });
 
 test('@persona/src/output/foreach', init => {
@@ -548,6 +556,133 @@ test('@persona/src/output/foreach', init => {
 
       $elSlotlessValue$.get(_.tester.vine).next([]);
       assert(element).to.matchSnapshot('foreach__el_slotless_multi_delete.html');
+    });
+  });
+
+  test('withId', _, () => {
+    should('process \'init\' correctly', () => {
+      const element = _.tester.createElement(HOST);
+
+      $withIdValue$.get(_.tester.vine).next([['div1'], ['div2'], ['div3']]);
+
+      assert(element).to.matchSnapshot('foreach__with_id_init.html');
+    });
+
+    should('process \'insert\' correctly for index 0', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+
+      $withIdValue$.get(_.tester.vine).next([[node1], [node2], [node3]]);
+
+      const harness = getHarness(element, ElementHarness);
+      const node1Before = harness.target.shadowRoot!.querySelector('div1');
+      const node2Before = harness.target.shadowRoot!.querySelector('div2');
+      const node3Before = harness.target.shadowRoot!.querySelector('div3');
+
+      const insertNode = 'div0';
+      $withIdValue$.get(_.tester.vine).next([[insertNode], [node1], [node2], [node3]]);
+      const node1After = harness.target.shadowRoot!.querySelector('div1');
+      const node2After = harness.target.shadowRoot!.querySelector('div2');
+      const node3After = harness.target.shadowRoot!.querySelector('div3');
+
+      // Check that the other nodes were not removed.
+      assert(node1After).to.equal(node1Before);
+      assert(node2After).to.equal(node2Before);
+      assert(node3After).to.equal(node3Before);
+      assert(element).to.matchSnapshot('foreach__with_id_insert_start.html');
+    });
+
+    should('process \'insert\' correctly for index 2', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+      $withIdValue$.get(_.tester.vine).next([[node1], [node2], [node3]]);
+
+      const insertNode = 'div0';
+      $withIdValue$.get(_.tester.vine).next([[node1], [node2], [insertNode], [node3]]);
+
+      assert(element).to.matchSnapshot('foreach__with_id_insert_middle.html');
+    });
+
+    should('process \'insert\' correctly for large index', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+      $withIdValue$.get(_.tester.vine).next([[node1], [node2], [node3]]);
+
+      const insertNode = 'div0';
+      $withIdValue$.get(_.tester.vine).next([[node1], [node2], [node3], [insertNode]]);
+
+      assert(element).to.matchSnapshot('foreach__with_id_insert_end.html');
+    });
+
+    should('process \'delete\' correctly', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+      $withIdValue$.get(_.tester.vine).next([[node1], [node2], [node3]]);
+
+      $withIdValue$.get(_.tester.vine).next([[node1], [node3]]);
+
+      assert(element).to.matchSnapshot('foreach__with_id_delete.html');
+    });
+
+    should('ignore node insertions with the same id', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div1';
+
+      $withIdValue$.get(_.tester.vine).next([[node1]]);
+      $withIdValue$.get(_.tester.vine).next([[node2]]);
+
+      assert(element).to.matchSnapshot('foreach__with_id_same_id.html');
+    });
+
+    should('handle deleting duplicates', () => {
+      const element = _.tester.createElement(HOST);
+      const node = 'div';
+      $withIdValue$.get(_.tester.vine).next([[node], [node]]);
+
+      $withIdValue$.get(_.tester.vine).next([]);
+
+      assert(element).to.matchSnapshot('foreach__with_id_delete_duplicate.html');
+    });
+
+    should('replace the element correctly for \'set\'', () => {
+      const element = _.tester.createElement(HOST);
+      const node1 = 'div1';
+      const node2 = 'div2';
+      const node3 = 'div3';
+      $withIdValue$.get(_.tester.vine).next([[node1], [node2], [node3]]);
+
+      const setNode = 'div0';
+      $withIdValue$.get(_.tester.vine).next([[setNode], [node2], [node3]]);
+
+      assert(element).to.matchSnapshot('foreach__with_id_set.html');
+    });
+
+    should('handle insertion and deletions of renders with multiple nodes', () => {
+      $renderer.get(_.tester.vine).render = value => {
+        const node = document.createDocumentFragment();
+        node.appendChild(document.createElement(value));
+        node.appendChild(document.createElement(value));
+        node.appendChild(document.createElement(value));
+        return renderNode({node});
+      };
+
+      const element = _.tester.createElement(HOST);
+      const id = 'div';
+
+      $withIdValue$.get(_.tester.vine).next([[id]]);
+      assert(element).to.matchSnapshot('foreach__with_id_multi_insert.html');
+
+      $withIdValue$.get(_.tester.vine).next([]);
+      assert(element).to.matchSnapshot('foreach__with_id_multi_delete.html');
     });
   });
 });
