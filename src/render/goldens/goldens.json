@@ -1,4 +1,5 @@
 {
+  "html-parse-service.html": "<div>raw</div>",
   "render-element__attribute_undefined.html": "<test-host><gst-fake-shadow><!-- #ref --><pr-test></pr-test></gst-fake-shadow></test-host>",
   "render-element__attribute_update.html": "<test-host><gst-fake-shadow><!-- #ref --><pr-test b=\"b2\"></pr-test></gst-fake-shadow></test-host>",
   "render-element__dom.html": "<test-host><gst-fake-shadow><!-- #ref --><button autofocus=\"\">button</button></gst-fake-shadow></test-host>",

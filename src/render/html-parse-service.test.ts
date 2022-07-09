@@ -1,43 +1,31 @@
-import {assert, createSpyInstance, fake, resetCalls, should, test} from 'gs-testing';
+import {assert, runEnvironment, should, test} from 'gs-testing';
+import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 
+import goldens from './goldens/goldens.json';
 import {HtmlParseService, ParseType} from './html-parse-service';
 
 
 test('@persona/src/render/html-parse-service', init => {
   const _ = init(() => {
-    const mockDOMParser = createSpyInstance(DOMParser);
-    const service = new HtmlParseService(mockDOMParser);
-    return {service, mockDOMParser};
+    runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));
+    const service = new HtmlParseService();
+    return {service};
   });
 
   test('parse', () => {
-    should('return the parsed element', () => {
+    should('return the parsed element', async () => {
       const mockEl = document.createElement('div');
       const parsedDoc = new Document();
       parsedDoc.appendChild(mockEl);
-      fake(_.mockDOMParser.parseFromString).always().return(parsedDoc);
 
-      const raw = 'raw';
+      const raw = '<div>raw</div>';
       const supportedType = ParseType.HTML;
-      assert(_.service.parse(raw, supportedType)).to.emitWith(mockEl);
-      assert(_.mockDOMParser.parseFromString).to.haveBeenCalledWith(raw, supportedType);
+      const result$ = _.service.parse(raw, supportedType);
+      const result = await result$.toPromise();
+      assert(result!).to.matchSnapshot('html-parse-service.html');
 
-    });
-
-    should('return the cached data if any', () => {
-      const mockEl = document.createElement('div');
-      const parsedDoc = new Document();
-      parsedDoc.appendChild(mockEl);
-      fake(_.mockDOMParser.parseFromString).always().return(parsedDoc);
-
-      const raw = 'raw';
-      const supportedType = ParseType.HTML;
-      // Get the initial parse.
-      _.service.parse(raw, supportedType);
-
-      resetCalls(_.mockDOMParser.parseFromString);
-      assert(_.service.parse(raw, supportedType)).to.emitWith(mockEl);
-      assert(_.mockDOMParser.parseFromString).toNot.haveBeenCalled();
+      // Run again, should return the same instance.
+      assert(_.service.parse(raw, supportedType)).to.emitWith(result);
     });
   });
 });

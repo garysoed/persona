@@ -2,13 +2,13 @@ import {source} from 'grapevine';
 import {Observable, of} from 'rxjs';
 
 export enum ParseType {
-  HTML = 'application/xhtml+xml',
+  HTML = 'text/html',
   SVG = 'image/svg+xml',
 }
 
 export type ElementForType<T extends ParseType> =
-    T extends 'application/xhtml+xml' ? HTMLElement :
-    T extends 'image/svg+xml' ? SVGElement :
+    T extends ParseType.HTML ? HTMLElement :
+    T extends ParseType.SVG ? SVGElement :
     never;
 
 export class HtmlParseService {
@@ -24,8 +24,9 @@ export class HtmlParseService {
       return existingEl$;
     }
 
-    const xmlDoc = this.domParser.parseFromString(raw, supportedType);
-    const el$ = of(xmlDoc.children.item(0));
+    const result = this.domParser.parseFromString(raw, supportedType);
+    const el = supportedType === ParseType.HTML ? result.body.firstChild : result.firstChild;
+    const el$ = of(el as Element|null);
     this.elMap.set(raw, el$);
     return el$;
   }
