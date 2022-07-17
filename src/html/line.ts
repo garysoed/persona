@@ -3,6 +3,7 @@ import {lengthParser} from '../parser/length-parser';
 import {listParser} from '../parser/list-parser';
 import {numberParser} from '../parser/number-parser';
 import {stringEnumParser} from '../parser/string-enum-parser';
+import {ElementNamespace} from '../types/registration';
 
 import {createDomRegistration} from './create-dom-registration';
 import {ELEMENT_SPEC} from './element';
@@ -29,4 +30,5 @@ export const LINE = createDomRegistration({
     y2: iattr('y2', lengthParser()),
   },
   tag: 'line',
+  namespace: ElementNamespace.SVG,
 });

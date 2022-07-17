@@ -1,4 +1,5 @@
 import {iflag} from '../input/flag';
+import {ElementNamespace} from '../types/registration';
 
 import {createDomRegistration} from './create-dom-registration';
 import {ELEMENT_SPEC} from './element';
@@ -12,4 +13,5 @@ export const BUTTON = createDomRegistration({
     disabled: iflag('disabled'),
   },
   tag: 'button',
+  namespace: ElementNamespace.HTML,
 });

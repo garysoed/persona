@@ -10,10 +10,8 @@ import {RenderSpecType} from './render-spec-type';
 
 export type ExtraSpec = Record<string, InputOutputThatResolvesWith<Element>>;
 
-interface LiteRegistration<S extends Spec, E extends Element> extends Pick<Registration<E, {}>, '$ctor'> {
-  readonly spec: S;
-  readonly tag: string;
-}
+type LiteRegistration<S extends Spec, E extends Element> =
+    Pick<Registration<E, S>, '$ctor'|'tag'|'namespace'|'spec'>;
 
 interface InputRenderSpec<S extends Spec, X extends ExtraSpec, E extends Element> {
   readonly registration: LiteRegistration<S, E>;

@@ -2,7 +2,7 @@ import {source} from 'grapevine';
 
 import {ResolvedBindingSpec} from '../types/ctrl';
 import {InputOutputThatResolvesWith} from '../types/io';
-import {Registration} from '../types/registration';
+import {ElementNamespace, Registration} from '../types/registration';
 
 
 type DomRegistration<E extends Element, S extends Record<string, InputOutputThatResolvesWith<Element>>> =
@@ -11,6 +11,7 @@ type DomRegistration<E extends Element, S extends Record<string, InputOutputThat
 interface Input<E extends Element, S extends ResolvedBindingSpec> {
   readonly ctor: new (...args: readonly any[]) => E;
   readonly tag: string;
+  readonly namespace: ElementNamespace;
   readonly spec: S;
 }
 
@@ -27,5 +28,6 @@ export function createDomRegistration<
       host: input.spec,
     },
     tag: input.tag,
+    namespace: input.namespace,
   };
 }

@@ -4,7 +4,7 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import {Spec} from '../types/ctrl';
 import {AttributeChangedEvent} from '../types/event';
 import {ICall, IValue, OValue} from '../types/io';
-import {CustomElementRegistration, RegistrationSpec} from '../types/registration';
+import {CustomElementRegistration, ElementNamespace, RegistrationSpec} from '../types/registration';
 import {setAttributeChangeObservable} from '../util/attribute-change-observable';
 
 import {getObservedAttributes} from './get-observed-attributes';
@@ -99,6 +99,7 @@ export function registerCustomElement<S extends Spec>(
     deps: [],
     $ctor,
     configure: spec.configure ?? (() => undefined),
+    namespace: ElementNamespace.HTML,
     ...spec,
   };
 

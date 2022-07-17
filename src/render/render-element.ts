@@ -25,11 +25,19 @@ import {RenderSpecType} from './types/render-spec-type';
 export function renderElement<S extends Spec, X extends ExtraSpec, E extends Element>(
     renderSpec: RenderElementSpec<S, X, E>,
     context: RenderContext,
-): Observable<HTMLElement> {
+): Observable<Element> {
   const nodeSpec = {
     ...renderSpec,
     type: RenderSpecType.NODE as const,
-    node: context.document.createElement(renderSpec.registration.tag),
+    // node: context.document.createElementNS(
+    //     renderSpec.registration.namespace,
+    //     renderSpec.registration.tag,
+    // ),
+    // TODO: centralize this
+    node: context.document.createElement(
+        // renderSpec.registration.namespace,
+        renderSpec.registration.tag,
+    ),
   };
   return renderNode(nodeSpec)
       .pipe(
