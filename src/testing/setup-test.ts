@@ -25,7 +25,7 @@ export class Tester {
   ) { }
 
   createElement<E extends HTMLElement, S extends Spec>(spec: CustomElementRegistration<E, S>): E {
-    return this.customElementRegistry.create(spec.tag) as E;
+    return this.customElementRegistry.create(spec.namespace, spec.tag) as E;
   }
 
   setMedia(query: string, value: boolean): void {
@@ -43,8 +43,22 @@ export function setupTest(spec: TestSpec): Tester {
 
   const fakeTime = mockTime(window);
   const registrationMap = new Map<string, CustomElementRegistration<HTMLElement, Spec>>();
+
+  const origCreateElementNS = document.createElementNS;
+  function createElementNS(namespaceURI: string|null, tag: string): Element {
+    return origCreateElementNS.call(document, namespaceURI, tag);
+  }
+  fake(spy(document, 'createElementNS'))
+      .always().call((namespace, tag) => {
+        try {
+          return customElementRegistry.create(namespace, tag);
+        } catch (e) {
+          return createElementNS(namespace, tag);
+        }
+      });
+
   const customElementRegistry = new FakeCustomElementRegistry(
-      createElement,
+      createElementNS,
       registrationMap,
       vine,
   );
@@ -62,32 +76,6 @@ export function setupTest(spec: TestSpec): Tester {
   }
 
   const tester = new Tester(fakeTime, vine, customElementRegistry);
-
-  const origCreateElement = document.createElement;
-  function createElement(tag: string): HTMLElement {
-    return origCreateElement.call(document, tag);
-  }
-  fake(spy(document, 'createElement'))
-      .always().call(tag => {
-        try {
-          return customElementRegistry.create(tag);
-        } catch (e) {
-          return createElement(tag);
-        }
-      });
-
-  const origCreateElementNS = document.createElementNS;
-  function createElementNS(namespaceURI: string|null, tag: string): Element {
-    return origCreateElementNS.call(document, namespaceURI, tag);
-  }
-  fake(spy(document, 'createElementNS'))
-      .always().call((namespace, tag) => {
-        try {
-          return customElementRegistry.create(tag);
-        } catch (e) {
-          return createElementNS(namespace, tag);
-        }
-      });
 
   const spyAppendChild = spy(Node.prototype, 'appendChild');
   fake(spyAppendChild)

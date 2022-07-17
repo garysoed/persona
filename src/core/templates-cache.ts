@@ -15,6 +15,7 @@ export const $getTemplate = source(vine => {
 
     // TODO: Inject document
     const templateEl = document.createElement('template');
+
     templateEl.innerHTML = spec.template;
     templateCache.set(spec.tag, templateEl);
 

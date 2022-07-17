@@ -27,14 +27,16 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
 
   constructor(
       // Do not use document.createElement since it will be faked.
-      private readonly createElement: (tag: string) => HTMLElement,
+      private readonly createElement: (namespace: string|null, tag: string) => Element,
       private readonly registrationMap: ReadonlyMap<string, CustomElementRegistration<HTMLElement, Spec>>,
       private readonly vine: Vine,
   ) { }
 
-  create(tag: string): HTMLElement {
-    const el = this.createElement(tag);
-    this.upgradeElement(el);
+  create(namespace: string|null, tag: string): Element {
+    const el = this.createElement(namespace, tag);
+    if (el instanceof HTMLElement) {
+      this.upgradeElement(el);
+    }
     return el;
   }
 

@@ -29,13 +29,8 @@ export function renderElement<S extends Spec, X extends ExtraSpec, E extends Ele
   const nodeSpec = {
     ...renderSpec,
     type: RenderSpecType.NODE as const,
-    // node: context.document.createElementNS(
-    //     renderSpec.registration.namespace,
-    //     renderSpec.registration.tag,
-    // ),
-    // TODO: centralize this
-    node: context.document.createElement(
-        // renderSpec.registration.namespace,
+    node: context.document.createElementNS(
+        renderSpec.registration.namespace,
         renderSpec.registration.tag,
     ),
   };
