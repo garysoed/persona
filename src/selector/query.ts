@@ -30,20 +30,20 @@ interface ExtraBindingSpec<T> {
 
 export function query<E extends Element, S extends Spec>(
     query: string|null,
-    registration: Registration<E, S>,
+    registration: Registration<E, S>|null,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}>, E>;
 export function query<E extends Element, S extends Spec, X extends ExtraBindingSpec<E>>(
     query: string|null,
-    registration: Registration<E, S>,
+    registration: Registration<E, S>|null,
     extra: X,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X, E>
 export function query<S extends Spec, X extends ExtraBindingSpec<Element>>(
     query: string|null,
-    registration: Registration<Element, S>,
+    registration: Registration<Element, S>|null,
     extra?: ExtraBindingSpec<Element>,
 ): ResolvedBindingSpecProvider<ReversedSpec<S['host']&{}> & X, Element> {
   const providers: Record<string, BindingProvider> = {};
-  const reversed = reverseSpec(registration.spec.host ?? {});
+  const reversed = reverseSpec(registration?.spec.host ?? {});
   for (const key in reversed) {
     providers[key] = (root: Target, context: RenderContext) => reversed[key].resolve(
         getElement(root, query),
