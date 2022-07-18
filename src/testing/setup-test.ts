@@ -1,5 +1,5 @@
 import {Config as VineConfig, Vine} from 'grapevine';
-import {fake, FakeTime, mockTime, runEnvironment, spy} from 'gs-testing';
+import {Environment, fake, FakeTime, mockTime, runEnvironment, spy} from 'gs-testing';
 import {getOrigFn} from 'gs-testing/src/spy/spy';
 import {arrayFrom} from 'gs-tools/export/collect';
 
@@ -18,11 +18,18 @@ export interface TestSpec {
 }
 
 export class Tester {
+  private readonly addedNodes: Node[] = [];
+
   constructor(
       readonly fakeTime: FakeTime,
       readonly vine: Vine,
       private readonly customElementRegistry: FakeCustomElementRegistry,
   ) { }
+
+  addToBody(node: Node): void {
+    this.addedNodes.push(node);
+    document.body.appendChild(node);
+  }
 
   createElement<E extends HTMLElement, S extends Spec>(spec: CustomElementRegistration<E, S>): E {
     return this.customElementRegistry.create(spec.namespace, spec.tag) as E;
@@ -35,6 +42,30 @@ export class Tester {
     }
 
     (mediaQuery as FakeMediaQuery).matches = value;
+  }
+
+  teardown(): void {
+    for (const node of this.addedNodes) {
+      try {
+        document.body.removeChild(node);
+      } catch {
+        // noop
+      }
+    }
+  }
+}
+
+class TesterEnvironment extends Environment {
+  constructor(private readonly tester: Tester) {
+    super();
+  }
+
+  protected innerAfterEach(): void {
+    this.tester.teardown();
+  }
+
+  protected innerBeforeEach(): void {
+    // noop
   }
 }
 
@@ -100,6 +131,7 @@ export function setupTest(spec: TestSpec): Tester {
       });
   mockMatchMedia(window);
   runEnvironment(new PersonaTesterEnvironment());
+  runEnvironment(new TesterEnvironment(tester));
 
   return tester;
 }

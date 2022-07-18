@@ -1,18 +1,18 @@
 import {iattr} from '../input/attr';
+import {lengthParser} from '../parser/length-parser';
 import {ElementNamespace} from '../types/registration';
 
 import {createDomRegistration} from './create-dom-registration';
 import {ELEMENT_SPEC} from './element';
 
-// TODO: Add better typing to the attrs
 export const SVG = createDomRegistration({
   ctor: SVGElement,
   spec: {
     ...ELEMENT_SPEC,
-    x: iattr('x'),
-    y: iattr('y'),
-    width: iattr('width'),
-    height: iattr('height'),
+    x: iattr('x', lengthParser()),
+    y: iattr('y', lengthParser()),
+    width: iattr('width', lengthParser()),
+    height: iattr('height', lengthParser()),
   },
   tag: 'svg',
   namespace: ElementNamespace.HTML,

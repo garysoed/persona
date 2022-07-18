@@ -17,6 +17,10 @@ export class PersonaTesterEnvironment extends Environment {
     if (this.uninstallFakeResizeObserver) {
       this.uninstallFakeResizeObserver();
     }
+
+    if (this.uninstallFakeRect) {
+      this.uninstallFakeRect();
+    }
   }
 
   protected innerBeforeEach(): void {
