@@ -86,7 +86,7 @@ test('@persona/src/output/value', init => {
   test('host', () => {
     should('update values correctly if the default value is given', () => {
       const value = 2;
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element.valueWithDefaultProp).to.equal(DEFAULT_VALUE);
 
@@ -96,7 +96,7 @@ test('@persona/src/output/value', init => {
 
     should('update values correctly if the default value is not given', () => {
       const value = 2;
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element.valueProp).toNot.beDefined();
 
@@ -108,7 +108,7 @@ test('@persona/src/output/value', init => {
   test('shadow', () => {
     should('update values correctly if the default value is given', () => {
       const value = 2;
-      _.tester.createElement(SHADOW);
+      _.tester.bootstrapElement(SHADOW);
 
       $hostValueWithDefault$.get(_.tester.vine).next(value);
       assert($shadowValueWithDefault$.get(_.tester.vine)).to.emitSequence([DEFAULT_VALUE, value]);
@@ -116,7 +116,7 @@ test('@persona/src/output/value', init => {
 
     should('update values correctly if the default value is not given', () => {
       const value = 2;
-      _.tester.createElement(SHADOW);
+      _.tester.bootstrapElement(SHADOW);
 
       $hostValue$.get(_.tester.vine).next(value);
       assert($shadowValue$.get(_.tester.vine)).to.emitSequence([undefined, value]);

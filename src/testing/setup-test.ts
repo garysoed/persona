@@ -26,13 +26,15 @@ export class Tester {
       private readonly customElementRegistry: FakeCustomElementRegistry,
   ) { }
 
-  addToBody(node: Node): void {
+  private addToBody(node: Node): void {
     this.addedNodes.push(node);
     document.body.appendChild(node);
   }
 
-  createElement<E extends HTMLElement, S extends Spec>(spec: CustomElementRegistration<E, S>): E {
-    return this.customElementRegistry.create(spec.namespace, spec.tag) as E;
+  bootstrapElement<E extends HTMLElement, S extends Spec>(spec: CustomElementRegistration<E, S>): E {
+    const element = this.customElementRegistry.create(spec.namespace, spec.tag) as E;
+    this.addToBody(element);
+    return element;
   }
 
   setMedia(query: string, value: boolean): void {

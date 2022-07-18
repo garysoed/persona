@@ -50,7 +50,7 @@ test('@persona/src/output/property', init => {
   });
 
   should('set the property value correctly', () => {
-    const element = _.tester.createElement(HOST);
+    const element = _.tester.bootstrapElement(HOST);
     $value$.get(_.tester.vine).next('value');
 
     assert(element).to.matchSnapshot('property.html');

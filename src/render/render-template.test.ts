@@ -60,7 +60,7 @@ test('@persona/src/render/render-template', init => {
   });
 
   should('emit the custom element', () => {
-    const element = _.tester.createElement(HOST);
+    const element = _.tester.bootstrapElement(HOST);
     const text$ = new BehaviorSubject<string>('text');
     const attr$ = new ReplaySubject<string|null>();
     $spec.get(_.tester.vine).next(renderTemplate({
@@ -84,7 +84,7 @@ test('@persona/src/render/render-template', init => {
   });
 
   should('update the inputs', () => {
-    const element = _.tester.createElement(HOST);
+    const element = _.tester.bootstrapElement(HOST);
     const text$ = new BehaviorSubject<string>('text');
     const attr$ = new ReplaySubject<string|null>();
     $spec.get(_.tester.vine).next(renderTemplate({
@@ -109,7 +109,7 @@ test('@persona/src/render/render-template', init => {
   });
 
   should('update the outputs', () => {
-    const element = _.tester.createElement(HOST);
+    const element = _.tester.bootstrapElement(HOST);
     const text$ = new BehaviorSubject<string>('text');
     const attr$ = new ReplaySubject<string|null>();
     $spec.get(_.tester.vine).next(renderTemplate({

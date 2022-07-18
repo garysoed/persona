@@ -68,14 +68,14 @@ test('@persona/src/output/text', init => {
 
   test('el', () => {
     should('set the text content correctly with a single emission', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       $elValue$.get(_.tester.vine).next('text');
 
       assert(element).to.matchSnapshot('text__el.html');
     });
 
     should('set the text content correctly with multiple emissions', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       $elValue$.get(_.tester.vine).next('text');
       $elValue$.get(_.tester.vine).next('text');
 
@@ -85,14 +85,14 @@ test('@persona/src/output/text', init => {
 
   test('root', () => {
     should('set the text content correctly with a single emission', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       $rootValue$.get(_.tester.vine).next('text');
 
       assert(element).to.matchSnapshot('text__root.html');
     });
 
     should('set the text content correctly with multiple emissions', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       $rootValue$.get(_.tester.vine).next('text');
       $rootValue$.get(_.tester.vine).next('text');
 

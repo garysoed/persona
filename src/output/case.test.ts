@@ -92,7 +92,7 @@ test('@persona/src/output/case', init => {
 
   test('el', () => {
     should('update values correctly if unslotted', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element).to.matchSnapshot('case__el_empty.html');
 
@@ -105,7 +105,7 @@ test('@persona/src/output/case', init => {
     });
 
     should('update values correctly if slotted', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element).to.matchSnapshot('case__el_slotted_empty.html');
 
@@ -120,7 +120,7 @@ test('@persona/src/output/case', init => {
 
   test('root', () => {
     should('update values correctly if unslotted', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element).to.matchSnapshot('case__root_empty.html');
 
@@ -133,7 +133,7 @@ test('@persona/src/output/case', init => {
     });
 
     should('update values correctly if slotted', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element).to.matchSnapshot('case__root_slotted_empty.html');
 
@@ -148,7 +148,7 @@ test('@persona/src/output/case', init => {
 
   test('withId', () => {
     should('update values correctly if unslotted', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element).to.matchSnapshot('case__with_id_empty.html');
 

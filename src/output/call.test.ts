@@ -55,7 +55,7 @@ test('@persona/src/output/call', init => {
 
   test('el', () => {
     should('call the function correctly', () => {
-      const host = _.tester.createElement(HOST);
+      const host = _.tester.bootstrapElement(HOST);
 
       const eventName = 'event-name';
       const el = getHarness(host, '#el', ElementHarness).target;

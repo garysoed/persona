@@ -91,7 +91,7 @@ test('@persona/src/output/class', init => {
 
   test('host', () => {
     should('update values correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element.classList.contains(CLASS_NAME)).to.beFalse();
 
@@ -105,7 +105,7 @@ test('@persona/src/output/class', init => {
 
   test('el', () => {
     should('update values correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element).to.matchSnapshot('class__el_empty.html');
 
@@ -119,7 +119,7 @@ test('@persona/src/output/class', init => {
 
   test('shadow', () => {
     should('update values correctly', () => {
-      const element = _.tester.createElement(SHADOW);
+      const element = _.tester.bootstrapElement(SHADOW);
 
       $hostValue$.get(_.tester.vine).next(true);
       getHarness(element, '#deps', ElementHarness).simulateMutation();

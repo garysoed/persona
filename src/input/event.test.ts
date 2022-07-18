@@ -57,7 +57,7 @@ test('@persona/src/input/event', init => {
 
   test('el', () => {
     should('listen to events correctly', () => {
-      const rootEl = _.tester.createElement(HOST);
+      const rootEl = _.tester.bootstrapElement(HOST);
       const element = getHarness(rootEl, '#el', ElementHarness).target;
       const event = new CustomEvent(EVENT_NAME);
       element.dispatchEvent(event);
@@ -67,7 +67,7 @@ test('@persona/src/input/event', init => {
     });
 
     should('ignore events that do not match the target if matchTarget is true', () => {
-      const rootEl = _.tester.createElement(HOST);
+      const rootEl = _.tester.bootstrapElement(HOST);
       const element = getHarness(rootEl, '#sub', ElementHarness).target;
       const event = new CustomEvent(EVENT_NAME, {bubbles: true});
       element.dispatchEvent(event);
@@ -77,7 +77,7 @@ test('@persona/src/input/event', init => {
     });
 
     should('ignore events that do not match the type', () => {
-      const rootEl = _.tester.createElement(HOST);
+      const rootEl = _.tester.bootstrapElement(HOST);
       const element = getHarness(rootEl, '#sub', ElementHarness).target;
       const event = new KeyboardEvent(EVENT_NAME, {bubbles: true});
       element.dispatchEvent(event);

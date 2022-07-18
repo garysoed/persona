@@ -61,7 +61,7 @@ test('@persona/src/output/render-fragment', init => {
 
   test('el', () => {
     should('update values correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element).to.matchSnapshot('render-fragment__empty.html');
 

@@ -95,7 +95,7 @@ test('@persona/src/input/value', init => {
   test('host', () => {
     should('emit values on sets when default values are given', () => {
       const value = 2;
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       element.valueWithDefaultProp = value;
 
       assert($hostValueWithDefault$.get(_.tester.vine)).to.emitSequence([DEFAULT_VALUE, value]);
@@ -103,7 +103,7 @@ test('@persona/src/input/value', init => {
 
     should('emit values on sets when default values aren\'t given', () => {
       const value = 2;
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       element.valueProp = value;
       element.valueProp = undefined;
 
@@ -111,7 +111,7 @@ test('@persona/src/input/value', init => {
     });
 
     should('handle null values', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       element.valueProp = null;
       element.valueProp = undefined;
 
@@ -122,7 +122,7 @@ test('@persona/src/input/value', init => {
   test('shadow', () => {
     should('emit values on sets when default values are given', () => {
       const value = 2;
-      _.tester.createElement(SHADOW);
+      _.tester.bootstrapElement(SHADOW);
       $shadowValueWithDefault$.get(_.tester.vine).next(value);
 
       assert($hostValueWithDefault$.get(_.tester.vine)).to.emitSequence([DEFAULT_VALUE, value]);
@@ -130,7 +130,7 @@ test('@persona/src/input/value', init => {
 
     should('emit values on sets when default values aren\'t given', () => {
       const value = 2;
-      _.tester.createElement(SHADOW);
+      _.tester.bootstrapElement(SHADOW);
       $shadowValue$.get(_.tester.vine).next(value);
       $shadowValue$.get(_.tester.vine).next(undefined);
 
@@ -138,7 +138,7 @@ test('@persona/src/input/value', init => {
     });
 
     should('handle null values', () => {
-      _.tester.createElement(SHADOW);
+      _.tester.bootstrapElement(SHADOW);
       $shadowValue$.get(_.tester.vine).next(null);
       $shadowValue$.get(_.tester.vine).next(undefined);
 

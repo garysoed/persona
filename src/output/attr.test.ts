@@ -101,7 +101,7 @@ test('@persona/src/output/attr', init => {
   test('host', () => {
     should('update values correctly', () => {
       const value = 'value';
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element.getAttribute('attr')).to.beNull();
 
@@ -113,7 +113,7 @@ test('@persona/src/output/attr', init => {
     });
 
     should('update values with custom parsers correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element.getAttribute('attr-int')).to.beNull();
 
@@ -128,7 +128,7 @@ test('@persona/src/output/attr', init => {
   test('el', () => {
     should('update values correctly', () => {
       const value = 'value';
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element).to.matchSnapshot('attr__el_empty.html');
 
@@ -140,7 +140,7 @@ test('@persona/src/output/attr', init => {
     });
 
     should('update values with custom parsers correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element).to.matchSnapshot('attr__el_integer_empty.html');
 
@@ -155,7 +155,7 @@ test('@persona/src/output/attr', init => {
   test('shadow', () => {
     should('update values correctly', () => {
       const value = 'value';
-      _.tester.createElement(SHADOW);
+      _.tester.bootstrapElement(SHADOW);
 
       $hostValue$.get(_.tester.vine).next(value);
       assert($shadowValue$.get(_.tester.vine)).to.emitSequence([null, value]);
@@ -163,7 +163,7 @@ test('@persona/src/output/attr', init => {
 
     should('update values with custom parsers correctly', () => {
       const value = 12;
-      _.tester.createElement(SHADOW);
+      _.tester.bootstrapElement(SHADOW);
 
       $hostIntegerValue$.get(_.tester.vine).next(value);
       assert($shadowIntegerValue$.get(_.tester.vine)).to.emitSequence([null, value]);

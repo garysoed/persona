@@ -96,7 +96,7 @@ test('@persona/src/input/keydown', init => {
 
   test('el', () => {
     should('match the key correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const harness = getHarness(element, '#el', ElementHarness);
 
       const event = harness.simulateKeydown(KEY);
@@ -106,7 +106,7 @@ test('@persona/src/input/keydown', init => {
     });
 
     should('match the alt correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const harness = getHarness(element, '#el', ElementHarness);
 
       // alt === true
@@ -124,7 +124,7 @@ test('@persona/src/input/keydown', init => {
     });
 
     should('match the ctrl correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const harness = getHarness(element, '#el', ElementHarness);
 
       // ctrl === true
@@ -142,7 +142,7 @@ test('@persona/src/input/keydown', init => {
     });
 
     should('match the meta correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const harness = getHarness(element, '#el', ElementHarness);
 
       // meta === true
@@ -160,7 +160,7 @@ test('@persona/src/input/keydown', init => {
     });
 
     should('match the shift correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const harness = getHarness(element, '#el', ElementHarness);
 
       // shift === true
@@ -178,7 +178,7 @@ test('@persona/src/input/keydown', init => {
     });
 
     should('ignore if event is not KeyboardEvent', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const harness = getHarness(element, '#el', ElementHarness);
 
       harness.target.dispatchEvent(new CustomEvent<unknown>('keydown'));

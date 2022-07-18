@@ -102,7 +102,7 @@ test('@persona/src/input/attr', init => {
   test('host', () => {
     should('emit values on sets', () => {
       const value = 'value';
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       element.setAttribute('attr', value);
       element.removeAttribute('attr');
 
@@ -110,7 +110,7 @@ test('@persona/src/input/attr', init => {
     });
 
     should('handle custom parser', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       element.setAttribute('attr-int', '12');
       element.removeAttribute('attr-int');
 
@@ -121,7 +121,7 @@ test('@persona/src/input/attr', init => {
   test('el', () => {
     should('update values correctly', () => {
       const value = 'value';
-      const rootEl = _.tester.createElement(HOST);
+      const rootEl = _.tester.bootstrapElement(HOST);
       const element = getHarness(rootEl, '#el', ElementHarness).target;
       element.setAttribute('attr', value);
       element.removeAttribute('attr');
@@ -130,7 +130,7 @@ test('@persona/src/input/attr', init => {
     });
 
     should('update values with custom parser correctly', () => {
-      const rootEl = _.tester.createElement(HOST);
+      const rootEl = _.tester.bootstrapElement(HOST);
       const element = getHarness(rootEl, '#el', ElementHarness).target;
       element.setAttribute('attr-int', '12');
       element.removeAttribute('attr-int');
@@ -142,7 +142,7 @@ test('@persona/src/input/attr', init => {
   test('shadow', () => {
     should('emit values on set', () => {
       const value = 'value';
-      _.tester.createElement(SHADOW);
+      _.tester.bootstrapElement(SHADOW);
 
       $shadowValue$.get(_.tester.vine).next(value);
       $shadowValue$.get(_.tester.vine).next(null);
@@ -151,7 +151,7 @@ test('@persona/src/input/attr', init => {
 
     should('emit values on set with custom parser', () => {
       const value = 12;
-      _.tester.createElement(SHADOW);
+      _.tester.bootstrapElement(SHADOW);
 
       $shadowIntegerValue$.get(_.tester.vine).next(value);
       $shadowIntegerValue$.get(_.tester.vine).next(null);

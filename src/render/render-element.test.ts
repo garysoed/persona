@@ -85,7 +85,7 @@ test('@persona/src/render/render-element', init => {
   });
 
   should('emit the custom element', () => {
-    const element = _.tester.createElement(HOST);
+    const element = _.tester.bootstrapElement(HOST);
     $spec.get(_.tester.vine).next(renderElement({
       registration: CHILD,
       spec: {},
@@ -99,7 +99,7 @@ test('@persona/src/render/render-element', init => {
   });
 
   should('update the inputs', () => {
-    const element = _.tester.createElement(HOST);
+    const element = _.tester.bootstrapElement(HOST);
     $spec.get(_.tester.vine).next(renderElement({
       registration: CHILD,
       spec: {},
@@ -113,7 +113,7 @@ test('@persona/src/render/render-element', init => {
   });
 
   should('work with DOM elements', () => {
-    const element = _.tester.createElement(HOST);
+    const element = _.tester.bootstrapElement(HOST);
     $spec.get(_.tester.vine).next(renderElement({
       registration: BUTTON,
       spec: {

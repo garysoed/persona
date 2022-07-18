@@ -88,7 +88,7 @@ test('@persona/src/input/flag', init => {
 
   test('host', () => {
     should('emit values on sets', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       element.setAttribute('attr', '');
       element.removeAttribute('attr');
 
@@ -98,7 +98,7 @@ test('@persona/src/input/flag', init => {
 
   test('el', () => {
     should('update values correctly', () => {
-      const rootEl = _.tester.createElement(HOST);
+      const rootEl = _.tester.bootstrapElement(HOST);
       const element = getHarness(rootEl, '#el', ElementHarness).target;
       element.setAttribute('attr', '');
       element.removeAttribute('attr');
@@ -109,7 +109,7 @@ test('@persona/src/input/flag', init => {
 
   test('shadow', () => {
     should('emit values on set', () => {
-      _.tester.createElement(SHADOW);
+      _.tester.bootstrapElement(SHADOW);
 
       $shadowValue$.get(_.tester.vine).next(true);
       $shadowValue$.get(_.tester.vine).next(false);

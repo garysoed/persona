@@ -52,7 +52,7 @@ test('@persona/src/output/style', init => {
 
   test('el', () => {
     should('set the style correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element).to.matchSnapshot('style__el_empty.html');
 

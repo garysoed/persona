@@ -81,7 +81,7 @@ test('@persona/src/output/event', init => {
 
   test('host', () => {
     should('update values correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       const event$ = createSpyObservable(fromEvent(element, EVENT_NAME));
       const event = new CustomEvent(EVENT_NAME);
@@ -93,7 +93,7 @@ test('@persona/src/output/event', init => {
 
   test('shadow', () => {
     should('update values correctly', () => {
-      _.tester.createElement(SHADOW);
+      _.tester.bootstrapElement(SHADOW);
       const event = new CustomEvent(EVENT_NAME);
 
       $hostValue$.get(_.tester.vine).next(event);

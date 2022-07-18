@@ -51,7 +51,7 @@ test('@persona/src/html/line', init => {
   });
 
   should('render the line correctly', () => {
-    const element = _.tester.createElement(TEST);
+    const element = _.tester.bootstrapElement(TEST);
     $renderSpec$.get(_.tester.vine).next(renderElement({
       registration: LINE,
       spec: {},

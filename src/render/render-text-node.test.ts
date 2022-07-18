@@ -54,7 +54,7 @@ test('@persona/src/render/render-text-node', init => {
   });
 
   should('emit the text node', () => {
-    const element = _.tester.createElement(HOST);
+    const element = _.tester.bootstrapElement(HOST);
 
     const textContent = 'textContent';
     $text.get(_.tester.vine).next(textContent);

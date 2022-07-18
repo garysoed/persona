@@ -59,7 +59,7 @@ test('@persona/src/input/text', init => {
 
   test('host', () => {
     should('emit values on sets', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const text = 'text';
       element.textContent = text;
       triggerFakeMutation(element, {});
@@ -70,7 +70,7 @@ test('@persona/src/input/text', init => {
 
   test('el', () => {
     should('emit values on sets', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const text = 'text';
       const div = getHarness(element, '#div', ElementHarness).target;
       div.textContent = text;

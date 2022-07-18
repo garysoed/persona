@@ -55,7 +55,7 @@ test('@persona/src/input/target', init => {
 
   test('el', () => {
     should('update values correctly', () => {
-      const rootEl = _.tester.createElement(HOST);
+      const rootEl = _.tester.bootstrapElement(HOST);
       const element = getHarness(rootEl, '#el', ElementHarness).target;
 
       assert($elValue$.get(_.tester.vine)).to.emitSequence([element]);

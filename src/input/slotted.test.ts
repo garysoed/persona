@@ -51,7 +51,7 @@ test('@persona/src/input/attr', init => {
 
   test('el', () => {
     should('emit values on sets', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const newNode = document.createTextNode('text');
       getHarness(element, '#slot', SlotHarness).simulateSlotChange(element => {
         element.appendChild(newNode);

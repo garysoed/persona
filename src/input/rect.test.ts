@@ -54,7 +54,7 @@ test('@persona/src/input/rect', init => {
 
   test('el', () => {
     should('update values correctly', () => {
-      const rootEl = _.tester.createElement(HOST);
+      const rootEl = _.tester.bootstrapElement(HOST);
       const harness = getHarness(rootEl, '#el', ElementHarness);
 
       const newRect = new DOMRect(1, 2, 3, 4);

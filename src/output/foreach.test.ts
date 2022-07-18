@@ -95,7 +95,7 @@ test('@persona/src/output/foreach', init => {
 
   test('root', _, () => {
     should('process \'init\' correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       $rootValue$.get(_.tester.vine).next(['div1', 'div2', 'div3']);
 
@@ -103,7 +103,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for index 0', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -117,7 +117,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for index 2', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -130,7 +130,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for large index', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -143,7 +143,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'delete\' correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -155,7 +155,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('ignore node insertions with the same id', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div1';
 
@@ -166,7 +166,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('handle deleting duplicates', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node = 'div';
       $rootValue$.get(_.tester.vine).next([node, node]);
 
@@ -176,7 +176,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('replace the element correctly for \'set\'', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -197,7 +197,7 @@ test('@persona/src/output/foreach', init => {
         return renderNode({node});
       };
 
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const id = 'div';
 
       $rootValue$.get(_.tester.vine).next([id]);
@@ -210,7 +210,7 @@ test('@persona/src/output/foreach', init => {
 
   test('root slotless', _, () => {
     should('process \'init\' correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       $rootSlotlessValue$.get(_.tester.vine).next(['div1', 'div2', 'div3']);
 
@@ -218,7 +218,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for index 0', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -232,7 +232,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for index 2', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -245,7 +245,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for large index', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -258,7 +258,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'delete\' correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -270,7 +270,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('ignore node insertions with the same id', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div1';
 
@@ -281,7 +281,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('handle deleting duplicates', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node = 'div';
       $rootSlotlessValue$.get(_.tester.vine).next([node, node]);
 
@@ -291,7 +291,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('replace the element correctly for \'set\'', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -312,7 +312,7 @@ test('@persona/src/output/foreach', init => {
         return renderNode({node});
       };
 
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const id = 'div';
 
       $rootSlotlessValue$.get(_.tester.vine).next([id]);
@@ -325,7 +325,7 @@ test('@persona/src/output/foreach', init => {
 
   test('el', () => {
     should('process \'init\' correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -336,7 +336,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for index 0', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -350,7 +350,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for index 2', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -363,7 +363,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for large index', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -376,7 +376,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'delete\' correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -388,7 +388,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('ignore node insertions with the same id', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div1';
 
@@ -399,7 +399,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('handle deleting duplicates', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node = 'div';
       $elValue$.get(_.tester.vine).next([node, node]);
 
@@ -409,7 +409,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('replace the element correctly for \'set\'', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -430,7 +430,7 @@ test('@persona/src/output/foreach', init => {
         return renderNode({node});
       };
 
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const id = 'div';
 
       $elValue$.get(_.tester.vine).next([id]);
@@ -443,7 +443,7 @@ test('@persona/src/output/foreach', init => {
 
   test('el slotless', () => {
     should('process \'init\' correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -454,7 +454,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for index 0', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -468,7 +468,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for index 2', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -481,7 +481,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for large index', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -494,7 +494,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'delete\' correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -506,7 +506,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('ignore node insertions with the same id', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div1';
 
@@ -517,7 +517,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('handle deleting duplicates', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node = 'div';
       $elSlotlessValue$.get(_.tester.vine).next([node, node]);
 
@@ -527,7 +527,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('replace the element correctly for \'set\'', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -548,7 +548,7 @@ test('@persona/src/output/foreach', init => {
         return renderNode({node});
       };
 
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const id = 'div';
 
       $elSlotlessValue$.get(_.tester.vine).next([id]);
@@ -561,7 +561,7 @@ test('@persona/src/output/foreach', init => {
 
   test('withId', _, () => {
     should('process \'init\' correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       $withIdValue$.get(_.tester.vine).next([['div1'], ['div2'], ['div3']]);
 
@@ -569,7 +569,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for index 0', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -595,7 +595,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for index 2', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -608,7 +608,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'insert\' correctly for large index', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -621,7 +621,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('process \'delete\' correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -633,7 +633,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('ignore node insertions with the same id', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div1';
 
@@ -644,7 +644,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('handle deleting duplicates', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node = 'div';
       $withIdValue$.get(_.tester.vine).next([[node], [node]]);
 
@@ -654,7 +654,7 @@ test('@persona/src/output/foreach', init => {
     });
 
     should('replace the element correctly for \'set\'', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
       const node3 = 'div3';
@@ -675,7 +675,7 @@ test('@persona/src/output/foreach', init => {
         return renderNode({node});
       };
 
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       const id = 'div';
 
       $withIdValue$.get(_.tester.vine).next([[id]]);

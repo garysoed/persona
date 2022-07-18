@@ -60,7 +60,7 @@ test('@persona/src/render/render-string', init => {
   });
 
   should('emit the parse result', () => {
-    const element = _.tester.createElement(HOST);
+    const element = _.tester.bootstrapElement(HOST);
 
     $spec.get(_.tester.vine).next(renderString({
       raw: of('<div></div>'),

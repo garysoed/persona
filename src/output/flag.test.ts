@@ -87,7 +87,7 @@ test('@persona/src/output/flag', init => {
 
   test('host', () => {
     should('update values correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element.hasAttribute('has-attr')).to.beFalse();
 
@@ -101,7 +101,7 @@ test('@persona/src/output/flag', init => {
 
   test('el', () => {
     should('update values correctly', () => {
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
 
       assert(element).to.matchSnapshot('flag__el_empty.html');
 
@@ -115,7 +115,7 @@ test('@persona/src/output/flag', init => {
 
   test('shadow', () => {
     should('update values correctly', () => {
-      _.tester.createElement(SHADOW);
+      _.tester.bootstrapElement(SHADOW);
 
       $hostValue$.get(_.tester.vine).next(true);
       assert($shadowValue$.get(_.tester.vine)).to.emitSequence([false, true]);

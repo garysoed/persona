@@ -86,7 +86,7 @@ test('@persona/src/input/call', init => {
   test('host', () => {
     should('emit values on calls', () => {
       const value = 2;
-      const element = _.tester.createElement(HOST);
+      const element = _.tester.bootstrapElement(HOST);
       element.callFn(value);
 
       assert($hostValue$.get(_.tester.vine)).to.emitSequence([value]);
@@ -96,7 +96,7 @@ test('@persona/src/input/call', init => {
   test('shadow', () => {
     should('emit values on calls', () => {
       const value = 2;
-      _.tester.createElement(SHADOW);
+      _.tester.bootstrapElement(SHADOW);
       $shadowValue$.get(_.tester.vine).next(value);
 
       assert($hostValue$.get(_.tester.vine)).to.emitSequence([value]);
