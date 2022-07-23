@@ -34,11 +34,11 @@ class HostCtrl implements Ctrl {
     return [
       $value.get(this.$.vine).pipe(
           map(value => [value]),
-          this.$.shadow.el.value(value => {
+          this.$.shadow.el.value(map(value => {
             return renderFragment({
               nodes: value.map(text => renderTextNode({textContent: of(text)})),
             });
-          }),
+          })),
       ),
     ];
   }

@@ -33,7 +33,6 @@ export enum ApiType {
 }
 
 export type RenderValueFn<T> = OperatorFunction<T, RenderSpec|null>;
-export type RenderValuesFn<T> = (value: T, index: number) => RenderSpec|null;
 
 export interface ReferenceI<V, T> {
   readonly ioType: IOType.INPUT;
@@ -124,14 +123,14 @@ export interface OFlag extends ReferenceO<boolean, boolean, [], Element> {
   readonly attrName: string;
 }
 
-export interface OForeach<T> extends ReferenceO<readonly T[], readonly T[], [RenderValuesFn<T>], Target> {
+export interface OForeach<T> extends ReferenceO<readonly T[], readonly T[], [RenderValueFn<T>], Target> {
   readonly apiType: ApiType.FOREACH;
   readonly ioType: IOType.OUTPUT;
   readonly slotName: string|null;
 }
 
 export interface OForeachConfig<T> {
-  readonly render?: RenderValuesFn<T>;
+  readonly render?: RenderValueFn<T>;
   readonly getId?: (value: T) => unknown;
 }
 

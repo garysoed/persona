@@ -2,12 +2,13 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, OperatorFunction, pipe} from 'rxjs';
+import {map} from 'rxjs/operators';
 
-import {RenderSpec} from '../../export';
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
 import {renderNode} from '../render/types/render-node-spec';
+import {RenderSpec} from '../render/types/render-spec';
 import {query} from '../selector/query';
 import {root} from '../selector/root';
 import {ElementHarness} from '../testing/harness/element-harness';
@@ -57,25 +58,25 @@ class HostCtrl implements Ctrl {
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $elValue$.get(this.$.vine).pipe(
-          this.$.shadow.el.value(value => this.renderNode(value)),
+          this.$.shadow.el.value(this.renderNode()),
       ),
       $elSlotlessValue$.get(this.$.vine).pipe(
-          this.$.shadow.el.slotless(value => this.renderNode(value)),
+          this.$.shadow.el.slotless(this.renderNode()),
       ),
       $rootValue$.get(this.$.vine).pipe(
-          this.$.shadow.root.value(value => this.renderNode(value)),
+          this.$.shadow.root.value(this.renderNode()),
       ),
       $rootSlotlessValue$.get(this.$.vine).pipe(
-          this.$.shadow.root.slotless(value => this.renderNode(value)),
+          this.$.shadow.root.slotless(this.renderNode()),
       ),
       $withIdValue$.get(this.$.vine).pipe(
-          this.$.shadow.root.withId(([value]) => this.renderNode(value)),
+          this.$.shadow.root.withId(pipe(map(([value]) => value), this.renderNode())),
       ),
     ];
   }
 
-  renderNode(tag: string): RenderSpec {
-    return $renderer.get(this.$.vine).render(tag);
+  renderNode(): OperatorFunction<string, RenderSpec> {
+    return map(tag => $renderer.get(this.$.vine).render(tag));
   }
 }
 

@@ -6,7 +6,7 @@ import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
 
 import {render} from '../render/render';
 import {RenderContext} from '../render/types/render-context';
-import {ApiType, IOType, OForeach, RenderValuesFn} from '../types/io';
+import {ApiType, IOType, OForeach, RenderValueFn} from '../types/io';
 import {Target} from '../types/target';
 import {initSlot} from '../util/init-slot';
 
@@ -61,7 +61,6 @@ function getCurrentNodes(parentNode: Node, start: Node|null): readonly NodeWithI
   return [guessStart, ...getContiguousSiblingNodesWithId(guessStart)];
 }
 
-// TODO: Consolidate with applyChildren.
 export class ResolvedOForeach<T> implements OForeach<T> {
   readonly apiType = ApiType.FOREACH;
   readonly ioType = IOType.OUTPUT;
@@ -71,8 +70,8 @@ export class ResolvedOForeach<T> implements OForeach<T> {
       private readonly trackByFn: TrackByFn<T>,
   ) {}
 
-  resolve(target: Target, context: RenderContext): (renderFn: RenderValuesFn<T>) => OperatorFunction<readonly T[], readonly T[]> {
-    return (renderFn: RenderValuesFn<T>) => {
+  resolve(target: Target, context: RenderContext): (renderFn: RenderValueFn<T>) => OperatorFunction<readonly T[], readonly T[]> {
+    return (renderFn: RenderValueFn<T>) => {
       const slotEl$ = of(target).pipe(
           initSlot(this.slotName),
       );
@@ -80,9 +79,11 @@ export class ResolvedOForeach<T> implements OForeach<T> {
       return values$ => {
         const render$ = values$.pipe(
             switchMap(values => {
-              const node$list = values.map((value, index) => {
-                const spec = renderFn(value, index);
-                return (spec ? render(spec, context) : of(null)).pipe(
+              const node$list = values.map((value) => {
+                // TODO: Get rid of of().
+                return of(value).pipe(
+                    renderFn,
+                    switchMap(spec => spec ? render(spec, context) : of(null)),
                     tap(node => {
                       if (!node) {
                         return;
