@@ -2,7 +2,8 @@ import {source} from 'grapevine';
 import {assert, runEnvironment, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
-import {Observable, of, Subject} from 'rxjs';
+import {Observable, of, pipe, Subject, OperatorFunction} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
@@ -47,25 +48,25 @@ class HostCtrl implements Ctrl {
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $elSlottedValue$.get(this.$.vine).pipe(
-          this.$.shadow.el.slotted(value => this.render(value)),
+          this.$.shadow.el.slotted(this.render()),
       ),
       $elValue$.get(this.$.vine).pipe(
-          this.$.shadow.el.value(value => this.render(value)),
+          this.$.shadow.el.value(this.render()),
       ),
       $rootSlottedValue$.get(this.$.vine).pipe(
-          this.$.shadow.root.slotted(value => this.render(value)),
+          this.$.shadow.root.slotted(this.render()),
       ),
       $rootValue$.get(this.$.vine).pipe(
-          this.$.shadow.root.value(value => this.render(value)),
+          this.$.shadow.root.value(this.render()),
       ),
       $withIdValue$.get(this.$.vine).pipe(
-          this.$.shadow.root.withId(([value]) => this.render(value)),
+          this.$.shadow.root.withId(pipe(map(([value]) => value), this.render())),
       ),
     ];
   }
 
-  private render(text: string|null): RenderSpec|null {
-    return !text ? null : renderTextNode({textContent: of(text)});
+  private render(): OperatorFunction<string|null, RenderSpec|null> {
+    return map(text => !text ? null : renderTextNode({textContent: of(text)}));
   }
 }
 

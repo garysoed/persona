@@ -1,5 +1,5 @@
 import {EMPTY, merge, of, OperatorFunction} from 'rxjs';
-import {switchMapTo} from 'rxjs/operators';
+import {switchMapTo, map} from 'rxjs/operators';
 
 import {RenderContext} from '../render/types/render-context';
 import {renderTextNode} from '../render/types/render-text-node-spec';
@@ -21,9 +21,9 @@ class ResolvedOText implements OText {
     return () => {
       return value$ => {
         const render$ = value$.pipe(
-            this.caseOutput.resolve(target, context)(value => renderTextNode({
+            this.caseOutput.resolve(target, context)(map(value => renderTextNode({
               textContent: of(value),
-            })),
+            }))),
             switchMapTo(EMPTY),
         );
         return merge(render$, value$);

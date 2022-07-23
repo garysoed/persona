@@ -79,8 +79,10 @@ class ResolvedOCase<T> implements OCase<T> {
         : of(null);
 
       return value$ => {
+        const spec$ = value$.pipe(renderFn);
         const render$ = value$.pipe(
-            map(value => ({spec: renderFn(value), value})),
+            withLatestFrom(spec$),
+            map(([value, spec]) => ({spec, value})),
             switchMap(({spec, value}) => {
               if (!spec) {
                 return of(null);
@@ -104,7 +106,7 @@ class ResolvedOCase<T> implements OCase<T> {
             }),
             withLatestFrom(slotEl$),
             tap(([newNode, slotNode]) => {
-            // Flatten the new nodes
+              // Flatten the new nodes
               const flattenedNewNodes = flattenNode(newNode);
 
               // Iterate through one diff at a time, since moving nodes doesn't act like an array.

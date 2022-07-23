@@ -32,7 +32,7 @@ export enum ApiType {
   VALUE,
 }
 
-export type RenderValueFn<T> = (value: T) => RenderSpec|null;
+export type RenderValueFn<T> = OperatorFunction<T, RenderSpec|null>;
 export type RenderValuesFn<T> = (value: T, index: number) => RenderSpec|null;
 
 export interface ReferenceI<V, T> {
