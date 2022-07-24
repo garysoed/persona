@@ -1,4 +1,5 @@
-import {$filter, $first, $pipe, arrayFrom} from 'gs-tools/export/collect';
+import {$filter, $first, arrayFrom} from 'gs-tools/export/collect';
+import {$pipe} from 'gs-tools/export/typescript';
 import {OperatorFunction, pipe} from 'rxjs';
 import {map, startWith, switchMap} from 'rxjs/operators';
 

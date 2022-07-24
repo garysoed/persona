@@ -1,5 +1,6 @@
 import {Vine} from 'grapevine';
-import {$map, $pipe} from 'gs-tools/export/collect';
+import {$map} from 'gs-tools/export/collect';
+import {$pipe} from 'gs-tools/export/typescript';
 import {BehaviorSubject, combineLatest, defer, EMPTY, merge, Observable, of, Subject, timer} from 'rxjs';
 import {catchError, distinctUntilChanged, mapTo, shareReplay, switchMap} from 'rxjs/operators';
 

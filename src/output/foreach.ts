@@ -1,8 +1,9 @@
 import {arrayFrom} from 'gs-testing/src/util/flatten-node';
-import {$asArray, $asSet, $filterNonNull, $flat, $map, $pipe, diffArray} from 'gs-tools/export/collect';
+import {$asArray, $asSet, $filterNonNull, $flat, $map, diffArray} from 'gs-tools/export/collect';
+import {$pipe} from 'gs-tools/export/typescript';
 import {hasPropertiesType, instanceofType, intersectType, notType, stringType, undefinedType} from 'gs-types';
 import {combineLatest, EMPTY, merge, of, OperatorFunction} from 'rxjs';
-import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
+import {map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 
 import {render} from '../render/render';
 import {RenderContext} from '../render/types/render-context';
@@ -80,7 +81,6 @@ export class ResolvedOForeach<T> implements OForeach<T> {
         const render$ = values$.pipe(
             switchMap(values => {
               const node$list = values.map((value) => {
-                // TODO: Get rid of of().
                 return of(value).pipe(
                     renderFn,
                     switchMap(spec => spec ? render(spec, context) : of(null)),
@@ -150,7 +150,7 @@ export class ResolvedOForeach<T> implements OForeach<T> {
                 }
               }
             }),
-            switchMapTo(EMPTY),
+            switchMap(() => EMPTY),
         );
 
         return merge(values$, render$);
