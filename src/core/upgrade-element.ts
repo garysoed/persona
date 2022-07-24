@@ -26,7 +26,7 @@ export function upgradeElement(
     isConnected$: Subject<boolean>,
     vine: Vine,
 ): void {
-  const shadowRoot = createShadow(registration, element, vine);
+  const shadowRoot = createShadow(registration, element, vine, element.ownerDocument);
   createProperties(registration, element);
   createMethods(registration, element);
   createCtrl(registration, element, shadowRoot, vine, isConnected$);
@@ -170,12 +170,13 @@ function createShadow(
     registrationSpec: CustomElementRegistration<HTMLElement, Spec>,
     element: HTMLElement,
     vine: Vine,
+    document: Document,
 ): ShadowRoot {
   if (element.shadowRoot) {
     return element.shadowRoot;
   }
   const root = element.attachShadow({mode: 'open'});
-  root.appendChild($getTemplate.get(vine)(registrationSpec).content.cloneNode(true));
+  root.appendChild($getTemplate.get(vine)(registrationSpec, document).content.cloneNode(true));
   return root;
 }
 
