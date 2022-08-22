@@ -1,4 +1,4 @@
-import {assert, should, test} from 'gs-testing';
+import {assert, should, test, setup} from 'gs-testing';
 
 import {setupTest} from '../testing/setup-test';
 import {Ctrl} from '../types/ctrl';
@@ -29,8 +29,8 @@ const TEST_CLASS = registerCustomElement({
   template: '',
 });
 
-test('@persona/src/core/install-custom-elements', init => {
-  const _ = init(() => {
+test('@persona/src/core/install-custom-elements', () => {
+  const _ = setup(() => {
     const tester = setupTest({
       roots: [TEST_CLASS],
     });

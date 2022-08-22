@@ -1,5 +1,5 @@
 import {source} from 'grapevine';
-import {assert, createSpy, createSpySubject, fake, should, spy, test} from 'gs-testing';
+import {assert, createSpy, createSpySubject, fake, should, spy, test, setup} from 'gs-testing';
 import {cache} from 'gs-tools/export/data';
 import {instanceofType, numberType} from 'gs-types';
 import {fromEvent, Observable, of, Subject} from 'rxjs';
@@ -47,8 +47,8 @@ const HOST = registerCustomElement({
   template: '<div id="el"></div>',
 });
 
-test('@persona/src/output/call', init => {
-  const _ = init(() => {
+test('@persona/src/output/call', () => {
+  const _ = setup(() => {
     const tester = setupTest({roots: [HOST]});
     return {tester};
   });

@@ -1,5 +1,5 @@
 import {source} from 'grapevine';
-import {assert, runEnvironment, should, test} from 'gs-testing';
+import {assert, runEnvironment, should, test, setup} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
 import {Observable, Subject, OperatorFunction, pipe} from 'rxjs';
@@ -87,14 +87,14 @@ const HOST = registerCustomElement({
   template: '<!-- #root --><div id="el"><!-- #ref --></div><!-- #withId -->',
 });
 
-test('@persona/src/output/foreach', init => {
-  const _ = init(() => {
+test('@persona/src/output/foreach', () => {
+  const _ = setup(() => {
     runEnvironment(new BrowserSnapshotsEnv('src/output/goldens', goldens));
     const tester = setupTest({roots: [HOST]});
     return {tester};
   });
 
-  test('root', _, () => {
+  test('root', () => {
     should('process \'init\' correctly', () => {
       const element = _.tester.bootstrapElement(HOST);
 
@@ -209,7 +209,7 @@ test('@persona/src/output/foreach', init => {
     });
   });
 
-  test('root slotless', _, () => {
+  test('root slotless', () => {
     should('process \'init\' correctly', () => {
       const element = _.tester.bootstrapElement(HOST);
 
@@ -560,7 +560,7 @@ test('@persona/src/output/foreach', init => {
     });
   });
 
-  test('withId', _, () => {
+  test('withId', () => {
     should('process \'init\' correctly', () => {
       const element = _.tester.bootstrapElement(HOST);
 

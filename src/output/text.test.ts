@@ -1,5 +1,5 @@
 import {source} from 'grapevine';
-import {assert, runEnvironment, should, test} from 'gs-testing';
+import {assert, runEnvironment, should, test, setup} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
 import {Observable, Subject} from 'rxjs';
@@ -59,8 +59,8 @@ const HOST = registerCustomElement({
 });
 
 
-test('@persona/src/output/text', init => {
-  const _ = init(() => {
+test('@persona/src/output/text', () => {
+  const _ = setup(() => {
     runEnvironment(new BrowserSnapshotsEnv('src/output/goldens', goldens));
     const tester = setupTest({roots: [HOST]});
     return {tester};

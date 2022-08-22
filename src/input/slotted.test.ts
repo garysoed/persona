@@ -1,5 +1,5 @@
 import {source} from 'grapevine';
-import {arrayThat, assert, should, test} from 'gs-testing';
+import {arrayThat, assert, should, test, setup} from 'gs-testing';
 import {cache} from 'gs-tools/export/data';
 import {Observable, ReplaySubject} from 'rxjs';
 import {tap} from 'rxjs/operators';
@@ -43,8 +43,8 @@ const HOST = registerCustomElement({
 });
 
 
-test('@persona/src/input/attr', init => {
-  const _ = init(() => {
+test('@persona/src/input/attr', () => {
+  const _ = setup(() => {
     const tester = setupTest({roots: [HOST]});
     return {tester};
   });

@@ -1,4 +1,4 @@
-import {assert, objectThat, run, should, spy, test} from 'gs-testing';
+import {assert, objectThat, run, should, spy, test, setup} from 'gs-testing';
 
 import {integerParser} from '../parser/integer-parser';
 import {createFakeWindow} from '../testing/fake-window';
@@ -12,8 +12,8 @@ const SPEC = {
   pathA: fromPattern('/a/:a', {a: integerParser()}),
 };
 
-test('@persona/src/location/location-service', init => {
-  const _ = init(() => {
+test('@persona/src/location/location-service', () => {
+  const _ = setup(() => {
     const fakeWindow = createFakeWindow();
 
     const service = new LocationService(

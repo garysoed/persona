@@ -1,5 +1,5 @@
 import {source} from 'grapevine';
-import {arrayThat, assert, createSpySubject, fake, should, spy, test} from 'gs-testing';
+import {arrayThat, assert, createSpySubject, fake, should, spy, test, setup} from 'gs-testing';
 import {cache} from 'gs-tools/export/data';
 import {numberType} from 'gs-types';
 import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
@@ -74,8 +74,8 @@ const SHADOW = registerCustomElement({
 });
 
 
-test('@persona/src/input/call', init => {
-  const _ = init(() => {
+test('@persona/src/input/call', () => {
+  const _ = setup(() => {
     const tester = setupTest({
       roots: [SHADOW],
     });

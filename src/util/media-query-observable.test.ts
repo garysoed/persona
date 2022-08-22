@@ -1,14 +1,14 @@
-import {assert, should, test} from 'gs-testing';
+import {assert, should, test, setup} from 'gs-testing';
 
 import {setupTest} from '../testing/setup-test';
 
 import {mediaQueryObservable} from './media-query-observable';
 
 
-test('@persona/src/util/media-query-observable', init => {
+test('@persona/src/util/media-query-observable', () => {
   const QUERY = 'query';
 
-  const _ = init(() => {
+  const _ = setup(() => {
     const tester = setupTest({});
     return {tester};
   });

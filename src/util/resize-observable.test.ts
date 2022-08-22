@@ -1,4 +1,4 @@
-import {assert, createSpySubject, runEnvironment, should, test} from 'gs-testing';
+import {assert, createSpySubject, runEnvironment, should, test, setup} from 'gs-testing';
 
 import {dispatchResizeEvent} from '../testing/fake-resize-observer';
 import {PersonaTesterEnvironment} from '../testing/persona-tester-environment';
@@ -6,10 +6,9 @@ import {PersonaTesterEnvironment} from '../testing/persona-tester-environment';
 import {resizeObservable} from './resize-observable';
 
 
-test('@persona/src/util/resize-observable', init => {
-  init(() => {
+test('@persona/src/util/resize-observable', () => {
+  setup(() => {
     runEnvironment(new PersonaTesterEnvironment());
-    return {};
   });
 
   should('emit correctly', () => {

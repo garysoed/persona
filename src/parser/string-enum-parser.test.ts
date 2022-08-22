@@ -1,4 +1,4 @@
-import {assert, should, test} from 'gs-testing';
+import {assert, should, test, setup} from 'gs-testing';
 import {failure, success} from 'nabu';
 
 import {stringEnumParser} from './string-enum-parser';
@@ -7,8 +7,8 @@ enum Test {
   A = 'a',
 }
 
-test('@persona/src/parser/string-enum-parser', init => {
-  const _ = init(() => {
+test('@persona/src/parser/string-enum-parser', () => {
+  const _ = setup(() => {
     const converter = stringEnumParser<Test>(Test);
     return {converter};
   });

@@ -1,4 +1,4 @@
-import {assert, runEnvironment, should, test} from 'gs-testing';
+import {assert, runEnvironment, should, test, setup} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {firstValueFrom} from 'rxjs';
 
@@ -6,8 +6,8 @@ import goldens from './goldens/goldens.json';
 import {HtmlParseService, ParseType} from './html-parse-service';
 
 
-test('@persona/src/render/html-parse-service', init => {
-  const _ = init(() => {
+test('@persona/src/render/html-parse-service', () => {
+  const _ = setup(() => {
     runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));
     const service = new HtmlParseService();
     return {service};

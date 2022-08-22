@@ -1,5 +1,5 @@
 import {source} from 'grapevine';
-import {assert, should, test} from 'gs-testing';
+import {assert, should, test, setup} from 'gs-testing';
 import {cache} from 'gs-tools/export/data';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
@@ -80,8 +80,8 @@ const SHADOW = registerCustomElement({
 });
 
 
-test('@persona/src/input/flag', init => {
-  const _ = init(() => {
+test('@persona/src/input/flag', () => {
+  const _ = setup(() => {
     const tester = setupTest({roots: [SHADOW]});
     return {tester};
   });

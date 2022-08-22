@@ -1,5 +1,5 @@
 import {source} from 'grapevine';
-import {assert, runEnvironment, should, test} from 'gs-testing';
+import {assert, runEnvironment, should, test, setup} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
 import {numberType} from 'gs-types';
@@ -77,8 +77,8 @@ const HOST = registerCustomElement({
   template: '<!-- #ref -->',
 });
 
-test('@persona/src/render/render-element', init => {
-  const _ = init(() => {
+test('@persona/src/render/render-element', () => {
+  const _ = setup(() => {
     runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));
     const tester = setupTest({roots: [HOST, CHILD]});
     return {tester};

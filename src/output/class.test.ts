@@ -1,5 +1,5 @@
 import {source} from 'grapevine';
-import {assert, runEnvironment, should, test} from 'gs-testing';
+import {assert, runEnvironment, should, test, setup} from 'gs-testing';
 import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
 import {cache} from 'gs-tools/export/data';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
@@ -82,8 +82,8 @@ const SHADOW = registerCustomElement({
 });
 
 
-test('@persona/src/output/class', init => {
-  const _ = init(() => {
+test('@persona/src/output/class', () => {
+  const _ = setup(() => {
     runEnvironment(new BrowserSnapshotsEnv('src/output/goldens', goldens));
     const tester = setupTest({roots: [SHADOW]});
     return {tester};

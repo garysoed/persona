@@ -1,4 +1,4 @@
-import {assert, createSpySubject, runEnvironment, should, test} from 'gs-testing';
+import {assert, createSpySubject, runEnvironment, should, test, setup} from 'gs-testing';
 import {filter, map} from 'rxjs/operators';
 
 import {PersonaTesterEnvironment} from '../testing/persona-tester-environment';
@@ -6,10 +6,9 @@ import {PersonaTesterEnvironment} from '../testing/persona-tester-environment';
 import {mutationObservable} from './mutation-observable';
 
 
-test('@persona/src/util/mutation-observable', init => {
-  init(() => {
+test('@persona/src/util/mutation-observable', () => {
+  setup(() => {
     runEnvironment(new PersonaTesterEnvironment());
-    return {};
   });
 
   should('emit the records correctly', () => {

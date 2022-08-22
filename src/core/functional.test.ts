@@ -1,4 +1,4 @@
-import {assert, should, test} from 'gs-testing';
+import {assert, should, test, setup} from 'gs-testing';
 import {Observable} from 'rxjs';
 
 import {setupTest} from '../testing/setup-test';
@@ -19,8 +19,8 @@ const TEST_CLASS_SPEC = registerCustomElement({
   spec: {},
 });
 
-test('@persona/src/core/functional', init => {
-  const _ = init(() => {
+test('@persona/src/core/functional', () => {
+  const _ = setup(() => {
     const tester = setupTest({
       roots: [TEST_CLASS_SPEC],
     });
