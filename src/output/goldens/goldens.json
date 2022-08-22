@@ -82,6 +82,8 @@
   "style__el_value.html": "<test-host><gst-fake-shadow><div id=\"el\" style=\"height: 123px;\"></div></gst-fake-shadow></test-host>",
   "text__el-double.html": "<test-host><gst-fake-shadow>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  text</div></gst-fake-shadow></test-host>",
   "text__el.html": "<test-host><gst-fake-shadow>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  text</div></gst-fake-shadow></test-host>",
+  "text__host-double.html": "<test-host>text<gst-fake-shadow>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div></gst-fake-shadow></test-host>",
+  "text__host.html": "<test-host>text<gst-fake-shadow>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div></gst-fake-shadow></test-host>",
   "text__root-double.html": "<test-host><gst-fake-shadow>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div>text</gst-fake-shadow></test-host>",
   "text__root.html": "<test-host><gst-fake-shadow>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div>text</gst-fake-shadow></test-host>"
 }

@@ -2,7 +2,7 @@ import {source} from 'grapevine';
 import {assert, should, test, setup} from 'gs-testing';
 import {cache} from 'gs-tools/export/data';
 import {forwardTo} from 'gs-tools/export/rxjs';
-import {Observable, ReplaySubject} from 'rxjs';
+import {Observable, ReplaySubject, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
@@ -18,6 +18,7 @@ import {itext} from './text';
 
 const $hostValue$ = source(() => new ReplaySubject<string>());
 const $elValue$ = source(() => new ReplaySubject<string>());
+const $shadowValue$ = source(() => new Subject<string>());
 
 
 const $host = {
@@ -30,6 +31,7 @@ const $host = {
     }),
   },
 };
+
 
 class HostCtrl implements Ctrl {
   constructor(private readonly $: Context<typeof $host>) {}
@@ -50,10 +52,35 @@ const HOST = registerCustomElement({
   template: '<div id="div"></div>',
 });
 
+const $shadow = {
+  shadow: {
+    deps: query('#deps', HOST),
+  },
+};
+
+class ShadowCtrl implements Ctrl {
+  constructor(private readonly context: Context<typeof $shadow>) {}
+
+  @cache()
+  get runs(): ReadonlyArray<Observable<unknown>> {
+    return [
+      $shadowValue$.get(this.context.vine).pipe(this.context.shadow.deps.text()),
+    ];
+  }
+}
+
+const SHADOW = registerCustomElement({
+  tag: 'test-shadow',
+  ctrl: ShadowCtrl,
+  spec: $shadow,
+  template: '<test-host id="deps"></test-host>',
+  deps: [HOST],
+});
+
 
 test('@persona/src/input/text', () => {
   const _ = setup(() => {
-    const tester = setupTest({roots: [HOST]});
+    const tester = setupTest({roots: [HOST, SHADOW]});
     return {tester};
   });
 
@@ -77,6 +104,16 @@ test('@persona/src/input/text', () => {
       triggerFakeMutation(div, {});
 
       assert($elValue$.get(_.tester.vine)).to.emitSequence(['', text]);
+    });
+  });
+
+  test('shadow', () => {
+    should('emit values on sets', () => {
+      _.tester.bootstrapElement(SHADOW);
+      const text = 'text';
+      $shadowValue$.get(_.tester.vine).next(text);
+
+      assert($hostValue$.get(_.tester.vine)).to.emitSequence(['', text]);
     });
   });
 });

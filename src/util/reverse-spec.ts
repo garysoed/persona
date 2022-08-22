@@ -16,7 +16,7 @@ import {oflag} from '../output/flag';
 import {otext} from '../output/text';
 import {ovalue} from '../output/value';
 import {ResolvedBindingSpec} from '../types/ctrl';
-import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, ISlotted, IValue, OAttr, OCall, OClass, OEvent, OFlag, OSlotted, OValue} from '../types/io';
+import {ApiType, IAttr, ICall, IClass, IEvent, IFlag, InputOutput, IOType, ISlotted, IText, IValue, OAttr, OCall, OClass, OEvent, OFlag, OSlotted, OText, OValue} from '../types/io';
 
 
 type ReversedIO<T> =
@@ -30,6 +30,8 @@ type ReversedIO<T> =
     T extends OFlag ? IFlag :
     T extends ISlotted ? OSlotted :
     T extends OSlotted ? ISlotted :
+    T extends IText ? OText :
+    T extends OText ? IText :
     T extends IValue<infer V, infer P> ? OValue<V, P> :
     T extends OValue<infer V, infer P> ? IValue<V, P> :
     never;
