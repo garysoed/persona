@@ -164,9 +164,9 @@ function getInsertBeforeTarget(
 }
 
 type TrackByFn<T> = (value: T) => unknown;
-export function ocase<T = unknown>(trackBy?: TrackByFn<T>): ResolvedOCase<T>;
-export function ocase<T = unknown>(refName: string, trackBy?: TrackByFn<T>): ResolvedOCase<T>;
-export function ocase<T = unknown>(refOrTrackBy?: string|TrackByFn<T>, trackBy?: TrackByFn<T>): ResolvedOCase<T>  {
+export function ocase<T = never>(trackBy?: TrackByFn<T>): ResolvedOCase<T>;
+export function ocase<T = never>(refName: string, trackBy?: TrackByFn<T>): ResolvedOCase<T>;
+export function ocase<T = never>(refOrTrackBy?: string|TrackByFn<T>, trackBy?: TrackByFn<T>): ResolvedOCase<T>  {
   if (typeof refOrTrackBy === 'string') {
     return new ResolvedOCase(refOrTrackBy, trackBy ?? (value => value));
   }

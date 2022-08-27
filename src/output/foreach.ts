@@ -185,9 +185,9 @@ function getInsertBeforeTarget(
 }
 
 type TrackByFn<T> = (value: T) => unknown;
-export function oforeach<T = unknown>(trackBy?: TrackByFn<T>): ResolvedOForeach<T>;
-export function oforeach<T = unknown>(slotName: string, trackBy?: TrackByFn<T>): ResolvedOForeach<T>;
-export function oforeach<T = unknown>(slotNameOrTrackBy?: string|TrackByFn<T>, trackBy?: TrackByFn<T>): ResolvedOForeach<T> {
+export function oforeach<T = never>(trackBy?: TrackByFn<T>): ResolvedOForeach<T>;
+export function oforeach<T = never>(slotName: string, trackBy?: TrackByFn<T>): ResolvedOForeach<T>;
+export function oforeach<T = never>(slotNameOrTrackBy?: string|TrackByFn<T>, trackBy?: TrackByFn<T>): ResolvedOForeach<T> {
   if (stringType.check(slotNameOrTrackBy)) {
     return new ResolvedOForeach(slotNameOrTrackBy, trackBy ?? (value => value));
   }
