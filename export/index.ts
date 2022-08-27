@@ -28,12 +28,14 @@ export {ostyle} from '../src/output/style';
 export {otext} from '../src/output/text';
 export {ovalue} from '../src/output/value';
 
+export {AutocompleteType} from '../src/html/types/autocomplete-type';
 export {BUTTON} from '../src/html/button';
 export {CODE} from '../src/html/code';
 export {DIV} from '../src/html/div';
 export {ELEMENT_SPEC as ELEMENT} from '../src/html/element';
+export {G} from '../src/html/g';
 export {H1, H2, H3, H4, H5, H6} from '../src/html/heading';
-export {INPUT, AutocompleteType, InputType} from '../src/html/input';
+export {INPUT, InputType} from '../src/html/input';
 export {KBD} from '../src/html/keyboard';
 export {LABEL} from '../src/html/label';
 export {LINE, LineCap} from '../src/html/line';

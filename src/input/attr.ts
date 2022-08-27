@@ -62,8 +62,8 @@ class ResolvedIAttr<T> implements IAttr<T> {
 }
 
 export function iattr(attrName: string): ResolvedIAttr<string>;
-export function iattr<T>(attrName: string, converter: Converter<string, T>): ResolvedIAttr<T>;
-export function iattr<T>(attrName: string, converter?: Converter<string, T>): ResolvedIAttr<any> {
+export function iattr<T = never>(attrName: string, converter: Converter<string, T>): ResolvedIAttr<T>;
+export function iattr(attrName: string, converter?: Converter<string, unknown>): ResolvedIAttr<any> {
   if (converter) {
     return new ResolvedIAttr(attrName, converter);
   }
