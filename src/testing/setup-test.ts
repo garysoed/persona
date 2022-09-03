@@ -26,7 +26,7 @@ export class Tester {
       private readonly customElementRegistry: FakeCustomElementRegistry,
   ) { }
 
-  private addToBody(node: Node): void {
+  addToBody(node: Node): void {
     this.addedNodes.push(node);
     document.body.appendChild(node);
   }
