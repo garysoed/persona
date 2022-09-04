@@ -12,7 +12,8 @@ import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import goldens from './goldens/goldens.json';
-import {LINE, LineCap} from './line';
+import {LINE} from './line';
+import {LineCap} from './presentational-attributes';
 import {SVG} from './svg';
 
 const $renderSpec$ = source(() => new Subject<RenderSpec>());
