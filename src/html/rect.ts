@@ -18,7 +18,7 @@ export enum TextAnchor {
 }
 
 export const RECT = createDomRegistration({
-  ctor: SVGTextElement,
+  ctor: SVGRectElement,
   spec: {
     ...ELEMENT_SPEC,
     ...PRESENTATIONAL_ATTRIBUTES,

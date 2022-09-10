@@ -51,7 +51,7 @@ export {TD} from '../src/html/table-cell';
 export {TR} from '../src/html/table-row';
 export {TBODY, THEAD} from '../src/html/table-section';
 export {TEMPLATE} from '../src/html/template';
-export {TEXT} from '../src/html/text';
+export {AlignmentBaseline, TEXT, TextAnchor} from '../src/html/text';
 export {LineCap} from '../src/html/presentational-attributes';
 
 export {ParseType} from '../src/render/html-parse-service';
@@ -69,6 +69,7 @@ export {integerParser} from '../src/parser/integer-parser';
 export {Length, lengthParser} from '../src/parser/length-parser';
 export {listParser} from '../src/parser/list-parser';
 export {numberParser} from '../src/parser/number-parser';
+export {stringEnumParser} from '../src/parser/string-enum-parser';
 
 // Util
 export {customElementType} from '../src/util/custom-element-type';
