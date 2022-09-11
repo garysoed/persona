@@ -6,16 +6,6 @@ import {createDomRegistration} from './create-dom-registration';
 import {ELEMENT_SPEC} from './element';
 import {PRESENTATIONAL_ATTRIBUTES} from './presentational-attributes';
 
-export enum LengthAdjust {
-  SPACING = 'spacing',
-  SPACING_AND_GLYPH = 'spacingAndGlyphs',
-}
-
-export enum TextAnchor {
-  START = 'start',
-  MIDDLE = 'middle',
-  END = 'end',
-}
 
 export const RECT = createDomRegistration({
   ctor: SVGRectElement,

@@ -51,8 +51,12 @@ export {TD} from '../src/html/table-cell';
 export {TR} from '../src/html/table-row';
 export {TBODY, THEAD} from '../src/html/table-section';
 export {TEMPLATE} from '../src/html/template';
-export {AlignmentBaseline, TEXT, TextAnchor} from '../src/html/text';
+export {TEXT} from '../src/html/text';
+export {TSPAN} from '../src/html/tspan';
 export {LineCap} from '../src/html/presentational-attributes';
+
+export {AlignmentBaseline} from '../src/html/types/alignment-baseline';
+export {TextAnchor} from '../src/html/types/text-anchor';
 
 export {ParseType} from '../src/render/html-parse-service';
 export {RenderSpec} from '../src/render/types/render-spec';

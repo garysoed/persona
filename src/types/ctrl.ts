@@ -46,7 +46,7 @@ export type ShadowBindings<O> = {
   readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<infer S, infer T> ? Bindings<S, T> : never;
 };
 
-export interface Context<S extends Spec> {
+export interface Context<S extends Spec> extends RenderContext {
   readonly host: Bindings<S['host']&{}, HTMLElement>;
   readonly shadow: ShadowBindings<S['shadow']&{}>;
   readonly shadowRoot: ShadowRoot;

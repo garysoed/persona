@@ -13,8 +13,8 @@ import {LengthAdjust} from './types/length-adjust';
 import {TextAnchor} from './types/text-anchor';
 
 
-export const TEXT = createDomRegistration({
-  ctor: SVGTextElement,
+export const TSPAN = createDomRegistration({
+  ctor: SVGTSpanElement,
   spec: {
     ...ELEMENT_SPEC,
     ...PRESENTATIONAL_ATTRIBUTES,
@@ -30,6 +30,6 @@ export const TEXT = createDomRegistration({
     x: iattr('x', lengthParser()),
     y: iattr('y', lengthParser()),
   },
-  tag: 'text',
+  tag: 'tspan',
   namespace: ElementNamespace.SVG,
 });

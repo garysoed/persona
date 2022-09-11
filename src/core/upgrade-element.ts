@@ -48,6 +48,7 @@ function createCtrl(
   const ctrl$ = defer(() => {
     return of(new registrationSpec.ctrl({
       element,
+      document: element.ownerDocument,
       host: createBindings(registrationSpec.spec.host ?? {}, element, renderContext),
       shadow: createShadowBindingObjects(registrationSpec.spec.shadow ?? {}, shadowRoot, renderContext),
       shadowRoot,
