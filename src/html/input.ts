@@ -1,5 +1,6 @@
 import {iattr} from '../input/attr';
 import {iflag} from '../input/flag';
+import {numberParser} from '../parser/number-parser';
 import {stringEnumParser} from '../parser/string-enum-parser';
 import {ElementNamespace} from '../types/registration';
 
@@ -22,9 +23,9 @@ export const INPUT = createDomRegistration({
     autocomplete: iattr('autocomplete', stringEnumParser<AutocompleteType>(AutocompleteType)),
     autofocus: iflag('autofocus'),
     disabled: iflag('disabled'),
-    max: iattr('max'),
-    min: iattr('min'),
-    step: iattr('step'),
+    max: iattr('max', numberParser()),
+    min: iattr('min', numberParser()),
+    step: iattr('step', numberParser()),
     type: iattr('type'),
   },
   tag: 'input',
