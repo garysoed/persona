@@ -33,6 +33,7 @@ export {BUTTON} from '../src/html/button';
 export {CODE} from '../src/html/code';
 export {DIV} from '../src/html/div';
 export {ELEMENT_SPEC as ELEMENT} from '../src/html/element';
+export {FOREIGN_OBJECT} from '../src/html/foreign-object';
 export {G} from '../src/html/g';
 export {H1, H2, H3, H4, H5, H6} from '../src/html/heading';
 export {INPUT, InputType} from '../src/html/input';
