@@ -4,3 +4,4 @@ export {IAttr, ICall, IEvent, IFlag, IValue, OEvent, OStyle, OValue, RenderValue
 export {Target} from '../src/types/target';
 export {RenderContext} from '../src/render/types/render-context';
 export {ElementNamespace} from '../src/types/registration';
+export {render} from '../src/render/render';
