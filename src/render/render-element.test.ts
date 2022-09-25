@@ -26,7 +26,7 @@ const $child = {
   host: {
     a: iattr('a'),
     b: iflag('b'),
-    c: ovalue('c', numberType, DEFAULT_C),
+    c: ovalue('c', numberType, () => DEFAULT_C),
   },
 };
 

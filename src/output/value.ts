@@ -12,7 +12,7 @@ class ResolvedOValue<T, P extends string> implements OValue<T, P> {
   readonly ioType = IOType.OUTPUT;
 
   constructor(
-      readonly defaultValue: T,
+      readonly defaultValueProvider: () => T,
       readonly key: P,
       readonly valueType: Type<T>,
   ) {}
@@ -38,16 +38,16 @@ class ResolvedOValue<T, P extends string> implements OValue<T, P> {
 export function ovalue<T, P extends string>(
     key: P,
     valueType: Type<T>,
-    startValue: T,
+    defaultValueProvider: () => T,
 ): ResolvedOValue<T, P>;
 export function ovalue<T, P extends string>(
     key: P,
     valueType: Type<T>,
 ): ResolvedOValue<T|undefined, P>;
-export function ovalue(key: string, valueType: Type<unknown>, defaultValue?: unknown): ResolvedOValue<unknown, string> {
-  if (defaultValue !== undefined) {
-    return new ResolvedOValue(defaultValue, key, valueType);
+export function ovalue(key: string, valueType: Type<unknown>, defaultValueProvider?: () => unknown): ResolvedOValue<unknown, string> {
+  if (defaultValueProvider !== undefined) {
+    return new ResolvedOValue(defaultValueProvider, key, valueType);
   }
 
-  return new ResolvedOValue(defaultValue, key, unionType([valueType, undefinedType]));
+  return new ResolvedOValue(() => undefined, key, unionType([valueType, undefinedType]));
 }

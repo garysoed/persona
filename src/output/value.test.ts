@@ -24,7 +24,7 @@ const DEFAULT_VALUE = 3;
 const $host = {
   host: {
     value: ovalue('valueProp', numberType),
-    valueWithDefault: ovalue('valueWithDefaultProp', numberType, DEFAULT_VALUE),
+    valueWithDefault: ovalue('valueWithDefaultProp', numberType, () => DEFAULT_VALUE),
   },
 };
 

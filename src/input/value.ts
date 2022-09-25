@@ -12,7 +12,7 @@ class ResolvedIValue<T, P extends string> implements IValue<T, P> {
   readonly ioType = IOType.INPUT;
 
   constructor(
-      readonly defaultValue: T,
+      readonly defaultValueProvider: () => T,
       readonly key: P,
       readonly valueType: Type<T>,
   ) {}
@@ -43,16 +43,16 @@ class ResolvedIValue<T, P extends string> implements IValue<T, P> {
 export function ivalue<T, P extends string>(
     key: P,
     valueType: Type<T>,
-    defaultValue: T,
+    defaultValueProvider: () => T,
 ): ResolvedIValue<T, P>;
 export function ivalue<T, P extends string>(
     key: P,
     valueType: Type<T>,
 ): ResolvedIValue<T|undefined, P>;
-export function ivalue(key: string, valueType: Type<unknown>, defaultValue?: unknown): ResolvedIValue<unknown, string> {
-  if (defaultValue !== undefined) {
-    return new ResolvedIValue(defaultValue, key, valueType);
+export function ivalue(key: string, valueType: Type<unknown>, defaultValueProvider?: () => unknown): ResolvedIValue<unknown, string> {
+  if (defaultValueProvider !== undefined) {
+    return new ResolvedIValue(defaultValueProvider, key, valueType);
   }
 
-  return new ResolvedIValue(defaultValue, key, unionType([valueType, undefinedType]));
+  return new ResolvedIValue(() => undefined, key, unionType([valueType, undefinedType]));
 }

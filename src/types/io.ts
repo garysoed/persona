@@ -192,7 +192,7 @@ export interface OText extends ReferenceO<string, string, [], Target> {
 export interface IValue<T, P extends string> extends ReferenceI<T, Element> {
   readonly apiType: ApiType.VALUE;
   readonly ioType: IOType.INPUT;
-  readonly defaultValue: T;
+  readonly defaultValueProvider: () => T;
   readonly key: P;
   readonly valueType: Type<T>;
 }
@@ -202,7 +202,7 @@ export interface OValue<T, P extends string> extends ReferenceO<T, T, [], Elemen
   readonly ioType: IOType.OUTPUT;
   readonly valueType: Type<T>;
   readonly key: P;
-  readonly defaultValue: T;
+  readonly defaultValueProvider: () => T;
 }
 
 export type Resolver = (host: HTMLElement) => HTMLElement;

@@ -127,9 +127,9 @@ function reverseIO(io: InputOutput): InputOutput {
     case ApiType.VALUE:
       switch (io.ioType) {
         case IOType.INPUT:
-          return ovalue(io.key, io.valueType, io.defaultValue);
+          return ovalue(io.key, io.valueType, io.defaultValueProvider);
         case IOType.OUTPUT:
-          return ivalue(io.key, io.valueType, io.defaultValue);
+          return ivalue(io.key, io.valueType, io.defaultValueProvider);
       }
   }
 }

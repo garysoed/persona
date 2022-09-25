@@ -133,7 +133,7 @@ function createProperties(
       continue;
     }
 
-    const value$ = new BehaviorSubject<unknown>(io.defaultValue);
+    const value$ = new BehaviorSubject<unknown>(io.defaultValueProvider());
     descriptor[io.key] = createDescriptorForProperty(io, value$);
     setValueObservable(element, io.key, value$);
   }

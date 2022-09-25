@@ -25,7 +25,7 @@ const VALUE_TYPE = unionType([numberType, nullType]);
 const $host = {
   host: {
     value: ivalue('valueProp', VALUE_TYPE),
-    valueWithDefault: ivalue('valueWithDefaultProp', VALUE_TYPE, DEFAULT_VALUE),
+    valueWithDefault: ivalue('valueWithDefaultProp', VALUE_TYPE, () => DEFAULT_VALUE),
   },
 };
 
