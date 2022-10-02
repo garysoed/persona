@@ -1,5 +1,4 @@
 import {cache} from 'gs-tools/export/data';
-import {Runnable} from 'gs-tools/export/rxjs';
 import {Result} from 'nabu';
 import {fromEvent, fromEventPattern, merge, Observable, Subject} from 'rxjs';
 import {map, startWith, tap} from 'rxjs/operators';
@@ -20,16 +19,14 @@ export interface Route<S extends RouteSpec, K extends keyof S> {
   readonly type: K;
 }
 
-export class LocationService<S extends RouteSpec> extends Runnable {
+export class LocationService<S extends RouteSpec> {
   private readonly onPushState$: Subject<unknown> = new Subject();
 
   constructor(
       private readonly specs: S,
       private readonly defaultRoute: Route<S, keyof S>,
       private readonly windowObj: Window,
-  ) {
-    super();
-  }
+  ) {}
 
   @cache()
   get location$(): Observable<Route<S, keyof S>> {

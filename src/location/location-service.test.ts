@@ -21,7 +21,6 @@ test('@persona/src/location/location-service', () => {
         {payload: {}, type: 'default'},
         fakeWindow,
     );
-    run(service.run());
     return {service, fakeWindow};
   });
 
