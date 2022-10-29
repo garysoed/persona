@@ -21,7 +21,7 @@ import {ExtraHtmlBindings, ExtraSpec, RenderStringSpec} from './types/render-str
  * @thModule render
  */
 export function renderString<T extends ParseType>(
-    spec: RenderStringSpec<T, ExtraSpec<ElementForType<T>>>,
+    spec: RenderStringSpec<T, ExtraSpec>,
     context: RenderContext,
 ): Observable<ElementForType<T>|null> {
   const service = $htmlParseService.get(context.vine);
@@ -52,7 +52,7 @@ export function renderString<T extends ParseType>(
 }
 
 // TODO: Consolidate this with the one for shadow in in upgrade-element.
-function createExtraBindingObjects<O extends ExtraSpec<any>>(
+function createExtraBindingObjects<O extends ExtraSpec>(
     spec: O,
     target: Element,
     context: RenderContext,

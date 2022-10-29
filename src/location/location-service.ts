@@ -1,3 +1,4 @@
+import {WindowLike} from 'gs-testing/export/fake';
 import {cache} from 'gs-tools/export/data';
 import {Result} from 'nabu';
 import {fromEvent, fromEventPattern, merge, Observable, Subject} from 'rxjs';
@@ -25,7 +26,7 @@ export class LocationService<S extends RouteSpec> {
   constructor(
       private readonly specs: S,
       private readonly defaultRoute: Route<S, keyof S>,
-      private readonly windowObj: Window,
+      private readonly windowObj: WindowLike,
   ) {}
 
   @cache()
