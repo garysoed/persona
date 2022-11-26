@@ -81,7 +81,7 @@ export function setupTest(spec: TestSpec): Tester {
   function createElementNS(namespaceURI: string|null, tag: string): Element {
     return origCreateElementNS.call(document, namespaceURI, tag);
   }
-  fake(spy(document, 'createElementNS'))
+  fake(spy(Document.prototype, 'createElementNS'))
       .always().call((namespace, tag) => {
         try {
           return customElementRegistry.create(namespace, tag);
