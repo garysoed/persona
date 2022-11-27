@@ -1,5 +1,4 @@
-import {arrayFrom} from 'gs-testing/src/util/flatten-node';
-import {$asArray, $asSet, $filterNonNull, $flat, $map, diffArray} from 'gs-tools/export/collect';
+import {$asArray, $asSet, $filterNonNull, $flat, $map, diffArray, arrayFrom} from 'gs-tools/export/collect';
 import {$pipe} from 'gs-tools/export/typescript';
 import {hasPropertiesType, instanceofType, intersectType, notType, stringType, undefinedType} from 'gs-types';
 import {combineLatest, EMPTY, merge, of, OperatorFunction} from 'rxjs';
@@ -117,7 +116,7 @@ export class ResolvedOForeach<T> implements OForeach<T> {
                       return [node];
                     }
 
-                    return arrayFrom(node.childNodes);
+                    return arrayFrom<Node>(node.childNodes);
                   }),
                   $flat(),
                   $asArray(),
