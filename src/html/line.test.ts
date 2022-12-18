@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {Observable, Subject, of} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
@@ -68,6 +68,6 @@ test('@persona/src/html/line', () => {
         of(5).pipe($.strokeWidth()),
       ],
     }));
-    assert(element).to.matchSnapshot('line.html');
+    assert(snapshotElement(element)).to.match('line.golden');
   });
 });
