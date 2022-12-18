@@ -6,6 +6,7 @@ export {InputHarness} from '../src/testing/harness/input-harness';
 export {SlotHarness} from '../src/testing/harness/slot-harness';
 export {windowHarness} from '../src/testing/harness/window-harness';
 export {setupTest, TestSpec, Tester} from '../src/testing/setup-test';
+export {triggerFakeMutation} from '../src/testing/fake-mutation-observer';
 
 export {FakeCustomElementRegistry} from '../src/testing/fake-custom-element-registry';
 export {PersonaTesterEnvironment} from '../src/testing/persona-tester-environment';
