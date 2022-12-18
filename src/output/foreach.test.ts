@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {cache} from 'gs-tools/export/data';
 import {Observable, Subject, OperatorFunction, pipe} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -100,7 +100,7 @@ test('@persona/src/output/foreach', () => {
 
       $rootValue$.get(_.tester.vine).next(['div1', 'div2', 'div3']);
 
-      assert(element).to.matchSnapshot('foreach__root_init.html');
+      assert(snapshotElement(element)).to.match('foreach__root_init.golden');
     });
 
     should('process \'insert\' correctly for index 0', () => {
@@ -114,7 +114,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $rootValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
 
-      assert(element).to.matchSnapshot('foreach__root_insert_start.html');
+      assert(snapshotElement(element)).to.match('foreach__root_insert_start.golden');
     });
 
     should('process \'insert\' correctly for index 2', () => {
@@ -127,7 +127,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $rootValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
 
-      assert(element).to.matchSnapshot('foreach__root_insert_middle.html');
+      assert(snapshotElement(element)).to.match('foreach__root_insert_middle.golden');
     });
 
     should('process \'insert\' correctly for large index', () => {
@@ -140,7 +140,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $rootValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
 
-      assert(element).to.matchSnapshot('foreach__root_insert_end.html');
+      assert(snapshotElement(element)).to.match('foreach__root_insert_end.golden');
     });
 
     should('process \'delete\' correctly', () => {
@@ -152,7 +152,7 @@ test('@persona/src/output/foreach', () => {
 
       $rootValue$.get(_.tester.vine).next([node1, node3]);
 
-      assert(element).to.matchSnapshot('foreach__root_delete.html');
+      assert(snapshotElement(element)).to.match('foreach__root_delete.golden');
     });
 
     should('ignore node insertions with the same id', () => {
@@ -163,7 +163,7 @@ test('@persona/src/output/foreach', () => {
       $rootValue$.get(_.tester.vine).next([node1]);
       $rootValue$.get(_.tester.vine).next([node2]);
 
-      assert(element).to.matchSnapshot('foreach__root_same_id.html');
+      assert(snapshotElement(element)).to.match('foreach__root_same_id.golden');
     });
 
     should('handle deleting duplicates', () => {
@@ -173,7 +173,7 @@ test('@persona/src/output/foreach', () => {
 
       $rootValue$.get(_.tester.vine).next([]);
 
-      assert(element).to.matchSnapshot('foreach__root_delete_duplicate.html');
+      assert(snapshotElement(element)).to.match('foreach__root_delete_duplicate.golden');
     });
 
     should('replace the element correctly for \'set\'', () => {
@@ -186,7 +186,7 @@ test('@persona/src/output/foreach', () => {
       const setNode = 'div0';
       $rootValue$.get(_.tester.vine).next([setNode, node2, node3]);
 
-      assert(element).to.matchSnapshot('foreach__root_set.html');
+      assert(snapshotElement(element)).to.match('foreach__root_set.golden');
     });
 
     should('handle insertion and deletions of renders with multiple nodes', () => {
@@ -202,10 +202,10 @@ test('@persona/src/output/foreach', () => {
       const id = 'div';
 
       $rootValue$.get(_.tester.vine).next([id]);
-      assert(element).to.matchSnapshot('foreach__root_multi_insert.html');
+      assert(snapshotElement(element)).to.match('foreach__root_multi_insert.golden');
 
       $rootValue$.get(_.tester.vine).next([]);
-      assert(element).to.matchSnapshot('foreach__root_multi_delete.html');
+      assert(snapshotElement(element)).to.match('foreach__root_multi_delete.golden');
     });
   });
 
@@ -215,7 +215,7 @@ test('@persona/src/output/foreach', () => {
 
       $rootSlotlessValue$.get(_.tester.vine).next(['div1', 'div2', 'div3']);
 
-      assert(element).to.matchSnapshot('foreach__root_slotless_init.html');
+      assert(snapshotElement(element)).to.match('foreach__root_slotless_init.golden');
     });
 
     should('process \'insert\' correctly for index 0', () => {
@@ -229,7 +229,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $rootSlotlessValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
 
-      assert(element).to.matchSnapshot('foreach__root_slotless_insert_start.html');
+      assert(snapshotElement(element)).to.match('foreach__root_slotless_insert_start.golden');
     });
 
     should('process \'insert\' correctly for index 2', () => {
@@ -242,7 +242,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $rootSlotlessValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
 
-      assert(element).to.matchSnapshot('foreach__root_slotless_insert_middle.html');
+      assert(snapshotElement(element)).to.match('foreach__root_slotless_insert_middle.golden');
     });
 
     should('process \'insert\' correctly for large index', () => {
@@ -255,7 +255,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $rootSlotlessValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
 
-      assert(element).to.matchSnapshot('foreach__root_slotless_insert_end.html');
+      assert(snapshotElement(element)).to.match('foreach__root_slotless_insert_end.golden');
     });
 
     should('process \'delete\' correctly', () => {
@@ -267,7 +267,7 @@ test('@persona/src/output/foreach', () => {
 
       $rootSlotlessValue$.get(_.tester.vine).next([node1, node3]);
 
-      assert(element).to.matchSnapshot('foreach__root_slotless_delete.html');
+      assert(snapshotElement(element)).to.match('foreach__root_slotless_delete.golden');
     });
 
     should('ignore node insertions with the same id', () => {
@@ -278,7 +278,7 @@ test('@persona/src/output/foreach', () => {
       $rootSlotlessValue$.get(_.tester.vine).next([node1]);
       $rootSlotlessValue$.get(_.tester.vine).next([node2]);
 
-      assert(element).to.matchSnapshot('foreach__root_slotless_same_id.html');
+      assert(snapshotElement(element)).to.match('foreach__root_slotless_same_id.golden');
     });
 
     should('handle deleting duplicates', () => {
@@ -288,7 +288,7 @@ test('@persona/src/output/foreach', () => {
 
       $rootSlotlessValue$.get(_.tester.vine).next([]);
 
-      assert(element).to.matchSnapshot('foreach__root_slotless_delete_duplicate.html');
+      assert(snapshotElement(element)).to.match('foreach__root_slotless_delete_duplicate.golden');
     });
 
     should('replace the element correctly for \'set\'', () => {
@@ -301,7 +301,7 @@ test('@persona/src/output/foreach', () => {
       const setNode = 'div0';
       $rootSlotlessValue$.get(_.tester.vine).next([setNode, node2, node3]);
 
-      assert(element).to.matchSnapshot('foreach__root_slotless_set.html');
+      assert(snapshotElement(element)).to.match('foreach__root_slotless_set.golden');
     });
 
     should('handle insertion and deletions of renders with multiple nodes', () => {
@@ -317,10 +317,10 @@ test('@persona/src/output/foreach', () => {
       const id = 'div';
 
       $rootSlotlessValue$.get(_.tester.vine).next([id]);
-      assert(element).to.matchSnapshot('foreach__root_slotless_multi_insert.html');
+      assert(snapshotElement(element)).to.match('foreach__root_slotless_multi_insert.golden');
 
       $rootSlotlessValue$.get(_.tester.vine).next([]);
-      assert(element).to.matchSnapshot('foreach__root_slotless_multi_delete.html');
+      assert(snapshotElement(element)).to.match('foreach__root_slotless_multi_delete.golden');
     });
   });
 
@@ -333,7 +333,7 @@ test('@persona/src/output/foreach', () => {
 
       $elValue$.get(_.tester.vine).next([node1, node2, node3]);
 
-      assert(element).to.matchSnapshot('foreach__el_init.html');
+      assert(snapshotElement(element)).to.match('foreach__el_init.golden');
     });
 
     should('process \'insert\' correctly for index 0', () => {
@@ -347,7 +347,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $elValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
 
-      assert(element).to.matchSnapshot('foreach__el_insert_start.html');
+      assert(snapshotElement(element)).to.match('foreach__el_insert_start.golden');
     });
 
     should('process \'insert\' correctly for index 2', () => {
@@ -360,7 +360,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $elValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
 
-      assert(element).to.matchSnapshot('foreach__el_insert_middle.html');
+      assert(snapshotElement(element)).to.match('foreach__el_insert_middle.golden');
     });
 
     should('process \'insert\' correctly for large index', () => {
@@ -373,7 +373,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $elValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
 
-      assert(element).to.matchSnapshot('foreach__el_insert_end.html');
+      assert(snapshotElement(element)).to.match('foreach__el_insert_end.golden');
     });
 
     should('process \'delete\' correctly', () => {
@@ -385,7 +385,7 @@ test('@persona/src/output/foreach', () => {
 
       $elValue$.get(_.tester.vine).next([node1, node3]);
 
-      assert(element).to.matchSnapshot('foreach__el_delete.html');
+      assert(snapshotElement(element)).to.match('foreach__el_delete.golden');
     });
 
     should('ignore node insertions with the same id', () => {
@@ -396,7 +396,7 @@ test('@persona/src/output/foreach', () => {
       $elValue$.get(_.tester.vine).next([node1]);
       $elValue$.get(_.tester.vine).next([node2]);
 
-      assert(element).to.matchSnapshot('foreach__el_same_id.html');
+      assert(snapshotElement(element)).to.match('foreach__el_same_id.golden');
     });
 
     should('handle deleting duplicates', () => {
@@ -406,7 +406,7 @@ test('@persona/src/output/foreach', () => {
 
       $elValue$.get(_.tester.vine).next([]);
 
-      assert(element).to.matchSnapshot('foreach__el_delete_duplicate.html');
+      assert(snapshotElement(element)).to.match('foreach__el_delete_duplicate.golden');
     });
 
     should('replace the element correctly for \'set\'', () => {
@@ -419,7 +419,7 @@ test('@persona/src/output/foreach', () => {
       const setNode = 'div0';
       $elValue$.get(_.tester.vine).next([setNode, node2, node3]);
 
-      assert(element).to.matchSnapshot('foreach__el_set.html');
+      assert(snapshotElement(element)).to.match('foreach__el_set.golden');
     });
 
     should('handle insertion and deletions of renders with multiple nodes', () => {
@@ -435,10 +435,10 @@ test('@persona/src/output/foreach', () => {
       const id = 'div';
 
       $elValue$.get(_.tester.vine).next([id]);
-      assert(element).to.matchSnapshot('foreach__el_multi_insert.html');
+      assert(snapshotElement(element)).to.match('foreach__el_multi_insert.golden');
 
       $elValue$.get(_.tester.vine).next([]);
-      assert(element).to.matchSnapshot('foreach__el_multi_delete.html');
+      assert(snapshotElement(element)).to.match('foreach__el_multi_delete.golden');
     });
   });
 
@@ -451,7 +451,7 @@ test('@persona/src/output/foreach', () => {
 
       $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
 
-      assert(element).to.matchSnapshot('foreach__el_slotless_init.html');
+      assert(snapshotElement(element)).to.match('foreach__el_slotless_init.golden');
     });
 
     should('process \'insert\' correctly for index 0', () => {
@@ -465,7 +465,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $elSlotlessValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
 
-      assert(element).to.matchSnapshot('foreach__el_slotless_insert_start.html');
+      assert(snapshotElement(element)).to.match('foreach__el_slotless_insert_start.golden');
     });
 
     should('process \'insert\' correctly for index 2', () => {
@@ -478,7 +478,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $elSlotlessValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
 
-      assert(element).to.matchSnapshot('foreach__el_slotless_insert_middle.html');
+      assert(snapshotElement(element)).to.match('foreach__el_slotless_insert_middle.golden');
     });
 
     should('process \'insert\' correctly for large index', () => {
@@ -491,7 +491,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
 
-      assert(element).to.matchSnapshot('foreach__el_slotless_insert_end.html');
+      assert(snapshotElement(element)).to.match('foreach__el_slotless_insert_end.golden');
     });
 
     should('process \'delete\' correctly', () => {
@@ -503,7 +503,7 @@ test('@persona/src/output/foreach', () => {
 
       $elSlotlessValue$.get(_.tester.vine).next([node1, node3]);
 
-      assert(element).to.matchSnapshot('foreach__el_slotless_delete.html');
+      assert(snapshotElement(element)).to.match('foreach__el_slotless_delete.golden');
     });
 
     should('ignore node insertions with the same id', () => {
@@ -514,7 +514,7 @@ test('@persona/src/output/foreach', () => {
       $elSlotlessValue$.get(_.tester.vine).next([node1]);
       $elSlotlessValue$.get(_.tester.vine).next([node2]);
 
-      assert(element).to.matchSnapshot('foreach__el_slotless_same_id.html');
+      assert(snapshotElement(element)).to.match('foreach__el_slotless_same_id.golden');
     });
 
     should('handle deleting duplicates', () => {
@@ -524,7 +524,7 @@ test('@persona/src/output/foreach', () => {
 
       $elSlotlessValue$.get(_.tester.vine).next([]);
 
-      assert(element).to.matchSnapshot('foreach__el_slotless_delete_duplicate.html');
+      assert(snapshotElement(element)).to.match('foreach__el_slotless_delete_duplicate.golden');
     });
 
     should('replace the element correctly for \'set\'', () => {
@@ -537,7 +537,7 @@ test('@persona/src/output/foreach', () => {
       const setNode = 'div0';
       $elSlotlessValue$.get(_.tester.vine).next([setNode, node2, node3]);
 
-      assert(element).to.matchSnapshot('foreach__el_slotless_set.html');
+      assert(snapshotElement(element)).to.match('foreach__el_slotless_set.golden');
     });
 
     should('handle insertion and deletions of renders with multiple nodes', () => {
@@ -553,10 +553,10 @@ test('@persona/src/output/foreach', () => {
       const id = 'div';
 
       $elSlotlessValue$.get(_.tester.vine).next([id]);
-      assert(element).to.matchSnapshot('foreach__el_slotless_multi_insert.html');
+      assert(snapshotElement(element)).to.match('foreach__el_slotless_multi_insert.golden');
 
       $elSlotlessValue$.get(_.tester.vine).next([]);
-      assert(element).to.matchSnapshot('foreach__el_slotless_multi_delete.html');
+      assert(snapshotElement(element)).to.match('foreach__el_slotless_multi_delete.golden');
     });
   });
 
@@ -566,7 +566,7 @@ test('@persona/src/output/foreach', () => {
 
       $withIdValue$.get(_.tester.vine).next([['div1'], ['div2'], ['div3']]);
 
-      assert(element).to.matchSnapshot('foreach__with_id_init.html');
+      assert(snapshotElement(element)).to.match('foreach__with_id_init.golden');
     });
 
     should('process \'insert\' correctly for index 0', () => {
@@ -592,7 +592,7 @@ test('@persona/src/output/foreach', () => {
       assert(node1After).to.equal(node1Before);
       assert(node2After).to.equal(node2Before);
       assert(node3After).to.equal(node3Before);
-      assert(element).to.matchSnapshot('foreach__with_id_insert_start.html');
+      assert(snapshotElement(element)).to.match('foreach__with_id_insert_start.golden');
     });
 
     should('process \'insert\' correctly for index 2', () => {
@@ -605,7 +605,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $withIdValue$.get(_.tester.vine).next([[node1], [node2], [insertNode], [node3]]);
 
-      assert(element).to.matchSnapshot('foreach__with_id_insert_middle.html');
+      assert(snapshotElement(element)).to.match('foreach__with_id_insert_middle.golden');
     });
 
     should('process \'insert\' correctly for large index', () => {
@@ -618,7 +618,7 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $withIdValue$.get(_.tester.vine).next([[node1], [node2], [node3], [insertNode]]);
 
-      assert(element).to.matchSnapshot('foreach__with_id_insert_end.html');
+      assert(snapshotElement(element)).to.match('foreach__with_id_insert_end.golden');
     });
 
     should('process \'delete\' correctly', () => {
@@ -630,7 +630,7 @@ test('@persona/src/output/foreach', () => {
 
       $withIdValue$.get(_.tester.vine).next([[node1], [node3]]);
 
-      assert(element).to.matchSnapshot('foreach__with_id_delete.html');
+      assert(snapshotElement(element)).to.match('foreach__with_id_delete.golden');
     });
 
     should('ignore node insertions with the same id', () => {
@@ -641,7 +641,7 @@ test('@persona/src/output/foreach', () => {
       $withIdValue$.get(_.tester.vine).next([[node1]]);
       $withIdValue$.get(_.tester.vine).next([[node2]]);
 
-      assert(element).to.matchSnapshot('foreach__with_id_same_id.html');
+      assert(snapshotElement(element)).to.match('foreach__with_id_same_id.golden');
     });
 
     should('handle deleting duplicates', () => {
@@ -651,7 +651,7 @@ test('@persona/src/output/foreach', () => {
 
       $withIdValue$.get(_.tester.vine).next([]);
 
-      assert(element).to.matchSnapshot('foreach__with_id_delete_duplicate.html');
+      assert(snapshotElement(element)).to.match('foreach__with_id_delete_duplicate.golden');
     });
 
     should('replace the element correctly for \'set\'', () => {
@@ -664,7 +664,7 @@ test('@persona/src/output/foreach', () => {
       const setNode = 'div0';
       $withIdValue$.get(_.tester.vine).next([[setNode], [node2], [node3]]);
 
-      assert(element).to.matchSnapshot('foreach__with_id_set.html');
+      assert(snapshotElement(element)).to.match('foreach__with_id_set.golden');
     });
 
     should('handle insertion and deletions of renders with multiple nodes', () => {
@@ -680,10 +680,10 @@ test('@persona/src/output/foreach', () => {
       const id = 'div';
 
       $withIdValue$.get(_.tester.vine).next([[id]]);
-      assert(element).to.matchSnapshot('foreach__with_id_multi_insert.html');
+      assert(snapshotElement(element)).to.match('foreach__with_id_multi_insert.golden');
 
       $withIdValue$.get(_.tester.vine).next([]);
-      assert(element).to.matchSnapshot('foreach__with_id_multi_delete.html');
+      assert(snapshotElement(element)).to.match('foreach__with_id_multi_delete.golden');
     });
   });
 });

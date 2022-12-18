@@ -1,0 +1,5 @@
+{
+  "type": "element",
+  "raw": "<test-host><gst-fake-shadow>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  </div>\n  <!-- #withId -->text</gst-fake-shadow></test-host>",
+  "name": "case__with_id_dupe"
+}

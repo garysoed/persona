@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {cache} from 'gs-tools/export/data';
 import {forwardTo} from 'gs-tools/export/rxjs';
 import {BehaviorSubject, Observable, of, ReplaySubject, Subject} from 'rxjs';
@@ -79,7 +79,7 @@ test('@persona/src/render/render-template', () => {
       },
     }));
 
-    assert(element).to.matchSnapshot('render-template__emit.html');
+    assert(snapshotElement(element)).to.match('render-template__emit.golden');
     assert(attr$).to.emitSequence(['value']);
   });
 
@@ -130,6 +130,6 @@ test('@persona/src/render/render-template', () => {
 
     text$.next('new text');
 
-    assert(element).to.matchSnapshot('render-template__update-output.html');
+    assert(snapshotElement(element)).to.match('render-template__update-output.golden');
   });
 });

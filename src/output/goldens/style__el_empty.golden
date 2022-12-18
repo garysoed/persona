@@ -1,0 +1,5 @@
+{
+  "type": "element",
+  "raw": "<test-host><gst-fake-shadow><div id=\"el\"></div></gst-fake-shadow></test-host>",
+  "name": "style__el_empty"
+}

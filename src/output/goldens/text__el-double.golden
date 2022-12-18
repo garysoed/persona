@@ -1,0 +1,5 @@
+{
+  "type": "element",
+  "raw": "<test-host><gst-fake-shadow>\n  <!-- #root -->\n  <div id=\"el\">\n    <!-- #ref -->\n    other\n  text</div></gst-fake-shadow></test-host>",
+  "name": "text__el-double"
+}

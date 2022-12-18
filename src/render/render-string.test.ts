@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {cache} from 'gs-tools/export/data';
 import {Observable, of, Subject} from 'rxjs';
 
@@ -75,6 +75,6 @@ test('@persona/src/render/render-string', () => {
       ],
     }));
 
-    assert(element).to.matchSnapshot('render-string.html');
+    assert(snapshotElement(element)).to.match('render-string.golden');
   });
 });

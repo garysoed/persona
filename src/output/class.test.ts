@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {cache} from 'gs-tools/export/data';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
@@ -107,13 +107,13 @@ test('@persona/src/output/class', () => {
     should('update values correctly', () => {
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(element).to.matchSnapshot('class__el_empty.html');
+      assert(snapshotElement(element)).to.match('class__el_empty.golden');
 
       $elValue$.get(_.tester.vine).next(true);
-      assert(element).to.matchSnapshot('class__el_value.html');
+      assert(snapshotElement(element)).to.match('class__el_value.golden');
 
       $elValue$.get(_.tester.vine).next(false);
-      assert(element).to.matchSnapshot('class__el_reset.html');
+      assert(snapshotElement(element)).to.match('class__el_reset.golden');
     });
   });
 

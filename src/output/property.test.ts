@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {cache} from 'gs-tools/export/data';
 import {Observable, Subject} from 'rxjs';
 
@@ -53,6 +53,6 @@ test('@persona/src/output/property', () => {
     const element = _.tester.bootstrapElement(HOST);
     $value$.get(_.tester.vine).next('value');
 
-    assert(element).to.matchSnapshot('property.html');
+    assert(snapshotElement(element)).to.match('property.golden');
   });
 });

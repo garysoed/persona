@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {cache} from 'gs-tools/export/data';
 import {numberType} from 'gs-types';
 import {Observable, of, Subject} from 'rxjs';
@@ -95,7 +95,7 @@ test('@persona/src/render/render-element', () => {
       ],
     }));
 
-    assert(element).to.matchSnapshot('render-element__emit.html');
+    assert(snapshotElement(element)).to.match('render-element__emit.golden');
   });
 
   should('update the inputs', () => {
@@ -109,7 +109,7 @@ test('@persona/src/render/render-element', () => {
       ],
     }));
 
-    assert(element).to.matchSnapshot('render-element__update.html');
+    assert(snapshotElement(element)).to.match('render-element__update.golden');
   });
 
   should('work with DOM elements', () => {
@@ -125,6 +125,6 @@ test('@persona/src/render/render-element', () => {
       ],
     }));
 
-    assert(element).to.matchSnapshot('render-element__dom.html');
+    assert(snapshotElement(element)).to.match('render-element__dom.golden');
   });
 });

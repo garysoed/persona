@@ -1,5 +1,5 @@
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {firstValueFrom} from 'rxjs';
 
 import goldens from './goldens/goldens.json';
@@ -23,7 +23,7 @@ test('@persona/src/render/html-parse-service', () => {
       const supportedType = ParseType.HTML;
       const result$ = _.service.parse(raw, supportedType);
       const result = await firstValueFrom(result$);
-      assert(result!).to.matchSnapshot('html-parse-service.html');
+      assert(snapshotElement(result!)).to.match('html-parse-service.golden');
 
       // Run again, should return the same instance.
       assert(_.service.parse(raw, supportedType)).to.emitWith(result);

@@ -1,0 +1,5 @@
+{
+  "type": "element",
+  "raw": "<test-host><gst-fake-shadow><!-- #ref -->textContent</gst-fake-shadow></test-host>",
+  "name": "render-text-node"
+}

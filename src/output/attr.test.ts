@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {cache} from 'gs-tools/export/data';
 import {reverse} from 'nabu';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
@@ -130,25 +130,25 @@ test('@persona/src/output/attr', () => {
       const value = 'value';
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(element).to.matchSnapshot('attr__el_empty.html');
+      assert(snapshotElement(element)).to.match('attr__el_empty.golden');
 
       $elValue$.get(_.tester.vine).next(value);
-      assert(element).to.matchSnapshot('attr__el_value.html');
+      assert(snapshotElement(element)).to.match('attr__el_value.golden');
 
       $elValue$.get(_.tester.vine).next(null);
-      assert(element).to.matchSnapshot('attr__el_reset.html');
+      assert(snapshotElement(element)).to.match('attr__el_reset.golden');
     });
 
     should('update values with custom parsers correctly', () => {
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(element).to.matchSnapshot('attr__el_integer_empty.html');
+      assert(snapshotElement(element)).to.match('attr__el_integer_empty.golden');
 
       $elIntegerValue$.get(_.tester.vine).next(12);
-      assert(element).to.matchSnapshot('attr__el_integer_value.html');
+      assert(snapshotElement(element)).to.match('attr__el_integer_value.golden');
 
       $elIntegerValue$.get(_.tester.vine).next(null);
-      assert(element).to.matchSnapshot('attr__el_integer_reset.html');
+      assert(snapshotElement(element)).to.match('attr__el_integer_reset.golden');
     });
   });
 

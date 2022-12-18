@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {cache} from 'gs-tools/export/data';
 import {Observable, Subject} from 'rxjs';
 
@@ -54,10 +54,10 @@ test('@persona/src/output/style', () => {
     should('set the style correctly', () => {
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(element).to.matchSnapshot('style__el_empty.html');
+      assert(snapshotElement(element)).to.match('style__el_empty.golden');
 
       $elValue$.get(_.tester.vine).next('123px');
-      assert(element).to.matchSnapshot('style__el_value.html');
+      assert(snapshotElement(element)).to.match('style__el_value.golden');
     });
   });
 });

@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {cache} from 'gs-tools/export/data';
 import {Observable, Subject, ReplaySubject} from 'rxjs';
 import {tap} from 'rxjs/operators';
@@ -101,7 +101,7 @@ test('@persona/src/output/text', () => {
       const element = _.tester.bootstrapElement(HOST);
       $hostValue$.get(_.tester.vine).next('text');
 
-      assert(element).to.matchSnapshot('text__host.html');
+      assert(snapshotElement(element)).to.match('text__host.golden');
     });
 
     should('set the text content correctly with multiple emissions', () => {
@@ -109,7 +109,7 @@ test('@persona/src/output/text', () => {
       $hostValue$.get(_.tester.vine).next('text');
       $hostValue$.get(_.tester.vine).next('text');
 
-      assert(element).to.matchSnapshot('text__host-double.html');
+      assert(snapshotElement(element)).to.match('text__host-double.golden');
     });
   });
 
@@ -118,7 +118,7 @@ test('@persona/src/output/text', () => {
       const element = _.tester.bootstrapElement(HOST);
       $elValue$.get(_.tester.vine).next('text');
 
-      assert(element).to.matchSnapshot('text__el.html');
+      assert(snapshotElement(element)).to.match('text__el.golden');
     });
 
     should('set the text content correctly with multiple emissions', () => {
@@ -126,7 +126,7 @@ test('@persona/src/output/text', () => {
       $elValue$.get(_.tester.vine).next('text');
       $elValue$.get(_.tester.vine).next('text');
 
-      assert(element).to.matchSnapshot('text__el-double.html');
+      assert(snapshotElement(element)).to.match('text__el-double.golden');
     });
   });
 
@@ -135,7 +135,7 @@ test('@persona/src/output/text', () => {
       const element = _.tester.bootstrapElement(HOST);
       $rootValue$.get(_.tester.vine).next('text');
 
-      assert(element).to.matchSnapshot('text__root.html');
+      assert(snapshotElement(element)).to.match('text__root.golden');
     });
 
     should('set the text content correctly with multiple emissions', () => {
@@ -143,7 +143,7 @@ test('@persona/src/output/text', () => {
       $rootValue$.get(_.tester.vine).next('text');
       $rootValue$.get(_.tester.vine).next('text');
 
-      assert(element).to.matchSnapshot('text__root-double.html');
+      assert(snapshotElement(element)).to.match('text__root-double.golden');
     });
   });
 

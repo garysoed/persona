@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {cache} from 'gs-tools/export/data';
 import {Observable, of, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -60,6 +60,6 @@ test('@persona/src/render/render-text-node', () => {
     const textContent = 'textContent';
     $text.get(_.tester.vine).next(textContent);
 
-    assert(element).to.matchSnapshot('render-text-node.html');
+    assert(snapshotElement(element)).to.match('render-text-node.golden');
   });
 });

@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {cache} from 'gs-tools/export/data';
 import {Observable, of, pipe, Subject, OperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -95,27 +95,27 @@ test('@persona/src/output/case', () => {
     should('update values correctly if unslotted', () => {
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(element).to.matchSnapshot('case__el_empty.html');
+      assert(snapshotElement(element)).to.match('case__el_empty.golden');
 
       const node = 'text';
       $elValue$.get(_.tester.vine).next(node);
-      assert(element).to.matchSnapshot('case__el_value.html');
+      assert(snapshotElement(element)).to.match('case__el_value.golden');
 
       $elValue$.get(_.tester.vine).next(null);
-      assert(element).to.matchSnapshot('case__el_reset.html');
+      assert(snapshotElement(element)).to.match('case__el_reset.golden');
     });
 
     should('update values correctly if slotted', () => {
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(element).to.matchSnapshot('case__el_slotted_empty.html');
+      assert(snapshotElement(element)).to.match('case__el_slotted_empty.golden');
 
       const node = 'text';
       $elSlottedValue$.get(_.tester.vine).next(node);
-      assert(element).to.matchSnapshot('case__el_slotted_value.html');
+      assert(snapshotElement(element)).to.match('case__el_slotted_value.golden');
 
       $elSlottedValue$.get(_.tester.vine).next(null);
-      assert(element).to.matchSnapshot('case__el_slotted_reset.html');
+      assert(snapshotElement(element)).to.match('case__el_slotted_reset.golden');
     });
   });
 
@@ -123,27 +123,27 @@ test('@persona/src/output/case', () => {
     should('update values correctly if unslotted', () => {
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(element).to.matchSnapshot('case__root_empty.html');
+      assert(snapshotElement(element)).to.match('case__root_empty.golden');
 
       const node = 'text';
       $rootValue$.get(_.tester.vine).next(node);
-      assert(element).to.matchSnapshot('case__root_value.html');
+      assert(snapshotElement(element)).to.match('case__root_value.golden');
 
       $rootValue$.get(_.tester.vine).next(null);
-      assert(element).to.matchSnapshot('case__root_reset.html');
+      assert(snapshotElement(element)).to.match('case__root_reset.golden');
     });
 
     should('update values correctly if slotted', () => {
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(element).to.matchSnapshot('case__root_slotted_empty.html');
+      assert(snapshotElement(element)).to.match('case__root_slotted_empty.golden');
 
       const node = 'text';
       $rootSlottedValue$.get(_.tester.vine).next(node);
-      assert(element).to.matchSnapshot('case__root_slotted_value.html');
+      assert(snapshotElement(element)).to.match('case__root_slotted_value.golden');
 
       $rootSlottedValue$.get(_.tester.vine).next(null);
-      assert(element).to.matchSnapshot('case__root_slotted_reset.html');
+      assert(snapshotElement(element)).to.match('case__root_slotted_reset.golden');
     });
   });
 
@@ -151,24 +151,24 @@ test('@persona/src/output/case', () => {
     should('update values correctly if unslotted', () => {
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(element).to.matchSnapshot('case__with_id_empty.html');
+      assert(snapshotElement(element)).to.match('case__with_id_empty.golden');
 
       const node = 'text';
       $withIdValue$.get(_.tester.vine).next([node]);
-      assert(element).to.matchSnapshot('case__with_id_value.html');
+      assert(snapshotElement(element)).to.match('case__with_id_value.golden');
 
       const harness = getHarness(element, ElementHarness);
       const nodeBefore = harness.target.shadowRoot!.lastChild;
 
       $withIdValue$.get(_.tester.vine).next([node]);
-      assert(element).to.matchSnapshot('case__with_id_dupe.html');
+      assert(snapshotElement(element)).to.match('case__with_id_dupe.golden');
       const nodeAfter = harness.target.shadowRoot!.lastChild;
 
       // The node must be the same.
       assert(nodeAfter).to.equal(nodeBefore);
 
       $withIdValue$.get(_.tester.vine).next([null]);
-      assert(element).to.matchSnapshot('case__with_id_reset.html');
+      assert(snapshotElement(element)).to.match('case__with_id_reset.golden');
     });
   });
 });

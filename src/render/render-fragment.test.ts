@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
 import {assert, runEnvironment, should, test, setup} from 'gs-testing';
-import {BrowserSnapshotsEnv} from 'gs-testing/export/browser';
+import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {cache} from 'gs-tools/export/data';
 import {Observable, of, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -63,13 +63,13 @@ test('@persona/src/output/render-fragment', () => {
     should('update values correctly', () => {
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(element).to.matchSnapshot('render-fragment__empty.html');
+      assert(snapshotElement(element)).to.match('render-fragment__empty.golden');
 
       $value.get(_.tester.vine).next(['one', 'two', 'three']);
-      assert(element).to.matchSnapshot('render-fragment__value.html');
+      assert(snapshotElement(element)).to.match('render-fragment__value.golden');
 
       $value.get(_.tester.vine).next([]);
-      assert(element).to.matchSnapshot('render-fragment__reset.html');
+      assert(snapshotElement(element)).to.match('render-fragment__reset.golden');
     });
   });
 });
