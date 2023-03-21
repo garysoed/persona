@@ -6,7 +6,8 @@ import {Target} from '../types/target';
 import {ReversedSpec, reverseSpec} from '../util/reverse-spec';
 
 
-type BindingProvider = (root: Target, context: RenderContext) => InputBinding<any>|OutputBinding<any, any, any[]>;
+type BindingProvider = (root: Target, context: RenderContext) =>
+    InputBinding<any>|OutputBinding<any, any, any[]>;
 
 function getElement(target: Target, query: string|null): Element {
   if (query === null) {

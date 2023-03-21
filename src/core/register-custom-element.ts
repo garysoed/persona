@@ -49,7 +49,8 @@ export type ApiReadonly<A> = ApiReadonlyRaw<Pick<A, ApiReadonlyKeys<A>>>;
 type MethodNameOf<O> = O extends ICall<any, infer M> ? M : never;
 
 type ApiMethodRaw<A> = {
-  [K in keyof A as MethodNameOf<A[K]>]: A[K] extends ICall<infer A, string> ? (...args: A) => void : never;
+  [K in keyof A as MethodNameOf<A[K]>]: A[K] extends ICall<infer A, string> ?
+      (...args: A) => void : never;
 }
 
 type ApiMethodKeys<A> = {
@@ -59,7 +60,8 @@ type ApiMethodKeys<A> = {
 type ApiMethod<A> = ApiMethodRaw<Pick<A, ApiMethodKeys<A>>>;
 
 
-export type ApiAsProperties<S extends Spec> = (ApiReadable<S['host']>&ApiReadonly<S['host']>&ApiMethod<S['host']>);
+export type ApiAsProperties<S extends Spec> =
+    (ApiReadable<S['host']>&ApiReadonly<S['host']>&ApiMethod<S['host']>);
 
 export function registerCustomElement<S extends Spec>(
     spec: RegistrationSpec<S>,

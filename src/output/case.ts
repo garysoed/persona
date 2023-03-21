@@ -49,7 +49,11 @@ function getContiguousSiblingNodesWithId(start: Node|null, parent: Node): readon
     return children.reverse();
   }
   const children: NodeWithId[] = [];
-  for (let current = start.nextSibling ?? parent.firstChild; current !== null; current = current.nextSibling) {
+  for (
+    let current = start.nextSibling ?? parent.firstChild;
+    current !== null;
+    current = current.nextSibling
+  ) {
     if (!NODE_WITH_ID_TYPE.check(current)) {
       break;
     }
@@ -69,7 +73,10 @@ class ResolvedOCase<T> implements OCase<T> {
       private readonly trackBy: TrackByFn<T>,
   ) {}
 
-  resolve(target: Target, context: RenderContext): (renderFn: RenderValueFn<T>) => OperatorFunction<T, T> {
+  resolve(
+      target: Target,
+      context: RenderContext,
+  ): (renderFn: RenderValueFn<T>) => OperatorFunction<T, T> {
     return (renderFn: RenderValueFn<T>) => {
       const slotEl$ = this.slotName
         ? of(target).pipe(
@@ -166,7 +173,10 @@ function getInsertBeforeTarget(
 type TrackByFn<T> = (value: T) => unknown;
 export function ocase<T = never>(trackBy?: TrackByFn<T>): ResolvedOCase<T>;
 export function ocase<T = never>(refName: string, trackBy?: TrackByFn<T>): ResolvedOCase<T>;
-export function ocase<T = never>(refOrTrackBy?: string|TrackByFn<T>, trackBy?: TrackByFn<T>): ResolvedOCase<T>  {
+export function ocase<T = never>(
+    refOrTrackBy?: string|TrackByFn<T>,
+    trackBy?: TrackByFn<T>,
+): ResolvedOCase<T>  {
   if (typeof refOrTrackBy === 'string') {
     return new ResolvedOCase(refOrTrackBy, trackBy ?? (value => value));
   }

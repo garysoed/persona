@@ -22,6 +22,9 @@ class ResolvedOEvent<E extends Event> implements OEvent<E> {
   }
 }
 
-export function oevent<E extends Event>(eventName: string, eventType: EventCtor<E>): ResolvedOEvent<E> {
+export function oevent<E extends Event>(
+    eventName: string,
+    eventType: EventCtor<E>,
+): ResolvedOEvent<E> {
   return new ResolvedOEvent(eventName, eventType);
 }

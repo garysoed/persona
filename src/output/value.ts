@@ -44,7 +44,11 @@ export function ovalue<T, P extends string>(
     key: P,
     valueType: Type<T>,
 ): ResolvedOValue<T|undefined, P>;
-export function ovalue(key: string, valueType: Type<unknown>, defaultValueProvider?: () => unknown): ResolvedOValue<unknown, string> {
+export function ovalue(
+    key: string,
+    valueType: Type<unknown>,
+    defaultValueProvider?: () => unknown,
+): ResolvedOValue<unknown, string> {
   if (defaultValueProvider !== undefined) {
     return new ResolvedOValue(defaultValueProvider, key, valueType);
   }

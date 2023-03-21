@@ -12,6 +12,11 @@ import {FakeMediaQuery, mockMatchMedia} from './mock-match-media';
 import {PersonaTesterEnvironment} from './persona-tester-environment';
 
 
+interface DecoratedElement {
+  connectedCallback(): void;
+  disconnectedCallback(): void;
+}
+
 export interface TestSpec {
   readonly roots?: ReadonlyArray<CustomElementRegistration<HTMLElement, any>>;
   readonly overrides?: VineConfig['overrides'];
@@ -31,8 +36,11 @@ export class Tester {
     document.body.appendChild(node);
   }
 
-  bootstrapElement<E extends HTMLElement, S extends Spec>(spec: CustomElementRegistration<E, S>): E {
-    const element = this.customElementRegistry.create(spec.namespace, spec.tag) as E;
+  bootstrapElement<E extends HTMLElement, S extends Spec>(
+      spec: CustomElementRegistration<E, S>,
+  ): E & DecoratedElement {
+    const element = this.customElementRegistry.create(spec.namespace, spec.tag) as
+        E & DecoratedElement;
     this.addToBody(element);
     return element;
   }

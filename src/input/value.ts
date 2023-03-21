@@ -49,7 +49,11 @@ export function ivalue<T, P extends string>(
     key: P,
     valueType: Type<T>,
 ): ResolvedIValue<T|undefined, P>;
-export function ivalue(key: string, valueType: Type<unknown>, defaultValueProvider?: () => unknown): ResolvedIValue<unknown, string> {
+export function ivalue(
+    key: string,
+    valueType: Type<unknown>,
+    defaultValueProvider?: () => unknown,
+): ResolvedIValue<unknown, string> {
   if (defaultValueProvider !== undefined) {
     return new ResolvedIValue(defaultValueProvider, key, valueType);
   }

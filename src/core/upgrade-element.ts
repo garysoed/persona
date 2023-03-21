@@ -2,7 +2,7 @@ import {Vine} from 'grapevine';
 import {$map} from 'gs-tools/export/collect';
 import {$pipe} from 'gs-tools/export/typescript';
 import {BehaviorSubject, combineLatest, defer, EMPTY, merge, Observable, of, Subject, timer} from 'rxjs';
-import {catchError, distinctUntilChanged, mapTo, shareReplay, switchMap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, map, shareReplay, switchMap} from 'rxjs/operators';
 
 import {RenderContext} from '../render/types/render-context';
 import {Bindings, BindingSpec, OutputBinding, ResolvedBindingSpec, ResolvedBindingSpecProvider, ShadowBindings, Spec} from '../types/ctrl';
@@ -16,14 +16,9 @@ import {$getTemplate} from './templates-cache';
 
 const CLEANUP_DELAY_MS = 1000;
 
-type DecoratedHtmlElement = HTMLElement & {
-  connectedCallback(): void;
-  disconnectedCallback(): void;
-};
-
 export function upgradeElement(
     registration: CustomElementRegistration<HTMLElement, Spec>,
-    element: DecoratedHtmlElement,
+    element: HTMLElement,
     isConnected$: Subject<boolean>,
     vine: Vine,
 ): void {
@@ -50,7 +45,11 @@ function createCtrl(
       element,
       document: element.ownerDocument,
       host: createBindings(registrationSpec.spec.host ?? {}, element, renderContext),
-      shadow: createShadowBindingObjects(registrationSpec.spec.shadow ?? {}, shadowRoot, renderContext),
+      shadow: createShadowBindingObjects(
+          registrationSpec.spec.shadow ?? {},
+          shadowRoot,
+          renderContext,
+      ),
       shadowRoot,
       vine,
     }));
@@ -68,7 +67,7 @@ function createCtrl(
     ctrl$,
     isConnected$.pipe(
         switchMap(isConnected => {
-          return isConnected ? of(true) : timer(CLEANUP_DELAY_MS).pipe(mapTo(false));
+          return isConnected ? of(true) : timer(CLEANUP_DELAY_MS).pipe(map(() => false));
         }),
         distinctUntilChanged(),
     )])

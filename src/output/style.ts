@@ -26,6 +26,8 @@ class ResolvedOStyle<S extends StringPropertyKeys<CSSStyleDeclaration>> implemen
   }
 }
 
-export function ostyle<S extends StringPropertyKeys<CSSStyleDeclaration>>(propertyName: S): ResolvedOStyle<S> {
+export function ostyle<S extends StringPropertyKeys<CSSStyleDeclaration>>(
+    propertyName: S,
+): ResolvedOStyle<S> {
   return new ResolvedOStyle<S>(propertyName);
 }

@@ -5,9 +5,11 @@ import {Bindings, ResolvedBindingSpec, ResolvedBindingSpecProvider} from '../../
 import {RenderSpecType} from './render-spec-type';
 
 
-export type TemplateBindingSpec = Record<string, ResolvedBindingSpecProvider<ResolvedBindingSpec, any>>;
+export type TemplateBindingSpec =
+    Record<string, ResolvedBindingSpecProvider<ResolvedBindingSpec, any>>;
 export type TemplateBindings<O> = {
-  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<infer S, infer T> ? Bindings<S, T> : never;
+  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<infer S, infer T> ?
+      Bindings<S, T> : never;
 }
 
 interface InputRenderSpec<S extends TemplateBindingSpec> {

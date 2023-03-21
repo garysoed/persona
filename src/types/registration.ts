@@ -24,7 +24,8 @@ export interface Registration<
   readonly $ctor: Source<CustomElementCtor<E>>;
 }
 
-export interface CustomElementRegistration<E extends HTMLElement, S extends Spec> extends Registration<E, S> {
+export interface CustomElementRegistration<E extends HTMLElement, S extends Spec>
+    extends Registration<E, S> {
   readonly ctrl: new (context: Context<S>) => Ctrl;
   readonly deps: ReadonlyArray<CustomElementRegistration<HTMLElement, any>>;
   readonly template: string;

@@ -7,7 +7,8 @@ import {RenderSpecType} from './render-spec-type';
 
 export type ExtraSpec = Record<string, ResolvedBindingSpecProvider<ResolvedBindingSpec, Element>>;
 export type ExtraHtmlBindings<O> = {
-  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<infer S, infer T> ? Bindings<S, T> : never;
+  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<infer S, infer T> ?
+      Bindings<S, T> : never;
 }
 
 interface Input<T extends ParseType, X extends ExtraSpec> {

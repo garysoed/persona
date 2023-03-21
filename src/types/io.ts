@@ -61,14 +61,16 @@ export interface OAttr<T> extends ReferenceO<T|null, T|null, [], Element> {
 
 export type TypeOfArray<T extends readonly unknown[]> = {readonly [K in keyof T]: Type<T[K]>};
 
-export interface ICall<A extends readonly unknown[], M extends string> extends ReferenceI<A, Element> {
+export interface ICall<A extends readonly unknown[], M extends string> extends
+    ReferenceI<A, Element> {
   readonly apiType: ApiType.CALL;
   readonly ioType: IOType.INPUT;
   readonly methodName: M;
   readonly argTypes: TypeOfArray<A>;
 }
 
-export interface OCall<A extends readonly unknown[], M extends string> extends ReferenceO<A, A, [], Element> {
+export interface OCall<A extends readonly unknown[], M extends string> extends
+    ReferenceO<A, A, [], Element> {
   readonly apiType: ApiType.CALL;
   readonly ioType: IOType.OUTPUT;
   readonly methodName: M;
@@ -123,7 +125,8 @@ export interface OFlag extends ReferenceO<boolean, boolean, [], Element> {
   readonly attrName: string;
 }
 
-export interface OForeach<T> extends ReferenceO<readonly T[], readonly T[], [RenderValueFn<T>], Target> {
+export interface OForeach<T> extends
+    ReferenceO<readonly T[], readonly T[], [RenderValueFn<T>], Target> {
   readonly apiType: ApiType.FOREACH;
   readonly ioType: IOType.OUTPUT;
   readonly slotName: string|null;
@@ -168,7 +171,8 @@ export interface OSlotted extends ReferenceO<readonly Node[], readonly Node[], [
   readonly ioType: IOType.OUTPUT;
 }
 
-export interface OStyle<S extends keyof CSSStyleDeclaration> extends ReferenceO<string, string, [], Target&ElementCSSInlineStyle> {
+export interface OStyle<S extends keyof CSSStyleDeclaration> extends
+    ReferenceO<string, string, [], Target&ElementCSSInlineStyle> {
   readonly apiType: ApiType.STYLE;
   readonly ioType: IOType.OUTPUT;
   readonly propertyName: S;
@@ -226,4 +230,5 @@ export type InputOutput =
     IText|OText|
     IValue<any, string>|OValue<any, string>;
 
-export type InputOutputThatResolvesWith<T> = (InputOutput&ReferenceI<any, T>)|(InputOutput&ReferenceO<any, any, any, T>);
+export type InputOutputThatResolvesWith<T> = (InputOutput&ReferenceI<any, T>)|
+    (InputOutput&ReferenceO<any, any, any, T>);

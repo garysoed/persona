@@ -16,12 +16,15 @@ type LiteRegistration<S extends Spec, E extends Element> =
 interface InputRenderSpec<S extends Spec, X extends ExtraSpec, E extends Element> {
   readonly registration: LiteRegistration<S, E>;
   readonly spec: X;
-  readonly runs?: (bindings: Bindings<ReversedSpec<S['host']&{}>&(X&{}), unknown>) => ReadonlyArray<Observable<unknown>>;
+  readonly runs?: (bindings: Bindings<ReversedSpec<S['host']&{}>&(X&{}), unknown>) =>
+      ReadonlyArray<Observable<unknown>>;
 }
 
-export interface RenderElementSpec<S extends Spec, X extends ExtraSpec, E extends Element> extends InputRenderSpec<S, X, E> {
+export interface RenderElementSpec<S extends Spec, X extends ExtraSpec, E extends Element>
+    extends InputRenderSpec<S, X, E> {
   readonly type: RenderSpecType.ELEMENT;
-  readonly runs: (bindings: Bindings<ReversedSpec<S['host']&{}>&X, unknown>) => ReadonlyArray<Observable<unknown>>;
+  readonly runs: (bindings: Bindings<ReversedSpec<S['host']&{}>&X, unknown>) =>
+      ReadonlyArray<Observable<unknown>>;
 }
 
 export function renderElement<S extends Spec, X extends ExtraSpec, E extends Element>(

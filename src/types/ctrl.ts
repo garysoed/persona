@@ -31,7 +31,8 @@ export type Spec = {
 };
 
 export type InputBinding<V> = Observable<V>;
-export type OutputBinding<T, U, A extends readonly unknown[]> = (...args: A) => OperatorFunction<T, U>;
+export type OutputBinding<T, U, A extends readonly unknown[]> =
+    (...args: A) => OperatorFunction<T, U>;
 export type Binding<O, T> =
     O extends ITarget ? InputBinding<T> :
     O extends ReferenceI<infer V, any> ? InputBinding<V> :
@@ -43,7 +44,8 @@ export type Bindings<S extends BindingSpec, T> = {
 };
 
 export type ShadowBindings<O> = {
-  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<infer S, infer T> ? Bindings<S, T> : never;
+  readonly [K in keyof O]: O[K] extends ResolvedBindingSpecProvider<infer S, infer T> ?
+      Bindings<S, T> : never;
 };
 
 export interface Context<S extends Spec> extends RenderContext {

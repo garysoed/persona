@@ -3,7 +3,8 @@ import {InputBinding, OutputBinding, ResolvedBindingSpecProvider} from '../types
 import {InputOutputThatResolvesWith} from '../types/io';
 import {Target} from '../types/target';
 
-type Binding = (root: Target, context: RenderContext) => InputBinding<any>|OutputBinding<any, any, any[]>;
+type Binding = (root: Target, context: RenderContext) =>
+    InputBinding<any>|OutputBinding<any, any, any[]>;
 
 type ExtraBindings = {
   readonly [key: string]: InputOutputThatResolvesWith<Target>;

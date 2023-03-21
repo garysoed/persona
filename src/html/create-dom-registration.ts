@@ -5,8 +5,10 @@ import {InputOutputThatResolvesWith} from '../types/io';
 import {ElementNamespace, Registration} from '../types/registration';
 
 
-type DomRegistration<E extends Element, S extends Record<string, InputOutputThatResolvesWith<Element>>> =
-    Registration<E, {host: S}>;
+type DomRegistration<
+    E extends Element,
+    S extends Record<string, InputOutputThatResolvesWith<Element>>,
+> = Registration<E, {host: S}>;
 
 interface Input<E extends Element, S extends ResolvedBindingSpec> {
   readonly ctor: new (...args: readonly any[]) => E;

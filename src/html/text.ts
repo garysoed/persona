@@ -20,7 +20,10 @@ export const TEXT = createDomRegistration({
     ...PRESENTATIONAL_ATTRIBUTES,
     dx: iattr('dx', lengthParser()),
     dy: iattr('dy', lengthParser()),
-    alignmentBaseline: iattr('alignment-baseline', stringEnumParser<AlignmentBaseline>(AlignmentBaseline)),
+    alignmentBaseline: iattr(
+        'alignment-baseline',
+        stringEnumParser<AlignmentBaseline>(AlignmentBaseline),
+    ),
     fontFamily: iattr('font-family'),
     fontSize: iattr('font-size', lengthParser()),
     lengthAdjust: iattr('lengthAdjust', stringEnumParser<LengthAdjust>(LengthAdjust)),

@@ -70,7 +70,10 @@ export class ResolvedOForeach<T> implements OForeach<T> {
       private readonly trackByFn: TrackByFn<T>,
   ) {}
 
-  resolve(target: Target, context: RenderContext): (renderFn: RenderValueFn<T>) => OperatorFunction<readonly T[], readonly T[]> {
+  resolve(
+      target: Target,
+      context: RenderContext,
+  ): (renderFn: RenderValueFn<T>) => OperatorFunction<readonly T[], readonly T[]> {
     return (renderFn: RenderValueFn<T>) => {
       const slotEl$ = of(target).pipe(
           initSlot(this.slotName),
@@ -130,7 +133,12 @@ export class ResolvedOForeach<T> implements OForeach<T> {
                 const [diff] = diffs;
                 switch (diff.type) {
                   case 'insert': {
-                    const insertBefore = getInsertBeforeTarget(diff.index, currentNodes, slotNode, target);
+                    const insertBefore = getInsertBeforeTarget(
+                        diff.index,
+                        currentNodes,
+                        slotNode,
+                        target,
+                    );
                     target.insertBefore(diff.value, insertBefore);
                     break;
                   }
@@ -186,7 +194,10 @@ function getInsertBeforeTarget(
 type TrackByFn<T> = (value: T) => unknown;
 export function oforeach<T = never>(trackBy?: TrackByFn<T>): ResolvedOForeach<T>;
 export function oforeach<T = never>(slotName: string, trackBy?: TrackByFn<T>): ResolvedOForeach<T>;
-export function oforeach<T = never>(slotNameOrTrackBy?: string|TrackByFn<T>, trackBy?: TrackByFn<T>): ResolvedOForeach<T> {
+export function oforeach<T = never>(
+    slotNameOrTrackBy?: string|TrackByFn<T>,
+    trackBy?: TrackByFn<T>,
+): ResolvedOForeach<T> {
   if (stringType.check(slotNameOrTrackBy)) {
     return new ResolvedOForeach(slotNameOrTrackBy, trackBy ?? (value => value));
   }
