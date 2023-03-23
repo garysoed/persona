@@ -14,7 +14,7 @@ export class FakeMediaQuery extends EventTarget implements MediaQueryList {
     super();
   }
 
-  addEventListener(
+  override addEventListener(
       type: string,
       listener: EventListener|EventListenerObject|null,
       options?: boolean|AddEventListenerOptions|undefined,
@@ -26,7 +26,7 @@ export class FakeMediaQuery extends EventTarget implements MediaQueryList {
     throw new Error('Deprecated');
   }
 
-  dispatchEvent(event: Event): boolean {
+  override dispatchEvent(event: Event): boolean {
     return this.eventTarget.dispatchEvent(event);
   }
 
@@ -43,7 +43,7 @@ export class FakeMediaQuery extends EventTarget implements MediaQueryList {
     this.eventTarget.dispatchEvent(event);
   }
 
-  removeEventListener(
+  override removeEventListener(
       type: string,
       listener: EventListener|EventListenerObject|null,
       options?: boolean|AddEventListenerOptions|undefined,

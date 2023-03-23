@@ -8,7 +8,7 @@ class FakeMutationObserver extends MutationObserver {
     super(callback);
   }
 
-  observe(target: Node, options: MutationObserverInit): void {
+  override observe(target: Node, options: MutationObserverInit): void {
     target.addEventListener(FAKE_MUTATION_EVENT, event => {
       if (!options.subtree && event.target !== target) {
         return;

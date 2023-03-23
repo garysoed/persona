@@ -1,31 +1,17 @@
 {
+  "extends": "devbase/ts",
   "compilerOptions": {
-    "alwaysStrict": true,
-    "assumeChangesOnlyAffectDirectDependencies": true,
     "baseUrl": ".",
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
     "lib": [
       "dom",
       "es2015"
     ],
-    "module": "commonjs",
-    "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "noImplicitThis": true,
     "outDir": "out",
     "paths": {
       "gs-tools/export/*": ["node_modules/gs-tools/export/*"],
       "rxjs": ["node_modules/rxjs"],
       "rxjs/*": ["node_modules/rxjs/*"],
     },
-    "pretty": true,
-    "resolveJsonModule": true,
-    "sourceMap": true,
-    "strict": true,
-    "strictBindCallApply": true,
-    "strictFunctionTypes": true,
-    "target": "es6",
   },
   "include": [
     "src/**/*.json",

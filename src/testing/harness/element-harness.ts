@@ -18,10 +18,10 @@ interface MouseOverEvents {
 }
 
 export class ElementHarness<E extends Element> extends EventTargetHarness<E> {
-  static readonly validType = instanceofType(Element);
+  static override readonly validType = instanceofType(Element);
 
   constructor(
-      readonly target: E,
+      override readonly target: E,
       readonly hostElement: Element,
   ) {
     super(target);

@@ -3,7 +3,7 @@ import {instanceofType} from 'gs-types';
 import {ElementHarness} from './element-harness';
 
 export class SlotHarness<E extends HTMLSlotElement> extends ElementHarness<E> {
-  static readonly validType = instanceofType(HTMLSlotElement);
+  static override readonly validType = instanceofType(HTMLSlotElement);
 
   simulateSlotChange(modifierFn: (hostEl: Element) => void): Event {
     const event = new CustomEvent('slotchange');

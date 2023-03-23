@@ -18,10 +18,10 @@
   "homepage": "https://github.com/garysoed/persona#readme",
   "devDependencies": {
     "@types/jasmine": "^2.8.17",
-    "@typescript-eslint/eslint-plugin": "^5.30.5",
+    "@typescript-eslint/eslint-plugin": "^5.48.2",
     "@typescript-eslint/eslint-plugin-tslint": "^4.33.0",
-    "@typescript-eslint/parser": "^5.30.5",
-    "eslint": "^7.12.1",
+    "@typescript-eslint/parser": "^5.48.2",
+    "eslint": "^7.27.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-no-null": "^1.0.2",
@@ -37,7 +37,7 @@
     "karma-sourcemap-loader": "^0.3.8",
     "source-map-loader": "^0.2.4",
     "ts-loader": "^8.0.18",
-    "typescript": "^4.6.2",
+    "typescript": "5.0",
     "webpack-notifier": "^1.13.0"
   },
   "dependencies": {
