@@ -80,7 +80,7 @@ class TesterEnvironment extends Environment {
 }
 
 export function setupTest(spec: TestSpec): Tester {
-  const vine = new Vine({appName: 'test', overrides: spec.overrides});
+  const vine = new Vine({overrides: spec.overrides});
 
   const fakeTime = mockTime(window);
   const registrationMap = new Map<string, CustomElementRegistration<HTMLElement, Spec>>();
