@@ -1,8 +1,15 @@
 import {source} from 'grapevine';
-import {assert, runEnvironment, should, test, setup} from 'gs-testing';
+import {
+  assert,
+  asyncAssert,
+  runEnvironment,
+  setup,
+  should,
+  test,
+} from 'gs-testing';
 import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
-import {cache} from 'gs-tools/export/data';
-import {Observable, Subject, OperatorFunction, pipe} from 'rxjs';
+import {cached} from 'gs-tools/export/data';
+import {Observable, OperatorFunction, pipe, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
@@ -17,8 +24,6 @@ import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import {oforeach} from './foreach';
-import goldens from './goldens/goldens.json';
-
 
 interface Renderer {
   render: (tag: string) => RenderSpec;
@@ -28,7 +33,9 @@ const $elValue$ = source(() => new Subject<readonly string[]>());
 const $elSlotlessValue$ = source(() => new Subject<readonly string[]>());
 const $rootValue$ = source(() => new Subject<readonly string[]>());
 const $rootSlotlessValue$ = source(() => new Subject<readonly string[]>());
-const $withIdValue$ = source(() => new Subject<ReadonlyArray<readonly string[]>>());
+const $withIdValue$ = source(
+  () => new Subject<ReadonlyArray<readonly string[]>>(),
+);
 
 const $renderer = source<Renderer>(() => ({
   render: (tag: string): RenderSpec => {
@@ -36,17 +43,16 @@ const $renderer = source<Renderer>(() => ({
   },
 }));
 
-
 const $host = {
   shadow: {
-    root: root({
-      value: oforeach<string>('#root'),
-      slotless: oforeach<string>(),
-      withId: oforeach<readonly string[]>('#withId', ([value]) => value),
-    }),
     el: query('#el', DIV, {
-      value: oforeach<string>('#ref'),
       slotless: oforeach<string>(),
+      value: oforeach<string>('#ref'),
+    }),
+    root: root({
+      slotless: oforeach<string>(),
+      value: oforeach<string>('#root'),
+      withId: oforeach<readonly string[]>('#withId', ([value]) => value),
     }),
   },
 };
@@ -54,56 +60,63 @@ const $host = {
 class HostCtrl implements Ctrl {
   constructor(private readonly $: Context<typeof $host>) {}
 
-  @cache()
-  get runs(): ReadonlyArray<Observable<unknown>> {
-    return [
-      $elValue$.get(this.$.vine).pipe(
-          this.$.shadow.el.value(this.renderNode()),
-      ),
-      $elSlotlessValue$.get(this.$.vine).pipe(
-          this.$.shadow.el.slotless(this.renderNode()),
-      ),
-      $rootValue$.get(this.$.vine).pipe(
-          this.$.shadow.root.value(this.renderNode()),
-      ),
-      $rootSlotlessValue$.get(this.$.vine).pipe(
-          this.$.shadow.root.slotless(this.renderNode()),
-      ),
-      $withIdValue$.get(this.$.vine).pipe(
-          this.$.shadow.root.withId(pipe(map(([value]) => value), this.renderNode())),
-      ),
-    ];
+  renderNode(): OperatorFunction<string, RenderSpec> {
+    return map((tag) => $renderer.get(this.$.vine).render(tag));
   }
 
-  renderNode(): OperatorFunction<string, RenderSpec> {
-    return map(tag => $renderer.get(this.$.vine).render(tag));
+  @cached()
+  get runs(): ReadonlyArray<Observable<unknown>> {
+    return [
+      $elValue$
+        .get(this.$.vine)
+        .pipe(this.$.shadow.el.value(this.renderNode())),
+      $elSlotlessValue$
+        .get(this.$.vine)
+        .pipe(this.$.shadow.el.slotless(this.renderNode())),
+      $rootValue$
+        .get(this.$.vine)
+        .pipe(this.$.shadow.root.value(this.renderNode())),
+      $rootSlotlessValue$
+        .get(this.$.vine)
+        .pipe(this.$.shadow.root.slotless(this.renderNode())),
+      $withIdValue$.get(this.$.vine).pipe(
+        this.$.shadow.root.withId(
+          pipe(
+            map(([value]) => value!),
+            this.renderNode(),
+          ),
+        ),
+      ),
+    ];
   }
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '<!-- #root --><div id="el"><!-- #ref --></div><!-- #withId -->',
 });
 
 test('@persona/src/output/foreach', () => {
   const _ = setup(() => {
-    runEnvironment(new BrowserSnapshotsEnv('src/output/goldens', goldens));
+    runEnvironment(new BrowserSnapshotsEnv('src/output/goldens'));
     const tester = setupTest({roots: [HOST]});
     return {tester};
   });
 
   test('root', () => {
-    should('process \'init\' correctly', () => {
+    should("process 'init' correctly", async () => {
       const element = _.tester.bootstrapElement(HOST);
 
       $rootValue$.get(_.tester.vine).next(['div1', 'div2', 'div3']);
 
-      assert(snapshotElement(element)).to.match('foreach__root_init.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_init',
+      );
     });
 
-    should('process \'insert\' correctly for index 0', () => {
+    should("process 'insert' correctly for index 0", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -114,10 +127,12 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $rootValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_insert_start.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_insert_start',
+      );
     });
 
-    should('process \'insert\' correctly for index 2', () => {
+    should("process 'insert' correctly for index 2", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -127,10 +142,12 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $rootValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_insert_middle.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_insert_middle',
+      );
     });
 
-    should('process \'insert\' correctly for large index', () => {
+    should("process 'insert' correctly for large index", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -140,10 +157,12 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $rootValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_insert_end.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_insert_end',
+      );
     });
 
-    should('process \'delete\' correctly', () => {
+    should("process 'delete' correctly", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -152,10 +171,12 @@ test('@persona/src/output/foreach', () => {
 
       $rootValue$.get(_.tester.vine).next([node1, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_delete.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_delete',
+      );
     });
 
-    should('ignore node insertions with the same id', () => {
+    should('ignore node insertions with the same id', async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div1';
@@ -163,20 +184,24 @@ test('@persona/src/output/foreach', () => {
       $rootValue$.get(_.tester.vine).next([node1]);
       $rootValue$.get(_.tester.vine).next([node2]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_same_id.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_same_id',
+      );
     });
 
-    should('handle deleting duplicates', () => {
+    should('handle deleting duplicates', async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node = 'div';
       $rootValue$.get(_.tester.vine).next([node, node]);
 
       $rootValue$.get(_.tester.vine).next([]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_delete_duplicate.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_delete_duplicate',
+      );
     });
 
-    should('replace the element correctly for \'set\'', () => {
+    should("replace the element correctly for 'set'", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -186,39 +211,48 @@ test('@persona/src/output/foreach', () => {
       const setNode = 'div0';
       $rootValue$.get(_.tester.vine).next([setNode, node2, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_set.golden');
+      await asyncAssert(snapshotElement(element)).to.match('foreach__root_set');
     });
 
-    should('handle insertion and deletions of renders with multiple nodes', () => {
-      $renderer.get(_.tester.vine).render = value => {
-        const node = document.createDocumentFragment();
-        node.appendChild(document.createElement(value));
-        node.appendChild(document.createElement(value));
-        node.appendChild(document.createElement(value));
-        return renderNode({node});
-      };
+    should(
+      'handle insertion and deletions of renders with multiple nodes',
+      async () => {
+        $renderer.get(_.tester.vine).render = (value) => {
+          const node = document.createDocumentFragment();
+          node.appendChild(document.createElement(value));
+          node.appendChild(document.createElement(value));
+          node.appendChild(document.createElement(value));
+          return renderNode({node});
+        };
 
-      const element = _.tester.bootstrapElement(HOST);
-      const id = 'div';
+        const element = _.tester.bootstrapElement(HOST);
+        const id = 'div';
 
-      $rootValue$.get(_.tester.vine).next([id]);
-      assert(snapshotElement(element)).to.match('foreach__root_multi_insert.golden');
+        $rootValue$.get(_.tester.vine).next([id]);
+        await asyncAssert(snapshotElement(element)).to.match(
+          'foreach__root_multi_insert',
+        );
 
-      $rootValue$.get(_.tester.vine).next([]);
-      assert(snapshotElement(element)).to.match('foreach__root_multi_delete.golden');
-    });
+        $rootValue$.get(_.tester.vine).next([]);
+        await asyncAssert(snapshotElement(element)).to.match(
+          'foreach__root_multi_delete',
+        );
+      },
+    );
   });
 
   test('root slotless', () => {
-    should('process \'init\' correctly', () => {
+    should("process 'init' correctly", async () => {
       const element = _.tester.bootstrapElement(HOST);
 
       $rootSlotlessValue$.get(_.tester.vine).next(['div1', 'div2', 'div3']);
 
-      assert(snapshotElement(element)).to.match('foreach__root_slotless_init.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_slotless_init',
+      );
     });
 
-    should('process \'insert\' correctly for index 0', () => {
+    should("process 'insert' correctly for index 0", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -227,12 +261,16 @@ test('@persona/src/output/foreach', () => {
       $rootSlotlessValue$.get(_.tester.vine).next(['node1', node2, node3]);
 
       const insertNode = 'div0';
-      $rootSlotlessValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
+      $rootSlotlessValue$
+        .get(_.tester.vine)
+        .next([insertNode, node1, node2, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_slotless_insert_start.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_slotless_insert_start',
+      );
     });
 
-    should('process \'insert\' correctly for index 2', () => {
+    should("process 'insert' correctly for index 2", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -240,12 +278,16 @@ test('@persona/src/output/foreach', () => {
       $rootSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
 
       const insertNode = 'div0';
-      $rootSlotlessValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
+      $rootSlotlessValue$
+        .get(_.tester.vine)
+        .next([node1, node2, insertNode, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_slotless_insert_middle.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_slotless_insert_middle',
+      );
     });
 
-    should('process \'insert\' correctly for large index', () => {
+    should("process 'insert' correctly for large index", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -253,12 +295,16 @@ test('@persona/src/output/foreach', () => {
       $rootSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
 
       const insertNode = 'div0';
-      $rootSlotlessValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
+      $rootSlotlessValue$
+        .get(_.tester.vine)
+        .next([node1, node2, node3, insertNode]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_slotless_insert_end.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_slotless_insert_end',
+      );
     });
 
-    should('process \'delete\' correctly', () => {
+    should("process 'delete' correctly", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -267,10 +313,12 @@ test('@persona/src/output/foreach', () => {
 
       $rootSlotlessValue$.get(_.tester.vine).next([node1, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_slotless_delete.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_slotless_delete',
+      );
     });
 
-    should('ignore node insertions with the same id', () => {
+    should('ignore node insertions with the same id', async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div1';
@@ -278,20 +326,24 @@ test('@persona/src/output/foreach', () => {
       $rootSlotlessValue$.get(_.tester.vine).next([node1]);
       $rootSlotlessValue$.get(_.tester.vine).next([node2]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_slotless_same_id.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_slotless_same_id',
+      );
     });
 
-    should('handle deleting duplicates', () => {
+    should('handle deleting duplicates', async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node = 'div';
       $rootSlotlessValue$.get(_.tester.vine).next([node, node]);
 
       $rootSlotlessValue$.get(_.tester.vine).next([]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_slotless_delete_duplicate.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_slotless_delete_duplicate',
+      );
     });
 
-    should('replace the element correctly for \'set\'', () => {
+    should("replace the element correctly for 'set'", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -301,31 +353,40 @@ test('@persona/src/output/foreach', () => {
       const setNode = 'div0';
       $rootSlotlessValue$.get(_.tester.vine).next([setNode, node2, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__root_slotless_set.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__root_slotless_set',
+      );
     });
 
-    should('handle insertion and deletions of renders with multiple nodes', () => {
-      $renderer.get(_.tester.vine).render = value => {
-        const node = document.createDocumentFragment();
-        node.appendChild(document.createElement(value));
-        node.appendChild(document.createElement(value));
-        node.appendChild(document.createElement(value));
-        return renderNode({node});
-      };
+    should(
+      'handle insertion and deletions of renders with multiple nodes',
+      async () => {
+        $renderer.get(_.tester.vine).render = (value) => {
+          const node = document.createDocumentFragment();
+          node.appendChild(document.createElement(value));
+          node.appendChild(document.createElement(value));
+          node.appendChild(document.createElement(value));
+          return renderNode({node});
+        };
 
-      const element = _.tester.bootstrapElement(HOST);
-      const id = 'div';
+        const element = _.tester.bootstrapElement(HOST);
+        const id = 'div';
 
-      $rootSlotlessValue$.get(_.tester.vine).next([id]);
-      assert(snapshotElement(element)).to.match('foreach__root_slotless_multi_insert.golden');
+        $rootSlotlessValue$.get(_.tester.vine).next([id]);
+        await asyncAssert(snapshotElement(element)).to.match(
+          'foreach__root_slotless_multi_insert',
+        );
 
-      $rootSlotlessValue$.get(_.tester.vine).next([]);
-      assert(snapshotElement(element)).to.match('foreach__root_slotless_multi_delete.golden');
-    });
+        $rootSlotlessValue$.get(_.tester.vine).next([]);
+        await asyncAssert(snapshotElement(element)).to.match(
+          'foreach__root_slotless_multi_delete',
+        );
+      },
+    );
   });
 
   test('el', () => {
-    should('process \'init\' correctly', () => {
+    should("process 'init' correctly", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -333,10 +394,10 @@ test('@persona/src/output/foreach', () => {
 
       $elValue$.get(_.tester.vine).next([node1, node2, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_init.golden');
+      await asyncAssert(snapshotElement(element)).to.match('foreach__el_init');
     });
 
-    should('process \'insert\' correctly for index 0', () => {
+    should("process 'insert' correctly for index 0", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -347,10 +408,12 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $elValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_insert_start.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_insert_start',
+      );
     });
 
-    should('process \'insert\' correctly for index 2', () => {
+    should("process 'insert' correctly for index 2", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -360,10 +423,12 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $elValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_insert_middle.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_insert_middle',
+      );
     });
 
-    should('process \'insert\' correctly for large index', () => {
+    should("process 'insert' correctly for large index", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -373,10 +438,12 @@ test('@persona/src/output/foreach', () => {
       const insertNode = 'div0';
       $elValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_insert_end.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_insert_end',
+      );
     });
 
-    should('process \'delete\' correctly', () => {
+    should("process 'delete' correctly", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -385,10 +452,12 @@ test('@persona/src/output/foreach', () => {
 
       $elValue$.get(_.tester.vine).next([node1, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_delete.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_delete',
+      );
     });
 
-    should('ignore node insertions with the same id', () => {
+    should('ignore node insertions with the same id', async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div1';
@@ -396,20 +465,24 @@ test('@persona/src/output/foreach', () => {
       $elValue$.get(_.tester.vine).next([node1]);
       $elValue$.get(_.tester.vine).next([node2]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_same_id.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_same_id',
+      );
     });
 
-    should('handle deleting duplicates', () => {
+    should('handle deleting duplicates', async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node = 'div';
       $elValue$.get(_.tester.vine).next([node, node]);
 
       $elValue$.get(_.tester.vine).next([]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_delete_duplicate.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_delete_duplicate',
+      );
     });
 
-    should('replace the element correctly for \'set\'', () => {
+    should("replace the element correctly for 'set'", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -419,31 +492,38 @@ test('@persona/src/output/foreach', () => {
       const setNode = 'div0';
       $elValue$.get(_.tester.vine).next([setNode, node2, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_set.golden');
+      await asyncAssert(snapshotElement(element)).to.match('foreach__el_set');
     });
 
-    should('handle insertion and deletions of renders with multiple nodes', () => {
-      $renderer.get(_.tester.vine).render = value => {
-        const node = document.createDocumentFragment();
-        node.appendChild(document.createElement(value));
-        node.appendChild(document.createElement(value));
-        node.appendChild(document.createElement(value));
-        return renderNode({node});
-      };
+    should(
+      'handle insertion and deletions of renders with multiple nodes',
+      async () => {
+        $renderer.get(_.tester.vine).render = (value) => {
+          const node = document.createDocumentFragment();
+          node.appendChild(document.createElement(value));
+          node.appendChild(document.createElement(value));
+          node.appendChild(document.createElement(value));
+          return renderNode({node});
+        };
 
-      const element = _.tester.bootstrapElement(HOST);
-      const id = 'div';
+        const element = _.tester.bootstrapElement(HOST);
+        const id = 'div';
 
-      $elValue$.get(_.tester.vine).next([id]);
-      assert(snapshotElement(element)).to.match('foreach__el_multi_insert.golden');
+        $elValue$.get(_.tester.vine).next([id]);
+        await asyncAssert(snapshotElement(element)).to.match(
+          'foreach__el_multi_insert',
+        );
 
-      $elValue$.get(_.tester.vine).next([]);
-      assert(snapshotElement(element)).to.match('foreach__el_multi_delete.golden');
-    });
+        $elValue$.get(_.tester.vine).next([]);
+        await asyncAssert(snapshotElement(element)).to.match(
+          'foreach__el_multi_delete',
+        );
+      },
+    );
   });
 
   test('el slotless', () => {
-    should('process \'init\' correctly', () => {
+    should("process 'init' correctly", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -451,10 +531,12 @@ test('@persona/src/output/foreach', () => {
 
       $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_slotless_init.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_slotless_init',
+      );
     });
 
-    should('process \'insert\' correctly for index 0', () => {
+    should("process 'insert' correctly for index 0", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -463,12 +545,16 @@ test('@persona/src/output/foreach', () => {
       $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
 
       const insertNode = 'div0';
-      $elSlotlessValue$.get(_.tester.vine).next([insertNode, node1, node2, node3]);
+      $elSlotlessValue$
+        .get(_.tester.vine)
+        .next([insertNode, node1, node2, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_slotless_insert_start.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_slotless_insert_start',
+      );
     });
 
-    should('process \'insert\' correctly for index 2', () => {
+    should("process 'insert' correctly for index 2", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -476,12 +562,16 @@ test('@persona/src/output/foreach', () => {
       $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
 
       const insertNode = 'div0';
-      $elSlotlessValue$.get(_.tester.vine).next([node1, node2, insertNode, node3]);
+      $elSlotlessValue$
+        .get(_.tester.vine)
+        .next([node1, node2, insertNode, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_slotless_insert_middle.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_slotless_insert_middle',
+      );
     });
 
-    should('process \'insert\' correctly for large index', () => {
+    should("process 'insert' correctly for large index", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -489,12 +579,16 @@ test('@persona/src/output/foreach', () => {
       $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3]);
 
       const insertNode = 'div0';
-      $elSlotlessValue$.get(_.tester.vine).next([node1, node2, node3, insertNode]);
+      $elSlotlessValue$
+        .get(_.tester.vine)
+        .next([node1, node2, node3, insertNode]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_slotless_insert_end.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_slotless_insert_end',
+      );
     });
 
-    should('process \'delete\' correctly', () => {
+    should("process 'delete' correctly", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -503,10 +597,12 @@ test('@persona/src/output/foreach', () => {
 
       $elSlotlessValue$.get(_.tester.vine).next([node1, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_slotless_delete.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_slotless_delete',
+      );
     });
 
-    should('ignore node insertions with the same id', () => {
+    should('ignore node insertions with the same id', async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div1';
@@ -514,20 +610,24 @@ test('@persona/src/output/foreach', () => {
       $elSlotlessValue$.get(_.tester.vine).next([node1]);
       $elSlotlessValue$.get(_.tester.vine).next([node2]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_slotless_same_id.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_slotless_same_id',
+      );
     });
 
-    should('handle deleting duplicates', () => {
+    should('handle deleting duplicates', async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node = 'div';
       $elSlotlessValue$.get(_.tester.vine).next([node, node]);
 
       $elSlotlessValue$.get(_.tester.vine).next([]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_slotless_delete_duplicate.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_slotless_delete_duplicate',
+      );
     });
 
-    should('replace the element correctly for \'set\'', () => {
+    should("replace the element correctly for 'set'", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -537,39 +637,50 @@ test('@persona/src/output/foreach', () => {
       const setNode = 'div0';
       $elSlotlessValue$.get(_.tester.vine).next([setNode, node2, node3]);
 
-      assert(snapshotElement(element)).to.match('foreach__el_slotless_set.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__el_slotless_set',
+      );
     });
 
-    should('handle insertion and deletions of renders with multiple nodes', () => {
-      $renderer.get(_.tester.vine).render = value => {
-        const node = document.createDocumentFragment();
-        node.appendChild(document.createElement(value));
-        node.appendChild(document.createElement(value));
-        node.appendChild(document.createElement(value));
-        return renderNode({node});
-      };
+    should(
+      'handle insertion and deletions of renders with multiple nodes',
+      async () => {
+        $renderer.get(_.tester.vine).render = (value) => {
+          const node = document.createDocumentFragment();
+          node.appendChild(document.createElement(value));
+          node.appendChild(document.createElement(value));
+          node.appendChild(document.createElement(value));
+          return renderNode({node});
+        };
 
-      const element = _.tester.bootstrapElement(HOST);
-      const id = 'div';
+        const element = _.tester.bootstrapElement(HOST);
+        const id = 'div';
 
-      $elSlotlessValue$.get(_.tester.vine).next([id]);
-      assert(snapshotElement(element)).to.match('foreach__el_slotless_multi_insert.golden');
+        $elSlotlessValue$.get(_.tester.vine).next([id]);
+        await asyncAssert(snapshotElement(element)).to.match(
+          'foreach__el_slotless_multi_insert',
+        );
 
-      $elSlotlessValue$.get(_.tester.vine).next([]);
-      assert(snapshotElement(element)).to.match('foreach__el_slotless_multi_delete.golden');
-    });
+        $elSlotlessValue$.get(_.tester.vine).next([]);
+        await asyncAssert(snapshotElement(element)).to.match(
+          'foreach__el_slotless_multi_delete',
+        );
+      },
+    );
   });
 
   test('withId', () => {
-    should('process \'init\' correctly', () => {
+    should("process 'init' correctly", async () => {
       const element = _.tester.bootstrapElement(HOST);
 
       $withIdValue$.get(_.tester.vine).next([['div1'], ['div2'], ['div3']]);
 
-      assert(snapshotElement(element)).to.match('foreach__with_id_init.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__with_id_init',
+      );
     });
 
-    should('process \'insert\' correctly for index 0', () => {
+    should("process 'insert' correctly for index 0", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -583,7 +694,9 @@ test('@persona/src/output/foreach', () => {
       const node3Before = harness.target.shadowRoot!.querySelector('div3');
 
       const insertNode = 'div0';
-      $withIdValue$.get(_.tester.vine).next([[insertNode], [node1], [node2], [node3]]);
+      $withIdValue$
+        .get(_.tester.vine)
+        .next([[insertNode], [node1], [node2], [node3]]);
       const node1After = harness.target.shadowRoot!.querySelector('div1');
       const node2After = harness.target.shadowRoot!.querySelector('div2');
       const node3After = harness.target.shadowRoot!.querySelector('div3');
@@ -592,10 +705,12 @@ test('@persona/src/output/foreach', () => {
       assert(node1After).to.equal(node1Before);
       assert(node2After).to.equal(node2Before);
       assert(node3After).to.equal(node3Before);
-      assert(snapshotElement(element)).to.match('foreach__with_id_insert_start.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__with_id_insert_start',
+      );
     });
 
-    should('process \'insert\' correctly for index 2', () => {
+    should("process 'insert' correctly for index 2", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -603,12 +718,16 @@ test('@persona/src/output/foreach', () => {
       $withIdValue$.get(_.tester.vine).next([[node1], [node2], [node3]]);
 
       const insertNode = 'div0';
-      $withIdValue$.get(_.tester.vine).next([[node1], [node2], [insertNode], [node3]]);
+      $withIdValue$
+        .get(_.tester.vine)
+        .next([[node1], [node2], [insertNode], [node3]]);
 
-      assert(snapshotElement(element)).to.match('foreach__with_id_insert_middle.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__with_id_insert_middle',
+      );
     });
 
-    should('process \'insert\' correctly for large index', () => {
+    should("process 'insert' correctly for large index", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -616,12 +735,16 @@ test('@persona/src/output/foreach', () => {
       $withIdValue$.get(_.tester.vine).next([[node1], [node2], [node3]]);
 
       const insertNode = 'div0';
-      $withIdValue$.get(_.tester.vine).next([[node1], [node2], [node3], [insertNode]]);
+      $withIdValue$
+        .get(_.tester.vine)
+        .next([[node1], [node2], [node3], [insertNode]]);
 
-      assert(snapshotElement(element)).to.match('foreach__with_id_insert_end.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__with_id_insert_end',
+      );
     });
 
-    should('process \'delete\' correctly', () => {
+    should("process 'delete' correctly", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -630,10 +753,12 @@ test('@persona/src/output/foreach', () => {
 
       $withIdValue$.get(_.tester.vine).next([[node1], [node3]]);
 
-      assert(snapshotElement(element)).to.match('foreach__with_id_delete.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__with_id_delete',
+      );
     });
 
-    should('ignore node insertions with the same id', () => {
+    should('ignore node insertions with the same id', async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div1';
@@ -641,20 +766,24 @@ test('@persona/src/output/foreach', () => {
       $withIdValue$.get(_.tester.vine).next([[node1]]);
       $withIdValue$.get(_.tester.vine).next([[node2]]);
 
-      assert(snapshotElement(element)).to.match('foreach__with_id_same_id.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__with_id_same_id',
+      );
     });
 
-    should('handle deleting duplicates', () => {
+    should('handle deleting duplicates', async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node = 'div';
       $withIdValue$.get(_.tester.vine).next([[node], [node]]);
 
       $withIdValue$.get(_.tester.vine).next([]);
 
-      assert(snapshotElement(element)).to.match('foreach__with_id_delete_duplicate.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__with_id_delete_duplicate',
+      );
     });
 
-    should('replace the element correctly for \'set\'', () => {
+    should("replace the element correctly for 'set'", async () => {
       const element = _.tester.bootstrapElement(HOST);
       const node1 = 'div1';
       const node2 = 'div2';
@@ -664,26 +793,35 @@ test('@persona/src/output/foreach', () => {
       const setNode = 'div0';
       $withIdValue$.get(_.tester.vine).next([[setNode], [node2], [node3]]);
 
-      assert(snapshotElement(element)).to.match('foreach__with_id_set.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'foreach__with_id_set',
+      );
     });
 
-    should('handle insertion and deletions of renders with multiple nodes', () => {
-      $renderer.get(_.tester.vine).render = value => {
-        const node = document.createDocumentFragment();
-        node.appendChild(document.createElement(value));
-        node.appendChild(document.createElement(value));
-        node.appendChild(document.createElement(value));
-        return renderNode({node});
-      };
+    should(
+      'handle insertion and deletions of renders with multiple nodes',
+      async () => {
+        $renderer.get(_.tester.vine).render = (value) => {
+          const node = document.createDocumentFragment();
+          node.appendChild(document.createElement(value));
+          node.appendChild(document.createElement(value));
+          node.appendChild(document.createElement(value));
+          return renderNode({node});
+        };
 
-      const element = _.tester.bootstrapElement(HOST);
-      const id = 'div';
+        const element = _.tester.bootstrapElement(HOST);
+        const id = 'div';
 
-      $withIdValue$.get(_.tester.vine).next([[id]]);
-      assert(snapshotElement(element)).to.match('foreach__with_id_multi_insert.golden');
+        $withIdValue$.get(_.tester.vine).next([[id]]);
+        await asyncAssert(snapshotElement(element)).to.match(
+          'foreach__with_id_multi_insert',
+        );
 
-      $withIdValue$.get(_.tester.vine).next([]);
-      assert(snapshotElement(element)).to.match('foreach__with_id_multi_delete.golden');
-    });
+        $withIdValue$.get(_.tester.vine).next([]);
+        await asyncAssert(snapshotElement(element)).to.match(
+          'foreach__with_id_multi_delete',
+        );
+      },
+    );
   });
 });

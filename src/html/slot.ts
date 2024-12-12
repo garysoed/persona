@@ -6,10 +6,10 @@ import {ELEMENT_SPEC} from './element';
 
 export const SLOT = createDomRegistration({
   ctor: HTMLSlotElement,
+  namespace: ElementNamespace.HTML,
   spec: {
     ...ELEMENT_SPEC,
     slotted: oslotted(),
   },
   tag: 'slot',
-  namespace: ElementNamespace.HTML,
 });

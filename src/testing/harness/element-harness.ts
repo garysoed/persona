@@ -6,7 +6,6 @@ import {dispatchResizeEvent} from '../fake-resize-observer';
 
 import {EventTargetHarness} from './event-target-harness';
 
-
 interface MouseOutEvents {
   readonly leaves: readonly MouseEvent[];
   readonly out: MouseEvent;
@@ -21,8 +20,8 @@ export class ElementHarness<E extends Element> extends EventTargetHarness<E> {
   static override readonly validType = instanceofType(Element);
 
   constructor(
-      override readonly target: E,
-      readonly hostElement: Element,
+    override readonly target: E,
+    readonly hostElement: Element,
   ) {
     super(target);
   }
@@ -32,8 +31,8 @@ export class ElementHarness<E extends Element> extends EventTargetHarness<E> {
     this.target.dispatchEvent(out);
 
     const leaves: MouseEvent[] = [];
-    let curr: Element|null = this.target;
-    while(curr !== null) {
+    let curr: Element | null = this.target;
+    while (curr !== null) {
       const enter = new MouseEvent('mouseleave', options);
       curr.dispatchEvent(enter);
       leaves.push(enter);
@@ -42,14 +41,13 @@ export class ElementHarness<E extends Element> extends EventTargetHarness<E> {
 
     return {leaves, out};
   }
-
   simulateMouseOver(options: MouseEventInit = {}): MouseOverEvents {
     const over = new MouseEvent('mouseover', {bubbles: true, ...options});
     this.target.dispatchEvent(over);
 
     const enters: MouseEvent[] = [];
-    let curr: Element|null = this.target;
-    while(curr !== null) {
+    let curr: Element | null = this.target;
+    while (curr !== null) {
       const enter = new MouseEvent('mouseenter', options);
       curr.dispatchEvent(enter);
       enters.push(enter);
@@ -58,11 +56,9 @@ export class ElementHarness<E extends Element> extends EventTargetHarness<E> {
 
     return {enters, over};
   }
-
   simulateMutation(record: {} = {}): void {
     triggerFakeMutation(this.target, record);
   }
-
   simulateResize(newRect: DOMRect): Event {
     setBoundingClientRect(this.target, newRect);
     return dispatchResizeEvent(this.target, [{contentRect: newRect}]);

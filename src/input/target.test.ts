@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
-import {assert, should, test, setup} from 'gs-testing';
-import {cache} from 'gs-tools/export/data';
+import {asyncAssert, setup, should, test} from 'gs-testing';
+import {cached} from 'gs-tools/export/data';
 import {Observable, ReplaySubject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
@@ -15,7 +15,6 @@ import {Target} from '../types/target';
 
 import {itarget} from './target';
 
-
 const $elValue$ = source(() => new ReplaySubject<Target>());
 
 const $host = {
@@ -29,23 +28,22 @@ const $host = {
 class HostCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       this.context.shadow.el.target.pipe(
-          tap(value => $elValue$.get(this.context.vine).next(value)),
+        tap((value) => $elValue$.get(this.context.vine).next(value)),
       ),
     ];
   }
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '<div id="el"></div>',
 });
-
 
 test('@persona/src/input/target', () => {
   const _ = setup(() => {
@@ -54,11 +52,13 @@ test('@persona/src/input/target', () => {
   });
 
   test('el', () => {
-    should('update values correctly', () => {
+    should('update values correctly', async () => {
       const rootEl = _.tester.bootstrapElement(HOST);
       const element = getHarness(rootEl, '#el', ElementHarness).target;
 
-      assert($elValue$.get(_.tester.vine)).to.emitSequence([element]);
+      await asyncAssert($elValue$.get(_.tester.vine)).to.emitSequence([
+        element,
+      ]);
     });
   });
 });

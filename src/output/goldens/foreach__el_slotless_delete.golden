@@ -1,5 +1,0 @@
-{
-  "type": "element",
-  "raw": "<test-host><gst-fake-shadow><!-- #root --><div id=\"el\"><div1 gst-warning-is-unknown=\"\"></div1><div3 gst-warning-is-unknown=\"\"></div3><!-- #ref --></div><!-- #withId --></gst-fake-shadow></test-host>",
-  "name": "foreach__el_slotless_delete"
-}

@@ -1,7 +1,10 @@
 export {Bindings, Context, Ctrl, Spec as ElementSpec} from '../src/types/ctrl';
 export {installCustomElements} from '../src/core/install-custom-elements';
 export {registerCustomElement} from '../src/core/register-custom-element';
-export {CustomElementRegistration, Registration} from '../src/types/registration';
+export {
+  CustomElementRegistration,
+  Registration,
+} from '../src/types/registration';
 
 export {query} from '../src/selector/query';
 export {root} from '../src/selector/root';
@@ -66,12 +69,27 @@ export {TextAnchor} from '../src/html/types/text-anchor';
 export {ParseType} from '../src/render/html-parse-service';
 export {RenderSpec} from '../src/render/types/render-spec';
 export {RenderSpecType} from '../src/render/types/render-spec-type';
-export {renderElement, RenderElementSpec} from '../src/render/types/render-element-spec';
-export {renderFragment, RenderFragmentSpec} from '../src/render/types/render-fragment-spec';
-export {renderString, RenderStringSpec} from '../src/render/types/render-string-spec';
+export {
+  renderElement,
+  RenderElementSpec,
+} from '../src/render/types/render-element-spec';
+export {
+  renderFragment,
+  RenderFragmentSpec,
+} from '../src/render/types/render-fragment-spec';
+export {
+  renderString,
+  RenderStringSpec,
+} from '../src/render/types/render-string-spec';
 export {renderNode, RenderNodeSpec} from '../src/render/types/render-node-spec';
-export {renderTemplate, RenderTemplateSpec} from '../src/render/types/render-template-spec';
-export {RenderTextNodeSpec, renderTextNode} from '../src/render/types/render-text-node-spec';
+export {
+  renderTemplate,
+  RenderTemplateSpec,
+} from '../src/render/types/render-template-spec';
+export {
+  RenderTextNodeSpec,
+  renderTextNode,
+} from '../src/render/types/render-text-node-spec';
 
 // Parsers
 export {integerParser} from '../src/parser/integer-parser';
@@ -87,4 +105,3 @@ export {mutationObservable} from '../src/util/mutation-observable';
 export {resizeObservable} from '../src/util/resize-observable';
 export {LocationService} from '../src/location/location-service';
 export {fromPattern} from '../src/location/location-converter';
-

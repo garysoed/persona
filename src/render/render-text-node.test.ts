@@ -1,7 +1,7 @@
 import {source} from 'grapevine';
-import {assert, runEnvironment, should, test, setup} from 'gs-testing';
+import {asyncAssert, runEnvironment, setup, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
-import {cache} from 'gs-tools/export/data';
+import {cached} from 'gs-tools/export/data';
 import {Observable, of, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -11,9 +11,7 @@ import {root} from '../selector/root';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
-import goldens from './goldens/goldens.json';
 import {renderTextNode} from './types/render-text-node-spec';
-
 
 const $text = source(() => new Subject<string>());
 
@@ -28,38 +26,40 @@ const $host = {
 class HostCtrl implements Ctrl {
   constructor(private readonly $: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $text.get(this.$.vine).pipe(
-          this.$.shadow.el.value(map(textContent => {
+        this.$.shadow.el.value(
+          map((textContent) => {
             return renderTextNode({textContent: of(textContent)});
-          })),
+          }),
+        ),
       ),
     ];
   }
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '<!-- #ref -->',
 });
 
 test('@persona/src/render/render-text-node', () => {
   const _ = setup(() => {
-    runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));
+    runEnvironment(new BrowserSnapshotsEnv('src/render/goldens'));
     const tester = setupTest({roots: [HOST]});
     return {tester};
   });
 
-  should('emit the text node', () => {
+  should('emit the text node', async () => {
     const element = _.tester.bootstrapElement(HOST);
 
     const textContent = 'textContent';
     $text.get(_.tester.vine).next(textContent);
 
-    assert(snapshotElement(element)).to.match('render-text-node.golden');
+    await asyncAssert(snapshotElement(element)).to.match('render-text-node');
   });
 });

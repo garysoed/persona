@@ -5,7 +5,7 @@ import {ELEMENT_SPEC} from './element';
 
 export const LABEL = createDomRegistration({
   ctor: HTMLLabelElement,
+  namespace: ElementNamespace.HTML,
   spec: ELEMENT_SPEC,
   tag: 'label',
-  namespace: ElementNamespace.HTML,
 });

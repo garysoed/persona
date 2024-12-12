@@ -1,28 +1,59 @@
 import {Vine} from 'grapevine';
 import {$map} from 'gs-tools/export/collect';
 import {$pipe} from 'gs-tools/export/typescript';
-import {BehaviorSubject, combineLatest, defer, EMPTY, merge, Observable, of, Subject, timer} from 'rxjs';
-import {catchError, distinctUntilChanged, map, shareReplay, switchMap} from 'rxjs/operators';
+import {
+  BehaviorSubject,
+  combineLatest,
+  defer,
+  EMPTY,
+  merge,
+  Observable,
+  of,
+  Subject,
+  timer,
+} from 'rxjs';
+import {
+  catchError,
+  distinctUntilChanged,
+  map,
+  shareReplay,
+  switchMap,
+} from 'rxjs/operators';
 
 import {RenderContext} from '../render/types/render-context';
-import {Bindings, BindingSpec, OutputBinding, ResolvedBindingSpec, ResolvedBindingSpecProvider, ShadowBindings, Spec} from '../types/ctrl';
+import {
+  Bindings,
+  BindingSpec,
+  OutputBinding,
+  ResolvedBindingSpec,
+  ResolvedBindingSpecProvider,
+  ShadowBindings,
+  Spec,
+} from '../types/ctrl';
 import {ApiType, IOType, IValue, OValue} from '../types/io';
-import {CustomElementRegistration, RegistrationSpec} from '../types/registration';
+import {
+  CustomElementRegistration,
+  RegistrationSpec,
+} from '../types/registration';
 import {setValueObservable} from '../util/value-observable';
 
 import {createBindings} from './create-bindings';
 import {$getTemplate} from './templates-cache';
 
-
 const CLEANUP_DELAY_MS = 1000;
 
 export function upgradeElement(
-    registration: CustomElementRegistration<HTMLElement, Spec>,
-    element: HTMLElement,
-    isConnected$: Subject<boolean>,
-    vine: Vine,
+  registration: CustomElementRegistration<HTMLElement, Spec>,
+  element: HTMLElement,
+  isConnected$: Subject<boolean>,
+  vine: Vine,
 ): void {
-  const shadowRoot = createShadow(registration, element, vine, element.ownerDocument);
+  const shadowRoot = createShadow(
+    registration,
+    element,
+    vine,
+    element.ownerDocument,
+  );
   createProperties(registration, element);
   createMethods(registration, element);
   createCtrl(registration, element, shadowRoot, vine, isConnected$);
@@ -30,73 +61,83 @@ export function upgradeElement(
 }
 
 function createCtrl(
-    registrationSpec: CustomElementRegistration<HTMLElement, Spec>,
-    element: HTMLElement,
-    shadowRoot: ShadowRoot,
-    vine: Vine,
-    isConnected$: Observable<boolean>,
+  registrationSpec: CustomElementRegistration<HTMLElement, Spec>,
+  element: HTMLElement,
+  shadowRoot: ShadowRoot,
+  vine: Vine,
+  isConnected$: Observable<boolean>,
 ): void {
   const renderContext = {
     document: element.ownerDocument,
     vine,
   };
   const ctrl$ = defer(() => {
-    return of(new registrationSpec.ctrl({
-      element,
-      document: element.ownerDocument,
-      host: createBindings(registrationSpec.spec.host ?? {}, element, renderContext),
-      shadow: createShadowBindingObjects(
+    return of(
+      new registrationSpec.ctrl({
+        document: element.ownerDocument,
+        element,
+        host: createBindings(
+          registrationSpec.spec.host ?? {},
+          element,
+          renderContext,
+        ),
+        shadow: createShadowBindingObjects(
           registrationSpec.spec.shadow ?? {},
           shadowRoot,
           renderContext,
-      ),
-      shadowRoot,
-      vine,
-    }));
-  })
-      .pipe(
-          catchError(err => {
-            // eslint-disable-next-line no-console
-            console.error(err);
-            return EMPTY;
-          }),
-          shareReplay({bufferSize: 1, refCount: false}),
-      );
+        ),
+        shadowRoot,
+        vine,
+      }),
+    );
+  }).pipe(
+    catchError((err) => {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      return EMPTY;
+    }),
+    shareReplay({bufferSize: 1, refCount: false}),
+  );
 
   combineLatest([
     ctrl$,
     isConnected$.pipe(
-        switchMap(isConnected => {
-          return isConnected ? of(true) : timer(CLEANUP_DELAY_MS).pipe(map(() => false));
-        }),
-        distinctUntilChanged(),
-    )])
-      .pipe(
-          switchMap(([ctrl, isConnected]) => {
-            if (!isConnected) {
-              return EMPTY;
-            }
+      switchMap((isConnected) => {
+        return isConnected
+          ? of(true)
+          : timer(CLEANUP_DELAY_MS).pipe(map(() => false));
+      }),
+      distinctUntilChanged(),
+    ),
+  ])
+    .pipe(
+      switchMap(([ctrl, isConnected]) => {
+        if (!isConnected) {
+          return EMPTY;
+        }
 
-            const runs = $pipe(
-                ctrl.runs,
-                $map(run => run.pipe(
-                    catchError(err => {
-                      // eslint-disable-next-line no-console
-                      console.warn(err);
-                      return EMPTY;
-                    }),
-                )),
-            );
+        const runs = $pipe(
+          ctrl.runs,
+          $map((run) =>
+            run.pipe(
+              catchError((err) => {
+                // eslint-disable-next-line no-console
+                console.warn(err);
+                return EMPTY;
+              }),
+            ),
+          ),
+        );
 
-            return merge(...runs);
-          }),
-      )
-      .subscribe();
+        return merge(...runs);
+      }),
+    )
+    .subscribe();
 }
 
 function createMethods(
-    registrationSpec: RegistrationSpec<Spec>,
-    element: HTMLElement,
+  registrationSpec: RegistrationSpec<Spec>,
+  element: HTMLElement,
 ): void {
   const methodRecord: Record<string, Function> = {};
   const spec = {
@@ -104,7 +145,7 @@ function createMethods(
   };
   for (const key in spec.host) {
     const io = spec.host[key];
-    if (io.apiType !== ApiType.CALL) {
+    if (!io || io.apiType !== ApiType.CALL) {
       continue;
     }
 
@@ -119,8 +160,8 @@ function createMethods(
 }
 
 function createProperties(
-    registrationSpec: RegistrationSpec<Spec>,
-    element: HTMLElement,
+  registrationSpec: RegistrationSpec<Spec>,
+  element: HTMLElement,
 ): void {
   const descriptor: Record<string, PropertyDescriptor> = {};
   const spec = {
@@ -128,7 +169,7 @@ function createProperties(
   };
   for (const key in spec.host) {
     const io = spec.host[key];
-    if (io.apiType !== ApiType.VALUE) {
+    if (!io || io.apiType !== ApiType.VALUE) {
       continue;
     }
 
@@ -140,10 +181,9 @@ function createProperties(
   Object.defineProperties(element, descriptor);
 }
 
-
 function createDescriptorForProperty<T>(
-    io: IValue<T, string>|OValue<T, string>,
-    value$: BehaviorSubject<T>,
+  io: IValue<T, string> | OValue<T, string>,
+  value$: BehaviorSubject<T>,
 ): PropertyDescriptor {
   const getterDescriptor: PropertyDescriptor = {
     get(): unknown {
@@ -168,38 +208,49 @@ function createDescriptorForProperty<T>(
 }
 
 function createShadow(
-    registrationSpec: CustomElementRegistration<HTMLElement, Spec>,
-    element: HTMLElement,
-    vine: Vine,
-    document: Document,
+  registrationSpec: CustomElementRegistration<HTMLElement, Spec>,
+  element: HTMLElement,
+  vine: Vine,
+  document: Document,
 ): ShadowRoot {
   if (element.shadowRoot) {
     return element.shadowRoot;
   }
   const root = element.attachShadow({mode: 'open'});
-  root.appendChild($getTemplate.get(vine)(registrationSpec, document).content.cloneNode(true));
+  root.appendChild(
+    $getTemplate.get(vine)(registrationSpec, document).content.cloneNode(true),
+  );
   return root;
 }
 
-type ShadowBindingRecord = Record<string, ResolvedBindingSpecProvider<ResolvedBindingSpec, any>>;
+type ShadowBindingRecord = Record<
+  string,
+  ResolvedBindingSpecProvider<ResolvedBindingSpec, any>
+>;
 function createShadowBindingObjects<O extends ShadowBindingRecord>(
-    spec: O,
-    shadowRoot: ShadowRoot,
-    context: RenderContext,
+  specs: O,
+  shadowRoot: ShadowRoot,
+  context: RenderContext,
 ): ShadowBindings<O> {
   const partial: Record<string, Bindings<BindingSpec, any>> = {};
-  for (const key in spec) {
-    partial[key] = createShadowBindings(spec[key], shadowRoot, context);
+  for (const key in specs) {
+    const spec = specs[key];
+    if (!spec) {
+      throw new Error(`No specs for key ${key} found`);
+    }
+    partial[key] = createShadowBindings(spec, shadowRoot, context);
   }
   return partial as ShadowBindings<O>;
 }
 
 function createShadowBindings<S extends ResolvedBindingSpec>(
-    spec: ResolvedBindingSpecProvider<S, any>,
-    shadowRoot: ShadowRoot,
-    context: RenderContext,
+  spec: ResolvedBindingSpecProvider<S, any>,
+  shadowRoot: ShadowRoot,
+  context: RenderContext,
 ): Bindings<S, any> {
-  const partial: Partial<Record<string, Observable<unknown>|OutputBinding<any, any, any[]>>> = {};
+  const partial: Partial<
+    Record<string, Observable<unknown> | OutputBinding<any, any, any[]>>
+  > = {};
   for (const key in spec) {
     partial[key] = spec[key](shadowRoot, context);
   }

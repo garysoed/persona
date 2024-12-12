@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
-import {assert, should, test, setup} from 'gs-testing';
-import {cache} from 'gs-tools/export/data';
+import {asyncAssert, setup, should, test} from 'gs-testing';
+import {cached} from 'gs-tools/export/data';
 import {forwardTo} from 'gs-tools/export/rxjs';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 
@@ -15,11 +15,9 @@ import {Context, Ctrl} from '../types/ctrl';
 
 import {itext} from './text';
 
-
 const $hostValue$ = source(() => new ReplaySubject<string>());
 const $elValue$ = source(() => new ReplaySubject<string>());
 const $shadowValue$ = source(() => new Subject<string>());
-
 
 const $host = {
   host: {
@@ -32,11 +30,10 @@ const $host = {
   },
 };
 
-
 class HostCtrl implements Ctrl {
   constructor(private readonly $: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       this.$.host.text.pipe(forwardTo($hostValue$.get(this.$.vine))),
@@ -46,9 +43,9 @@ class HostCtrl implements Ctrl {
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '<div id="div"></div>',
 });
 
@@ -61,22 +58,23 @@ const $shadow = {
 class ShadowCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $shadow>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
-      $shadowValue$.get(this.context.vine).pipe(this.context.shadow.deps.text()),
+      $shadowValue$
+        .get(this.context.vine)
+        .pipe(this.context.shadow.deps.text()),
     ];
   }
 }
 
 const SHADOW = registerCustomElement({
-  tag: 'test-shadow',
   ctrl: ShadowCtrl,
-  spec: $shadow,
-  template: '<test-host id="deps"></test-host>',
   deps: [HOST],
+  spec: $shadow,
+  tag: 'test-shadow',
+  template: '<test-host id="deps"></test-host>',
 });
-
 
 test('@persona/src/input/text', () => {
   const _ = setup(() => {
@@ -85,35 +83,44 @@ test('@persona/src/input/text', () => {
   });
 
   test('host', () => {
-    should('emit values on sets', () => {
+    should('emit values on sets', async () => {
       const element = _.tester.bootstrapElement(HOST);
       const text = 'text';
       element.textContent = text;
       triggerFakeMutation(element, {});
 
-      assert($hostValue$.get(_.tester.vine)).to.emitSequence(['', text]);
+      await asyncAssert($hostValue$.get(_.tester.vine)).to.emitSequence([
+        '',
+        text,
+      ]);
     });
   });
 
   test('el', () => {
-    should('emit values on sets', () => {
+    should('emit values on sets', async () => {
       const element = _.tester.bootstrapElement(HOST);
       const text = 'text';
       const div = getHarness(element, '#div', ElementHarness).target;
       div.textContent = text;
       triggerFakeMutation(div, {});
 
-      assert($elValue$.get(_.tester.vine)).to.emitSequence(['', text]);
+      await asyncAssert($elValue$.get(_.tester.vine)).to.emitSequence([
+        '',
+        text,
+      ]);
     });
   });
 
   test('shadow', () => {
-    should('emit values on sets', () => {
+    should('emit values on sets', async () => {
       _.tester.bootstrapElement(SHADOW);
       const text = 'text';
       $shadowValue$.get(_.tester.vine).next(text);
 
-      assert($hostValue$.get(_.tester.vine)).to.emitSequence(['', text]);
+      await asyncAssert($hostValue$.get(_.tester.vine)).to.emitSequence([
+        '',
+        text,
+      ]);
     });
   });
 });

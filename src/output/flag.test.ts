@@ -1,7 +1,14 @@
 import {source} from 'grapevine';
-import {assert, runEnvironment, should, test, setup} from 'gs-testing';
+import {
+  assert,
+  asyncAssert,
+  runEnvironment,
+  setup,
+  should,
+  test,
+} from 'gs-testing';
 import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
-import {cache} from 'gs-tools/export/data';
+import {cached} from 'gs-tools/export/data';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
@@ -12,13 +19,10 @@ import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import {oflag} from './flag';
-import goldens from './goldens/goldens.json';
-
 
 const $hostValue$ = source(() => new Subject<boolean>());
 const $elValue$ = source(() => new Subject<boolean>());
 const $shadowValue$ = source(() => new ReplaySubject<boolean>());
-
 
 const $host = {
   host: {
@@ -34,7 +38,7 @@ const $host = {
 class HostCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $hostValue$.get(this.context.vine).pipe(this.context.host.value()),
@@ -44,9 +48,9 @@ class HostCtrl implements Ctrl {
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '<div id="el"></div>',
 });
 
@@ -59,28 +63,27 @@ const $shadow = {
 class ShadowCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $shadow>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       this.context.shadow.deps.value.pipe(
-          tap(value => $shadowValue$.get(this.context.vine).next(value)),
+        tap((value) => $shadowValue$.get(this.context.vine).next(value)),
       ),
     ];
   }
 }
 
 const SHADOW = registerCustomElement({
-  tag: 'test-shadow',
   ctrl: ShadowCtrl,
-  spec: $shadow,
-  template: '<test-host id="deps"></test-host>',
   deps: [HOST],
+  spec: $shadow,
+  tag: 'test-shadow',
+  template: '<test-host id="deps"></test-host>',
 });
-
 
 test('@persona/src/output/flag', () => {
   const _ = setup(() => {
-    runEnvironment(new BrowserSnapshotsEnv('src/output/goldens', goldens));
+    runEnvironment(new BrowserSnapshotsEnv('src/output/goldens'));
     const tester = setupTest({roots: [SHADOW]});
     return {tester};
   });
@@ -100,25 +103,28 @@ test('@persona/src/output/flag', () => {
   });
 
   test('el', () => {
-    should('update values correctly', () => {
+    should('update values correctly', async () => {
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(snapshotElement(element)).to.match('flag__el_empty.golden');
+      await asyncAssert(snapshotElement(element)).to.match('flag__el_empty');
 
       $elValue$.get(_.tester.vine).next(true);
-      assert(snapshotElement(element)).to.match('flag__el_value.golden');
+      await asyncAssert(snapshotElement(element)).to.match('flag__el_value');
 
       $elValue$.get(_.tester.vine).next(false);
-      assert(snapshotElement(element)).to.match('flag__el_reset.golden');
+      await asyncAssert(snapshotElement(element)).to.match('flag__el_reset');
     });
   });
 
   test('shadow', () => {
-    should('update values correctly', () => {
+    should('update values correctly', async () => {
       _.tester.bootstrapElement(SHADOW);
 
       $hostValue$.get(_.tester.vine).next(true);
-      assert($shadowValue$.get(_.tester.vine)).to.emitSequence([false, true]);
+      await asyncAssert($shadowValue$.get(_.tester.vine)).to.emitSequence([
+        false,
+        true,
+      ]);
     });
   });
 });

@@ -2,21 +2,18 @@
   "extends": "devbase/ts",
   "compilerOptions": {
     "baseUrl": ".",
-    "lib": [
-      "dom",
-      "es2015"
-    ],
+    "lib": ["dom", "es2015"],
     "outDir": "out",
     "paths": {
       "gs-tools/export/*": ["node_modules/gs-tools/export/*"],
       "rxjs": ["node_modules/rxjs"],
-      "rxjs/*": ["node_modules/rxjs/*"],
-    },
+      "rxjs/*": ["node_modules/rxjs/*"]
+    }
   },
   "include": [
     "src/**/*.json",
     "src/**/*.ts",
     "node_modules/devbase/ts/typings/*.d.ts",
-    "export/*.ts",
+    "export/*.ts"
   ]
 }

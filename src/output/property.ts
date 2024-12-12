@@ -9,9 +9,11 @@ export class ResolvedOProperty implements OProperty {
 
   constructor(readonly propertyName: string) {}
 
-  resolve(target: HTMLElement): () => OperatorFunction<string|null, string|null> {
+  resolve(
+    target: HTMLElement,
+  ): () => OperatorFunction<string | null, string | null> {
     return () => {
-      return tap(value => {
+      return tap((value) => {
         target.style.setProperty(this.propertyName, value);
       });
     };

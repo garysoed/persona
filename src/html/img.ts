@@ -6,10 +6,10 @@ import {ELEMENT_SPEC} from './element';
 
 export const IMG = createDomRegistration({
   ctor: HTMLImageElement,
+  namespace: ElementNamespace.HTML,
   spec: {
     ...ELEMENT_SPEC,
     src: iattr('src'),
   },
   tag: 'img',
-  namespace: ElementNamespace.HTML,
 });

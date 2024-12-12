@@ -1,5 +1,0 @@
-{
-  "type": "element",
-  "raw": "<test-host><gst-fake-shadow><!-- #root --><div1 gst-warning-is-unknown=\"\"></div1><div2 gst-warning-is-unknown=\"\"></div2><div3 gst-warning-is-unknown=\"\"></div3><div0 gst-warning-is-unknown=\"\"></div0><div id=\"el\"><!-- #ref --></div><!-- #withId --></gst-fake-shadow></test-host>",
-  "name": "foreach__root_insert_end"
-}

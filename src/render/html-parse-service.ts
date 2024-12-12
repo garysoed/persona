@@ -6,31 +6,32 @@ export enum ParseType {
   SVG = 'image/svg+xml',
 }
 
-export type ElementForType<T extends ParseType> =
-    T extends ParseType.HTML ? HTMLElement :
-    T extends ParseType.SVG ? SVGElement :
-    never;
+export type ElementForType<T extends ParseType> = T extends ParseType.HTML
+  ? HTMLElement
+  : T extends ParseType.SVG
+    ? SVGElement
+    : never;
 
 export class HtmlParseService {
-  private readonly elMap = new Map<string, Observable<Element|null>>();
+  private readonly elMap = new Map<string, Observable<Element | null>>();
 
-  constructor(
-      private readonly domParser: DOMParser = new DOMParser(),
-  ) { }
+  constructor(private readonly domParser: DOMParser = new DOMParser()) {}
 
-  parse(raw: string, supportedType: ParseType): Observable<Element|null> {
+  parse(raw: string, supportedType: ParseType): Observable<Element | null> {
     const existingEl$ = this.elMap.get(raw);
     if (existingEl$) {
       return existingEl$;
     }
 
     const result = this.domParser.parseFromString(raw, supportedType);
-    const el = supportedType === ParseType.HTML ? result.body.firstChild : result.firstChild;
-    const el$ = of(el as Element|null);
+    const el =
+      supportedType === ParseType.HTML
+        ? result.body.firstChild
+        : result.firstChild;
+    const el$ = of(el as Element | null);
     this.elMap.set(raw, el$);
     return el$;
   }
 }
 
 export const $htmlParseService = source(() => new HtmlParseService());
-

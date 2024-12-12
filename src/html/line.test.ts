@@ -1,5 +1,5 @@
 import {source} from 'grapevine';
-import {assert, runEnvironment, should, test, setup} from 'gs-testing';
+import {asyncAssert, runEnvironment, setup, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
 import {Observable, Subject, of} from 'rxjs';
 
@@ -11,7 +11,6 @@ import {query} from '../selector/query';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
-import goldens from './goldens/goldens.json';
 import {LINE} from './line';
 import {LineCap} from './presentational-attributes';
 import {SVG} from './svg';
@@ -31,43 +30,47 @@ class TestElement implements Ctrl {
 
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
-      $renderSpec$.get(this.$.vine).pipe(this.$.shadow.svg.content(spec => spec)),
+      $renderSpec$
+        .get(this.$.vine)
+        .pipe(this.$.shadow.svg.content((spec) => spec)),
     ];
   }
 }
 
 const TEST = registerCustomElement({
-  tag: 'ps-test',
   ctrl: TestElement,
   spec: $test,
+  tag: 'ps-test',
   template: '<svg></svg>',
 });
 
 test('@persona/src/html/line', () => {
   const _ = setup(() => {
-    runEnvironment(new BrowserSnapshotsEnv('src/html/goldens', goldens));
+    runEnvironment(new BrowserSnapshotsEnv('src/html/goldens'));
 
     const tester = setupTest({roots: [TEST]});
     return {tester};
   });
 
-  should('render the line correctly', () => {
+  should('render the line correctly', async () => {
     const element = _.tester.bootstrapElement(TEST);
-    $renderSpec$.get(_.tester.vine).next(renderElement({
-      registration: LINE,
-      spec: {},
-      runs: $ => [
-        of(10).pipe($.x1()),
-        of(60).pipe($.x2()),
-        of(20).pipe($.y1()),
-        of(50).pipe($.y2()),
-        of('green').pipe($.stroke()),
-        of([10, 10]).pipe($.strokeDasharray()),
-        of(LineCap.ROUND).pipe($.strokeLinecap()),
-        of(.5).pipe($.strokeOpacity()),
-        of(5).pipe($.strokeWidth()),
-      ],
-    }));
-    assert(snapshotElement(element)).to.match('line.golden');
+    $renderSpec$.get(_.tester.vine).next(
+      renderElement({
+        registration: LINE,
+        runs: ($) => [
+          of(10).pipe($.x1()),
+          of(60).pipe($.x2()),
+          of(20).pipe($.y1()),
+          of(50).pipe($.y2()),
+          of('green').pipe($.stroke()),
+          of([10, 10]).pipe($.strokeDasharray()),
+          of(LineCap.ROUND).pipe($.strokeLinecap()),
+          of(0.5).pipe($.strokeOpacity()),
+          of(5).pipe($.strokeWidth()),
+        ],
+        spec: {},
+      }),
+    );
+    await asyncAssert(snapshotElement(element)).to.match('line');
   });
 });

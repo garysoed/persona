@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
-import {arrayThat, assert, should, test, setup} from 'gs-testing';
-import {cache} from 'gs-tools/export/data';
+import {arrayThat, asyncAssert, setup, should, test} from 'gs-testing';
+import {cached} from 'gs-tools/export/data';
 import {Observable, ReplaySubject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
@@ -12,9 +12,7 @@ import {SlotHarness} from '../testing/harness/slot-harness';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
-
 const $elValue$ = source(() => new ReplaySubject<readonly Node[]>());
-
 
 const $host = {
   shadow: {
@@ -25,23 +23,22 @@ const $host = {
 class HostCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       this.context.shadow.slot.slotted.pipe(
-          tap(value => $elValue$.get(this.context.vine).next(value)),
+        tap((value) => $elValue$.get(this.context.vine).next(value)),
       ),
     ];
   }
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '<slot id="slot"></slot>',
 });
-
 
 test('@persona/src/input/attr', () => {
   const _ = setup(() => {
@@ -50,14 +47,16 @@ test('@persona/src/input/attr', () => {
   });
 
   test('el', () => {
-    should('emit values on sets', () => {
+    should('emit values on sets', async () => {
       const element = _.tester.bootstrapElement(HOST);
       const newNode = document.createTextNode('text');
-      getHarness(element, '#slot', SlotHarness).simulateSlotChange(element => {
-        element.appendChild(newNode);
-      });
+      getHarness(element, '#slot', SlotHarness).simulateSlotChange(
+        (element) => {
+          element.appendChild(newNode);
+        },
+      );
 
-      assert($elValue$.get(_.tester.vine)).to.emitSequence([
+      await asyncAssert($elValue$.get(_.tester.vine)).to.emitSequence([
         arrayThat<Node>().haveExactElements([]),
         arrayThat<Node>().haveExactElements([newNode]),
       ]);

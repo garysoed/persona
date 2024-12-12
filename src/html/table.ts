@@ -5,7 +5,7 @@ import {ELEMENT_SPEC} from './element';
 
 export const TABLE = createDomRegistration({
   ctor: HTMLTableElement,
+  namespace: ElementNamespace.HTML,
   spec: ELEMENT_SPEC,
   tag: 'table',
-  namespace: ElementNamespace.HTML,
 });

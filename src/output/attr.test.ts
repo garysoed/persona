@@ -1,7 +1,14 @@
 import {source} from 'grapevine';
-import {assert, runEnvironment, should, test, setup} from 'gs-testing';
+import {
+  assert,
+  asyncAssert,
+  runEnvironment,
+  setup,
+  should,
+  test,
+} from 'gs-testing';
 import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
-import {cache} from 'gs-tools/export/data';
+import {cached} from 'gs-tools/export/data';
 import {reverse} from 'nabu';
 import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
@@ -14,17 +21,14 @@ import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import {oattr} from './attr';
-import goldens from './goldens/goldens.json';
 
+const $hostValue$ = source(() => new Subject<string | null>());
+const $elValue$ = source(() => new Subject<string | null>());
+const $shadowValue$ = source(() => new ReplaySubject<string | null>());
 
-const $hostValue$ = source(() => new Subject<string|null>());
-const $elValue$ = source(() => new Subject<string|null>());
-const $shadowValue$ = source(() => new ReplaySubject<string|null>());
-
-const $hostIntegerValue$ = source(() => new Subject<number|null>());
-const $elIntegerValue$ = source(() => new Subject<number|null>());
-const $shadowIntegerValue$ = source(() => new ReplaySubject<number|null>());
-
+const $hostIntegerValue$ = source(() => new Subject<number | null>());
+const $elIntegerValue$ = source(() => new Subject<number | null>());
+const $shadowIntegerValue$ = source(() => new ReplaySubject<number | null>());
 
 const $host = {
   host: {
@@ -42,21 +46,25 @@ const $host = {
 class HostCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $hostValue$.get(this.context.vine).pipe(this.context.host.value()),
-      $hostIntegerValue$.get(this.context.vine).pipe(this.context.host.valueInt()),
+      $hostIntegerValue$
+        .get(this.context.vine)
+        .pipe(this.context.host.valueInt()),
       $elValue$.get(this.context.vine).pipe(this.context.shadow.el.value()),
-      $elIntegerValue$.get(this.context.vine).pipe(this.context.shadow.el.valueInt()),
+      $elIntegerValue$
+        .get(this.context.vine)
+        .pipe(this.context.shadow.el.valueInt()),
     ];
   }
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '<div id="el"></div>',
 });
 
@@ -69,31 +77,30 @@ const $shadow = {
 class ShadowCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $shadow>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       this.context.shadow.deps.value.pipe(
-          tap(value => $shadowValue$.get(this.context.vine).next(value)),
+        tap((value) => $shadowValue$.get(this.context.vine).next(value)),
       ),
       this.context.shadow.deps.valueInt.pipe(
-          tap(value => $shadowIntegerValue$.get(this.context.vine).next(value)),
+        tap((value) => $shadowIntegerValue$.get(this.context.vine).next(value)),
       ),
     ];
   }
 }
 
 const SHADOW = registerCustomElement({
-  tag: 'test-shadow',
   ctrl: ShadowCtrl,
-  spec: $shadow,
-  template: '<test-host id="deps"></test-host>',
   deps: [HOST],
+  spec: $shadow,
+  tag: 'test-shadow',
+  template: '<test-host id="deps"></test-host>',
 });
-
 
 test('@persona/src/output/attr', () => {
   const _ = setup(() => {
-    runEnvironment(new BrowserSnapshotsEnv('src/output/goldens', goldens));
+    runEnvironment(new BrowserSnapshotsEnv('src/output/goldens'));
     const tester = setupTest({roots: [SHADOW]});
     return {tester};
   });
@@ -126,47 +133,58 @@ test('@persona/src/output/attr', () => {
   });
 
   test('el', () => {
-    should('update values correctly', () => {
+    should('update values correctly', async () => {
       const value = 'value';
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(snapshotElement(element)).to.match('attr__el_empty.golden');
+      await asyncAssert(snapshotElement(element)).to.match('attr__el_empty');
 
       $elValue$.get(_.tester.vine).next(value);
-      assert(snapshotElement(element)).to.match('attr__el_value.golden');
+      await asyncAssert(snapshotElement(element)).to.match('attr__el_value');
 
       $elValue$.get(_.tester.vine).next(null);
-      assert(snapshotElement(element)).to.match('attr__el_reset.golden');
+      await asyncAssert(snapshotElement(element)).to.match('attr__el_reset');
     });
 
-    should('update values with custom parsers correctly', () => {
+    should('update values with custom parsers correctly', async () => {
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(snapshotElement(element)).to.match('attr__el_integer_empty.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'attr__el_integer_empty',
+      );
 
       $elIntegerValue$.get(_.tester.vine).next(12);
-      assert(snapshotElement(element)).to.match('attr__el_integer_value.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'attr__el_integer_value',
+      );
 
       $elIntegerValue$.get(_.tester.vine).next(null);
-      assert(snapshotElement(element)).to.match('attr__el_integer_reset.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'attr__el_integer_reset',
+      );
     });
   });
 
   test('shadow', () => {
-    should('update values correctly', () => {
+    should('update values correctly', async () => {
       const value = 'value';
       _.tester.bootstrapElement(SHADOW);
 
       $hostValue$.get(_.tester.vine).next(value);
-      assert($shadowValue$.get(_.tester.vine)).to.emitSequence([null, value]);
+      await asyncAssert($shadowValue$.get(_.tester.vine)).to.emitSequence([
+        null,
+        value,
+      ]);
     });
 
-    should('update values with custom parsers correctly', () => {
+    should('update values with custom parsers correctly', async () => {
       const value = 12;
       _.tester.bootstrapElement(SHADOW);
 
       $hostIntegerValue$.get(_.tester.vine).next(value);
-      assert($shadowIntegerValue$.get(_.tester.vine)).to.emitSequence([null, value]);
+      await asyncAssert(
+        $shadowIntegerValue$.get(_.tester.vine),
+      ).to.emitSequence([null, value]);
     });
   });
 });

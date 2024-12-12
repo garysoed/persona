@@ -1,5 +1,0 @@
-{
-  "type": "element",
-  "raw": "<test-host><gst-fake-shadow><div id=\"el\" class=\"\"></div></gst-fake-shadow></test-host>",
-  "name": "class__el_reset"
-}

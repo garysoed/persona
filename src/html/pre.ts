@@ -5,7 +5,7 @@ import {ELEMENT_SPEC} from './element';
 
 export const PRE = createDomRegistration({
   ctor: HTMLPreElement,
+  namespace: ElementNamespace.HTML,
   spec: ELEMENT_SPEC,
   tag: 'pre',
-  namespace: ElementNamespace.HTML,
 });

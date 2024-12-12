@@ -5,16 +5,15 @@ import {Ctrl} from '../types/ctrl';
 
 import {registerCustomElement} from './register-custom-element';
 
-
 class DepsClass implements Ctrl {
   readonly runs = [];
 }
 
 const DEPS_CLASS = registerCustomElement({
-  tag: 'deps-el',
   ctrl: DepsClass,
-  template: '',
   spec: {},
+  tag: 'deps-el',
+  template: '',
 });
 
 class TestClass implements Ctrl {
@@ -22,10 +21,10 @@ class TestClass implements Ctrl {
 }
 
 const TEST_CLASS = registerCustomElement({
-  tag: 'test-el',
   ctrl: TestClass,
   deps: [DEPS_CLASS],
   spec: {},
+  tag: 'test-el',
   template: '',
 });
 

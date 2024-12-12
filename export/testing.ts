@@ -11,5 +11,7 @@ export {triggerFakeMutation} from '../src/testing/fake-mutation-observer';
 export {FakeCustomElementRegistry} from '../src/testing/fake-custom-element-registry';
 export {PersonaTesterEnvironment} from '../src/testing/persona-tester-environment';
 export {installFakeMutationObserver} from '../src/testing/fake-mutation-observer';
-export {dispatchResizeEvent, installFakeResizeObserver} from '../src/testing/fake-resize-observer';
-
+export {
+  dispatchResizeEvent,
+  installFakeResizeObserver,
+} from '../src/testing/fake-resize-observer';

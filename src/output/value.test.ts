@@ -1,6 +1,6 @@
 import {source} from 'grapevine';
-import {assert, fake, should, spy, test, setup} from 'gs-testing';
-import {cache} from 'gs-tools/export/data';
+import {assert, asyncAssert, fake, setup, should, spy, test} from 'gs-testing';
+import {cached} from 'gs-tools/export/data';
 import {numberType} from 'gs-types';
 import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {take, tap} from 'rxjs/operators';
@@ -13,10 +13,9 @@ import {setValueObservable} from '../util/value-observable';
 
 import {ovalue} from './value';
 
-
-const $hostValue$ = source(() => new Subject<number|undefined>());
+const $hostValue$ = source(() => new Subject<number | undefined>());
 const $hostValueWithDefault$ = source(() => new Subject<number>());
-const $shadowValue$ = source(() => new ReplaySubject<number|undefined>());
+const $shadowValue$ = source(() => new ReplaySubject<number | undefined>());
 const $shadowValueWithDefault$ = source(() => new ReplaySubject<number>());
 
 const DEFAULT_VALUE = 3;
@@ -24,26 +23,32 @@ const DEFAULT_VALUE = 3;
 const $host = {
   host: {
     value: ovalue('valueProp', numberType),
-    valueWithDefault: ovalue('valueWithDefaultProp', numberType, () => DEFAULT_VALUE),
+    valueWithDefault: ovalue(
+      'valueWithDefaultProp',
+      numberType,
+      () => DEFAULT_VALUE,
+    ),
   },
 };
 
 class HostCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $hostValue$.get(this.context.vine).pipe(this.context.host.value()),
-      $hostValueWithDefault$.get(this.context.vine).pipe(this.context.host.valueWithDefault()),
+      $hostValueWithDefault$
+        .get(this.context.vine)
+        .pipe(this.context.host.valueWithDefault()),
     ];
   }
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '',
 });
 
@@ -56,25 +61,27 @@ const $shadow = {
 class ShadowCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $shadow>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       this.context.shadow.deps.value.pipe(
-          tap(value => $shadowValue$.get(this.context.vine).next(value)),
+        tap((value) => $shadowValue$.get(this.context.vine).next(value)),
       ),
       this.context.shadow.deps.valueWithDefault.pipe(
-          tap(value => $shadowValueWithDefault$.get(this.context.vine).next(value)),
+        tap((value) =>
+          $shadowValueWithDefault$.get(this.context.vine).next(value),
+        ),
       ),
     ];
   }
 }
 
 const SHADOW = registerCustomElement({
-  tag: 'test-shadow',
   ctrl: ShadowCtrl,
-  spec: $shadow,
-  template: '<test-host id="deps"></test-host>',
   deps: [HOST],
+  spec: $shadow,
+  tag: 'test-shadow',
+  template: '<test-host id="deps"></test-host>',
 });
 
 test('@persona/src/output/value', () => {
@@ -106,42 +113,59 @@ test('@persona/src/output/value', () => {
   });
 
   test('shadow', () => {
-    should('update values correctly if the default value is given', () => {
-      const value = 2;
-      _.tester.bootstrapElement(SHADOW);
+    should(
+      'update values correctly if the default value is given',
+      async () => {
+        const value = 2;
+        _.tester.bootstrapElement(SHADOW);
 
-      $hostValueWithDefault$.get(_.tester.vine).next(value);
-      assert($shadowValueWithDefault$.get(_.tester.vine)).to.emitSequence([DEFAULT_VALUE, value]);
-    });
+        $hostValueWithDefault$.get(_.tester.vine).next(value);
+        await asyncAssert(
+          $shadowValueWithDefault$.get(_.tester.vine),
+        ).to.emitSequence([DEFAULT_VALUE, value]);
+      },
+    );
 
-    should('update values correctly if the default value is not given', () => {
-      const value = 2;
-      _.tester.bootstrapElement(SHADOW);
+    should(
+      'update values correctly if the default value is not given',
+      async () => {
+        const value = 2;
+        _.tester.bootstrapElement(SHADOW);
 
-      $hostValue$.get(_.tester.vine).next(value);
-      assert($shadowValue$.get(_.tester.vine)).to.emitSequence([undefined, value]);
-    });
+        $hostValue$.get(_.tester.vine).next(value);
+        await asyncAssert($shadowValue$.get(_.tester.vine)).to.emitSequence([
+          undefined,
+          value,
+        ]);
+      },
+    );
   });
 
-  should('update values correctly if target is not initialized on time', async () => {
-    const onWhenDefined$ = new Subject<CustomElementConstructor>();
-    fake(spy(window.customElements, 'whenDefined')).always()
+  should(
+    'update values correctly if target is not initialized on time',
+    async () => {
+      const onWhenDefined$ = new Subject<CustomElementConstructor>();
+      fake(spy(window.customElements, 'whenDefined'))
+        .always()
         .return(onWhenDefined$ as any);
 
-    const key = 'key';
-    const output = ovalue(key, numberType);
-    const tag = 'tag';
-    const target = document.createElement(tag);
+      const key = 'key';
+      const output = ovalue(key, numberType);
+      const tag = 'tag';
+      const target = document.createElement(tag);
 
-    const value = 123;
-    const onUpdate = of(456, value).pipe(output.resolve(target)(), take(1)).toPromise();
+      const value = 123;
+      const onUpdate = of(456, value)
+        .pipe(output.resolve(target)(), take(1))
+        .toPromise();
 
-    const value$ = new ReplaySubject();
-    setValueObservable(target, key, value$);
-    onWhenDefined$.next(HTMLElement);
+      const value$ = new ReplaySubject();
+      setValueObservable(target, key, value$);
+      onWhenDefined$.next(HTMLElement);
 
-    await onUpdate;
+      await onUpdate;
 
-    assert(value$).to.emitSequence([value]);
-  });
+      await asyncAssert(value$).to.emitSequence([value]);
+    },
+  );
 });

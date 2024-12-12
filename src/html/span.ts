@@ -5,7 +5,7 @@ import {ELEMENT_SPEC} from './element';
 
 export const SPAN = createDomRegistration({
   ctor: HTMLSpanElement,
+  namespace: ElementNamespace.HTML,
   spec: ELEMENT_SPEC,
   tag: 'span',
-  namespace: ElementNamespace.HTML,
 });

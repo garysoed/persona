@@ -8,4 +8,4 @@ export type HarnessCtor<E extends Element, H extends Harness<E>> = {
   new (element: E, hostElement: Element): H;
 
   readonly validType: Type<E>;
-}
+};

@@ -4,19 +4,19 @@ import {tap} from 'rxjs/operators';
 
 import {ApiType, IOType, OAttr} from '../types/io';
 
-
 class ResolvedOAttr<T> implements OAttr<T> {
   readonly apiType = ApiType.ATTR;
   readonly ioType = IOType.OUTPUT;
 
   constructor(
-      readonly attrName: string,
-      readonly converter: Converter<T, string>,
+    readonly attrName: string,
+    readonly converter: Converter<T, string>,
   ) {}
 
-  resolve(target: Element): () => OperatorFunction<T|null, T|null> {
-    return () => pipe(
-        tap(newValue => {
+  resolve(target: Element): () => OperatorFunction<T | null, T | null> {
+    return () =>
+      pipe(
+        tap((newValue) => {
           if (newValue === null) {
             target.removeAttribute(this.attrName);
             return;
@@ -29,13 +29,19 @@ class ResolvedOAttr<T> implements OAttr<T> {
             target.setAttribute(this.attrName, result.result);
           }
         }),
-    );
+      );
   }
 }
 
 export function oattr(attrName: string): ResolvedOAttr<string>;
-export function oattr<T>(attrName: string, converter: Converter<T, string>): ResolvedOAttr<T>;
-export function oattr<T>(attrName: string, converter?: Converter<T, string>): ResolvedOAttr<any> {
+export function oattr<T>(
+  attrName: string,
+  converter: Converter<T, string>,
+): ResolvedOAttr<T>;
+export function oattr<T>(
+  attrName: string,
+  converter?: Converter<T, string>,
+): ResolvedOAttr<any> {
   if (converter) {
     return new ResolvedOAttr(attrName, converter);
   }

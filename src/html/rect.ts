@@ -6,19 +6,18 @@ import {createDomRegistration} from './create-dom-registration';
 import {ELEMENT_SPEC} from './element';
 import {PRESENTATIONAL_ATTRIBUTES} from './presentational-attributes';
 
-
 export const RECT = createDomRegistration({
   ctor: SVGRectElement,
+  namespace: ElementNamespace.SVG,
   spec: {
     ...ELEMENT_SPEC,
     ...PRESENTATIONAL_ATTRIBUTES,
-    x: iattr('x', lengthParser()),
-    y: iattr('y', lengthParser()),
+    height: iattr('height', lengthParser()),
     rx: iattr('rx', lengthParser()),
     ry: iattr('ry', lengthParser()),
     width: iattr('width', lengthParser()),
-    height: iattr('height', lengthParser()),
+    x: iattr('x', lengthParser()),
+    y: iattr('y', lengthParser()),
   },
   tag: 'rect',
-  namespace: ElementNamespace.SVG,
 });

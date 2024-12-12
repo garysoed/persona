@@ -1,1 +1,1 @@
-export type Target = Element|ShadowRoot|DocumentFragment|SVGElement;
+export type Target = Element | ShadowRoot | DocumentFragment | SVGElement;

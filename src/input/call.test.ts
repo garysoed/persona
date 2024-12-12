@@ -1,6 +1,15 @@
 import {source} from 'grapevine';
-import {arrayThat, assert, createSpySubject, fake, should, spy, test, setup} from 'gs-testing';
-import {cache} from 'gs-tools/export/data';
+import {
+  asyncAssert,
+  createSpySubject,
+  fake,
+  setup,
+  should,
+  spy,
+  test,
+  tupleThat,
+} from 'gs-testing';
+import {cached} from 'gs-tools/export/data';
 import {numberType} from 'gs-types';
 import {BehaviorSubject, Observable, ReplaySubject, Subject} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
@@ -13,7 +22,6 @@ import {setValueObservable} from '../util/value-observable';
 
 import {icall} from './call';
 
-
 const $hostValue$ = source(() => new ReplaySubject<number>());
 const $shadowValue$ = source(() => new Subject<number>());
 
@@ -24,24 +32,22 @@ const $host = {
 };
 
 class HostCtrl implements Ctrl {
-  constructor(
-      private readonly context: Context<typeof $host>,
-  ) {}
+  constructor(private readonly context: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       this.context.host.fn.pipe(
-          tap(([value]) => $hostValue$.get(this.context.vine).next(value)),
+        tap(([value]) => $hostValue$.get(this.context.vine).next(value!)),
       ),
     ];
   }
 }
 
 const HOST = registerCustomElement<typeof $host>({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '',
 });
 
@@ -54,25 +60,24 @@ const $shadow = {
 class ShadowCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $shadow>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $shadowValue$.get(this.context.vine).pipe(
-          map(value => [value]),
-          this.context.shadow.deps.fn(),
+        map((value) => [value] satisfies [number]),
+        this.context.shadow.deps.fn(),
       ),
     ];
   }
 }
 
 const SHADOW = registerCustomElement({
-  tag: 'test-shadow',
   ctrl: ShadowCtrl,
-  spec: $shadow,
-  template: '<test-host id="deps"></test-host>',
   deps: [HOST],
+  spec: $shadow,
+  tag: 'test-shadow',
+  template: '<test-host id="deps"></test-host>',
 });
-
 
 test('@persona/src/input/call', () => {
   const _ = setup(() => {
@@ -84,29 +89,34 @@ test('@persona/src/input/call', () => {
   });
 
   test('host', () => {
-    should('emit values on calls', () => {
+    should('emit values on calls', async () => {
       const value = 2;
       const element = _.tester.bootstrapElement(HOST);
       element.callFn(value);
 
-      assert($hostValue$.get(_.tester.vine)).to.emitSequence([value]);
+      await asyncAssert($hostValue$.get(_.tester.vine)).to.emitSequence([
+        value,
+      ]);
     });
   });
 
   test('shadow', () => {
-    should('emit values on calls', () => {
+    should('emit values on calls', async () => {
       const value = 2;
       _.tester.bootstrapElement(SHADOW);
       $shadowValue$.get(_.tester.vine).next(value);
 
-      assert($hostValue$.get(_.tester.vine)).to.emitSequence([value]);
+      await asyncAssert($hostValue$.get(_.tester.vine)).to.emitSequence([
+        value,
+      ]);
     });
   });
 
   should('emit values if target is not initialized on time', async () => {
     const onWhenDefined$ = new Subject<CustomElementConstructor>();
-    fake(spy(window.customElements, 'whenDefined')).always()
-        .return(onWhenDefined$ as any);
+    fake(spy(window.customElements, 'whenDefined'))
+      .always()
+      .return(onWhenDefined$ as any);
 
     const key = 'key';
     const input = icall(key, [numberType]);
@@ -119,6 +129,8 @@ test('@persona/src/input/call', () => {
     setValueObservable(target, key, valueSubject);
     onWhenDefined$.next(HTMLElement);
 
-    assert(value$).to.emitSequence([arrayThat<number>().haveExactElements([value])]);
+    await asyncAssert(value$).to.emitSequence([
+      tupleThat<[number]>().haveExactElements([value]),
+    ]);
   });
 });

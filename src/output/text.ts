@@ -1,5 +1,5 @@
 import {EMPTY, merge, of, OperatorFunction} from 'rxjs';
-import {switchMapTo, map} from 'rxjs/operators';
+import {map, switchMap} from 'rxjs/operators';
 
 import {RenderContext} from '../render/types/render-context';
 import {renderTextNode} from '../render/types/render-text-node-spec';
@@ -8,23 +8,37 @@ import {Target} from '../types/target';
 
 import {ocase} from './case';
 
-
 class ResolvedOText implements OText {
   readonly apiType = ApiType.TEXT;
   readonly ioType = IOType.OUTPUT;
 
   constructor(
-      private readonly caseOutput: ReferenceO<string, string, [RenderValueFn<string>], Target>,
+    private readonly caseOutput: ReferenceO<
+      string,
+      string,
+      [RenderValueFn<string>],
+      Target
+    >,
   ) {}
 
-  resolve(target: Target, context: RenderContext): () => OperatorFunction<string, string> {
+  resolve(
+    target: Target,
+    context: RenderContext,
+  ): () => OperatorFunction<string, string> {
     return () => {
-      return value$ => {
+      return (value$) => {
         const render$ = value$.pipe(
-            this.caseOutput.resolve(target, context)(map(value => renderTextNode({
-              textContent: of(value),
-            }))),
-            switchMapTo(EMPTY),
+          this.caseOutput.resolve(
+            target,
+            context,
+          )(
+            map((value) =>
+              renderTextNode({
+                textContent: of(value),
+              }),
+            ),
+          ),
+          switchMap(() => EMPTY),
         );
         return merge(render$, value$);
       };

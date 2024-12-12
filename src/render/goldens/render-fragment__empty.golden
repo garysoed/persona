@@ -1,5 +1,0 @@
-{
-  "type": "element",
-  "raw": "<test-host><gst-fake-shadow><!-- #ref --></gst-fake-shadow></test-host>",
-  "name": "render-fragment__empty"
-}

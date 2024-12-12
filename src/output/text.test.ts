@@ -1,8 +1,8 @@
 import {source} from 'grapevine';
-import {assert, runEnvironment, should, test, setup} from 'gs-testing';
+import {asyncAssert, runEnvironment, setup, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
-import {cache} from 'gs-tools/export/data';
-import {Observable, Subject, ReplaySubject} from 'rxjs';
+import {cached} from 'gs-tools/export/data';
+import {Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
@@ -12,25 +12,22 @@ import {root} from '../selector/root';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
-import goldens from './goldens/goldens.json';
 import {otext} from './text';
-
 
 const $hostValue$ = source(() => new Subject<string>());
 const $elValue$ = source(() => new Subject<string>());
 const $rootValue$ = source(() => new Subject<string>());
 const $shadowValue$ = source(() => new ReplaySubject<string>());
 
-
 const $host = {
   host: {
     value: otext(),
   },
   shadow: {
-    root: root({
+    el: query('#el', DIV, {
       value: otext(),
     }),
-    el: query('#el', DIV, {
+    root: root({
       value: otext(),
     }),
   },
@@ -39,7 +36,7 @@ const $host = {
 class HostCtrl implements Ctrl {
   constructor(private readonly $: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $hostValue$.get(this.$.vine).pipe(this.$.host.value()),
@@ -50,9 +47,9 @@ class HostCtrl implements Ctrl {
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: `
   <!-- #root -->
   <div id="el">
@@ -70,91 +67,118 @@ const $shadow = {
 class ShadowCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $shadow>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       this.context.shadow.deps.value.pipe(
-          tap(value => $shadowValue$.get(this.context.vine).next(value)),
+        tap((value) => $shadowValue$.get(this.context.vine).next(value)),
       ),
     ];
   }
 }
 
 const SHADOW = registerCustomElement({
-  tag: 'test-shadow',
   ctrl: ShadowCtrl,
-  spec: $shadow,
-  template: '<test-host id="deps"></test-host>',
   deps: [HOST],
+  spec: $shadow,
+  tag: 'test-shadow',
+  template: '<test-host id="deps"></test-host>',
 });
-
 
 test('@persona/src/output/text', () => {
   const _ = setup(() => {
-    runEnvironment(new BrowserSnapshotsEnv('src/output/goldens', goldens));
+    runEnvironment(new BrowserSnapshotsEnv('src/output/goldens'));
     const tester = setupTest({roots: [HOST, SHADOW]});
     return {tester};
   });
 
   test('host', () => {
-    should('set the text content correctly with a single emission', () => {
-      const element = _.tester.bootstrapElement(HOST);
-      $hostValue$.get(_.tester.vine).next('text');
+    should(
+      'set the text content correctly with a single emission',
+      async () => {
+        const element = _.tester.bootstrapElement(HOST);
+        $hostValue$.get(_.tester.vine).next('text');
 
-      assert(snapshotElement(element)).to.match('text__host.golden');
-    });
+        await asyncAssert(snapshotElement(element)).to.match('text__host');
+      },
+    );
 
-    should('set the text content correctly with multiple emissions', () => {
-      const element = _.tester.bootstrapElement(HOST);
-      $hostValue$.get(_.tester.vine).next('text');
-      $hostValue$.get(_.tester.vine).next('text');
+    should(
+      'set the text content correctly with multiple emissions',
+      async () => {
+        const element = _.tester.bootstrapElement(HOST);
+        $hostValue$.get(_.tester.vine).next('text');
+        $hostValue$.get(_.tester.vine).next('text');
 
-      assert(snapshotElement(element)).to.match('text__host-double.golden');
-    });
+        await asyncAssert(snapshotElement(element)).to.match(
+          'text__host-double',
+        );
+      },
+    );
   });
 
   test('el', () => {
-    should('set the text content correctly with a single emission', () => {
-      const element = _.tester.bootstrapElement(HOST);
-      $elValue$.get(_.tester.vine).next('text');
+    should(
+      'set the text content correctly with a single emission',
+      async () => {
+        const element = _.tester.bootstrapElement(HOST);
+        $elValue$.get(_.tester.vine).next('text');
 
-      assert(snapshotElement(element)).to.match('text__el.golden');
-    });
+        await asyncAssert(snapshotElement(element)).to.match('text__el');
+      },
+    );
 
-    should('set the text content correctly with multiple emissions', () => {
-      const element = _.tester.bootstrapElement(HOST);
-      $elValue$.get(_.tester.vine).next('text');
-      $elValue$.get(_.tester.vine).next('text');
+    should(
+      'set the text content correctly with multiple emissions',
+      async () => {
+        const element = _.tester.bootstrapElement(HOST);
+        $elValue$.get(_.tester.vine).next('text');
+        $elValue$.get(_.tester.vine).next('text');
 
-      assert(snapshotElement(element)).to.match('text__el-double.golden');
-    });
+        await asyncAssert(snapshotElement(element)).to.match('text__el-double');
+      },
+    );
   });
 
   test('root', () => {
-    should('set the text content correctly with a single emission', () => {
-      const element = _.tester.bootstrapElement(HOST);
-      $rootValue$.get(_.tester.vine).next('text');
+    should(
+      'set the text content correctly with a single emission',
+      async () => {
+        const element = _.tester.bootstrapElement(HOST);
+        $rootValue$.get(_.tester.vine).next('text');
 
-      assert(snapshotElement(element)).to.match('text__root.golden');
-    });
+        await asyncAssert(snapshotElement(element)).to.match('text__root');
+      },
+    );
 
-    should('set the text content correctly with multiple emissions', () => {
-      const element = _.tester.bootstrapElement(HOST);
-      $rootValue$.get(_.tester.vine).next('text');
-      $rootValue$.get(_.tester.vine).next('text');
+    should(
+      'set the text content correctly with multiple emissions',
+      async () => {
+        const element = _.tester.bootstrapElement(HOST);
+        $rootValue$.get(_.tester.vine).next('text');
+        $rootValue$.get(_.tester.vine).next('text');
 
-      assert(snapshotElement(element)).to.match('text__root-double.golden');
-    });
+        await asyncAssert(snapshotElement(element)).to.match(
+          'text__root-double',
+        );
+      },
+    );
   });
 
   test('shadow', () => {
-    should('set the text content correctly with a single emission', () => {
-      _.tester.bootstrapElement(SHADOW);
+    should(
+      'set the text content correctly with a single emission',
+      async () => {
+        _.tester.bootstrapElement(SHADOW);
 
-      const text = 'text';
-      $hostValue$.get(_.tester.vine).next(text);
+        const text = 'text';
+        $hostValue$.get(_.tester.vine).next(text);
 
-      assert($shadowValue$.get(_.tester.vine)).to.emitSequence(['', text]);
-    });
+        await asyncAssert($shadowValue$.get(_.tester.vine)).to.emitSequence([
+          '',
+          text,
+        ]);
+      },
+    );
   });
 });

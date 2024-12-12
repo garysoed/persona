@@ -1,5 +1,0 @@
-{
-  "type": "element",
-  "raw": "<test-host><gst-fake-shadow><div id=\"el\" has-attr=\"\"></div></gst-fake-shadow></test-host>",
-  "name": "flag__el_value"
-}

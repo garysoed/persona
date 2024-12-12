@@ -6,9 +6,9 @@ import {createDomRegistration} from './create-dom-registration';
 import {ELEMENT_SPEC} from './element';
 import {PRESENTATIONAL_ATTRIBUTES} from './presentational-attributes';
 
-
 export const LINE = createDomRegistration({
   ctor: SVGLineElement,
+  namespace: ElementNamespace.SVG,
   spec: {
     ...ELEMENT_SPEC,
     ...PRESENTATIONAL_ATTRIBUTES,
@@ -19,5 +19,4 @@ export const LINE = createDomRegistration({
     y2: iattr('y2', lengthParser()),
   },
   tag: 'line',
-  namespace: ElementNamespace.SVG,
 });

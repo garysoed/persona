@@ -16,28 +16,44 @@ import {RenderNodeSpec} from './types/render-node-spec';
 import {RenderSpec} from './types/render-spec';
 import {RenderSpecType} from './types/render-spec-type';
 import {ExtraSpec, RenderStringSpec} from './types/render-string-spec';
-import {RenderTemplateSpec, TemplateBindingSpec} from './types/render-template-spec';
+import {
+  RenderTemplateSpec,
+  TemplateBindingSpec,
+} from './types/render-template-spec';
 import {RenderTextNodeSpec} from './types/render-text-node-spec';
 
-
 export function render<E extends Element>(
-    spec: RenderElementSpec<ResolvedBindingSpec, {}, E>,
-    context: RenderContext,
+  spec: RenderElementSpec<ResolvedBindingSpec, {}, E>,
+  context: RenderContext,
 ): Observable<E>;
 export function render(
-    spec: RenderFragmentSpec,
-    context: RenderContext,
+  spec: RenderFragmentSpec,
+  context: RenderContext,
 ): Observable<DocumentFragment>;
 export function render<T extends ParseType>(
-    spec: RenderStringSpec<T, ExtraSpec>, context: RenderContext): Observable<ElementForType<T>>;
-export function render(spec: RenderNodeSpec<Node>, context: RenderContext): Observable<Node>;
-export function render(spec: RenderTextNodeSpec, context: RenderContext): Observable<Text>;
-export function render(spec: RenderSpec, context: RenderContext): Observable<Node|null>;
+  spec: RenderStringSpec<T, ExtraSpec>,
+  context: RenderContext,
+): Observable<ElementForType<T>>;
 export function render(
-    spec: RenderTemplateSpec<TemplateBindingSpec>,
-    context: RenderContext,
+  spec: RenderNodeSpec<Node>,
+  context: RenderContext,
 ): Observable<Node>;
-export function render(spec: RenderSpec, context: RenderContext): Observable<Node|null> {
+export function render(
+  spec: RenderTextNodeSpec,
+  context: RenderContext,
+): Observable<Text>;
+export function render(
+  spec: RenderSpec,
+  context: RenderContext,
+): Observable<Node | null>;
+export function render(
+  spec: RenderTemplateSpec<TemplateBindingSpec>,
+  context: RenderContext,
+): Observable<Node>;
+export function render(
+  spec: RenderSpec,
+  context: RenderContext,
+): Observable<Node | null> {
   switch (spec.type) {
     case RenderSpecType.ELEMENT:
       return renderElement(spec, context);

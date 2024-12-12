@@ -10,12 +10,12 @@ const BASE_TABLE_SECTION = {
 
 export const TBODY = createDomRegistration({
   ...BASE_TABLE_SECTION,
-  tag: 'tbody',
   namespace: ElementNamespace.HTML,
+  tag: 'tbody',
 });
 
 export const THEAD = createDomRegistration({
   ...BASE_TABLE_SECTION,
-  tag: 'thead',
   namespace: ElementNamespace.HTML,
+  tag: 'thead',
 });

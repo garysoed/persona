@@ -10,14 +10,17 @@ import {AutocompleteType} from './types/autocomplete-type';
 
 export const SELECT = createDomRegistration({
   ctor: HTMLSelectElement,
+  namespace: ElementNamespace.HTML,
   spec: {
     ...ELEMENT_SPEC,
-    autocomplete: iattr('autocomplete', stringEnumParser<AutocompleteType>(AutocompleteType)),
+    autocomplete: iattr(
+      'autocomplete',
+      stringEnumParser<AutocompleteType>(AutocompleteType, 'AutocompleteType'),
+    ),
     autofocus: iflag('autofocus'),
     disabled: iflag('disabled'),
     multiple: iflag('multiple'),
     size: iattr('size', numberParser()),
   },
   tag: 'select',
-  namespace: ElementNamespace.HTML,
 });

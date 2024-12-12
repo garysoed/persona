@@ -6,17 +6,16 @@ import {Ctrl} from '../types/ctrl';
 
 import {registerCustomElement} from './register-custom-element';
 
-
 class TestClassCtrl implements Ctrl {
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [];
   }
 }
 const TEST_CLASS_SPEC = registerCustomElement({
-  tag: 'test-el',
   ctrl: TestClassCtrl,
-  template: '',
   spec: {},
+  tag: 'test-el',
+  template: '',
 });
 
 test('@persona/src/core/functional', () => {

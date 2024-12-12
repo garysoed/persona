@@ -3,20 +3,19 @@ import {map, startWith} from 'rxjs/operators';
 
 import {ApiType, IOType, ISlotted} from '../types/io';
 
-
 class ResolvedISlotted implements ISlotted {
   readonly apiType = ApiType.SLOTTED;
   readonly ioType = IOType.INPUT;
 
   resolve(target: Element): Observable<readonly Node[]> {
     return fromEvent(target, 'slotchange').pipe(
-        startWith({}),
-        map(() => {
-          if (!(target instanceof HTMLSlotElement)) {
-            return [];
-          }
-          return target.assignedNodes();
-        }),
+      startWith({}),
+      map(() => {
+        if (!(target instanceof HTMLSlotElement)) {
+          return [];
+        }
+        return target.assignedNodes();
+      }),
     );
   }
 }

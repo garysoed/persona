@@ -8,7 +8,6 @@ import {createDomRegistration} from './create-dom-registration';
 import {ELEMENT_SPEC} from './element';
 import {AutocompleteType} from './types/autocomplete-type';
 
-
 export enum InputType {
   EMAIL = 'email',
   TEL = 'tel',
@@ -18,9 +17,13 @@ export enum InputType {
 
 export const INPUT = createDomRegistration({
   ctor: HTMLInputElement,
+  namespace: ElementNamespace.HTML,
   spec: {
     ...ELEMENT_SPEC,
-    autocomplete: iattr('autocomplete', stringEnumParser<AutocompleteType>(AutocompleteType)),
+    autocomplete: iattr(
+      'autocomplete',
+      stringEnumParser<AutocompleteType>(AutocompleteType, 'AutocompleteType'),
+    ),
     autofocus: iflag('autofocus'),
     disabled: iflag('disabled'),
     max: iattr('max', numberParser()),
@@ -29,5 +32,4 @@ export const INPUT = createDomRegistration({
     type: iattr('type'),
   },
   tag: 'input',
-  namespace: ElementNamespace.HTML,
 });

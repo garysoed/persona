@@ -1,7 +1,7 @@
 import {source} from 'grapevine';
-import {assert, should, test, setup} from 'gs-testing';
+import {asyncAssert, setup, should, test} from 'gs-testing';
 import {createSpyObservable} from 'gs-testing/src/spy/spy';
-import {cache} from 'gs-tools/export/data';
+import {cached} from 'gs-tools/export/data';
 import {fromEvent, Observable, ReplaySubject, Subject} from 'rxjs';
 import {tap} from 'rxjs/operators';
 
@@ -11,7 +11,6 @@ import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import {oevent} from './event';
-
 
 const $hostValue$ = source(() => new Subject<CustomEvent>());
 const $shadowValue$ = source(() => new ReplaySubject<CustomEvent>());
@@ -27,18 +26,16 @@ const $host = {
 class HostCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
-    return [
-      $hostValue$.get(this.context.vine).pipe(this.context.host.event()),
-    ];
+    return [$hostValue$.get(this.context.vine).pipe(this.context.host.event())];
   }
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '<div id="el"></div>',
 });
 
@@ -51,24 +48,23 @@ const $shadow = {
 class ShadowCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $shadow>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       this.context.shadow.deps.event.pipe(
-          tap(value => $shadowValue$.get(this.context.vine).next(value)),
+        tap((value) => $shadowValue$.get(this.context.vine).next(value)),
       ),
     ];
   }
 }
 
 const SHADOW = registerCustomElement({
-  tag: 'test-shadow',
   ctrl: ShadowCtrl,
-  spec: $shadow,
-  template: '<test-host id="deps"></test-host>',
   deps: [HOST],
+  spec: $shadow,
+  tag: 'test-shadow',
+  template: '<test-host id="deps"></test-host>',
 });
-
 
 test('@persona/src/output/event', () => {
   const _ = setup(() => {
@@ -77,24 +73,26 @@ test('@persona/src/output/event', () => {
   });
 
   test('host', () => {
-    should('update values correctly', () => {
+    should('update values correctly', async () => {
       const element = _.tester.bootstrapElement(HOST);
 
       const event$ = createSpyObservable(fromEvent(element, EVENT_NAME));
       const event = new CustomEvent(EVENT_NAME);
       $hostValue$.get(_.tester.vine).next(event);
 
-      assert(event$).to.emitSequence([event]);
+      await asyncAssert(event$).to.emitSequence([event]);
     });
   });
 
   test('shadow', () => {
-    should('update values correctly', () => {
+    should('update values correctly', async () => {
       _.tester.bootstrapElement(SHADOW);
       const event = new CustomEvent(EVENT_NAME);
 
       $hostValue$.get(_.tester.vine).next(event);
-      assert($shadowValue$.get(_.tester.vine)).to.emitSequence([event]);
+      await asyncAssert($shadowValue$.get(_.tester.vine)).to.emitSequence([
+        event,
+      ]);
     });
   });
 });

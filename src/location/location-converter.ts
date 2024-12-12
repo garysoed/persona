@@ -8,7 +8,7 @@ interface Spec {
 
 type RawSpec<S extends Spec> = Record<keyof S, string>;
 type TypeOf<S extends Spec> = {
-  readonly [K in keyof S]: S[K] extends Converter<string, infer T> ? T : never
+  readonly [K in keyof S]: S[K] extends Converter<string, infer T> ? T : never;
 };
 
 /**
@@ -20,12 +20,12 @@ type TypeOf<S extends Spec> = {
  * `/hello/_/location` and returns the object `{a: 'hello', b: 'location'}`.
  *
  * @param pattern The pattern to generate the matcher.
- * @param spec Object with keys corresponding to a key in the pattern and converter for each key.
+ * @param specs Object with keys corresponding to a key in the pattern and converter for each key.
  * @return Converter for the location.
  */
 export function fromPattern<S extends Spec>(
-    pattern: string,
-    spec: S,
+  pattern: string,
+  specs: S,
 ): LocationConverter<TypeOf<S>> {
   return {
     convertBackward(value: TypeOf<S>): Result<string> {
@@ -34,17 +34,18 @@ export function fromPattern<S extends Spec>(
         result = result.replace(new RegExp(`:${key}\\??`), `${value[key]}`);
       }
 
-      return {success: true, result};
+      return {result, success: true};
     },
 
     convertForward(value: string): Result<TypeOf<S>> {
       const replacedSpec = pattern.replace(
-          /:([^/?]+)(\??)/g,
-          (_, key, optional) => {
-            const match = optional ? '*' : '+';
+        /:([^/?]+)(\??)/g,
+        (_, key, optional) => {
+          const match = optional ? '*' : '+';
 
-            return `(?<${key}>[^/]${match})`;
-          });
+          return `(?<${key}>[^/]${match})`;
+        },
+      );
       const regex = new RegExp(`^${replacedSpec}$`);
       const match = value.match(regex);
       if (!match) {
@@ -55,7 +56,11 @@ export function fromPattern<S extends Spec>(
       const outValue: Partial<TypeOf<S>> = {};
       for (const key of Object.keys(rawSpec) as Array<keyof RawSpec<S>>) {
         const rawStr = rawSpec[key];
-        const result = spec[key].convertForward(rawStr);
+        const spec = specs[key];
+        if (!spec) {
+          throw new Error(`No spec for key ${String(key)} found`);
+        }
+        const result = spec.convertForward(rawStr);
         if (!result.success) {
           return {success: false};
         }
@@ -63,7 +68,7 @@ export function fromPattern<S extends Spec>(
         outValue[key] = result.result as any;
       }
 
-      return {success: true, result: outValue as TypeOf<S>};
+      return {result: outValue as TypeOf<S>, success: true};
     },
   };
 }

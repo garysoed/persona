@@ -1,5 +1,0 @@
-{
-  "type": "element",
-  "raw": "<test-host><gst-fake-shadow><!-- #ref --><pr-test a=\"a2\"><gst-fake-shadow><div>child<slot></slot></div></gst-fake-shadow></pr-test></gst-fake-shadow></test-host>",
-  "name": "render-element__update"
-}

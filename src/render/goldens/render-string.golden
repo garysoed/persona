@@ -1,5 +1,0 @@
-{
-  "type": "element",
-  "raw": "<test-host><gst-fake-shadow><!-- #ref --><div>text content</div></gst-fake-shadow></test-host>",
-  "name": "render-string"
-}

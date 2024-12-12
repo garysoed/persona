@@ -1,5 +1,0 @@
-{
-  "type": "element",
-  "raw": "<test-host><gst-fake-shadow><!-- #ref --><button autofocus=\"\">button</button></gst-fake-shadow></test-host>",
-  "name": "render-element__dom"
-}

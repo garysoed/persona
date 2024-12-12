@@ -1,5 +1,0 @@
-{
-  "type": "element",
-  "raw": "<test-host><gst-fake-shadow><!-- #root --><div id=\"el\"><!-- #ref --></div><!-- #withId --><div></div><div></div><div></div></gst-fake-shadow></test-host>",
-  "name": "foreach__with_id_multi_insert"
-}

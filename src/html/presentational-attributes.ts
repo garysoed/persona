@@ -13,7 +13,10 @@ export enum LineCap {
 export const PRESENTATIONAL_ATTRIBUTES = {
   stroke: iattr('stroke'),
   strokeDasharray: iattr('stroke-dasharray', listParser(lengthParser())),
-  strokeLinecap: iattr('stroke-linecap', stringEnumParser<LineCap>(LineCap)),
+  strokeLinecap: iattr(
+    'stroke-linecap',
+    stringEnumParser<LineCap>(LineCap, 'LineCap'),
+  ),
   strokeOpacity: iattr('stroke-opacity', numberParser()),
   strokeWidth: iattr('stroke-width', lengthParser()),
 };

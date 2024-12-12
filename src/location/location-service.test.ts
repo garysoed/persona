@@ -1,11 +1,20 @@
-import {assert, objectThat, run, should, spy, test, setup} from 'gs-testing';
-import {FakeWindow} from 'gs-testing/export/fake';
+import {
+  assert,
+  objectThat,
+  run,
+  should,
+  spy,
+  test,
+  setup,
+  asyncAssert,
+  fake,
+} from 'gs-testing';
+import {FakeWindow} from 'gs-testing/export/fake/dom';
 
 import {integerParser} from '../parser/integer-parser';
 
 import {fromPattern} from './location-converter';
 import {LocationService, Route} from './location-service';
-
 
 const SPEC = {
   default: fromPattern('/', {}),
@@ -17,54 +26,57 @@ test('@persona/src/location/location-service', () => {
     const fakeWindow = new FakeWindow();
 
     const service = new LocationService(
-        SPEC,
-        {payload: {}, type: 'default'},
-        fakeWindow,
+      SPEC,
+      {payload: {}, type: 'default'},
+      fakeWindow,
     );
-    return {service, fakeWindow};
+    return {fakeWindow, service};
   });
 
   test('location$', () => {
-    should('emit the first matching path', () => {
+    should('emit the first matching path', async () => {
       _.fakeWindow.history.pushState({}, '', '/a/123');
 
-      assert(_.service.location$).to.emitWith(
-          objectThat<Route<typeof SPEC, 'pathA'>>().haveProperties({
-            payload: objectThat<{a: number}>().haveProperties({a: 123}),
-            type: 'pathA',
-          }),
+      await asyncAssert(_.service.location$).to.emitWith(
+        objectThat<Route<typeof SPEC, 'pathA'>>().haveProperties({
+          payload: objectThat<{a: number}>().haveProperties({a: 123}),
+          type: 'pathA',
+        }),
       );
     });
 
-    should('emit and go to the default path if none of the specs match', () => {
-      _.fakeWindow.history.pushState({}, '', '/un/match');
+    should(
+      'emit and go to the default path if none of the specs match',
+      async () => {
+        _.fakeWindow.history.pushState({}, '', '/un/match');
 
-      assert(_.service.location$).to.emitWith(
+        await asyncAssert(_.service.location$).to.emitWith(
           objectThat<Route<typeof SPEC, 'default'>>().haveProperties({
             payload: objectThat().haveProperties({}),
             type: 'default',
           }),
-      );
-      assert(_.fakeWindow.location.pathname).to.equal('/');
-    });
+        );
+        assert(_.fakeWindow.location.pathname).to.equal('/');
+      },
+    );
   });
 
   test('getLocationOfType', () => {
-    should('emit the location if it has the correct type', () => {
+    should('emit the location if it has the correct type', async () => {
       _.fakeWindow.history.pushState({}, '', '/a/123');
 
-      assert(_.service.getLocationOfType('pathA')).to.emitWith(
-          objectThat<Route<typeof SPEC, 'pathA'>>().haveProperties({
-            payload: objectThat<{a: number}>().haveProperties({a: 123}),
-            type: 'pathA',
-          }),
+      await asyncAssert(_.service.getLocationOfType('pathA')).to.emitWith(
+        objectThat<Route<typeof SPEC, 'pathA'>>().haveProperties({
+          payload: objectThat<{a: number}>().haveProperties({a: 123}),
+          type: 'pathA',
+        }),
       );
     });
 
-    should('emit null if location is of the wrong type', () => {
+    should('emit null if location is of the wrong type', async () => {
       _.fakeWindow.history.pushState({}, '', '/b/abc');
 
-      assert(_.service.getLocationOfType('pathA')).to.emitWith(null);
+      await asyncAssert(_.service.getLocationOfType('pathA')).to.emitWith(null);
     });
   });
 
@@ -90,6 +102,7 @@ test('@persona/src/location/location-service', () => {
       run(_.service.interceptLinks(rootEl));
       const event = new CustomEvent('click', {bubbles: true});
       const preventDefaultSpy = spy(event, 'preventDefault');
+      fake(preventDefaultSpy).always().return();
       codeEl.dispatchEvent(event);
 
       assert(preventDefaultSpy).to.haveBeenCalledWith();
@@ -109,7 +122,7 @@ test('@persona/src/location/location-service', () => {
       assert(_.fakeWindow.location.pathname).to.equal('');
     });
 
-    should('not intercept if the anchor element\'s target is _blank', () => {
+    should("not intercept if the anchor element's target is _blank", () => {
       const anchorEl = document.createElement('a');
       anchorEl.href = '/unmatch';
       anchorEl.target = '_blank';
@@ -125,25 +138,25 @@ test('@persona/src/location/location-service', () => {
   });
 
   test('parseLocation', () => {
-    should('return the first matching path', () => {
+    should('return the first matching path', async () => {
       _.fakeWindow.history.pushState({}, '', '/a/123');
 
-      assert(_.service.location$).to.emitWith(
-          objectThat<Route<typeof SPEC, 'pathA'>>().haveProperties({
-            payload: objectThat<{a: number}>().haveProperties({a: 123}),
-            type: 'pathA',
-          }),
+      await asyncAssert(_.service.location$).to.emitWith(
+        objectThat<Route<typeof SPEC, 'pathA'>>().haveProperties({
+          payload: objectThat<{a: number}>().haveProperties({a: 123}),
+          type: 'pathA',
+        }),
       );
     });
 
-    should('return null if none of the specs match', () => {
+    should('return null if none of the specs match', async () => {
       _.fakeWindow.history.pushState({}, '', '/un/match');
 
-      assert(_.service.location$).to.emitWith(
-          objectThat<Route<typeof SPEC, 'default'>>().haveProperties({
-            payload: objectThat().haveProperties({}),
-            type: 'default',
-          }),
+      await asyncAssert(_.service.location$).to.emitWith(
+        objectThat<Route<typeof SPEC, 'default'>>().haveProperties({
+          payload: objectThat().haveProperties({}),
+          type: 'default',
+        }),
       );
     });
   });

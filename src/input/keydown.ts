@@ -6,7 +6,6 @@ import {filter} from 'rxjs/operators';
 import {ApiType, IKeydown, IOType} from '../types/io';
 import {KeyMatchOptions} from '../types/key-match-options';
 
-
 class ResolvedIKeydown implements IKeydown {
   readonly apiType = ApiType.KEYDOWN;
   readonly ioType = IOType.INPUT;
@@ -18,39 +17,49 @@ class ResolvedIKeydown implements IKeydown {
 
   resolve(target: Element): Observable<KeyboardEvent> {
     return fromEvent(target, 'keydown').pipe(
-        filterByType(instanceofType(KeyboardEvent)),
-        filter(event => {
-          if (event.key !== this.key) {
-            return false;
-          }
+      filterByType(instanceofType(KeyboardEvent)),
+      filter((event) => {
+        if (event.key !== this.key) {
+          return false;
+        }
 
-          if (booleanType.check(this.matchOptions.alt)
-            && this.matchOptions.alt !== event.altKey) {
-            return false;
-          }
+        if (
+          booleanType.check(this.matchOptions.alt) &&
+          this.matchOptions.alt !== event.altKey
+        ) {
+          return false;
+        }
 
-          if (booleanType.check(this.matchOptions.ctrl)
-            && this.matchOptions.ctrl !== event.ctrlKey) {
-            return false;
-          }
+        if (
+          booleanType.check(this.matchOptions.ctrl) &&
+          this.matchOptions.ctrl !== event.ctrlKey
+        ) {
+          return false;
+        }
 
-          if (booleanType.check(this.matchOptions.meta)
-            && this.matchOptions.meta !== event.metaKey) {
-            return false;
-          }
+        if (
+          booleanType.check(this.matchOptions.meta) &&
+          this.matchOptions.meta !== event.metaKey
+        ) {
+          return false;
+        }
 
-          if (booleanType.check(this.matchOptions.shift)
-            && this.matchOptions.shift !== event.shiftKey) {
-            return false;
-          }
+        if (
+          booleanType.check(this.matchOptions.shift) &&
+          this.matchOptions.shift !== event.shiftKey
+        ) {
+          return false;
+        }
 
-          return true;
-        }),
-
+        return true;
+      }),
     );
   }
 }
 
-export function ikeydown(key: string, matchOptions: KeyMatchOptions = {}): ResolvedIKeydown {
+export function ikeydown(
+  key: string,
+  matchOptions: KeyMatchOptions = {},
+): ResolvedIKeydown {
   return new ResolvedIKeydown(key, matchOptions);
 }

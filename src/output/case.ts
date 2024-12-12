@@ -1,15 +1,21 @@
 import {arrayFrom, diffArray} from 'gs-tools/export/collect';
 import {filterNonNullable} from 'gs-tools/export/rxjs';
-import {hasPropertiesType, instanceofType, intersectType, notType, undefinedType} from 'gs-types';
+import {
+  hasPropertiesType,
+  instanceofType,
+  intersectType,
+  notType,
+  undefinedType,
+} from 'gs-types';
 import {EMPTY, merge, of, OperatorFunction} from 'rxjs';
 import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
+import {MutationEvent} from 'src/util/mutate-event';
 
 import {render} from '../render/render';
 import {RenderContext} from '../render/types/render-context';
 import {ApiType, IOType, OCase, RenderValueFn} from '../types/io';
 import {Target} from '../types/target';
 import {initSlot} from '../util/init-slot';
-
 
 const __id = Symbol('id');
 const __subId = Symbol('subid');
@@ -36,10 +42,17 @@ function setId(target: NodeWithId, id: unknown, subId?: number): void {
   }
 }
 
-function getContiguousSiblingNodesWithId(start: Node|null, parent: Node): readonly NodeWithId[] {
+function getContiguousSiblingNodesWithId(
+  start: Node | null,
+  parent: Node,
+): readonly NodeWithId[] {
   if (!start) {
     const children: NodeWithId[] = [];
-    for (let current = parent.lastChild; current !== null; current = current?.previousSibling) {
+    for (
+      let current = parent.lastChild;
+      current !== null;
+      current = current?.previousSibling
+    ) {
       if (!NODE_WITH_ID_TYPE.check(current)) {
         break;
       }
@@ -69,79 +82,96 @@ class ResolvedOCase<T> implements OCase<T> {
   readonly ioType = IOType.OUTPUT;
 
   constructor(
-      readonly slotName: string|null,
-      private readonly trackBy: TrackByFn<T>,
+    readonly slotName: string | null,
+    private readonly trackBy: TrackByFn<T>,
   ) {}
 
   resolve(
-      target: Target,
-      context: RenderContext,
+    target: Target,
+    context: RenderContext,
   ): (renderFn: RenderValueFn<T>) => OperatorFunction<T, T> {
     return (renderFn: RenderValueFn<T>) => {
       const slotEl$ = this.slotName
-        ? of(target).pipe(
-            initSlot(this.slotName),
-            filterNonNullable(),
-        )
+        ? of(target).pipe(initSlot(this.slotName), filterNonNullable())
         : of(null);
 
-      return value$ => {
+      return (value$) => {
         const spec$ = value$.pipe(renderFn);
         const render$ = value$.pipe(
-            withLatestFrom(spec$),
-            map(([value, spec]) => ({spec, value})),
-            switchMap(({spec, value}) => {
-              if (!spec) {
-                return of(null);
-              }
-              return render(spec, context).pipe(
-                  tap(node => {
-                    if (!node) {
-                      return;
-                    }
-
-                    if (!(node instanceof DocumentFragment)) {
-                      setId(node, this.trackBy(value));
-                      return;
-                    }
-
-                    for (let i = 0; i < node.childNodes.length; i++) {
-                      setId(node.childNodes.item(i), this.trackBy(value), i);
-                    }
-                  }),
-              );
-            }),
-            withLatestFrom(slotEl$),
-            tap(([newNode, slotNode]) => {
-              // Flatten the new nodes
-              const flattenedNewNodes = flattenNode(newNode);
-
-              // Iterate through one diff at a time, since moving nodes doesn't act like an array.
-              let currentNodes = getContiguousSiblingNodesWithId(slotNode, target);
-              let diffs = diffArray<Node>(currentNodes, flattenedNewNodes, equalNodes);
-              let i = 0;
-              while (diffs.length > 0) {
-                const [diff] = diffs;
-                switch (diff.type) {
-                  case 'insert': {
-                    const insertBefore = getInsertBeforeTarget(diff.index, currentNodes, slotNode);
-                    target.insertBefore(diff.value, insertBefore);
-                    break;
-                  }
-                  case 'delete':
-                    target.removeChild(currentNodes[diff.index]);
-                    break;
-                }
-
-                currentNodes = getContiguousSiblingNodesWithId(slotNode, target);
-                diffs = diffArray(currentNodes, flattenedNewNodes, equalNodes);
-                i++;
-                if (i >= 100) {
+          withLatestFrom(spec$),
+          map(([value, spec]) => ({spec, value})),
+          switchMap(({spec, value}) => {
+            if (!spec) {
+              return of(null);
+            }
+            return render(spec, context).pipe(
+              tap((node) => {
+                if (!node) {
                   return;
                 }
+
+                if (!(node instanceof DocumentFragment)) {
+                  setId(node, this.trackBy(value));
+                  return;
+                }
+
+                for (let i = 0; i < node.childNodes.length; i++) {
+                  setId(node.childNodes.item(i), this.trackBy(value), i);
+                }
+              }),
+            );
+          }),
+          withLatestFrom(slotEl$),
+          tap(([newNode, slotNode]) => {
+            // Flatten the new nodes
+            const flattenedNewNodes = flattenNode(newNode);
+
+            // Iterate through one diff at a time, since moving nodes doesn't act like an array.
+            let currentNodes = getContiguousSiblingNodesWithId(
+              slotNode,
+              target,
+            );
+            let diffs = diffArray<Node>(
+              currentNodes,
+              flattenedNewNodes,
+              equalNodes,
+            );
+            let i = 0;
+            while (diffs.length > 0) {
+              const [diff] = diffs;
+              if (!diff) {
+                continue;
               }
-            }),
-            switchMapTo(EMPTY),
+              switch (diff.type) {
+                case 'insert': {
+                  const insertBefore = getInsertBeforeTarget(
+                    diff.index,
+                    currentNodes,
+                    slotNode,
+                  );
+                  target.insertBefore(diff.value, insertBefore);
+                  target.dispatchEvent(new MutationEvent());
+                  break;
+                }
+                case 'delete': {
+                  const node = currentNodes[diff.index];
+                  if (!node) {
+                    throw new Error(`No nodes found at index ${diff.index}`);
+                  }
+                  target.removeChild(node);
+                  break;
+                }
+              }
+
+              currentNodes = getContiguousSiblingNodesWithId(slotNode, target);
+              diffs = diffArray(currentNodes, flattenedNewNodes, equalNodes);
+              i++;
+              if (i >= 100) {
+                return;
+              }
+            }
+          }),
+          switchMapTo(EMPTY),
         );
 
         return merge(value$, render$);
@@ -151,10 +181,10 @@ class ResolvedOCase<T> implements OCase<T> {
 }
 
 function getInsertBeforeTarget(
-    index: number,
-    currentNodes: readonly Node[],
-    slotNode: Node|null,
-): Node|null {
+  index: number,
+  currentNodes: readonly Node[],
+  slotNode: Node | null,
+): Node | null {
   // Try the specified node first.
   const targetNode = currentNodes[index];
   if (targetNode) {
@@ -172,19 +202,22 @@ function getInsertBeforeTarget(
 
 type TrackByFn<T> = (value: T) => unknown;
 export function ocase<T = never>(trackBy?: TrackByFn<T>): ResolvedOCase<T>;
-export function ocase<T = never>(refName: string, trackBy?: TrackByFn<T>): ResolvedOCase<T>;
 export function ocase<T = never>(
-    refOrTrackBy?: string|TrackByFn<T>,
-    trackBy?: TrackByFn<T>,
-): ResolvedOCase<T>  {
+  refName: string,
+  trackBy?: TrackByFn<T>,
+): ResolvedOCase<T>;
+export function ocase<T = never>(
+  refOrTrackBy?: string | TrackByFn<T>,
+  trackBy?: TrackByFn<T>,
+): ResolvedOCase<T> {
   if (typeof refOrTrackBy === 'string') {
-    return new ResolvedOCase(refOrTrackBy, trackBy ?? (value => value));
+    return new ResolvedOCase(refOrTrackBy, trackBy ?? ((value) => value));
   }
 
-  return new ResolvedOCase(null, refOrTrackBy ?? (value => value));
+  return new ResolvedOCase(null, refOrTrackBy ?? ((value) => value));
 }
 
-function flattenNode(node: Node|null): readonly Node[] {
+function flattenNode(node: Node | null): readonly Node[] {
   if (!node) {
     return [];
   }

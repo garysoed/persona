@@ -12,7 +12,6 @@ import {CustomElementRegistration} from '../types/registration';
 import {setAttributeChangeObservable} from '../util/attribute-change-observable';
 import {mutationObservable} from '../util/mutation-observable';
 
-
 type Listener = (value: CustomElementConstructor) => void;
 export const __upgraded = Symbol('upgraded');
 
@@ -22,25 +21,30 @@ type UpgradedElement = HTMLElement & {
 };
 
 export class FakeCustomElementRegistry implements CustomElementRegistry {
-  private readonly definedElements: Map<string, CustomElementConstructor> = new Map();
+  private readonly definedElements: Map<string, CustomElementConstructor> =
+    new Map();
   private readonly listeners: Map<string, Listener[]> = new Map();
 
   constructor(
-      // Do not use document.createElement since it will be faked.
-      private readonly createElement: (namespace: string|null, tag: string) => Element,
-      private readonly registrationMap:
-          ReadonlyMap<string, CustomElementRegistration<HTMLElement, Spec>>,
-      private readonly vine: Vine,
-  ) { }
+    // Do not use document.createElement since it will be faked.
+    private readonly createElement: (
+      namespace: string | null,
+      tag: string,
+    ) => Element,
+    private readonly registrationMap: ReadonlyMap<
+      string,
+      CustomElementRegistration<HTMLElement, Spec>
+    >,
+    private readonly vine: Vine,
+  ) {}
 
-  create(namespace: string|null, tag: string): Element {
+  create(namespace: string | null, tag: string): Element {
     const el = this.createElement(namespace, tag);
     if (el instanceof HTMLElement) {
       this.upgradeElement(el);
     }
     return el;
   }
-
   define(tag: string, constructor: CustomElementConstructor): void {
     this.definedElements.set(tag, constructor);
 
@@ -49,7 +53,6 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
       listener(constructor);
     }
   }
-
   get(tag: string): CustomElementConstructor {
     const el = this.definedElements.get(tag);
     if (!el) {
@@ -58,7 +61,9 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
 
     return el;
   }
-
+  getName(): string | null {
+    throw new Error('Method not implemented.');
+  }
   upgrade(node: Node): void {
     if (!(node instanceof HTMLElement)) {
       return;
@@ -66,22 +71,6 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
 
     this.upgradeElement(node);
   }
-
-  async whenDefined(tag: string): Promise<CustomElementConstructor> {
-    return new Promise(resolve => {
-      // Already defined.
-      try {
-        const el = this.get(tag);
-        resolve(el);
-        return;
-      } catch (e) {
-        const listeners = this.listeners.get(tag) || [];
-        listeners.push(resolve);
-        this.listeners.set(tag, listeners);
-      }
-    });
-  }
-
   upgradeElement(el: UpgradedElement): void {
     if (el[__upgraded]) {
       // Already upgraded, so ignore it.
@@ -99,30 +88,28 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     const onAttributeChanged$ = new Subject<AttributeChangedEvent>();
     setAttributeChangeObservable(el, onAttributeChanged$);
     const observedAttributes = new Set(getObservedAttributes(registration));
-    const decoratedEl = Object.assign(
-        el,
-        {
-          attributeChangedCallback(attrName: string): void {
-            if (!observedAttributes.has(attrName)) {
-              return;
-            }
-            onAttributeChanged$.next({attrName});
-          },
+    const decoratedEl = Object.assign(el, {
+      attributeChangedCallback(attrName: string): void {
+        if (!observedAttributes.has(attrName)) {
+          return;
+        }
+        onAttributeChanged$.next({attrName});
+      },
 
-          connectedCallback(): void {
-            isConnected$.next(true);
-          },
+      connectedCallback(): void {
+        isConnected$.next(true);
+      },
 
-          disconnectedCallback(): void {
-            isConnected$.next(false);
-          },
-        },
-    );
+      disconnectedCallback(): void {
+        isConnected$.next(false);
+      },
+    });
 
     upgradeElement(registration, decoratedEl, isConnected$, this.vine);
 
-    run(mutationObservable(el, {attributes: true}).pipe(
-        tap(records => {
+    run(
+      mutationObservable(el, {attributes: true}).pipe(
+        tap((records) => {
           for (const {attributeName} of records) {
             if (!attributeName || !el.attributeChangedCallback) {
               continue;
@@ -131,7 +118,8 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
             el.attributeChangedCallback(attributeName);
           }
         }),
-    ));
+      ),
+    );
 
     // Recursively upgrade the element.
     const nodeList = el.shadowRoot?.querySelectorAll('*');
@@ -144,5 +132,19 @@ export class FakeCustomElementRegistry implements CustomElementRegistry {
     }
 
     decoratedEl.connectedCallback();
+  }
+  async whenDefined(tag: string): Promise<CustomElementConstructor> {
+    return new Promise((resolve) => {
+      // Already defined.
+      try {
+        const el = this.get(tag);
+        resolve(el);
+        return;
+      } catch {
+        const listeners = this.listeners.get(tag) || [];
+        listeners.push(resolve);
+        this.listeners.set(tag, listeners);
+      }
+    });
   }
 }

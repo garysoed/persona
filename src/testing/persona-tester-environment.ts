@@ -5,9 +5,9 @@ import {installFakeRect} from './fake-rect';
 import {installFakeResizeObserver} from './fake-resize-observer';
 
 export class PersonaTesterEnvironment extends Environment {
-  private uninstallFakeMutationObserver: (() => void)|null = null;
-  private uninstallFakeRect: (() => void)|null = null;
-  private uninstallFakeResizeObserver: (() => void)|null = null;
+  private uninstallFakeMutationObserver: (() => void) | null = null;
+  private uninstallFakeRect: (() => void) | null = null;
+  private uninstallFakeResizeObserver: (() => void) | null = null;
 
   protected innerAfterEach(): void {
     if (this.uninstallFakeMutationObserver) {
@@ -22,7 +22,6 @@ export class PersonaTesterEnvironment extends Environment {
       this.uninstallFakeRect();
     }
   }
-
   protected innerBeforeEach(): void {
     this.uninstallFakeMutationObserver = installFakeMutationObserver();
     this.uninstallFakeRect = installFakeRect();

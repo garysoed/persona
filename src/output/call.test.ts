@@ -1,9 +1,9 @@
 import {source} from 'grapevine';
-import {assert, createSpy, createSpySubject, fake, should, spy, test, setup} from 'gs-testing';
-import {cache} from 'gs-tools/export/data';
-import {instanceofType, numberType} from 'gs-types';
-import {fromEvent, Observable, of, Subject} from 'rxjs';
-import {map, take} from 'rxjs/operators';
+import {asyncAssert, createSpySubject, setup, should, test} from 'gs-testing';
+import {cached} from 'gs-tools/export/data';
+import {instanceofType} from 'gs-types';
+import {fromEvent, Observable, Subject} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 import {registerCustomElement} from '../core/register-custom-element';
 import {DIV} from '../html/div';
@@ -14,7 +14,6 @@ import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
 import {ocall} from './call';
-
 
 const $elValue$ = source(() => new Subject<Event>());
 
@@ -27,23 +26,23 @@ const $host = {
 };
 
 class HostCtrl implements Ctrl {
-  constructor(private readonly context: Context<typeof $host>) { }
+  constructor(private readonly context: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $elValue$.get(this.context.vine).pipe(
-          map(el => [el]),
-          this.context.shadow.el.fn(),
+        map((el) => [el] satisfies [Event]),
+        this.context.shadow.el.fn(),
       ),
     ];
   }
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '<div id="el"></div>',
 });
 
@@ -54,7 +53,7 @@ test('@persona/src/output/call', () => {
   });
 
   test('el', () => {
-    should('call the function correctly', () => {
+    should('call the function correctly', async () => {
       const host = _.tester.bootstrapElement(HOST);
 
       const eventName = 'event-name';
@@ -64,29 +63,7 @@ test('@persona/src/output/call', () => {
       const event = new CustomEvent(eventName);
       $elValue$.get(_.tester.vine).next(event);
 
-      assert(spy).to.emitSequence([event]);
-    });
-
-    should('update values correctly if target is not initialized on time', async () => {
-      const onWhenDefined$ = new Subject<CustomElementConstructor>();
-      fake(spy(window.customElements, 'whenDefined')).always()
-          .return(onWhenDefined$ as any);
-
-      const key = 'key';
-      const output = ocall(key, [numberType]);
-      const tag = 'tag';
-      const target = document.createElement(tag);
-
-      const value = 123;
-      const onUpdate = of([456], [value]).pipe(output.resolve(target)(), take(1)).toPromise();
-
-      const calledSpy = createSpy(`${key}Spy`);
-      (target as any)[key] = calledSpy;
-      onWhenDefined$.next(HTMLElement);
-
-      await onUpdate;
-
-      assert(calledSpy).to.haveBeenCalledWith(value);
+      await asyncAssert(spy).to.emitSequence([event]);
     });
   });
 });

@@ -7,13 +7,13 @@ import {ELEMENT_SPEC} from './element';
 
 export const SVG = createDomRegistration({
   ctor: SVGElement,
+  namespace: ElementNamespace.SVG,
   spec: {
     ...ELEMENT_SPEC,
+    height: iattr('height', lengthParser()),
+    width: iattr('width', lengthParser()),
     x: iattr('x', lengthParser()),
     y: iattr('y', lengthParser()),
-    width: iattr('width', lengthParser()),
-    height: iattr('height', lengthParser()),
   },
   tag: 'svg',
-  namespace: ElementNamespace.SVG,
 });

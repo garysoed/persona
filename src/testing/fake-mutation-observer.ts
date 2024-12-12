@@ -9,7 +9,7 @@ class FakeMutationObserver extends MutationObserver {
   }
 
   override observe(target: Node, options: MutationObserverInit): void {
-    target.addEventListener(FAKE_MUTATION_EVENT, event => {
+    target.addEventListener(FAKE_MUTATION_EVENT, (event) => {
       if (!options.subtree && event.target !== target) {
         return;
       }
@@ -21,8 +21,10 @@ class FakeMutationObserver extends MutationObserver {
           return;
         }
 
-        if (options.attributeFilter
-            && !(new Set(options.attributeFilter)).has(record.attributeName)) {
+        if (
+          options.attributeFilter &&
+          !new Set(options.attributeFilter).has(record.attributeName)
+        ) {
           return;
         }
       }
@@ -39,7 +41,9 @@ class FakeMutationObserver extends MutationObserver {
 
 function createFakeNodeList(nodes: Node[]): NodeList {
   const nodeList = {
-    forEach: (callbackFn: (value: Node, key: number, parent: NodeList) => void) => {
+    forEach: (
+      callbackFn: (value: Node, key: number, parent: NodeList) => void,
+    ) => {
       nodes.forEach((node, index) => callbackFn(node, index, nodeList));
     },
     item: (index: number) => {
@@ -57,74 +61,78 @@ export function installFakeMutationObserver(): () => void {
 
   const origSetAttribute = HTMLElement.prototype.setAttribute;
   fake(spy(HTMLElement.prototype, 'setAttribute'))
-      .always()
-      .call(function(this: HTMLElement, attributeName: string, value: string): void {
-        const oldValue = this.getAttribute(attributeName);
-        origSetAttribute.call(this, attributeName, value);
-        const record = {
-          attributeName,
-          oldValue,
-        };
-        triggerFakeMutation(this, record);
-      });
+    .always()
+    .call(function (
+      this: HTMLElement,
+      attributeName: string,
+      value: string,
+    ): void {
+      const oldValue = this.getAttribute(attributeName);
+      origSetAttribute.call(this, attributeName, value);
+      const record = {
+        attributeName,
+        oldValue,
+      };
+      triggerFakeMutation(this, record);
+    });
 
   const origRemoveAttribute = HTMLElement.prototype.removeAttribute;
   fake(spy(HTMLElement.prototype, 'removeAttribute'))
-      .always()
-      .call(function(this: HTMLElement, attributeName: string): void {
-        const oldValue = this.getAttribute(attributeName);
-        origRemoveAttribute.call(this, attributeName);
-        const record = {
-          attributeName,
-          oldValue,
-        };
-        triggerFakeMutation(this, record);
-      });
+    .always()
+    .call(function (this: HTMLElement, attributeName: string): void {
+      const oldValue = this.getAttribute(attributeName);
+      origRemoveAttribute.call(this, attributeName);
+      const record = {
+        attributeName,
+        oldValue,
+      };
+      triggerFakeMutation(this, record);
+    });
 
   const spyAppendChild = spy(Node.prototype, 'appendChild');
   fake(spyAppendChild)
-      .always()
-      .call(function(this: Node, node: Node): Node {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const origFn = getOrigFn(spyAppendChild)!;
-        const newNode = origFn.call(this, node);
-        const record = {
-          addedNodes: createFakeNodeList([node]),
-          removedNodes: createFakeNodeList([]),
-        };
-        triggerFakeMutation(this, record);
+    .always()
+    .call(function (this: Node, node: Node): Node {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const origFn = getOrigFn(spyAppendChild)!;
+      const newNode = origFn.call(this, node);
+      const record = {
+        addedNodes: createFakeNodeList([node]),
+        removedNodes: createFakeNodeList([]),
+      };
+      triggerFakeMutation(this, record);
 
-        return newNode;
-      });
+      return newNode;
+    });
 
   const spyInsertBefore = spy(Node.prototype, 'insertBefore');
   fake(spyInsertBefore)
-      .always()
-      .call(function(this: Node, node: Node, refChild: Node|null): Node {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const newNode = getOrigFn(spyInsertBefore)!.call(this, node, refChild);
-        const record = {
-          addedNodes: createFakeNodeList([node]),
-          removedNodes: createFakeNodeList([]),
-        };
-        triggerFakeMutation(this, record);
+    .always()
+    .call(function (this: Node, node: Node, refChild: Node | null): Node {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const newNode = getOrigFn(spyInsertBefore)!.call(this, node, refChild);
+      const record = {
+        addedNodes: createFakeNodeList([node]),
+        removedNodes: createFakeNodeList([]),
+      };
+      triggerFakeMutation(this, record);
 
-        return newNode;
-      });
+      return newNode;
+    });
 
   const origRemoveChild = Node.prototype.removeChild;
   fake(spy(Node.prototype, 'removeChild'))
-      .always()
-      .call(function(this: Node, node: Node): Node {
-        const newNode = origRemoveChild.call(this, node);
-        const record = {
-          addedNodes: createFakeNodeList([]),
-          removedNodes: createFakeNodeList([node]),
-        };
-        triggerFakeMutation(this, record);
+    .always()
+    .call(function (this: Node, node: Node): Node {
+      const newNode = origRemoveChild.call(this, node);
+      const record = {
+        addedNodes: createFakeNodeList([]),
+        removedNodes: createFakeNodeList([node]),
+      };
+      triggerFakeMutation(this, record);
 
-        return newNode;
-      });
+      return newNode;
+    });
 
   return () => {
     globalThis.MutationObserver = origMutationObserver;
@@ -132,5 +140,7 @@ export function installFakeMutationObserver(): () => void {
 }
 
 export function triggerFakeMutation(element: Node, record: {}): void {
-  element.dispatchEvent(new CustomEvent(FAKE_MUTATION_EVENT, {bubbles: true, detail: {record}}));
+  element.dispatchEvent(
+    new CustomEvent(FAKE_MUTATION_EVENT, {bubbles: true, detail: {record}}),
+  );
 }

@@ -5,7 +5,7 @@ import {ELEMENT_SPEC} from './element';
 
 export const CODE = createDomRegistration({
   ctor: HTMLElement,
+  namespace: ElementNamespace.HTML,
   spec: ELEMENT_SPEC,
   tag: 'code',
-  namespace: ElementNamespace.HTML,
 });

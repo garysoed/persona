@@ -5,8 +5,11 @@ interface Enum<E extends string> {
   [key: number]: E;
 }
 
-export function stringEnumParser<E extends string = never>(en: Enum<E>): Converter<string, E> {
-  const enType = enumType<E>(en);
+export function stringEnumParser<E extends string = never>(
+  en: Enum<E>,
+  enumName: string,
+): Converter<string, E> {
+  const enType = enumType<E>(en, enumName);
   return {
     convertBackward(value: E): Result<string> {
       return success(value);

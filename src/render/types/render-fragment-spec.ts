@@ -1,7 +1,6 @@
 import {RenderSpec} from './render-spec';
 import {RenderSpecType} from './render-spec-type';
 
-
 interface Input {
   // This cannot be observable since the DocumentFragment disappears.
   readonly nodes: readonly RenderSpec[];

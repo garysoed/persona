@@ -1,7 +1,7 @@
 import {source} from 'grapevine';
-import {assert, runEnvironment, should, test, setup} from 'gs-testing';
+import {asyncAssert, runEnvironment, setup, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
-import {cache} from 'gs-tools/export/data';
+import {cached} from 'gs-tools/export/data';
 import {forwardTo} from 'gs-tools/export/rxjs';
 import {BehaviorSubject, Observable, of, ReplaySubject, Subject} from 'rxjs';
 
@@ -15,16 +15,14 @@ import {root} from '../selector/root';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
-import goldens from './goldens/goldens.json';
 import {RenderSpec} from './types/render-spec';
 import {renderTemplate} from './types/render-template-spec';
 
-
-const $spec = source(() => new Subject<RenderSpec|null>());
+const $spec = source(() => new Subject<RenderSpec | null>());
 const $host = {
   shadow: {
     root: root({
-      value: ocase<RenderSpec|null>('#ref'),
+      value: ocase<RenderSpec | null>('#ref'),
     }),
   },
 };
@@ -32,24 +30,24 @@ const $host = {
 class HostCtrl implements Ctrl {
   constructor(private readonly $: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
-      $spec.get(this.$.vine).pipe(this.$.shadow.root.value(spec => spec)),
+      $spec.get(this.$.vine).pipe(this.$.shadow.root.value((spec) => spec)),
     ];
   }
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '<!-- #ref -->',
 });
 
 test('@persona/src/render/render-template', () => {
   const _ = setup(() => {
-    runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));
+    runEnvironment(new BrowserSnapshotsEnv('src/render/goldens'));
     const tester = setupTest({roots: [HOST]});
 
     const templateEl = document.createElement('template');
@@ -59,77 +57,78 @@ test('@persona/src/render/render-template', () => {
     return {templateEl, tester};
   });
 
-  should('emit the custom element', () => {
+  should('emit the custom element', async () => {
     const element = _.tester.bootstrapElement(HOST);
     const text$ = new BehaviorSubject<string>('text');
-    const attr$ = new ReplaySubject<string|null>();
-    $spec.get(_.tester.vine).next(renderTemplate({
-      template$: of(_.templateEl),
-      spec: {
-        div: query('div', DIV, {
-          text: otext(),
-          attr: iattr('attr'),
-        }),
-      },
-      runs: $ => {
-        return [
-          text$.pipe($.div.text()),
-          $.div.attr.pipe(forwardTo(attr$)),
-        ];
-      },
-    }));
+    const attr$ = new ReplaySubject<string | null>();
+    $spec.get(_.tester.vine).next(
+      renderTemplate({
+        runs: ($) => {
+          return [text$.pipe($.div.text()), $.div.attr.pipe(forwardTo(attr$))];
+        },
+        spec: {
+          div: query('div', DIV, {
+            attr: iattr('attr'),
+            text: otext(),
+          }),
+        },
+        template$: of(_.templateEl),
+      }),
+    );
 
-    assert(snapshotElement(element)).to.match('render-template__emit.golden');
-    assert(attr$).to.emitSequence(['value']);
+    await asyncAssert(snapshotElement(element)).to.match(
+      'render-template__emit',
+    );
+    await asyncAssert(attr$).to.emitSequence(['value']);
   });
 
-  should('update the inputs', () => {
+  should('update the inputs', async () => {
     const element = _.tester.bootstrapElement(HOST);
     const text$ = new BehaviorSubject<string>('text');
-    const attr$ = new ReplaySubject<string|null>();
-    $spec.get(_.tester.vine).next(renderTemplate({
-      template$: of(_.templateEl),
-      spec: {
-        div: query('div', DIV, {
-          text: otext(),
-          attr: iattr('attr'),
-        }),
-      },
-      runs: $ => {
-        return [
-          text$.pipe($.div.text()),
-          $.div.attr.pipe(forwardTo(attr$)),
-        ];
-      },
-    }));
+    const attr$ = new ReplaySubject<string | null>();
+    $spec.get(_.tester.vine).next(
+      renderTemplate({
+        runs: ($) => {
+          return [text$.pipe($.div.text()), $.div.attr.pipe(forwardTo(attr$))];
+        },
+        spec: {
+          div: query('div', DIV, {
+            attr: iattr('attr'),
+            text: otext(),
+          }),
+        },
+        template$: of(_.templateEl),
+      }),
+    );
 
     const newValue = 'newValue';
     element.shadowRoot!.querySelector('div')?.setAttribute('attr', newValue);
-    assert(attr$).to.emitSequence(['value', newValue]);
+    await asyncAssert(attr$).to.emitSequence(['value', newValue]);
   });
 
-  should('update the outputs', () => {
+  should('update the outputs', async () => {
     const element = _.tester.bootstrapElement(HOST);
     const text$ = new BehaviorSubject<string>('text');
-    const attr$ = new ReplaySubject<string|null>();
-    $spec.get(_.tester.vine).next(renderTemplate({
-      template$: of(_.templateEl),
-      spec: {
-        div: query('div', DIV, {
-          text: otext(),
-          attr: iattr('attr'),
-        }),
-      },
-      runs: $ => {
-        return [
-          text$.pipe($.div.text()),
-          $.div.attr.pipe(forwardTo(attr$)),
-        ];
-      },
-    }));
+    const attr$ = new ReplaySubject<string | null>();
+    $spec.get(_.tester.vine).next(
+      renderTemplate({
+        runs: ($) => {
+          return [text$.pipe($.div.text()), $.div.attr.pipe(forwardTo(attr$))];
+        },
+        spec: {
+          div: query('div', DIV, {
+            attr: iattr('attr'),
+            text: otext(),
+          }),
+        },
+        template$: of(_.templateEl),
+      }),
+    );
 
     text$.next('new text');
 
-    assert(snapshotElement(element)).to.match('render-template__update-output.golden');
+    await asyncAssert(snapshotElement(element)).to.match(
+      'render-template__update-output',
+    );
   });
 });

@@ -4,54 +4,68 @@ import {BehaviorSubject, Subject} from 'rxjs';
 import {Spec} from '../types/ctrl';
 import {AttributeChangedEvent} from '../types/event';
 import {ICall, IValue, OValue} from '../types/io';
-import {CustomElementRegistration, ElementNamespace, RegistrationSpec} from '../types/registration';
+import {
+  CustomElementRegistration,
+  ElementNamespace,
+  RegistrationSpec,
+} from '../types/registration';
 import {setAttributeChangeObservable} from '../util/attribute-change-observable';
 
 import {getObservedAttributes} from './get-observed-attributes';
 import {upgradeElement} from './upgrade-element';
-
 
 interface Typeof<T> {
   new (): T;
   prototype: T;
 }
 
-export type PropertyNameOf<O> = O extends OValue<any, infer P> ? P :
-    O extends IValue<any, infer P> ? P :
-    never;
+export type PropertyNameOf<O> =
+  O extends OValue<any, infer P>
+    ? P
+    : O extends IValue<any, infer P>
+      ? P
+      : never;
 
 type ApiReadableKeys<A> = {
-  readonly [K in keyof A]: A[K] extends OValue<any, any> ? K :
-      A[K] extends IValue<any, any> ? K : never;
+  readonly [K in keyof A]: A[K] extends OValue<any, any>
+    ? K
+    : A[K] extends IValue<any, any>
+      ? K
+      : never;
 }[keyof A];
 
 type ApiReadableRaw<A> = {
-  [K in keyof A as PropertyNameOf<A[K]>]: A[K] extends OValue<infer T, string> ? T :
-      A[K] extends IValue<infer T, string> ? T : never;
+  [K in keyof A as PropertyNameOf<A[K]>]: A[K] extends OValue<infer T, string>
+    ? T
+    : A[K] extends IValue<infer T, string>
+      ? T
+      : never;
 };
 
 type ApiReadable<A> = ApiReadableRaw<Pick<A, ApiReadableKeys<A>>>;
-
 
 type ApiReadonlyKeys<A> = {
   readonly [K in keyof A]: A[K] extends OValue<unknown, any> ? K : never;
 }[keyof A];
 
 type ApiReadonlyRaw<A> = {
-  readonly [K in keyof A as PropertyNameOf<A[K]>]: A[K] extends OValue<infer T, string> ? T :
-      never;
+  readonly [K in keyof A as PropertyNameOf<A[K]>]: A[K] extends OValue<
+    infer T,
+    string
+  >
+    ? T
+    : never;
 };
 
-
 export type ApiReadonly<A> = ApiReadonlyRaw<Pick<A, ApiReadonlyKeys<A>>>;
-
 
 type MethodNameOf<O> = O extends ICall<any, infer M> ? M : never;
 
 type ApiMethodRaw<A> = {
-  [K in keyof A as MethodNameOf<A[K]>]: A[K] extends ICall<infer A, string> ?
-      (...args: A) => void : never;
-}
+  [K in keyof A as MethodNameOf<A[K]>]: A[K] extends ICall<infer A, string>
+    ? (...args: A) => void
+    : never;
+};
 
 type ApiMethodKeys<A> = {
   readonly [K in keyof A]: A[K] extends ICall<any, any> ? K : never;
@@ -59,17 +73,18 @@ type ApiMethodKeys<A> = {
 
 type ApiMethod<A> = ApiMethodRaw<Pick<A, ApiMethodKeys<A>>>;
 
-
-export type ApiAsProperties<S extends Spec> =
-    (ApiReadable<S['host']>&ApiReadonly<S['host']>&ApiMethod<S['host']>);
+export type ApiAsProperties<S extends Spec> = ApiReadable<S['host']> &
+  ApiReadonly<S['host']> &
+  ApiMethod<S['host']>;
 
 export function registerCustomElement<S extends Spec>(
-    spec: RegistrationSpec<S>,
-): CustomElementRegistration<ApiAsProperties<S>&HTMLElement, S> {
-  const $ctor = source(vine => {
+  spec: RegistrationSpec<S>,
+): CustomElementRegistration<ApiAsProperties<S> & HTMLElement, S> {
+  const $ctor = source((vine) => {
     const elementClass = class extends HTMLElement {
-      private readonly onAttributeChanged$ = new Subject<AttributeChangedEvent>();
       private readonly isConnected$ = new BehaviorSubject<boolean>(false);
+      private readonly onAttributeChanged$ =
+        new Subject<AttributeChangedEvent>();
 
       constructor() {
         super();
@@ -77,30 +92,28 @@ export function registerCustomElement<S extends Spec>(
         upgradeElement(registration, this, this.isConnected$, vine);
       }
 
-      static get observedAttributes(): readonly string[] {
-        return getObservedAttributes(spec);
-      }
-
       attributeChangedCallback(attrName: string): void {
         this.onAttributeChanged$.next({attrName});
       }
-
       connectedCallback(): void {
         this.isConnected$.next(true);
       }
-
       disconnectedCallback(): void {
         this.isConnected$.next(false);
       }
+
+      static get observedAttributes(): readonly string[] {
+        return getObservedAttributes(spec);
+      }
     };
 
-    return elementClass as unknown as Typeof<ApiAsProperties<S>&HTMLElement>;
+    return elementClass as unknown as Typeof<ApiAsProperties<S> & HTMLElement>;
   });
 
   const registration = {
-    deps: [],
     $ctor,
     configure: spec.configure ?? (() => undefined),
+    deps: [],
     namespace: ElementNamespace.HTML,
     ...spec,
   };

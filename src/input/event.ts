@@ -5,7 +5,6 @@ import {filter} from 'rxjs/operators';
 
 import {ApiType, EventCtor, IEvent, IOType} from '../types/io';
 
-
 export interface Options {
   readonly matchTarget: boolean;
 }
@@ -26,22 +25,25 @@ class ResolvedIEvent<E extends Event> implements IEvent<E> {
 
   resolve(target: Element): Observable<E> {
     return fromEvent(target, this.eventName).pipe(
-        filter(event => {
-          if (this.options.matchTarget && event.target !== target) {
-            return false;
-          }
+      filter((event) => {
+        if (this.options.matchTarget && event.target !== target) {
+          return false;
+        }
 
-          return true;
-        }),
-        filterByType(instanceofType(this.eventType)),
+        return true;
+      }),
+      filterByType(instanceofType(this.eventType)),
     );
   }
 }
 
 export function ievent<E extends Event>(
-    eventName: string,
-    eventType: EventCtor<E>,
-    options: Partial<Options> = {},
+  eventName: string,
+  eventType: EventCtor<E>,
+  options: Partial<Options> = {},
 ): ResolvedIEvent<E> {
-  return new ResolvedIEvent(eventName, eventType, {...DEFAULT_OPTIONS, ...options});
+  return new ResolvedIEvent(eventName, eventType, {
+    ...DEFAULT_OPTIONS,
+    ...options,
+  });
 }

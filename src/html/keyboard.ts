@@ -5,7 +5,7 @@ import {ELEMENT_SPEC} from './element';
 
 export const KBD = createDomRegistration({
   ctor: HTMLElement,
+  namespace: ElementNamespace.HTML,
   spec: ELEMENT_SPEC,
   tag: 'kbd',
-  namespace: ElementNamespace.HTML,
 });

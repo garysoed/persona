@@ -1,7 +1,7 @@
 import {source} from 'grapevine';
-import {assert, runEnvironment, should, test, setup} from 'gs-testing';
+import {asyncAssert, runEnvironment, setup, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
-import {cache} from 'gs-tools/export/data';
+import {cached} from 'gs-tools/export/data';
 import {Observable, Subject} from 'rxjs';
 
 import {registerCustomElement} from '../core/register-custom-element';
@@ -10,9 +10,7 @@ import {query} from '../selector/query';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
-import goldens from './goldens/goldens.json';
 import {ostyle} from './style';
-
 
 const $elValue$ = source(() => new Subject<string>());
 
@@ -27,7 +25,7 @@ const $host = {
 class HostCtrl implements Ctrl {
   constructor(private readonly context: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
       $elValue$.get(this.context.vine).pipe(this.context.shadow.el.value()),
@@ -36,28 +34,27 @@ class HostCtrl implements Ctrl {
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '<div id="el"></div>',
 });
 
-
 test('@persona/src/output/style', () => {
   const _ = setup(() => {
-    runEnvironment(new BrowserSnapshotsEnv('src/output/goldens', goldens));
+    runEnvironment(new BrowserSnapshotsEnv('src/output/goldens'));
     const tester = setupTest({roots: [HOST]});
     return {tester};
   });
 
   test('el', () => {
-    should('set the style correctly', () => {
+    should('set the style correctly', async () => {
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(snapshotElement(element)).to.match('style__el_empty.golden');
+      await asyncAssert(snapshotElement(element)).to.match('style__el_empty');
 
       $elValue$.get(_.tester.vine).next('123px');
-      assert(snapshotElement(element)).to.match('style__el_value.golden');
+      await asyncAssert(snapshotElement(element)).to.match('style__el_value');
     });
   });
 });

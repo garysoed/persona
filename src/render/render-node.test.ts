@@ -1,7 +1,7 @@
 import {source} from 'grapevine';
-import {assert, runEnvironment, should, test, setup} from 'gs-testing';
+import {asyncAssert, runEnvironment, setup, should, test} from 'gs-testing';
 import {BrowserSnapshotsEnv, snapshotElement} from 'gs-testing/export/snapshot';
-import {cache} from 'gs-tools/export/data';
+import {cached} from 'gs-tools/export/data';
 import {Observable, Subject} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -11,16 +11,14 @@ import {root} from '../selector/root';
 import {setupTest} from '../testing/setup-test';
 import {Context, Ctrl} from '../types/ctrl';
 
-import goldens from './goldens/goldens.json';
 import {renderNode} from './types/render-node-spec';
 
-
-const $elValue = source(() => new Subject<Node|null>());
+const $elValue = source(() => new Subject<Node | null>());
 
 const $host = {
   shadow: {
     el: root({
-      value: ocase<Node|null>('#ref'),
+      value: ocase<Node | null>('#ref'),
     }),
   },
 };
@@ -28,43 +26,52 @@ const $host = {
 class HostCtrl implements Ctrl {
   constructor(private readonly $: Context<typeof $host>) {}
 
-  @cache()
+  @cached()
   get runs(): ReadonlyArray<Observable<unknown>> {
     return [
-      $elValue.get(this.$.vine).pipe(
-          this.$.shadow.el.value(map(node => !node ? null : renderNode({node}))),
-      ),
+      $elValue
+        .get(this.$.vine)
+        .pipe(
+          this.$.shadow.el.value(
+            map((node) => (!node ? null : renderNode({node}))),
+          ),
+        ),
     ];
   }
 }
 
 const HOST = registerCustomElement({
-  tag: 'test-host',
   ctrl: HostCtrl,
   spec: $host,
+  tag: 'test-host',
   template: '<!-- #ref -->',
 });
 
-
 test('@persona/src/output/render-node', () => {
   const _ = setup(() => {
-    runEnvironment(new BrowserSnapshotsEnv('src/render/goldens', goldens));
+    runEnvironment(new BrowserSnapshotsEnv('src/render/goldens'));
     const tester = setupTest({roots: [HOST]});
     return {tester};
   });
 
   test('el', () => {
-    should('update values correctly', () => {
+    should('update values correctly', async () => {
       const element = _.tester.bootstrapElement(HOST);
 
-      assert(snapshotElement(element)).to.match('render-node__el_empty.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'render-node__el_empty',
+      );
 
       const node = document.createTextNode('text');
       $elValue.get(_.tester.vine).next(node);
-      assert(snapshotElement(element)).to.match('render-node__el_value.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'render-node__el_value',
+      );
 
       $elValue.get(_.tester.vine).next(null);
-      assert(snapshotElement(element)).to.match('render-node__el_reset.golden');
+      await asyncAssert(snapshotElement(element)).to.match(
+        'render-node__el_reset',
+      );
     });
   });
 });

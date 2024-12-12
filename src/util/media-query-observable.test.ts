@@ -1,9 +1,8 @@
-import {assert, should, test, setup} from 'gs-testing';
+import {asyncAssert, setup, should, test} from 'gs-testing';
 
 import {setupTest} from '../testing/setup-test';
 
 import {mediaQueryObservable} from './media-query-observable';
-
 
 test('@persona/src/util/media-query-observable', () => {
   const QUERY = 'query';
@@ -14,13 +13,13 @@ test('@persona/src/util/media-query-observable', () => {
   });
 
   test('getValue', () => {
-    should('emit the correct value on changes', () => {
+    should('emit the correct value on changes', async () => {
       const matches$ = mediaQueryObservable(QUERY);
 
-      assert(matches$).to.emitWith(false);
+      await asyncAssert(matches$).to.emitWith(false);
 
       _.tester.setMedia(QUERY, true);
-      assert(matches$).to.emitWith(true);
+      await asyncAssert(matches$).to.emitWith(true);
     });
   });
 });

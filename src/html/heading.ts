@@ -10,31 +10,31 @@ const BASE_HEADING = {
 
 export const H1 = createDomRegistration({
   ...BASE_HEADING,
-  tag: 'h1',
   namespace: ElementNamespace.HTML,
+  tag: 'h1',
 });
 export const H2 = createDomRegistration({
   ...BASE_HEADING,
-  tag: 'h2',
   namespace: ElementNamespace.HTML,
+  tag: 'h2',
 });
 export const H3 = createDomRegistration({
   ...BASE_HEADING,
-  tag: 'h3',
   namespace: ElementNamespace.HTML,
+  tag: 'h3',
 });
 export const H4 = createDomRegistration({
   ...BASE_HEADING,
-  tag: 'h4',
   namespace: ElementNamespace.HTML,
+  tag: 'h4',
 });
 export const H5 = createDomRegistration({
   ...BASE_HEADING,
-  tag: 'h5',
   namespace: ElementNamespace.HTML,
+  tag: 'h5',
 });
 export const H6 = createDomRegistration({
   ...BASE_HEADING,
-  tag: 'h6',
   namespace: ElementNamespace.HTML,
+  tag: 'h6',
 });
