@@ -1,27 +1,22 @@
+load("node_modules/devbase/.mk.config-base.js");
+load("node_modules/devbase/ts/.mk.config-base.js");
+
 set_vars({
   vars: {
-    goldens: [
-      'src/html/goldens',
-      'src/output/goldens',
-      'src/render/goldens',
+    local_deps: [
+      "gs-tools",
+      "gs-testing",
+      "gs-types",
+      "grapevine",
+      "devbase",
+      "moirai",
+      "nabu",
     ],
   },
 });
 
-declare({
-  name: 'link',
-  as: shell({
-    bin: 'npm',
-    flags: [
-      'link',
-      'gs-tools',
-      'gs-testing',
-      'gs-types',
-      'grapevine',
-      'dev',
-      'devbase',
-      'moirai',
-      'nabu',
-    ],
-  }),
+set_vars({
+  vars: {
+    goldens: ["src/html/goldens", "src/output/goldens", "src/render/goldens"],
+  },
 });
