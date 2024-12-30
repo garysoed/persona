@@ -8,14 +8,14 @@ import {
   undefinedType,
 } from 'gs-types';
 import {EMPTY, merge, of, OperatorFunction} from 'rxjs';
-import {map, switchMap, switchMapTo, tap, withLatestFrom} from 'rxjs/operators';
-import {MutationEvent} from 'src/util/mutate-event';
+import {map, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 
 import {render} from '../render/render';
 import {RenderContext} from '../render/types/render-context';
 import {ApiType, IOType, OCase, RenderValueFn} from '../types/io';
 import {Target} from '../types/target';
 import {initSlot} from '../util/init-slot';
+import {MutationEvent} from '../util/mutate-event';
 
 const __id = Symbol('id');
 const __subId = Symbol('subid');
@@ -171,7 +171,7 @@ class ResolvedOCase<T> implements OCase<T> {
               }
             }
           }),
-          switchMapTo(EMPTY),
+          switchMap(() => EMPTY),
         );
 
         return merge(value$, render$);

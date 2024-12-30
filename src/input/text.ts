@@ -1,8 +1,8 @@
 import {fromEvent, merge, Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import {MUTATION_EVENT_NAME} from 'src/util/mutate-event';
 
 import {ApiType, IOType, IText} from '../types/io';
+import {MUTATION_EVENT_NAME} from '../util/mutate-event';
 import {mutationObservable} from '../util/mutation-observable';
 
 class ResolvedIText implements IText {
