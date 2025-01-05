@@ -33,6 +33,7 @@ export {ovalue} from '../src/output/value';
 
 export {AutocompleteType} from '../src/html/types/autocomplete-type';
 export {BUTTON} from '../src/html/button';
+export {CANVAS} from '../src/html/canvas';
 export {CODE} from '../src/html/code';
 export {DIV} from '../src/html/div';
 export {ELEMENT_SPEC as ELEMENT} from '../src/html/element';
